@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Sidebar from '@/components/layout/Sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import ChatWidget from '@/components/chat/ChatWidget'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -35,6 +36,7 @@ export default function RootLayout({
           <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
             {children}
           </div>
+          <ChatWidget />
         </TooltipProvider>
       </body>
     </html>
