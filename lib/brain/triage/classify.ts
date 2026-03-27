@@ -1,13 +1,17 @@
 export type TriageLevel = 'EMERGENCY' | 'URGENT' | 'ROUTINE' | 'CLINIC_INFO'
 
 const EMERGENCY_KEYWORDS = [
-  'can\'t breathe', 'not breathing', 'difficulty breathing', 'collapsed', 'collapse',
-  'unconscious', 'seizure', 'fitting', 'convuls', 'pale gums', 'blue gums', 'white gums',
-  'grey gums', 'uncontrolled bleeding', 'hit by car', 'run over', 'snake bite', 'snake',
-  'toad', 'chocolate', 'xylitol', 'grapes', 'raisins', 'rat poison', 'poisoning', 'toxic',
-  'can\'t urinate', 'blocked bladder', 'not urinating', 'male cat', 'straining to wee',
-  'bloated stomach', 'distended', 'suspected gvd', 'stomach twisted', 'trauma',
-  'not moving', 'limp body', 'loss of vision', 'eye injury', 'eye popped',
+  "can't breathe", "cant breathe", 'not breathing', 'difficulty breathing', 'struggling to breathe',
+  'collapsed', 'collapse', 'unconscious', 'unresponsive',
+  'seizure', 'fitting', 'fit', 'convuls',
+  'pale gums', 'blue gums', 'white gums', 'grey gums', 'gray gums', 'gums are',
+  'uncontrolled bleeding', 'hit by car', 'run over', 'been hit',
+  'snake bite', 'snake', 'toad', 'chocolate', 'xylitol', 'grapes', 'raisins',
+  'rat poison', 'poisoning', 'toxic', 'ingested',
+  "can't urinate", "cant urinate", 'blocked bladder', 'not urinating', 'male cat',
+  'straining to wee', 'bloated stomach', 'distended', 'suspected gvd', 'stomach twisted',
+  'trauma', 'not moving', 'limp body', 'loss of vision', 'eye injury', 'eye popped',
+  'bleeding heavily', 'arterial', 'internal bleeding',
 ]
 
 const URGENT_KEYWORDS = [
