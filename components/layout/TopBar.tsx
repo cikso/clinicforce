@@ -10,6 +10,8 @@ interface TopBarProps {
   subtitle?: string
   searchPlaceholder?: string
   clinicName?: string
+  showAiBadge?: boolean
+  onNewCase?: () => void
 }
 
 export default function TopBar({
@@ -17,15 +19,25 @@ export default function TopBar({
   subtitle,
   searchPlaceholder = 'Search cases...',
   clinicName = 'Downtown Clinic',
+  showAiBadge,
+  onNewCase,
 }: TopBarProps) {
   return (
     <header className="h-20 bg-[#f8fafc] flex items-center px-8 sticky top-0 z-10 shrink-0 gap-6 border-b border-slate-200">
 
       {/* Page title */}
-      <div className="shrink-0">
-        <h2 className="text-[#0f5b8a] font-bold text-xl whitespace-nowrap leading-tight">{title}</h2>
-        {subtitle && (
-          <p className="text-xs text-slate-500 font-medium mt-0.5">{subtitle}</p>
+      <div className="shrink-0 flex items-center gap-3">
+        <div>
+          <h2 className="text-[#0f5b8a] font-bold text-xl whitespace-nowrap leading-tight">{title}</h2>
+          {subtitle && (
+            <p className="text-xs text-slate-500 font-medium mt-0.5">{subtitle}</p>
+          )}
+        </div>
+        {showAiBadge && (
+          <span className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            AI Triage Online
+          </span>
         )}
       </div>
 
@@ -61,7 +73,7 @@ export default function TopBar({
         </div>
 
         {/* Add New Case CTA */}
-        <button className="flex items-center gap-2 bg-[#0f5b8a] hover:bg-[#0c4a70] text-white px-5 py-2.5 rounded-full text-sm font-bold transition-colors shadow-sm">
+        <button onClick={onNewCase} className="flex items-center gap-2 bg-[#0f5b8a] hover:bg-[#0c4a70] text-white px-5 py-2.5 rounded-full text-sm font-bold transition-colors shadow-sm">
           <Plus className="w-4 h-4" />
           Add New Case
         </button>

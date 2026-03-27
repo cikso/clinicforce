@@ -6,12 +6,14 @@ interface PageShellProps {
   children: React.ReactNode
   searchPlaceholder?: string
   clinicName?: string
+  showAiBadge?: boolean
+  onNewCase?: () => void
 }
 
-export default function PageShell({ title, subtitle, children, searchPlaceholder, clinicName }: PageShellProps) {
+export default function PageShell({ title, subtitle, children, searchPlaceholder, clinicName, showAiBadge, onNewCase }: PageShellProps) {
   return (
     <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-      <TopBar title={title} subtitle={subtitle} searchPlaceholder={searchPlaceholder} clinicName={clinicName} />
+      <TopBar title={title} subtitle={subtitle} searchPlaceholder={searchPlaceholder} clinicName={clinicName} showAiBadge={showAiBadge} onNewCase={onNewCase} />
       <main className="flex-1 overflow-y-auto px-8 py-6">
         {children}
         {/* Footer */}
