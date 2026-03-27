@@ -22,10 +22,15 @@ import AssignClinicianModal from './AssignClinicianModal'
 import EscalateModal from './EscalateModal'
 import ToastContainer, { ToastItem } from './ToastContainer'
 
-export default function DashboardClient() {
+interface DashboardClientProps {
+  initialCases?: DashboardCase[]
+  initialCalls?: DashboardCall[]
+}
+
+export default function DashboardClient({ initialCases, initialCalls }: DashboardClientProps) {
   // ─── Core state ────────────────────────────────────────────
-  const [cases, setCases] = useState<DashboardCase[]>(INITIAL_CASES)
-  const [calls, setCalls] = useState<DashboardCall[]>(INITIAL_CALLS)
+  const [cases, setCases] = useState<DashboardCase[]>(initialCases?.length ? initialCases : INITIAL_CASES)
+  const [calls, setCalls] = useState<DashboardCall[]>(initialCalls?.length ? initialCalls : INITIAL_CALLS)
   const [capacity, setCapacity] = useState<ClinicCapacity>(INITIAL_CAPACITY)
   const [activity, setActivity] = useState<ActivityItem[]>(INITIAL_ACTIVITY)
 
