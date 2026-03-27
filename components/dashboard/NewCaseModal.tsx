@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Plus } from 'lucide-react'
+import { X, Plus, Loader2, Sparkles } from 'lucide-react'
 import { DashboardCase, CaseUrgency, IntakeSource } from '@/data/mock-dashboard'
+import type { TriageResult } from '@/app/api/triage/route'
 
 interface NewCaseModalProps {
   isOpen: boolean
@@ -17,16 +18,63 @@ export default function NewCaseModal({ isOpen, onClose, onSubmit }: NewCaseModal
     breed: '',
     age: '',
     issue: '',
-    urgency: 'URGENT' as CaseUrgency,
     ownerName: '',
     ownerPhone: '',
     source: 'FRONT_DESK' as IntakeSource,
   })
+  const [triaging, setTriaging] = useState(false)
+  const [triageResult, setTriageResult] = useState<TriageResult | null>(null)
+  const [triageError, setTriageError] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    onSubmit(form)
-    setForm({ patientName: '', species: 'Canine', breed: '', age: '', issue: '', urgency: 'URGENT', ownerName: '', ownerPhone: '', source: 'FRONT_DESK' })
+    setTriaging(true)
+    setTriageError(false)
+    setTriageResult(null)
+
+    let aiData: Partial<DashboardCase> = {
+      urgency: 'URGENT',
+      urgencyScore: 5.0,
+      riskFactor: 'Under Review',
+      aiSummary: 'Manual intake — AI triage pending.',
+      aiJustification: 'Case submitted manually. AI analysis unavailable.',
+    }
+
+    try {
+      const res = await fetch('/api/triage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patientName: form.patientName,
+          species: form.species,
+          breed: form.breed,
+          age: form.age,
+          presentingIssue: form.issue,
+        }),
+      })
+
+      if (res.ok) {
+        const result: TriageResult = await res.json()
+        setTriageResult(result)
+        aiData = {
+          urgency: result.urgency,
+          urgencyScore: result.urgencyScore,
+          riskFactor: result.riskFactor,
+          aiSummary: result.aiSummary,
+          aiJustification: result.aiJustification,
+        }
+      } else {
+        setTriageError(true)
+      }
+    } catch {
+      setTriageError(true)
+    } finally {
+      setTriaging(false)
+    }
+
+    onSubmit({ ...form, ...aiData })
+    setForm({ patientName: '', species: 'Canine', breed: '', age: '', issue: '', ownerName: '', ownerPhone: '', source: 'FRONT_DESK' })
+    setTriageResult(null)
     onClose()
   }
 
@@ -45,7 +93,10 @@ export default function NewCaseModal({ isOpen, onClose, onSubmit }: NewCaseModal
               </div>
               <div>
                 <h2 className="text-lg font-bold text-slate-900">New Case Intake</h2>
-                <p className="text-xs text-slate-500">Fill in details to add case to queue</p>
+                <p className="text-xs text-slate-500 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-emerald-500" />
+                  AI triage runs automatically on submission
+                </p>
               </div>
             </div>
             <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
@@ -114,33 +165,19 @@ export default function NewCaseModal({ isOpen, onClose, onSubmit }: NewCaseModal
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Urgency</label>
-                <select
-                  value={form.urgency}
-                  onChange={(e) => setForm((f) => ({ ...f, urgency: e.target.value as CaseUrgency }))}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#0f5b8a]/20 focus:border-[#0f5b8a] outline-none bg-white"
-                >
-                  <option value="CRITICAL">Critical</option>
-                  <option value="URGENT">Urgent</option>
-                  <option value="ROUTINE">Routine</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Intake Source</label>
-                <select
-                  value={form.source}
-                  onChange={(e) => setForm((f) => ({ ...f, source: e.target.value as IntakeSource }))}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#0f5b8a]/20 focus:border-[#0f5b8a] outline-none bg-white"
-                >
-                  <option value="FRONT_DESK">Front Desk</option>
-                  <option value="PHONE">Phone</option>
-                  <option value="VOICE_AI">Voice AI</option>
-                  <option value="WEB_CHAT">Web Chat</option>
-                  <option value="REFERRAL">Referral</option>
-                </select>
-              </div>
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Intake Source</label>
+              <select
+                value={form.source}
+                onChange={(e) => setForm((f) => ({ ...f, source: e.target.value as IntakeSource }))}
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#0f5b8a]/20 focus:border-[#0f5b8a] outline-none bg-white"
+              >
+                <option value="FRONT_DESK">Front Desk</option>
+                <option value="PHONE">Phone</option>
+                <option value="VOICE_AI">Voice AI</option>
+                <option value="WEB_CHAT">Web Chat</option>
+                <option value="REFERRAL">Referral</option>
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -160,17 +197,34 @@ export default function NewCaseModal({ isOpen, onClose, onSubmit }: NewCaseModal
                   value={form.ownerPhone}
                   onChange={(e) => setForm((f) => ({ ...f, ownerPhone: e.target.value }))}
                   className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#0f5b8a]/20 focus:border-[#0f5b8a] outline-none"
-                  placeholder="+1 (555) ..."
+                  placeholder="+61 4..."
                 />
               </div>
             </div>
+
+            {triageError && (
+              <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                AI triage unavailable — case will be added with manual urgency.
+              </p>
+            )}
 
             <div className="flex gap-3 pt-2">
               <button type="button" onClick={onClose} className="flex-1 py-3 bg-slate-100 text-slate-700 font-bold rounded-full hover:bg-slate-200 transition-colors text-sm">
                 Cancel
               </button>
-              <button type="submit" className="flex-1 py-3 bg-[#0f5b8a] text-white font-bold rounded-full hover:bg-[#0c4a70] transition-colors text-sm">
-                Add to Queue
+              <button
+                type="submit"
+                disabled={triaging}
+                className="flex-1 py-3 bg-[#0f5b8a] text-white font-bold rounded-full hover:bg-[#0c4a70] transition-colors text-sm disabled:opacity-70 flex items-center justify-center gap-2"
+              >
+                {triaging ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    AI Triaging...
+                  </>
+                ) : (
+                  'Add to Queue'
+                )}
               </button>
             </div>
           </form>
