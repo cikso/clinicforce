@@ -78,15 +78,10 @@ export default function TopBar({
           Log Interaction
         </button>
 
-        {/* Staff avatar */}
-        <button className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=DrArisThorne&backgroundColor=0f5b8a"
-            alt="Dr. Aris Thorne"
-            className="w-full h-full object-cover"
-          />
-        </button>
+        {/* Staff avatar — initials */}
+        <div className="w-10 h-10 rounded-full bg-[#0f5b8a] border-2 border-white shadow-sm flex items-center justify-center shrink-0 text-white text-xs font-bold">
+          {(clinicName ?? 'VC').slice(0, 1).toUpperCase()}
+        </div>
       </div>
     </header>
   )
