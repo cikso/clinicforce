@@ -7,22 +7,32 @@ export function LandingBenefits() {
     {
       icon: ShieldCheck,
       title: 'Fewer Missed Calls',
-      desc: 'Capture every opportunity and ensure no urgent case is ever ignored.',
+      desc: 'Every call is answered — appointment requests, routine questions, and urgent cases alike. Nothing falls through the cracks.',
     },
     {
       icon: HeartPulse,
-      title: 'Reduced Staff Pressure',
-      desc: 'Protect your team from phone fatigue, context-switching, and burnout.',
+      title: 'Reduced Front Desk Pressure',
+      desc: 'Your team can focus on the patients in front of them, without being pulled away by a constantly ringing phone.',
     },
     {
       icon: Star,
-      title: 'Premium Client Experience',
-      desc: 'Clients feel heard, understood, and guided with empathy—even when you\'re busy.',
+      title: 'Better Client Experience',
+      desc: 'Callers always reach someone professional. No hold music, no voicemail — just a warm, responsive interaction every time.',
     },
     {
       icon: FileCheck,
-      title: 'Cleaner Operations',
-      desc: 'Start the day or return from lunch to organized, prioritized data, not a blinking voicemail light.',
+      title: 'Cleaner Follow-Up',
+      desc: 'Structured intake notes, not scribbled messages. Return from lunch to organised, prioritised summaries ready to action.',
+    },
+    {
+      icon: ShieldCheck,
+      title: 'Urgent Cases Never Wait',
+      desc: 'When a call signals something time-sensitive, VetDesk identifies it and escalates — so your team can respond before it becomes critical.',
+    },
+    {
+      icon: HeartPulse,
+      title: 'Professional Coverage Anytime',
+      desc: 'Lunch breaks, staff meetings, sick days, and holidays — VetDesk keeps your front desk open and responsive around the clock.',
     },
   ]
 
@@ -38,7 +48,7 @@ export function LandingBenefits() {
               <span className="micro-label text-[#E25F38] block">CLINIC OUTCOMES</span>
             </div>
             <h2 className="text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] font-medium text-[#0A0A0A] mb-8 tracking-[-0.03em] leading-[0.85] text-balance">
-              Give your front desk room to breathe.
+              The front desk that never calls in sick.
             </h2>
             <p className="text-xl md:text-2xl text-[#0A0A0A]/60 leading-relaxed font-light mb-12 max-w-lg">
               The ROI of a smarter front door isn&apos;t just financial. It&apos;s measured in team morale, patient outcomes, and client loyalty.

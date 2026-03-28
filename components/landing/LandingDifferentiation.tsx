@@ -55,7 +55,7 @@ export function LandingDifferentiation() {
                     </div>
                     <div>
                       <span className="text-xs font-medium text-[#E25F38] tracking-widest uppercase block mb-1">Core Engine</span>
-                      <span className="text-lg font-medium text-white tracking-wide">VetDesk Triage</span>
+                      <span className="text-lg font-medium text-white tracking-wide">VetDesk Coverage</span>
                     </div>
                   </div>
                   <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
@@ -92,10 +92,10 @@ export function LandingDifferentiation() {
               <span className="micro-label text-[#E25F38] block">VETDESK IN ACTION</span>
             </div>
             <h2 className="text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] font-medium text-[#0A0A0A] mb-8 tracking-[-0.03em] leading-[0.85] text-balance">
-              11:30 AM. Two emergencies in the lobby. The phone rings.
+              11:30 AM. Reception is flat out. The phone rings.
             </h2>
             <p className="text-xl md:text-2xl text-[#0A0A0A]/60 mb-16 leading-relaxed font-light max-w-2xl">
-              When every second counts, traditional voicemail is a liability. Here is how VetDesk handles a real-world clinical gap.
+              It could be a booking request, a billing question, or something urgent. Traditional voicemail can&apos;t tell the difference. VetDesk can.
             </p>
 
             <div className="space-y-12">
@@ -107,7 +107,7 @@ export function LandingDifferentiation() {
                 <div>
                   <h4 className="text-2xl font-medium text-[#0A0A0A] mb-3 tracking-tight">The Scenario</h4>
                   <p className="text-lg text-[#0A0A0A]/60 leading-relaxed font-light">
-                    Your reception team is triaging a critical case at the front desk. They cannot answer the phone. A client is calling because their Golden Retriever just ingested chocolate.
+                    Your reception team is occupied with a patient at the front desk. They cannot answer the phone. A client is calling — it could be anything from an appointment request to a worried owner.
                   </p>
                 </div>
               </div>
@@ -118,9 +118,9 @@ export function LandingDifferentiation() {
                   <Brain className="w-7 h-7 text-[#0A3622] relative z-10" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <h4 className="text-2xl font-medium text-[#0A0A0A] mb-3 tracking-tight">The VetDesk Intercept</h4>
+                  <h4 className="text-2xl font-medium text-[#0A0A0A] mb-3 tracking-tight">VetDesk Answers</h4>
                   <p className="text-lg text-[#0A0A0A]/60 leading-relaxed font-light">
-                    VetDesk intercepts the call on the second ring. It greets the client calmly, captures the pet&apos;s details, and recognizes the toxicity keyword.
+                    VetDesk picks up on the second ring. It greets the client warmly, captures their name, their pet&apos;s details, and the reason for the call — naturally and professionally.
                   </p>
                 </div>
               </div>
@@ -133,7 +133,7 @@ export function LandingDifferentiation() {
                 <div>
                   <h4 className="text-2xl font-medium text-[#0A0A0A] mb-3 tracking-tight">The Outcome</h4>
                   <p className="text-lg text-[#0A0A0A]/60 leading-relaxed font-light">
-                    VetDesk immediately flags the interaction as high-urgency. A structured alert is sent directly to the treatment room, and the client is instructed to come in immediately. No voicemail delay. No compromised outcome. Total continuity.
+                    If it&apos;s routine, a clean summary is queued for the team. If it&apos;s urgent, VetDesk flags it immediately and escalates to the right person. Either way — no voicemail delay, no dropped call, total continuity.
                   </p>
                 </div>
               </div>

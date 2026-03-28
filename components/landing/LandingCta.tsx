@@ -29,25 +29,25 @@ export function LandingCta() {
                 <span className="micro-label text-[#E25F38] block">Ready to upgrade?</span>
               </div>
               <h2 className="text-[4rem] md:text-[6rem] lg:text-[7.5rem] font-medium text-[#F4F2ED] mb-8 tracking-[-0.03em] leading-[0.85] text-balance">
-                Keep your clinic responsive, no matter what happens.
+                Ready to give your clinic uninterrupted front desk coverage?
               </h2>
               <p className="text-xl md:text-2xl text-white/50 mb-12 leading-relaxed font-light text-balance max-w-lg">
-                Join the top-tier veterinary practices using VetDesk to protect their staff, streamline their front desk, and elevate their standard of care.
+                VetDesk handles every call with professionalism — so your team never misses what matters.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-6 items-start">
                 <LandingButton size="lg" variant="accent" className="group w-full sm:w-auto text-lg px-10 h-16">
-                  Request a Private Demo
+                  Book a Demo
                   <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </LandingButton>
                 <LandingButton size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white text-lg px-10 h-16">
-                  Talk to Sales
+                  See It in Action
                 </LandingButton>
                 <Link
                   href="/overview"
                   className="inline-flex items-center justify-center h-16 px-10 text-lg rounded-full border border-white/20 text-white/70 font-semibold hover:bg-white/10 transition-colors"
                 >
-                  View Dashboard →
+                  View the Dashboard →
                 </Link>
               </div>
             </div>

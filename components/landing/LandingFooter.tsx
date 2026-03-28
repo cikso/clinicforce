@@ -13,7 +13,7 @@ export function LandingFooter() {
               <span className="font-bold text-2xl tracking-tight text-[#0A0A0A]">VetDesk</span>
             </div>
             <p className="text-lg text-[#0A0A0A]/60 leading-relaxed max-w-sm font-light mb-8">
-              VetDesk. The operational layer for veterinary continuity.
+              VetDesk. The AI front desk for veterinary clinics.
             </p>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full border border-black/5 flex items-center justify-center hover:bg-white transition-colors cursor-pointer">

@@ -42,7 +42,7 @@ export function LandingHero() {
               transition={{ duration: 1, delay: 0.2, ease: customEase }}
               className="text-xl md:text-2xl text-[#0A0A0A]/60 mb-14 max-w-xl leading-relaxed font-light"
             >
-              VetDesk intelligently handles your calls, captures patient details, and triages urgency whenever your reception team is busy, in a meeting, or off the clock. Never miss the call that matters.
+              Whether your team is at lunch, in a meeting, or off the clock — VetDesk answers, captures, and triages every call.
             </motion.p>
 
             <motion.div
@@ -78,7 +78,7 @@ export function LandingHero() {
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:24px_24px]" />
                 <div className="relative z-10">
                   <div className="flex justify-between items-center mb-10">
-                    <span className="micro-label text-white/40">Neural Triage Core</span>
+                    <span className="micro-label text-white/40">Intelligent Intake Engine</span>
                     <div className="flex gap-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
                       <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
@@ -92,13 +92,13 @@ export function LandingHero() {
                     <div className="flex items-start gap-5">
                       <Activity className="w-6 h-6 text-white/30 shrink-0 mt-1" />
                       <div>
-                        <p className="text-[11px] text-white/50 font-mono mb-2 uppercase tracking-wider">Live Transcript Analysis</p>
+                        <p className="text-[11px] text-white/50 font-mono mb-2 uppercase tracking-wider">Live Call Analysis</p>
                         <p className="text-base text-white/90 font-medium leading-relaxed">&quot;He&apos;s been retching but nothing is coming up, and his stomach feels hard.&quot;</p>
                       </div>
                     </div>
                     <div className="mt-10 p-5 bg-white/[0.03] rounded-2xl border border-white/5">
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-xs text-white/50 font-medium tracking-wide">GDV Risk Assessment</span>
+                        <span className="text-xs text-white/50 font-medium tracking-wide">Urgency Assessment</span>
                         <span className="text-sm font-bold text-[#E25F38]">98%</span>
                       </div>
                       <div className="w-full bg-white/5 rounded-full h-1.5">
@@ -119,8 +119,8 @@ export function LandingHero() {
                     <ShieldCheck className="w-6 h-6 text-[#E25F38]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-[#0A0A0A] tracking-tight">Emergency Protocol</h3>
-                    <p className="text-xs text-[#0A0A0A]/50 mt-0.5">Routed to On-Call Veterinarian</p>
+                    <h3 className="text-sm font-semibold text-[#0A0A0A] tracking-tight">Coverage Active</h3>
+                    <p className="text-xs text-[#0A0A0A]/50 mt-0.5">Caller Handled — Message Sent to Clinic</p>
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -130,11 +130,11 @@ export function LandingHero() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-[#0A0A0A]/40 font-medium">Owner</span>
-                    <span className="text-sm font-medium text-[#0A0A0A]">Michael T. (ETA: 12 mins)</span>
+                    <span className="text-sm font-medium text-[#0A0A0A]">Michael T. — Callback requested</span>
                   </div>
                   <div className="flex justify-between items-center pt-2">
                     <span className="text-xs text-[#0A0A0A]/40 font-medium">Action</span>
-                    <span className="text-xs font-semibold text-[#0A3622] bg-[#0A3622]/5 px-2.5 py-1 rounded-md">Surgery team notified</span>
+                    <span className="text-xs font-semibold text-[#0A3622] bg-[#0A3622]/5 px-2.5 py-1 rounded-md">Summary sent to front desk</span>
                   </div>
                 </div>
               </motion.div>

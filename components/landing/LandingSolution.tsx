@@ -19,15 +19,15 @@ export function LandingSolution() {
     },
     {
       num: '03',
-      title: 'Clinical Triage',
-      desc: 'Engine assesses urgency using established veterinary protocols.',
+      title: 'Urgency Assessment',
+      desc: 'When something urgent comes in, VetDesk recognises it and escalates appropriately.',
       width: 'lg:col-span-3',
       offset: 'lg:mt-8',
     },
     {
       num: '04',
-      title: 'Smart Routing',
-      desc: 'Escalates emergencies to on-call staff or logs routine callbacks for morning.',
+      title: 'Structured Handoff',
+      desc: 'Delivers a clean intake summary to your team — so they pick up exactly where VetDesk left off.',
       width: 'lg:col-span-2',
       offset: 'lg:mt-24',
     },
@@ -46,7 +46,7 @@ export function LandingSolution() {
             Seamless coverage. Zero dropped calls.
           </h2>
           <p className="text-xl md:text-2xl text-[#0A0A0A]/60 leading-relaxed font-light max-w-2xl">
-            VetDesk acts as an invisible extension of your team. Turn it on when you need it, and let intelligent voice routing handle the intake. We capture the context, classify the urgency, and structure the data—so your staff can focus on the animals in front of them.
+            VetDesk acts as an invisible extension of your team — answering calls, capturing caller and patient details, handling routine enquiries, and escalating anything urgent. Turn it on when you need it, and your front desk never goes dark.
           </p>
         </div>
 

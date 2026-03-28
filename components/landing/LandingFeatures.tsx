@@ -13,10 +13,10 @@ export function LandingFeatures() {
             <span className="micro-label text-[#0A0A0A]/50 block">PURPOSE-BUILT FOR VETERINARY</span>
           </div>
           <h2 className="text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] font-medium text-[#0A0A0A] mb-8 tracking-[-0.03em] leading-[0.85] text-balance">
-            Intelligence that understands your workflow.
+            Everything your front desk does. Available on demand.
           </h2>
           <p className="text-xl md:text-2xl text-[#0A0A0A]/60 leading-relaxed font-light max-w-2xl">
-            Not just a chatbot. A comprehensive suite designed to handle the clinical nuances of triage and client communication.
+            Not just a chatbot. A complete front desk capability — coverage, intake, routine handling, and clean handoff — purpose-built for veterinary clinics.
           </p>
         </div>
 
@@ -34,12 +34,12 @@ export function LandingFeatures() {
                 <Mic className="w-6 h-6 text-[#0A0A0A]" />
                 <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#E25F38] border-2 border-[#F4F2ED]" />
               </div>
-              <h3 className="text-4xl md:text-5xl font-medium text-[#0A0A0A] mb-6 tracking-tight">AI Voice Receptionist</h3>
+              <h3 className="text-4xl md:text-5xl font-medium text-[#0A0A0A] mb-6 tracking-tight">Instant Call Coverage</h3>
               <p className="text-[#0A0A0A]/60 leading-relaxed font-light mb-10 text-xl">
-                Automatically captures the owner&apos;s details, the patient&apos;s history, and the exact clinical reason for calling.
+                Activates whenever your team is unavailable — lunch, meetings, sick leave, or after-hours. Every call is answered professionally, with full client and pet detail capture.
               </p>
               <ul className="space-y-5">
-                {['24/7 Availability', 'Natural Language Processing', 'Multi-lingual Support'].map((item, i) => (
+                {['Flexible activation — any time reception is unavailable', 'Client & pet detail capture on every call', 'Routine enquiry handling — appointments, hours, services'].map((item, i) => (
                   <li key={i} className="flex items-center gap-4 text-base font-medium text-[#0A0A0A]/80">
                     <div className="w-2 h-2 rounded-full bg-[#0A3622]/20" /> {item}
                   </li>
@@ -71,7 +71,7 @@ export function LandingFeatures() {
                       <Mic className="w-3 h-3 text-white" />
                     </div>
                     <div className="bg-[#0A3622] text-white p-4 rounded-2xl rounded-tr-none text-sm leading-relaxed">
-                      &quot;I understand, that&apos;s very stressful. Dark chocolate is highly toxic to dogs, especially a 20lb terrier. I am routing this to the emergency team immediately. Can you head to the clinic now?&quot;
+                      &quot;Of course — I&apos;ll take a note of that and let the team know. Can I take your name and your dog&apos;s details so we can have everything ready when you arrive?&quot;
                     </div>
                   </div>
                 </div>
@@ -92,9 +92,9 @@ export function LandingFeatures() {
               <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center mb-10 border border-white/10 backdrop-blur-md">
                 <Activity className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-3xl font-medium mb-6 tracking-tight">Clinical Triage Logic</h3>
+              <h3 className="text-3xl font-medium mb-6 tracking-tight">Urgency Detection & Escalation</h3>
               <p className="text-white/60 leading-relaxed font-light text-lg">
-                Identifies potential emergencies and escalates them immediately based on your clinic&apos;s custom protocols.
+                When something urgent comes in, VetDesk recognises it and escalates appropriately — routing time-sensitive cases to the right person without delay.
               </p>
             </div>
             <div className="mt-16 p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md relative z-10">
@@ -126,9 +126,9 @@ export function LandingFeatures() {
               <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-10 shadow-sm border border-black/5">
                 <FileText className="w-6 h-6 text-[#0A0A0A]" />
               </div>
-              <h3 className="text-3xl font-medium text-[#0A0A0A] mb-6 tracking-tight">Structured Summaries</h3>
+              <h3 className="text-3xl font-medium text-[#0A0A0A] mb-6 tracking-tight">Callback Summaries</h3>
               <p className="text-[#0A0A0A]/60 leading-relaxed font-light text-lg max-w-lg">
-                Replaces rambling, five-minute voicemails with clean, bulleted text briefs ready for your practice management system.
+                Every handled call ends with a clean handoff note sent to your team — caller name, pet details, reason for call, and next step. No voicemail, no scribbled messages.
               </p>
             </div>
 
@@ -165,7 +165,7 @@ export function LandingFeatures() {
               </div>
               <h3 className="text-2xl font-medium text-[#0A0A0A] mb-4 tracking-tight">Routine Enquiry Handling</h3>
               <p className="text-[#0A0A0A]/60 leading-relaxed font-light text-lg">
-                Answers standard questions about opening hours, location, and booking policies without human intervention.
+                Handles appointment requests, opening hours, pricing questions, and service enquiries — freeing your team to focus on the patients in front of them.
               </p>
             </div>
           </motion.div>
@@ -182,9 +182,9 @@ export function LandingFeatures() {
               <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-8 shadow-sm border border-black/5">
                 <Database className="w-5 h-5 text-[#0A0A0A]" />
               </div>
-              <h3 className="text-2xl font-medium text-[#0A0A0A] mb-4 tracking-tight">Seamless Integration</h3>
+              <h3 className="text-2xl font-medium text-[#0A0A0A] mb-4 tracking-tight">Practice Management Integration</h3>
               <p className="text-[#0A0A0A]/60 leading-relaxed font-light text-lg">
-                Designed to securely sync with leading Practice Management Software to log interactions directly into the patient record.
+                Designed to securely sync with leading Practice Management Software — logging intake summaries directly into the patient record.
               </p>
             </div>
           </motion.div>

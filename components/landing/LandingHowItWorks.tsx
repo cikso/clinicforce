@@ -5,38 +5,31 @@ export function LandingHowItWorks() {
   const steps = [
     {
       number: '01',
-      title: 'The Morning Rush',
-      description: 'Handle simultaneous calls without putting anxious owners on hold while checking in patients.',
+      title: 'Answer',
+      description: 'VetDesk picks up the call warmly and immediately — no hold music, no phone trees. The caller feels heard from the first second.',
       align: 'md:items-start md:text-left',
       offset: 'md:ml-0 md:mr-auto',
     },
     {
       number: '02',
-      title: 'Lunch & Learn',
-      description: 'Allow your entire staff to step away for training without turning off the phones.',
+      title: 'Capture',
+      description: 'Caller name, pet name, breed, age, and the reason for the call — all captured cleanly through natural conversation.',
       align: 'md:items-end md:text-right',
       offset: 'md:ml-auto md:mr-0',
     },
     {
       number: '03',
-      title: 'Unexpected Sick Leave',
-      description: 'Instantly absorb the impact of a missing receptionist with the flip of a switch.',
+      title: 'Triage',
+      description: 'VetDesk intelligently assesses urgency — distinguishing routine enquiries from time-sensitive cases and acting accordingly.',
       align: 'md:items-start md:text-left',
       offset: 'md:ml-0 md:mr-auto',
     },
     {
       number: '04',
-      title: 'Internal Meetings',
-      description: 'Keep the clinic running smoothly while your team aligns on daily operations.',
+      title: 'Handoff',
+      description: 'A structured intake summary is sent directly to your team — everything they need to follow up, prioritised and ready to act on.',
       align: 'md:items-end md:text-right',
       offset: 'md:ml-auto md:mr-0',
-    },
-    {
-      number: '05',
-      title: 'After-Hours Triage',
-      description: 'Provide professional, intelligent routing and emergency escalation when the clinic is dark.',
-      align: 'md:items-start md:text-left',
-      offset: 'md:ml-0 md:mr-auto',
     },
   ]
 
@@ -53,10 +46,10 @@ export function LandingHowItWorks() {
             <div className="h-px w-12 bg-[#E25F38]/50" />
           </div>
           <h2 className="text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] font-medium mb-8 tracking-[-0.03em] leading-[0.85] text-balance">
-            Coverage for every gap in your day.
+            How VetDesk works.
           </h2>
           <p className="text-xl md:text-2xl text-white/50 leading-relaxed font-light max-w-2xl mx-auto">
-            VetDesk is ready whenever your human team is stretched.
+            A reception workflow that runs itself — from the first ring to the final handoff note.
           </p>
         </div>
 
