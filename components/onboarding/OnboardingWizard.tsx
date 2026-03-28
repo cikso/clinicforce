@@ -2,9 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, ArrowRight, CheckCircle, Copy, Check } from 'lucide-react'
+import { Loader2, ArrowRight, CheckCircle } from 'lucide-react'
 
-const STATES = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']
 
 export default function OnboardingWizard() {
   const router = useRouter()
@@ -16,8 +15,6 @@ export default function OnboardingWizard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
-  const [clinicId, setClinicId] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -38,7 +35,6 @@ export default function OnboardingWizard() {
         return
       }
 
-      setClinicId(data.clinicId)
       setDone(true)
     } catch {
       setError('Network error. Please check your connection and try again.')
@@ -57,31 +53,36 @@ export default function OnboardingWizard() {
   // ── Success screen ──────────────────────────────────────────
   if (done) {
     return (
-      <div className="w-full max-w-lg">
-        <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-6">
-          <CheckCircle className="w-7 h-7 text-emerald-500" />
+      <div className="w-full max-w-lg text-center">
+        <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-6">
+          <CheckCircle className="w-8 h-8 text-emerald-500" />
         </div>
-        <h2 className="text-2xl font-bold text-[#0f2744] mb-1">
-          You&rsquo;re live, {clinicName.split(' ')[0]}!
+        <h2 className="text-2xl font-bold text-[#0f2744] mb-3">
+          Welcome to VetDesk, {clinicName}!
         </h2>
-        <p className="text-sm text-slate-500 mb-8">
-          Your VetDesk coverage profile is ready. Head to the dashboard to activate your first coverage window.
+        <p className="text-sm text-slate-500 mb-3 leading-relaxed">
+          Your clinic coverage profile is set up and ready to go.
+        </p>
+        <p className="text-sm text-slate-500 mb-10 leading-relaxed">
+          Head to your dashboard to activate coverage — your AI receptionist Sarah is standing by.
         </p>
 
-        {/* Clinic ID */}
-        <div className="bg-[#f0f6ff] border border-[#c8e0f4] rounded-2xl p-5 mb-6">
-          <p className="text-xs font-bold text-[#0f5b8a] uppercase tracking-wide mb-3">Your Clinic ID — for webhook setup</p>
-          <div className="flex items-center gap-2 bg-white rounded-xl p-3 border border-[#c8e0f4]">
-            <code className="text-sm font-mono text-[#0f5b8a] flex-1 truncate">{clinicId}</code>
-            <button onClick={copyId} className="shrink-0 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
-            </button>
-          </div>
+        <div className="grid grid-cols-3 gap-4 mb-10">
+          {[
+            { emoji: '📞', label: 'Answers every call' },
+            { emoji: '🏥', label: 'Triages urgency' },
+            { emoji: '📋', label: 'Full handover log' },
+          ].map(({ emoji, label }) => (
+            <div key={label} className="bg-slate-50 rounded-2xl p-4">
+              <div className="text-2xl mb-2">{emoji}</div>
+              <p className="text-xs font-semibold text-slate-600">{label}</p>
+            </div>
+          ))}
         </div>
 
         <button
           onClick={() => router.push('/overview')}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#0f5b8a] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-[#0f5b8a] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors"
         >
           Go to Dashboard <ArrowRight className="w-4 h-4" />
         </button>
