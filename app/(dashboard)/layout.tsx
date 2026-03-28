@@ -6,9 +6,9 @@ import { redirect } from 'next/navigation'
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const profile = await getClinicProfile()
 
-  // No clinic set up yet → back to login to complete signup
+  // No clinic set up yet → send to setup (not /login to avoid redirect loop)
   if (!profile) {
-    redirect('/login')
+    redirect('/setup')
   }
 
   return (

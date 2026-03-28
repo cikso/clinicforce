@@ -43,8 +43,7 @@ export default function LoginForm() {
       password: signInPassword,
     })
     if (err) { setError(err.message); setLoading(false); return }
-    router.push('/overview')
-    router.refresh()
+    window.location.href = '/overview'
   }
 
   // ── Create account + clinic ───────────────────────────────
@@ -72,7 +71,7 @@ export default function LoginForm() {
       password: ownerPassword,
     })
     if (signInErr) {
-      // Email confirmation required — tell them to check email
+      // Email confirmation required — show message and pre-fill sign in
       setError('Account created! Please check your email to confirm, then sign in.')
       setLoading(false)
       setStep('signin')
@@ -93,8 +92,8 @@ export default function LoginForm() {
     const data = await res.json()
     if (!res.ok) { setError(data.error ?? 'Failed to create clinic'); setLoading(false); return }
 
-    router.push('/overview')
-    router.refresh()
+    // Hard redirect so session cookie is fully loaded
+    window.location.href = '/overview'
   }
 
   // ─────────────────────────────────────────────────────────
