@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Loader2, ArrowRight, CheckCircle, Copy, Check } from 'lucide-react'
 
@@ -25,41 +24,26 @@ export default function OnboardingWizard() {
     setError(null)
     setLoading(true)
 
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setError('Session expired. Please sign in again.'); setLoading(false); return }
-
-    // Insert clinic — name only until schema cache refreshes
-    const { data: clinic, error: clinicErr } = await supabase
-      .from('clinics')
-      .insert({ name: clinicName })
-      .select('id')
-      .single()
-
-    if (clinicErr || !clinic) {
-      setError(clinicErr?.message ?? 'Could not create clinic. Please try again.')
-      setLoading(false)
-      return
-    }
-
-    // Link user to clinic
-    const { error: linkErr } = await supabase
-      .from('clinic_users')
-      .insert({
-        user_id: user.id,
-        clinic_id: clinic.id,
-        name: user.user_metadata?.full_name ?? user.email,
-        role: 'admin',
+    try {
+      const res = await fetch('/api/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clinicName, phone, email, suburb, state }),
       })
+      const data = await res.json()
 
-    if (linkErr) {
-      setError(linkErr.message)
-      setLoading(false)
-      return
+      if (!res.ok) {
+        setError(data.error ?? 'Something went wrong. Please try again.')
+        setLoading(false)
+        return
+      }
+
+      setClinicId(data.clinicId)
+      setDone(true)
+    } catch {
+      setError('Network error. Please check your connection and try again.')
     }
 
-    setClinicId(clinic.id)
-    setDone(true)
     setLoading(false)
   }
 
