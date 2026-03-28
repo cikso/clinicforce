@@ -12,6 +12,7 @@ import {
   CheckSquare,
   Settings,
   LogOut,
+  Users,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -24,6 +25,7 @@ const navItems = [
   { label: 'Coverage Reports', href: '/media-review',  icon: BarChart3 },
   { label: 'Handover Notes',   href: '/referrals',     icon: ClipboardList },
   { label: 'Team Tasks',       href: '/tasks',         icon: CheckSquare },
+  { label: 'Users',            href: '/users',         icon: Users },
 ]
 
 interface SidebarProps {
