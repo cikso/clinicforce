@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { buildBrainContext, Channel } from '@/lib/brain/orchestrator'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+function getOpenAI() { return new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) }
 
 export interface ChatMessage {
   role: 'user' | 'assistant'
@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
       { role: 'user', content: message },
     ]
 
+    const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages,

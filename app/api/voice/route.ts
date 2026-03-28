@@ -5,7 +5,7 @@ import { getClinicConfig, formatClinicContext } from '@/lib/brain/clinic/get-cli
 import { sharedRules } from '@/lib/brain/prompts/shared-rules'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+function getOpenAI() { return new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) }
 
 // ElevenLabs calls this as a server tool during the conversation
 // Input: caller's message + clinic_id
@@ -60,6 +60,7 @@ Rules:
 ${sharedRules}
     `.trim()
 
+    const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
