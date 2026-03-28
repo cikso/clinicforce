@@ -29,10 +29,10 @@ export default function OnboardingWizard() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setError('Session expired. Please sign in again.'); setLoading(false); return }
 
-    // Insert clinic — only columns we know exist
+    // Insert clinic — name only until schema cache refreshes
     const { data: clinic, error: clinicErr } = await supabase
       .from('clinics')
-      .insert({ name: clinicName, phone, email, suburb, state })
+      .insert({ name: clinicName })
       .select('id')
       .single()
 
