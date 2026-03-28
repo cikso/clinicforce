@@ -43,13 +43,6 @@ export default function OnboardingWizard() {
     setLoading(false)
   }
 
-  function copyId() {
-    if (!clinicId) return
-    navigator.clipboard.writeText(clinicId)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
   // ── Success screen ──────────────────────────────────────────
   if (done) {
     return (
