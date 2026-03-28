@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import Sidebar from '@/components/layout/Sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import ChatWidget from '@/components/chat/ChatWidget'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,8 +14,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'VetFlow AI',
-  description: 'Veterinary clinic operations dashboard',
+  title: 'VetDesk — AI Front Desk for Veterinary Clinics',
+  description: 'VetDesk intelligently handles your calls, captures patient details, and triages urgency 24/7.',
 }
 
 export default function RootLayout({
@@ -28,15 +26,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-      <body className="h-full flex overflow-hidden bg-[#f5f6f8]">
+      <body>
         <TooltipProvider>
-          <Sidebar />
-          <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-            {children}
-          </div>
-          <ChatWidget />
+          {children}
         </TooltipProvider>
       </body>
     </html>
