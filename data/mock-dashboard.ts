@@ -1,53 +1,88 @@
 // ─────────────────────────────────────────────────────────────
-// VetDesk — Central Mock Dashboard Data
+// VetDesk — Coverage Console Mock Data
 // ─────────────────────────────────────────────────────────────
 
-export type CaseUrgency = 'CRITICAL' | 'URGENT' | 'ROUTINE'
-export type CaseStatus = 'WAITING' | 'IN_REVIEW' | 'IN_TREATMENT' | 'AWAITING_OWNER' | 'ESCALATED'
+export type Urgency = 'CRITICAL' | 'URGENT' | 'ROUTINE'
+export type InteractionStatus = 'HANDLED' | 'CALLBACK_REQUIRED' | 'ESCALATED' | 'PENDING' | 'BOOKING_REQUESTED'
+export type EnquiryType = 'APPOINTMENT' | 'URGENT_CONCERN' | 'GENERAL_ENQUIRY' | 'CALLBACK_REQUEST' | 'EMERGENCY' | 'PRICING' | 'MEDICATION'
 export type IntakeSource = 'VOICE_AI' | 'WEB_CHAT' | 'PHONE' | 'FRONT_DESK' | 'REFERRAL'
+export type CoverageReason = 'LUNCH_BREAK' | 'MEETING' | 'SICK_LEAVE' | 'OVERFLOW' | 'AFTER_HOURS' | 'MORNING_RUSH'
+export type CoverageStatus = 'ACTIVE' | 'INACTIVE'
+export type FollowUpType = 'URGENT_CALLBACK' | 'ROUTINE_CALLBACK' | 'BOOKING_REQUEST' | 'MESSAGE_REVIEW'
+export type HandoverType = 'handled' | 'callback' | 'booking' | 'escalation' | 'coverage'
+
+// Legacy type aliases for backward compat with any remaining components
+export type CaseUrgency = Urgency
+export type CaseStatus = InteractionStatus
 export type CallStatus = 'NEW' | 'REVIEWED' | 'CASE_CREATED' | 'QUEUED' | 'CALLBACK_MARKED' | 'ESCALATED'
 export type CallRisk = 'CRITICAL' | 'URGENT' | 'GENERAL'
-export type ActivityType = 'case' | 'call' | 'assignment' | 'escalation' | 'system'
+export type ActivityType = HandoverType
 
-export interface DashboardCase {
+export interface CoveredInteraction {
   id: string
-  caseRef: string
-  patientName: string
+  ref: string
+  callerName: string
+  callerPhone: string
+  petName: string
   species: string
   breed: string
-  age: string
-  issue: string
-  urgency: CaseUrgency
-  waitMinutes: number
-  aiSummary: string
-  status: CaseStatus
-  clinician: string | null
-  clinicianAvatar: string | null
+  enquiryType: EnquiryType
+  urgency: Urgency
   source: IntakeSource
-  riskFactor: string
-  urgencyScore: number
-  aiJustification: string
-  ownerName: string
-  ownerPhone: string
-  ownerAddress: string
-  ownerAvatar: string
+  summary: string
+  aiDetail: string
+  status: InteractionStatus
+  nextAction: string
+  coverageReason: CoverageReason
   createdAt: string
 }
 
-export interface DashboardCall {
-  id: string
-  callerName: string
-  callerPhone: string
-  patientName: string
-  species: string
-  receivedMinsAgo: number
-  transcript: string
-  aiRiskLabel: CallRisk
-  aiConfidence: number
-  aiNextStep: string
-  status: CallStatus
+export interface CoverageSession {
+  status: CoverageStatus
+  reason: CoverageReason
+  startTime: string
+  durationMinutes: number
+  endsAt: string
+  clinicName: string
+  location: string
+  interactionsHandled: number
 }
 
+export interface FollowUpItem {
+  id: string
+  callerName: string
+  petName: string
+  species: string
+  summary: string
+  urgency: Urgency
+  type: FollowUpType
+  receivedAt: string
+  phone: string
+}
+
+export interface HandoverItem {
+  id: string
+  message: string
+  timestamp: Date
+  type: HandoverType
+}
+
+export interface CoverageUsage {
+  reason: CoverageReason
+  label: string
+  minutes: number
+  color: string
+}
+
+export interface StaffMember {
+  id: string
+  name: string
+  role: string
+  available: boolean
+  avatar: string
+}
+
+// Legacy interface aliases for backward compat
 export interface Clinician {
   id: string
   name: string
@@ -64,6 +99,37 @@ export interface ClinicCapacity {
   cliniciansAvailable: number
 }
 
+export interface DashboardCase extends CoveredInteraction {
+  caseRef: string
+  patientName: string
+  issue: string
+  waitMinutes: number
+  aiSummary: string
+  clinician: string | null
+  clinicianAvatar: string | null
+  riskFactor: string
+  urgencyScore: number
+  aiJustification: string
+  ownerName: string
+  ownerPhone: string
+  ownerAddress: string
+  ownerAvatar: string
+}
+
+export interface DashboardCall {
+  id: string
+  callerName: string
+  callerPhone: string
+  patientName: string
+  species: string
+  receivedMinsAgo: number
+  transcript: string
+  aiRiskLabel: CallRisk
+  aiConfidence: number
+  aiNextStep: string
+  status: CallStatus
+}
+
 export interface ActivityItem {
   id: string
   message: string
@@ -71,216 +137,243 @@ export interface ActivityItem {
   type: ActivityType
 }
 
-// ─── Cases ────────────────────────────────────────────────────
+// ─── Coverage Session ─────────────────────────────────────────
 
-export const INITIAL_CASES: DashboardCase[] = [
-  {
-    id: 'case-1',
-    caseRef: 'VD-9921',
-    patientName: 'Luna',
-    species: 'Feline',
-    breed: 'Domestic Shorthair',
-    age: '4y F/S',
-    issue: 'Respiratory Distress',
-    urgency: 'CRITICAL',
-    waitMinutes: 4,
-    aiSummary: 'Acute collapse with shallow breathing. Cardiovascular compromise likely.',
-    status: 'WAITING',
-    clinician: null,
-    clinicianAvatar: null,
-    source: 'VOICE_AI',
-    riskFactor: 'GDV / Cardiovascular',
-    urgencyScore: 9.2,
-    aiJustification:
-      'Acute onset collapse with shallow breathing and pale mucous membranes. Pattern consistent with cardiovascular compromise or internal trauma. Immediate intervention required — do not delay imaging.',
-    ownerName: 'Sarah Jenkins',
-    ownerPhone: '+1 (555) 012-4492',
-    ownerAddress: '122 West End Ave',
-    ownerAvatar: 'SarahJenkins',
-    createdAt: '4m ago',
-  },
-  {
-    id: 'case-2',
-    caseRef: 'VD-9922',
-    patientName: 'Oliver',
-    species: 'Feline',
-    breed: 'Tabby',
-    age: '12y M/N',
-    issue: 'Urinary Blockage',
-    urgency: 'URGENT',
-    waitMinutes: 12,
-    aiSummary: 'FLUTD suspected. Renal failure risk within 6 hours without unblocking.',
-    status: 'IN_REVIEW',
-    clinician: 'Dr. Smith',
-    clinicianAvatar: 'DrSmith',
-    source: 'WEB_CHAT',
-    riskFactor: 'Renal Failure',
-    urgencyScore: 8.1,
-    aiJustification:
-      'Complete urethral obstruction suspected. 12-year-old male with dysuria and abdominal distension. Renal decompensation likely within 6 hours without catheterisation. Prioritise over routine cases.',
-    ownerName: 'Liam Park',
-    ownerPhone: '+1 (555) 883-2910',
-    ownerAddress: '45 North St',
-    ownerAvatar: 'LiamPark',
-    createdAt: '12m ago',
-  },
-  {
-    id: 'case-3',
-    caseRef: 'VD-9923',
-    patientName: 'Bella',
-    species: 'Canine',
-    breed: 'French Bulldog',
-    age: '2y F/S',
-    issue: 'Toxin Ingestion',
-    urgency: 'URGENT',
-    waitMinutes: 15,
-    aiSummary: 'Dark chocolate ingestion ~40mg/kg. Emesis window still open.',
-    status: 'IN_TREATMENT',
-    clinician: 'Dr. Thorne',
-    clinicianAvatar: 'DrArisThorne',
-    source: 'PHONE',
-    riskFactor: 'Theobromine Toxicity',
-    urgencyScore: 7.4,
-    aiJustification:
-      'Dark chocolate at estimated 40mg/kg theobromine exposure. Current window for emesis induction is open — act within 30 minutes. Methylxanthine toxicity monitoring required for 6–8 hours post-ingestion.',
-    ownerName: 'Elena Rodriguez',
-    ownerPhone: '+1 (555) 441-0023',
-    ownerAddress: '88 East Ave',
-    ownerAvatar: 'ElenaRodriguez',
-    createdAt: '15m ago',
-  },
-  {
-    id: 'case-4',
-    caseRef: 'VD-9924',
-    patientName: 'Max',
-    species: 'Canine',
-    breed: 'Mixed Breed',
-    age: '1y M/N',
-    issue: 'Limping (Front Right)',
-    urgency: 'ROUTINE',
-    waitMinutes: 25,
-    aiSummary: 'Probable soft tissue injury. No systemic symptoms. Owner present.',
-    status: 'AWAITING_OWNER',
-    clinician: null,
-    clinicianAvatar: null,
-    source: 'FRONT_DESK',
-    riskFactor: 'Soft Tissue',
-    urgencyScore: 2.8,
-    aiJustification:
-      'Mild non-weight-bearing on right forelimb with no systemic signs. Likely soft tissue injury or minor fracture. Low urgency — physical exam and imaging can confirm after higher-priority cases are managed.',
-    ownerName: 'Michael Chen',
-    ownerPhone: '+1 (555) 662-8847',
-    ownerAddress: '12 South Blvd',
-    ownerAvatar: 'MichaelChen',
-    createdAt: '25m ago',
-  },
-]
-
-// ─── Calls ────────────────────────────────────────────────────
-
-export const INITIAL_CALLS: DashboardCall[] = [
-  {
-    id: 'call-1',
-    callerName: 'David Chen',
-    callerPhone: '+61 4 6789 0123',
-    patientName: 'Pepper',
-    species: 'African Grey Parrot',
-    receivedMinsAgo: 2,
-    transcript:
-      '"...Pepper just fell off her perch and she\'s breathing really fast with her mouth open. She can\'t stand up. We\'re getting in the car now..."',
-    aiRiskLabel: 'CRITICAL',
-    aiConfidence: 94,
-    aiNextStep: 'Alert ER team. Prepare avian emergency protocol immediately.',
-    status: 'NEW',
-  },
-  {
-    id: 'call-2',
-    callerName: 'Liam Park',
-    callerPhone: '+61 4 8901 2345',
-    patientName: 'Oscar',
-    species: 'Maine Coon',
-    receivedMinsAgo: 23,
-    transcript:
-      '"...Oscar keeps going to the litter box every few minutes and crying. He had a blockage six months ago, I\'m really worried it\'s happening again..."',
-    aiRiskLabel: 'URGENT',
-    aiConfidence: 87,
-    aiNextStep: 'Triage immediately — history of urethral obstruction, high recurrence risk.',
-    status: 'NEW',
-  },
-  {
-    id: 'call-3',
-    callerName: 'Maria Santos',
-    callerPhone: '+61 4 3210 5678',
-    patientName: 'Coco',
-    species: 'Beagle',
-    receivedMinsAgo: 47,
-    transcript:
-      '"...Coco got into the rubbish bin earlier tonight. She vomited twice but seems okay now. Should I bring her in or just watch her?..."',
-    aiRiskLabel: 'GENERAL',
-    aiConfidence: 72,
-    aiNextStep: 'Advise owner to monitor. Schedule morning callback if symptoms persist.',
-    status: 'REVIEWED',
-  },
-]
-
-// ─── Clinicians ───────────────────────────────────────────────
-
-export const CLINICIANS: Clinician[] = [
-  { id: 'c1', name: 'Dr. Aris Thorne', role: 'DVM – Night Lead', available: true, avatar: 'DrArisThorne' },
-  { id: 'c2', name: 'Dr. Sarah Smith', role: 'DVM – ER', available: true, avatar: 'DrSmith' },
-  { id: 'c3', name: 'Dr. James Miller', role: 'DVM – Surgery', available: false, avatar: 'DrMiller' },
-  { id: 'c4', name: 'LVT Sarah Nguyen', role: 'LVT – Triage', available: true, avatar: 'NurseSarah' },
-  { id: 'c5', name: 'LVT Mike Patel', role: 'LVT – ICU', available: false, avatar: 'NurseMike' },
-  { id: 'c6', name: 'LVT Jane Cooper', role: 'LVT – Ward', available: true, avatar: 'NurseJane' },
-]
-
-// ─── Capacity ─────────────────────────────────────────────────
-
-export const INITIAL_CAPACITY: ClinicCapacity = {
-  totalRooms: 6,
-  occupiedRooms: 4,
-  nextSlotTime: '2:30 PM',
-  cliniciansOnDuty: 6,
-  cliniciansAvailable: 2,
+export const INITIAL_COVERAGE_SESSION: CoverageSession = {
+  status: 'ACTIVE',
+  reason: 'LUNCH_BREAK',
+  startTime: '12:00 PM',
+  durationMinutes: 23,
+  endsAt: '1:30 PM',
+  clinicName: 'Baulkham Hills Pet Clinic',
+  location: 'Main Reception',
+  interactionsHandled: 9,
 }
 
-// ─── Activity Feed ────────────────────────────────────────────
+// ─── Covered Interactions ────────────────────────────────────
 
-export const INITIAL_ACTIVITY: ActivityItem[] = [
+export const INITIAL_INTERACTIONS: CoveredInteraction[] = [
   {
-    id: 'a1',
-    message: 'Luna escalated to ER — cardiovascular compromise suspected',
+    id: 'int-1',
+    ref: 'VD-1041',
+    callerName: 'Karen Watson',
+    callerPhone: '+61 4 1234 5678',
+    petName: 'Buddy',
+    species: 'Canine',
+    breed: 'Labrador',
+    enquiryType: 'APPOINTMENT',
+    urgency: 'ROUTINE',
+    source: 'VOICE_AI',
+    summary: 'Requesting annual check-up for 3yr Labrador. Flexible on timing.',
+    aiDetail: 'Routine wellness enquiry. Owner happy to book at next available slot. No clinical concern raised.',
+    status: 'BOOKING_REQUESTED',
+    nextAction: 'Book appointment',
+    coverageReason: 'LUNCH_BREAK',
+    createdAt: '8m ago',
+  },
+  {
+    id: 'int-2',
+    ref: 'VD-1042',
+    callerName: 'Tom Rafferty',
+    callerPhone: '+61 4 2345 6789',
+    petName: 'Whiskers',
+    species: 'Feline',
+    breed: 'Domestic Shorthair',
+    enquiryType: 'URGENT_CONCERN',
+    urgency: 'URGENT',
+    source: 'PHONE',
+    summary: 'Cat not eating for 2 days. Hiding under bed. Caller very concerned.',
+    aiDetail: 'Anorexia for 48+ hours with behavioural changes. Could indicate systemic illness, pain, or stress. Recommend same-day assessment.',
+    status: 'CALLBACK_REQUIRED',
+    nextAction: 'Call back — same-day triage',
+    coverageReason: 'LUNCH_BREAK',
+    createdAt: '14m ago',
+  },
+  {
+    id: 'int-3',
+    ref: 'VD-1043',
+    callerName: 'Sarah Mitchell',
+    callerPhone: '+61 4 3456 7890',
+    petName: '—',
+    species: '—',
+    breed: '—',
+    enquiryType: 'PRICING',
+    urgency: 'ROUTINE',
+    source: 'WEB_CHAT',
+    summary: 'Asked about desexing costs for a 6-month-old female cat.',
+    aiDetail: 'General pricing enquiry. Caller provided contact details. No pet health concern.',
+    status: 'HANDLED',
+    nextAction: '—',
+    coverageReason: 'LUNCH_BREAK',
+    createdAt: '18m ago',
+  },
+  {
+    id: 'int-4',
+    ref: 'VD-1044',
+    callerName: 'James Park',
+    callerPhone: '+61 4 4567 8901',
+    petName: 'Max',
+    species: 'Canine',
+    breed: 'Border Collie',
+    enquiryType: 'EMERGENCY',
+    urgency: 'CRITICAL',
+    source: 'VOICE_AI',
+    summary: 'Dog collapsed in backyard. Not responding normally. Gums pale.',
+    aiDetail: 'Suspected cardiovascular or toxic emergency. Pale gums and sudden collapse. Owner driving in now — estimated 10 mins. Prepare for urgent intake.',
+    status: 'ESCALATED',
+    nextAction: 'Prepare for urgent intake',
+    coverageReason: 'LUNCH_BREAK',
+    createdAt: '21m ago',
+  },
+  {
+    id: 'int-5',
+    ref: 'VD-1045',
+    callerName: 'Lisa Chen',
+    callerPhone: '+61 4 5678 9012',
+    petName: 'Mochi',
+    species: 'Feline',
+    breed: 'British Shorthair',
+    enquiryType: 'MEDICATION',
+    urgency: 'ROUTINE',
+    source: 'PHONE',
+    summary: "Querying whether to give this morning's flea treatment before tonight's scheduled appointment.",
+    aiDetail: 'Routine pre-appointment question. Advised to hold treatment until after the visit. Message captured for vet to confirm.',
+    status: 'HANDLED',
+    nextAction: '—',
+    coverageReason: 'LUNCH_BREAK',
+    createdAt: '29m ago',
+  },
+]
+
+// ─── Follow-Up Queue ─────────────────────────────────────────
+
+export const INITIAL_FOLLOWUPS: FollowUpItem[] = [
+  {
+    id: 'f1',
+    callerName: 'James Park',
+    petName: 'Max',
+    species: 'Canine',
+    summary: 'Collapsed — pale gums. Owner en route.',
+    urgency: 'CRITICAL',
+    type: 'URGENT_CALLBACK',
+    receivedAt: '21m ago',
+    phone: '+61 4 4567 8901',
+  },
+  {
+    id: 'f2',
+    callerName: 'Tom Rafferty',
+    petName: 'Whiskers',
+    species: 'Feline',
+    summary: 'Not eating 2 days. Hiding. Same-day assessment needed.',
+    urgency: 'URGENT',
+    type: 'URGENT_CALLBACK',
+    receivedAt: '14m ago',
+    phone: '+61 4 2345 6789',
+  },
+  {
+    id: 'f3',
+    callerName: 'Karen Watson',
+    petName: 'Buddy',
+    species: 'Canine',
+    summary: 'Annual check-up requested. Flexible on time.',
+    urgency: 'ROUTINE',
+    type: 'BOOKING_REQUEST',
+    receivedAt: '8m ago',
+    phone: '+61 4 1234 5678',
+  },
+  {
+    id: 'f4',
+    callerName: 'Sarah Mitchell',
+    petName: '—',
+    species: '—',
+    summary: 'Desexing price enquiry. Wants a callback with quote.',
+    urgency: 'ROUTINE',
+    type: 'ROUTINE_CALLBACK',
+    receivedAt: '18m ago',
+    phone: '+61 4 3456 7890',
+  },
+]
+
+// ─── Handover Feed ────────────────────────────────────────────
+
+export const INITIAL_HANDOVER: HandoverItem[] = [
+  {
+    id: 'h1',
+    message: 'James Park / Max — collapse reported. Escalated. Owner driving in now.',
     timestamp: new Date(Date.now() - 2 * 60000),
     type: 'escalation',
   },
   {
-    id: 'a2',
-    message: 'Sarah AI converted call to case — Oscar (Maine Coon, urinary)',
+    id: 'h2',
+    message: 'Tom Rafferty / Whiskers — urgent concern captured. Callback required today.',
     timestamp: new Date(Date.now() - 8 * 60000),
-    type: 'call',
+    type: 'callback',
   },
   {
-    id: 'a3',
-    message: 'Bella flagged for toxin ingestion — urgency score 7.4',
-    timestamp: new Date(Date.now() - 15 * 60000),
-    type: 'case',
+    id: 'h3',
+    message: 'Karen Watson / Buddy — booking request received. Check-up appointment needed.',
+    timestamp: new Date(Date.now() - 12 * 60000),
+    type: 'booking',
   },
   {
-    id: 'a4',
-    message: 'Dr. Smith assigned to Oliver (VD-9922)',
-    timestamp: new Date(Date.now() - 20 * 60000),
-    type: 'assignment',
+    id: 'h4',
+    message: 'Coverage activated — Lunch Break. 12:00 PM, Main Reception.',
+    timestamp: new Date(Date.now() - 23 * 60000),
+    type: 'coverage',
   },
   {
-    id: 'a5',
-    message: 'Emergency slot reserved — 2:30 PM',
-    timestamp: new Date(Date.now() - 35 * 60000),
-    type: 'system',
+    id: 'h5',
+    message: 'Sarah Mitchell — pricing enquiry handled. No callback needed.',
+    timestamp: new Date(Date.now() - 18 * 60000),
+    type: 'handled',
   },
   {
-    id: 'a6',
-    message: 'Callback marked complete — Coco (Beagle)',
-    timestamp: new Date(Date.now() - 52 * 60000),
-    type: 'call',
+    id: 'h6',
+    message: 'Lisa Chen / Mochi — medication question handled. Message left for vet.',
+    timestamp: new Date(Date.now() - 29 * 60000),
+    type: 'handled',
   },
 ]
+
+// ─── Coverage Usage ───────────────────────────────────────────
+
+export const COVERAGE_USAGE: CoverageUsage[] = [
+  { reason: 'LUNCH_BREAK', label: 'Lunch Break', minutes: 83, color: '#0ea5e9' },
+  { reason: 'MEETING', label: 'Team Meeting', minutes: 45, color: '#8b5cf6' },
+  { reason: 'MORNING_RUSH', label: 'Morning Rush', minutes: 30, color: '#f59e0b' },
+  { reason: 'AFTER_HOURS', label: 'After Hours', minutes: 0, color: '#64748b' },
+]
+
+// ─── Staff ────────────────────────────────────────────────────
+
+export const STAFF_MEMBERS: StaffMember[] = [
+  { id: 's1', name: 'Dr. Aris Thorne', role: 'Lead Veterinarian', available: true, avatar: 'DrArisThorne' },
+  { id: 's2', name: 'Sarah Kim', role: 'Head Receptionist', available: false, avatar: 'SarahKim' },
+  { id: 's3', name: 'Dr. James Miller', role: 'Veterinarian', available: true, avatar: 'DrMiller' },
+  { id: 's4', name: 'Priya Nguyen', role: 'Veterinary Nurse', available: true, avatar: 'PriyaNguyen' },
+]
+
+// ─── Legacy exports (for backward compat) ────────────────────
+
+export const INITIAL_CASES: DashboardCase[] = INITIAL_INTERACTIONS.map((i) => ({
+  ...i,
+  caseRef: i.ref,
+  patientName: i.petName,
+  issue: i.summary,
+  waitMinutes: 0,
+  aiSummary: i.summary,
+  clinician: null,
+  clinicianAvatar: null,
+  riskFactor: i.enquiryType,
+  urgencyScore: i.urgency === 'CRITICAL' ? 9 : i.urgency === 'URGENT' ? 6 : 2,
+  aiJustification: i.aiDetail,
+  ownerName: i.callerName,
+  ownerPhone: i.callerPhone,
+  ownerAddress: '',
+  ownerAvatar: i.callerName.replace(/\s/g, ''),
+}))
+
+export const INITIAL_CALLS: DashboardCall[] = []
+export const CLINICIANS: Clinician[] = STAFF_MEMBERS.map((s) => ({ id: s.id, name: s.name, role: s.role, available: s.available, avatar: s.avatar }))
+export const INITIAL_CAPACITY: ClinicCapacity = { totalRooms: 6, occupiedRooms: 2, nextSlotTime: '1:30 PM', cliniciansOnDuty: 3, cliniciansAvailable: 2 }
+export const INITIAL_ACTIVITY: ActivityItem[] = INITIAL_HANDOVER

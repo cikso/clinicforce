@@ -4,24 +4,24 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
-  Activity,
+  MessageSquare,
   Phone,
   CalendarDays,
-  Image,
-  ArrowRightLeft,
+  BarChart3,
+  ClipboardList,
   CheckSquare,
   Settings,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { label: 'Dashboard',    href: '/overview',      icon: LayoutDashboard },
-  { label: 'Care Queue',   href: '/care-queue',    icon: Activity },
-  { label: 'Calls',        href: '/calls',          icon: Phone },
-  { label: 'Bookings',     href: '/bookings',       icon: CalendarDays },
-  { label: 'Media',        href: '/media-review',   icon: Image },
-  { label: 'Referrals',    href: '/referrals',      icon: ArrowRightLeft },
-  { label: 'Tasks',        href: '/tasks',          icon: CheckSquare },
+  { label: 'Coverage Console', href: '/overview',      icon: LayoutDashboard },
+  { label: 'Interaction Log',  href: '/care-queue',    icon: MessageSquare },
+  { label: 'Follow-Up Queue',  href: '/calls',          icon: Phone },
+  { label: 'Bookings',         href: '/bookings',       icon: CalendarDays },
+  { label: 'Coverage Reports', href: '/media-review',   icon: BarChart3 },
+  { label: 'Handover Notes',   href: '/referrals',      icon: ClipboardList },
+  { label: 'Team Tasks',       href: '/tasks',          icon: CheckSquare },
 ]
 
 export default function Sidebar() {
@@ -40,7 +40,7 @@ export default function Sidebar() {
         </div>
         <div>
           <h1 className="font-bold text-xl tracking-tight text-[#0f5b8a] leading-tight">VetDesk</h1>
-          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Clinical Command</p>
+          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Front Desk AI</p>
         </div>
       </div>
 

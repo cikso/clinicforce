@@ -1,16 +1,21 @@
-import { ActivityItem, ActivityType } from '@/data/mock-dashboard'
-import { AlertTriangle, Phone, UserCheck, Zap, Settings } from 'lucide-react'
+import { ActivityItem } from '@/data/mock-dashboard'
+import { AlertTriangle, Phone, Calendar, CheckCircle, Radio, Zap } from 'lucide-react'
 
 interface ActivityFeedProps {
   activities: ActivityItem[]
 }
 
-const typeConfig: Record<ActivityType, { icon: React.ReactNode; color: string }> = {
+const typeConfig: Record<string, { icon: React.ReactNode; color: string }> = {
   escalation: { icon: <AlertTriangle className="w-3.5 h-3.5" />, color: 'text-[#b91c1c] bg-rose-50' },
-  call: { icon: <Phone className="w-3.5 h-3.5" />, color: 'text-[#0f5b8a] bg-blue-50' },
-  case: { icon: <Zap className="w-3.5 h-3.5" />, color: 'text-amber-600 bg-amber-50' },
-  assignment: { icon: <UserCheck className="w-3.5 h-3.5" />, color: 'text-teal-600 bg-teal-50' },
-  system: { icon: <Settings className="w-3.5 h-3.5" />, color: 'text-slate-500 bg-slate-100' },
+  callback:   { icon: <Phone className="w-3.5 h-3.5" />, color: 'text-[#0f5b8a] bg-blue-50' },
+  booking:    { icon: <Calendar className="w-3.5 h-3.5" />, color: 'text-sky-600 bg-sky-50' },
+  coverage:   { icon: <Radio className="w-3.5 h-3.5" />, color: 'text-emerald-600 bg-emerald-50' },
+  handled:    { icon: <CheckCircle className="w-3.5 h-3.5" />, color: 'text-slate-500 bg-slate-100' },
+  // Legacy keys kept for backward compat
+  call:       { icon: <Phone className="w-3.5 h-3.5" />, color: 'text-[#0f5b8a] bg-blue-50' },
+  case:       { icon: <Zap className="w-3.5 h-3.5" />, color: 'text-amber-600 bg-amber-50' },
+  assignment: { icon: <CheckCircle className="w-3.5 h-3.5" />, color: 'text-teal-600 bg-teal-50' },
+  system:     { icon: <Radio className="w-3.5 h-3.5" />, color: 'text-slate-500 bg-slate-100' },
 }
 
 function relativeTime(ts: Date): string {

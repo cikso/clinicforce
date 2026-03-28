@@ -34,9 +34,9 @@ export default function TopBar({
           )}
         </div>
         {showAiBadge && (
-          <span className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            AI Triage Online
+          <span className="flex items-center gap-1.5 bg-sky-50 text-sky-700 border border-sky-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wide">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0ea5e9] animate-pulse" />
+            Coverage Active
           </span>
         )}
       </div>
@@ -75,7 +75,7 @@ export default function TopBar({
         {/* Add New Case CTA */}
         <button onClick={onNewCase} className="flex items-center gap-2 bg-[#0f5b8a] hover:bg-[#0c4a70] text-white px-5 py-2.5 rounded-full text-sm font-bold transition-colors shadow-sm">
           <Plus className="w-4 h-4" />
-          Add New Case
+          Log Interaction
         </button>
 
         {/* Staff avatar */}

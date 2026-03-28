@@ -41,31 +41,44 @@ export async function fetchDashboardCases(): Promise<DashboardCase[]> {
       (Date.now() - new Date(row.opened_at as string).getTime()) / 60000
     )
 
+    const ownerName: string = owner?.name ?? ''
+    const caseRef: string = row.case_number as string
+    const petName: string = pet?.name ?? 'Unknown'
     return {
       id: row.id as string,
-      caseRef: row.case_number as string,
-      patientName: pet?.name ?? 'Unknown',
+      // CoveredInteraction base fields
+      ref: caseRef,
+      callerName: ownerName,
+      callerPhone: owner?.phone ?? '',
+      petName,
+      enquiryType: 'URGENT_CONCERN' as DashboardCase['enquiryType'],
+      urgency: row.urgency as DashboardCase['urgency'],
+      source: row.intake_source as DashboardCase['source'],
+      summary: row.presenting_issue as string,
+      aiDetail: (row.ai_justification as string) ?? '',
+      status: 'PENDING' as DashboardCase['status'],
+      nextAction: '',
+      coverageReason: 'OVERFLOW' as DashboardCase['coverageReason'],
+      createdAt: row.created_at as string,
+      // DashboardCase extension fields
+      caseRef,
+      patientName: petName,
       species: pet?.species ?? 'Unknown',
       breed: pet?.breed ?? '',
-      age: pet?.age ?? '',
       issue: row.presenting_issue as string,
-      urgency: row.urgency as DashboardCase['urgency'],
       waitMinutes,
       aiSummary: (row.ai_summary as string) ?? '',
-      status: row.status as DashboardCase['status'],
       clinician: staffMember?.name ?? null,
       clinicianAvatar: staffMember?.avatar_seed
         ? `https://api.dicebear.com/7.x/avataaars/svg?seed=${staffMember.avatar_seed}`
         : null,
-      source: row.intake_source as DashboardCase['source'],
       riskFactor: (row.ai_risk_factor as string) ?? '',
       urgencyScore: (row.urgency_score as number) ?? 0,
       aiJustification: (row.ai_justification as string) ?? '',
-      ownerName: owner?.name ?? '',
+      ownerName,
       ownerPhone: owner?.phone ?? '',
       ownerAddress: owner?.address ?? '',
-      ownerAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${owner?.name ?? 'unknown'}`,
-      createdAt: row.created_at as string,
+      ownerAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${ownerName || 'unknown'}`,
     }
   })
 }

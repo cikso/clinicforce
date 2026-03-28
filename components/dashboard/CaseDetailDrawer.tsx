@@ -70,7 +70,7 @@ export default function CaseDetailDrawer({
                 <span className="text-[#0f5b8a]">{caseData?.patientName}</span>
                 {' '}— {caseData?.breed}
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">{caseData?.age} · {caseData?.species} · {caseData?.createdAt}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{caseData?.species} · {caseData?.createdAt}</p>
             </div>
           </div>
           <span className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${styles.pill}`}>

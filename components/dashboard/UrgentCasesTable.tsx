@@ -25,17 +25,22 @@ const sourceConfig: Record<IntakeSource, { label: string; color: string; icon: R
 }
 
 const statusLabel: Record<string, { text: string; color: string }> = {
-  WAITING: { text: 'Waiting', color: 'text-rose-600 bg-rose-50' },
-  IN_REVIEW: { text: 'In Review', color: 'text-blue-600 bg-blue-50' },
-  IN_TREATMENT: { text: 'In Treatment', color: 'text-emerald-600 bg-emerald-50' },
-  AWAITING_OWNER: { text: 'Awaiting Owner', color: 'text-amber-600 bg-amber-50' },
-  ESCALATED: { text: 'Escalated', color: 'text-[#b91c1c] bg-rose-50' },
+  HANDLED:          { text: 'Handled',          color: 'text-emerald-600 bg-emerald-50' },
+  CALLBACK_REQUIRED: { text: 'Callback Needed', color: 'text-amber-600 bg-amber-50' },
+  ESCALATED:        { text: 'Escalated',        color: 'text-[#b91c1c] bg-rose-50' },
+  PENDING:          { text: 'Pending',           color: 'text-blue-600 bg-blue-50' },
+  BOOKING_REQUESTED: { text: 'Book Appt',       color: 'text-sky-600 bg-sky-50' },
+  // Legacy values kept for safety
+  WAITING:          { text: 'Waiting',           color: 'text-rose-600 bg-rose-50' },
+  IN_REVIEW:        { text: 'In Review',         color: 'text-blue-600 bg-blue-50' },
+  IN_TREATMENT:     { text: 'In Treatment',      color: 'text-emerald-600 bg-emerald-50' },
+  AWAITING_OWNER:   { text: 'Awaiting Owner',    color: 'text-amber-600 bg-amber-50' },
 }
 
 function actionLabel(c: DashboardCase): { label: string; style: string } {
   if (c.urgency === 'CRITICAL') return { label: 'Admit to ER', style: 'bg-[#b91c1c] text-white hover:bg-red-800' }
-  if (c.status === 'WAITING') return { label: 'Triage Now', style: 'bg-[#0f5b8a] text-white hover:bg-[#0c4a70]' }
-  if (c.status === 'IN_REVIEW') return { label: 'Review', style: 'bg-slate-100 text-slate-700 hover:bg-slate-200' }
+  if (c.status === 'CALLBACK_REQUIRED') return { label: 'Triage Now', style: 'bg-[#0f5b8a] text-white hover:bg-[#0c4a70]' }
+  if (c.status === 'PENDING') return { label: 'Review', style: 'bg-slate-100 text-slate-700 hover:bg-slate-200' }
   if (!c.clinician) return { label: 'Assign', style: 'bg-slate-100 text-slate-700 hover:bg-slate-200' }
   return { label: 'Update', style: 'bg-slate-100 text-slate-700 hover:bg-slate-200' }
 }
@@ -99,7 +104,7 @@ export default function UrgentCasesTable({ cases, selectedId, onSelectCase, onAc
                       </div>
                       <div>
                         <p className="font-bold text-slate-900">{c.patientName}</p>
-                        <p className="text-xs text-slate-500">{c.breed}, {c.age}</p>
+                        <p className="text-xs text-slate-500">{c.breed}</p>
                       </div>
                     </div>
                   </td>
