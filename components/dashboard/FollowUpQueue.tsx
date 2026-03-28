@@ -18,7 +18,7 @@ export default function FollowUpQueue({ items, onAction }: FollowUpQueueProps) {
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-slate-400" />
-          <span className="text-sm font-bold text-slate-900">Follow-Up Queue</span>
+          <span className="text-sm font-bold text-slate-900">Needs Follow-Up</span>
         </div>
         <span className="text-xs font-bold text-white bg-[#0f5b8a] px-2 py-0.5 rounded-full">{items.length}</span>
       </div>

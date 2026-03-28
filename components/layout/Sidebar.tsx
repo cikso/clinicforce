@@ -9,14 +9,14 @@ import {
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { label: 'Coverage Console', href: '/overview',     icon: LayoutDashboard },
-  { label: 'Interaction Log',  href: '/care-queue',   icon: MessageSquare },
-  { label: 'Follow-Up Queue',  href: '/calls',        icon: Phone },
-  { label: 'Bookings',         href: '/bookings',     icon: CalendarDays },
-  { label: 'Coverage Reports', href: '/media-review', icon: BarChart3 },
-  { label: 'Handover Notes',   href: '/referrals',    icon: ClipboardList },
-  { label: 'Team Tasks',       href: '/tasks',        icon: CheckSquare },
-  { label: 'Users',            href: '/users',        icon: Users },
+  { label: 'Coverage Overview', href: '/overview',     icon: LayoutDashboard },
+  { label: 'Covered Calls',     href: '/care-queue',   icon: Phone },
+  { label: 'Needs Follow-Up',   href: '/calls',        icon: MessageSquare },
+  { label: 'Bookings',          href: '/bookings',     icon: CalendarDays },
+  { label: 'Reports',           href: '/media-review', icon: BarChart3 },
+  { label: 'Handover Notes',    href: '/referrals',    icon: ClipboardList },
+  { label: 'Team Tasks',        href: '/tasks',        icon: CheckSquare },
+  { label: 'Users',             href: '/users',        icon: Users },
 ]
 
 interface SidebarProps {

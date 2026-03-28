@@ -1,31 +1,45 @@
 import TopBar from './TopBar'
 
+interface CoverageStatus {
+  status: 'ACTIVE' | 'INACTIVE'
+  reason?: string
+  startTime?: string
+}
+
 interface PageShellProps {
   title: string
   subtitle?: string
   children: React.ReactNode
   searchPlaceholder?: string
   clinicName?: string
-  showAiBadge?: boolean
+  coverage?: CoverageStatus
   onNewCase?: () => void
+  // legacy compat
+  showAiBadge?: boolean
 }
 
-export default function PageShell({ title, subtitle, children, searchPlaceholder, clinicName, showAiBadge, onNewCase }: PageShellProps) {
+export default function PageShell({ title, subtitle, children, searchPlaceholder, clinicName, coverage, onNewCase }: PageShellProps) {
   return (
     <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-      <TopBar title={title} subtitle={subtitle} searchPlaceholder={searchPlaceholder} clinicName={clinicName} showAiBadge={showAiBadge} onNewCase={onNewCase} />
+      <TopBar
+        title={title}
+        subtitle={subtitle}
+        searchPlaceholder={searchPlaceholder}
+        clinicName={clinicName}
+        coverage={coverage}
+        onNewCase={onNewCase}
+      />
       <main className="flex-1 overflow-y-auto px-8 py-6">
         {children}
-        {/* Footer */}
-        <footer className="mt-12 pt-6 border-t border-slate-200 flex items-center justify-between text-xs font-medium text-slate-400">
+        <footer className="mt-12 pt-6 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-slate-300">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-teal-500"></div>
-            © 2026 VETDESK OPERATIONS. SYSTEM STATUS: ACTIVE
+            <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+            © 2026 VetDesk — All systems operational
           </div>
           <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-slate-600 transition-colors">HELP CENTER</a>
-            <a href="#" className="hover:text-slate-600 transition-colors">PRIVACY</a>
-            <a href="#" className="hover:text-slate-600 transition-colors">SECURITY</a>
+            <a href="#" className="hover:text-slate-500 transition-colors">Help</a>
+            <a href="#" className="hover:text-slate-500 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-slate-500 transition-colors">Security</a>
           </div>
         </footer>
       </main>

@@ -124,9 +124,10 @@ export default function DashboardClient() {
 
   return (
     <PageShell
-      title="Coverage Console"
-      showAiBadge
+      title="Front Desk Coverage"
       clinicName={session.clinicName}
+      coverage={{ status: session.status, reason: session.reason, startTime: session.status === 'ACTIVE' ? session.startTime : undefined }}
+      onNewCase={session.status === 'ACTIVE' ? handleDeactivate : undefined}
     >
       <div className="space-y-6">
 

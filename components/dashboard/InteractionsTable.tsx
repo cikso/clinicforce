@@ -65,8 +65,8 @@ export default function InteractionsTable({ interactions, onSelect, selectedId }
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
         <div>
-          <h2 className="text-sm font-bold text-slate-900">Today&apos;s Covered Interactions</h2>
-          <p className="text-xs text-slate-400 mt-0.5">{interactions.length} interactions during active coverage windows</p>
+          <h2 className="text-sm font-bold text-slate-900">Today&apos;s Covered Calls</h2>
+          <p className="text-xs text-slate-400 mt-0.5">{interactions.length} call{interactions.length !== 1 ? 's' : ''} handled by VetDesk</p>
         </div>
         <button className="text-xs font-semibold text-[#0ea5e9] hover:text-[#0f5b8a] transition-colors">
           View All →
