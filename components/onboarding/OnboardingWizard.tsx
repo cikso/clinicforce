@@ -66,7 +66,6 @@ export default function OnboardingWizard() {
         suburb: form.suburb,
         state: form.state,
         species: form.species.map(s => s.toLowerCase()),
-        plan: 'trial',
       })
       .select('id')
       .single()
