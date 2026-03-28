@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import PageShell from '@/components/layout/PageShell'
 import KpiCard from '@/components/dashboard/KpiCard'
 import CoverageStatusCard from '@/components/dashboard/CoverageStatusCard'
@@ -43,6 +43,21 @@ export default function DashboardClient() {
   const [session, setSession] = useState<CoverageSession>(INITIAL_COVERAGE_SESSION)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [toasts, setToasts] = useState<ToastItem[]>([])
+
+  // Pull live callbacks from ElevenLabs webhook saves
+  useEffect(() => {
+    fetch('/api/callback')
+      .then(r => r.json())
+      .then((live: FollowUpItem[]) => {
+        if (!Array.isArray(live) || live.length === 0) return
+        setFollowUps(prev => {
+          const existingIds = new Set(prev.map(f => f.id))
+          const fresh = live.filter(f => !existingIds.has(f.id))
+          return fresh.length > 0 ? [...fresh, ...prev] : prev
+        })
+      })
+      .catch(() => { /* network error — silently keep mock data */ })
+  }, [])
 
   // Derived KPIs
   const callsCovered = interactions.length
