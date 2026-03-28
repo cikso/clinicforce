@@ -132,28 +132,7 @@ export default function OnboardingWizard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Suburb</label>
-            <input
-              type="text"
-              value={suburb}
-              onChange={e => setSuburb(e.target.value)}
-              placeholder="Baulkham Hills"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent transition-all"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">State</label>
-            <select
-              value={state}
-              onChange={e => setState(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent transition-all"
-            >
-              {STATES.map(s => <option key={s}>{s}</option>)}
-            </select>
-          </div>
-        </div>
+        {/* Suburb & state added later in Settings */}
 
         {error && (
           <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-700">

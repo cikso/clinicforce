@@ -26,10 +26,10 @@ export async function POST(req: NextRequest) {
 
     const admin = getSupabaseAdmin()
 
-    // Insert clinic with all fields
+    // Insert clinic name only — other fields saved via Settings
     const { data: clinic, error: clinicErr } = await admin
       .from('clinics')
-      .insert({ name: clinicName, phone, email, suburb, state })
+      .insert({ name: clinicName })
       .select('id')
       .single()
 
