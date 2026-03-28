@@ -1,17 +1,10 @@
 import Sidebar from '@/components/layout/Sidebar'
 import ChatWidget from '@/components/chat/ChatWidget'
-import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const profile = await getClinicProfile()
-
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="h-screen flex overflow-hidden bg-[#f5f6f8]">
-      <Sidebar
-        clinicName={profile?.clinicName ?? 'VetDesk'}
-        userName={profile?.userName ?? 'Staff'}
-        userRole={profile?.userRole ?? 'receptionist'}
-      />
+      <Sidebar clinicName="Baulkham Hills Clinic" userName="Tommy" userRole="admin" />
       <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
         {children}
       </div>

@@ -37,7 +37,7 @@ export function LandingNavbar() {
 
         <div className="flex items-center gap-3 relative z-10">
           <Link
-            href="/login"
+            href="/overview"
             className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0A3622] text-[#F4F2ED] text-sm font-semibold hover:bg-[#125235] transition-colors shadow-sm"
           >
             <LayoutDashboard className="w-4 h-4" />
