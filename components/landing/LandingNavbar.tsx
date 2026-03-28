@@ -31,7 +31,7 @@ export function LandingNavbar() {
 
         <nav className="hidden md:flex items-center gap-8 relative z-10">
           <a href="#features" className="text-sm font-medium text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors">Platform</a>
-          <a href="#solution" className="text-sm font-medium text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors">Triage Engine</a>
+          <a href="#solution" className="text-sm font-medium text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors">Coverage</a>
           <a href="#how-it-works" className="text-sm font-medium text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors">How It Works</a>
         </nav>
 

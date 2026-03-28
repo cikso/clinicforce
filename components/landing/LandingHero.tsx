@@ -42,7 +42,7 @@ export function LandingHero() {
               transition={{ duration: 1, delay: 0.2, ease: customEase }}
               className="text-xl md:text-2xl text-[#0A0A0A]/60 mb-14 max-w-xl leading-relaxed font-light"
             >
-              Whether your team is at lunch, in a meeting, or off the clock — VetDesk answers, captures, and triages every call.
+              Whether your team is at lunch, in a meeting, or off the clock — VetDesk answers, captures, and handles every call.
             </motion.p>
 
             <motion.div
@@ -78,7 +78,7 @@ export function LandingHero() {
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:24px_24px]" />
                 <div className="relative z-10">
                   <div className="flex justify-between items-center mb-10">
-                    <span className="micro-label text-white/40">Intelligent Intake Engine</span>
+                    <span className="micro-label text-white/40">Coverage Active</span>
                     <div className="flex gap-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
                       <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
@@ -98,7 +98,7 @@ export function LandingHero() {
                     </div>
                     <div className="mt-10 p-5 bg-white/[0.03] rounded-2xl border border-white/5">
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-xs text-white/50 font-medium tracking-wide">Urgency Assessment</span>
+                        <span className="text-xs text-white/50 font-medium tracking-wide">Priority Level</span>
                         <span className="text-sm font-bold text-[#E25F38]">98%</span>
                       </div>
                       <div className="w-full bg-white/5 rounded-full h-1.5">

@@ -9,7 +9,7 @@ import FollowUpQueue from '@/components/dashboard/FollowUpQueue'
 import HandoverSummary from '@/components/dashboard/HandoverSummary'
 import ToastContainer from '@/components/dashboard/ToastContainer'
 import {
-  Phone, AlertTriangle, CheckCircle, MessageSquare, Clock, Radio,
+  Phone, AlertTriangle, CheckCircle, MessageSquare, Clock,
 } from 'lucide-react'
 import {
   INITIAL_INTERACTIONS,
@@ -42,6 +42,27 @@ export default function DashboardClient() {
   const [session, setSession] = useState<CoverageSession>(INITIAL_COVERAGE_SESSION)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [toasts, setToasts] = useState<ToastItem[]>([])
+
+  // ── Sync coverage state with Supabase on mount ───────────────
+  useEffect(() => {
+    fetch('/api/coverage')
+      .then(r => r.json())
+      .then((data: { status: string; reason: string; started_at: string }) => {
+        if (data?.status === 'ACTIVE') {
+          setSession(prev => ({
+            ...prev,
+            status: 'ACTIVE',
+            reason: (data.reason as CoverageReason) ?? prev.reason,
+            startTime: data.started_at
+              ? new Date(data.started_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : prev.startTime,
+          }))
+        } else {
+          setSession(prev => ({ ...prev, status: 'INACTIVE' }))
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   // Poll live calls from Supabase every 30s
   const fetchLiveData = useCallback(() => {
@@ -77,7 +98,6 @@ export default function DashboardClient() {
   const urgentFlagged    = interactions.filter(i => i.urgency === 'CRITICAL' || i.urgency === 'URGENT').length
   const routineHandled   = interactions.filter(i => i.urgency === 'ROUTINE' && i.status === 'HANDLED').length
   const callbacksNeeded  = followUps.filter(i => i.type === 'URGENT_CALLBACK' || i.type === 'ROUTINE_CALLBACK').length
-  const messagesCaptured = interactions.filter(i => i.status !== 'ESCALATED').length
   const totalMins        = COVERAGE_USAGE.reduce((s, u) => s + u.minutes, 0)
   const hoursActive      = (totalMins / 60).toFixed(1)
 
@@ -94,19 +114,34 @@ export default function DashboardClient() {
   }, [])
 
   const handleActivate = useCallback((reason: CoverageReason) => {
-    setSession(prev => ({
-      ...prev, status: 'ACTIVE', reason,
-      startTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      durationMinutes: 0,
-    }))
+    const startTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+    // Update local state immediately for instant UI response
+    setSession(prev => ({ ...prev, status: 'ACTIVE', reason, startTime, durationMinutes: 0 }))
     logHandover(`Coverage activated — ${REASON_LABELS[reason]}.`, 'coverage')
     addToast(`VetDesk is now active — ${REASON_LABELS[reason]}`, 'success')
+
+    // Persist to Supabase → Twilio will read this on the next incoming call
+    fetch('/api/coverage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason }),
+    }).catch(() => {
+      // Non-fatal: UI already updated, log silently
+      console.warn('[coverage] Failed to persist activation to Supabase')
+    })
   }, [logHandover, addToast])
 
   const handleDeactivate = useCallback(() => {
+    // Update local state immediately
     setSession(prev => ({ ...prev, status: 'INACTIVE' }))
     logHandover('Coverage ended. Reception back online.', 'coverage')
     addToast('Coverage ended — reception back online', 'info')
+
+    // Persist to Supabase → next Twilio call will route to real number
+    fetch('/api/coverage', { method: 'DELETE' }).catch(() => {
+      console.warn('[coverage] Failed to persist deactivation to Supabase')
+    })
   }, [logHandover, addToast])
 
   const handleFollowUpAction = useCallback((id: string, action: string) => {
@@ -134,16 +169,16 @@ export default function DashboardClient() {
       }}
       onNewCase={session.status === 'ACTIVE' ? handleDeactivate : undefined}
     >
-      <div className="space-y-6">
+      <div className="space-y-5">
 
         {/* ── KPI Row ─────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
           <KpiCard
             title="Calls Covered"
             value={callsCovered}
             context="today"
             icon={<Phone className="w-4 h-4" />}
-            accentColor="blue"
+            accentColor="teal"
           />
           <KpiCard
             title="Urgent Flagged"
@@ -158,7 +193,7 @@ export default function DashboardClient() {
             value={routineHandled}
             context="resolved"
             icon={<CheckCircle className="w-4 h-4" />}
-            accentColor="teal"
+            accentColor="green"
           />
           <KpiCard
             title="Callbacks Needed"
@@ -167,13 +202,6 @@ export default function DashboardClient() {
             icon={<MessageSquare className="w-4 h-4" />}
             accentColor="amber"
             pulse={callbacksNeeded > 0}
-          />
-          <KpiCard
-            title="Messages Captured"
-            value={messagesCaptured}
-            context="logged"
-            icon={<Radio className="w-4 h-4" />}
-            accentColor="slate"
           />
           <KpiCard
             title="Coverage Active"
@@ -185,7 +213,7 @@ export default function DashboardClient() {
         </div>
 
         {/* ── Main Grid ───────────────────────────────────────── */}
-        <div className="grid grid-cols-12 gap-5">
+        <div className="grid grid-cols-12 gap-4">
 
           {/* Left: Today's Covered Calls */}
           <div className="col-span-12 xl:col-span-8">

@@ -19,8 +19,8 @@ export function LandingHowItWorks() {
     },
     {
       number: '03',
-      title: 'Triage',
-      description: 'VetDesk intelligently assesses urgency — distinguishing routine enquiries from time-sensitive cases and acting accordingly.',
+      title: 'Assess',
+      description: 'VetDesk identifies urgency — distinguishing routine enquiries from time-sensitive cases and flagging what needs immediate attention.',
       align: 'md:items-start md:text-left',
       offset: 'md:ml-0 md:mr-auto',
     },

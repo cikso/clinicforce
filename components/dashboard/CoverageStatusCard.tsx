@@ -29,7 +29,7 @@ export default function CoverageStatusCard({ session, onActivate, onDeactivate }
   const isActive = session.status === 'ACTIVE'
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200/70 shadow-[0_1px_3px_rgba(15,39,68,0.06)] overflow-hidden">
 
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-50">
@@ -103,7 +103,7 @@ export default function CoverageStatusCard({ session, onActivate, onDeactivate }
             <div className="relative">
               <button
                 onClick={() => setShowReasons(!showReasons)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-[#0f5b8a] text-white text-sm font-bold rounded-xl hover:bg-[#0c4a70] transition-colors shadow-sm"
+                className="w-full flex items-center justify-between px-4 py-3 bg-[#0f2744] text-white text-sm font-bold rounded-xl hover:bg-[#162032] transition-colors shadow-sm"
               >
                 Activate Coverage
                 <ChevronDown className={`w-4 h-4 transition-transform ${showReasons ? 'rotate-180' : ''}`} />
@@ -116,7 +116,7 @@ export default function CoverageStatusCard({ session, onActivate, onDeactivate }
                       onClick={() => { onActivate?.(key); setShowReasons(false) }}
                       className="w-full px-4 py-3 text-left hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0 group"
                     >
-                      <p className="text-sm font-semibold text-slate-800 group-hover:text-[#0f5b8a]">{label}</p>
+                      <p className="text-sm font-semibold text-slate-800 group-hover:text-[#0891b2]">{label}</p>
                       <p className="text-xs text-slate-400 mt-0.5">{description}</p>
                     </button>
                   ))}

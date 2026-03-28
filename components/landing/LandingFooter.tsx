@@ -29,7 +29,7 @@ export function LandingFooter() {
             <h4 className="micro-label text-[#0A0A0A]/40 mb-6">Product</h4>
             <ul className="space-y-4">
               <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Features</a></li>
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Triage Logic</a></li>
+              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Coverage Logic</a></li>
               <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Integrations</a></li>
               <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Security</a></li>
             </ul>

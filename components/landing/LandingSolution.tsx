@@ -13,7 +13,7 @@ export function LandingSolution() {
     {
       num: '02',
       title: 'Intelligent Intake',
-      desc: 'AI captures owner details, patient history, and the primary clinical concern.',
+      desc: 'AI captures owner details, pet name, and the reason for the call — cleanly and conversationally.',
       width: 'lg:col-span-4',
       offset: 'lg:mt-16',
     },

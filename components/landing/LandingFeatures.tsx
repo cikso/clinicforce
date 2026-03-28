@@ -92,14 +92,14 @@ export function LandingFeatures() {
               <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center mb-10 border border-white/10 backdrop-blur-md">
                 <Activity className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-3xl font-medium mb-6 tracking-tight">Urgency Detection & Escalation</h3>
+              <h3 className="text-3xl font-medium mb-6 tracking-tight">Urgent Call Detection</h3>
               <p className="text-white/60 leading-relaxed font-light text-lg">
                 When something urgent comes in, VetDesk recognises it and escalates appropriately — routing time-sensitive cases to the right person without delay.
               </p>
             </div>
             <div className="mt-16 p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md relative z-10">
               <div className="flex justify-between items-center mb-4">
-                <span className="text-sm text-white/60 font-medium tracking-wide uppercase">Toxicity Risk</span>
+                <span className="text-sm text-white/60 font-medium tracking-wide uppercase">Urgency Level</span>
                 <span className="text-sm font-bold text-[#E25F38] bg-[#E25F38]/10 px-3 py-1 rounded-full">Critical</span>
               </div>
               <div className="w-full bg-black/20 rounded-full h-2 overflow-hidden">
