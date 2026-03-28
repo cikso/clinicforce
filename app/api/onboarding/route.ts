@@ -26,10 +26,16 @@ export async function POST(req: NextRequest) {
 
     const admin = getSupabaseAdmin()
 
-    // Insert clinic name only — other fields saved via Settings
+    // Generate URL-safe slug from clinic name
+    const slug = clinicName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') +
+      '-' + Math.random().toString(36).slice(2, 6)
+
     const { data: clinic, error: clinicErr } = await admin
       .from('clinics')
-      .insert({ name: clinicName })
+      .insert({ name: clinicName, slug })
       .select('id')
       .single()
 
