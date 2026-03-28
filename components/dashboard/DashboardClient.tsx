@@ -7,10 +7,9 @@ import CoverageStatusCard from '@/components/dashboard/CoverageStatusCard'
 import InteractionsTable from '@/components/dashboard/InteractionsTable'
 import FollowUpQueue from '@/components/dashboard/FollowUpQueue'
 import HandoverSummary from '@/components/dashboard/HandoverSummary'
-import CoverageUsageCard from '@/components/dashboard/CoverageUsageCard'
 import ToastContainer from '@/components/dashboard/ToastContainer'
 import {
-  Phone, AlertTriangle, CheckCircle, MessageSquare, Clock,
+  Phone, AlertTriangle, CheckCircle, MessageSquare, Clock, Radio,
 } from 'lucide-react'
 import {
   INITIAL_INTERACTIONS,
@@ -46,7 +45,6 @@ export default function DashboardClient() {
 
   // Poll live calls from Supabase every 30s
   const fetchLiveData = useCallback(() => {
-    // Interactions table — all calls
     fetch('/api/calls')
       .then(r => r.json())
       .then((live: CoveredInteraction[]) => {
@@ -55,7 +53,6 @@ export default function DashboardClient() {
       })
       .catch(() => {})
 
-    // Follow-up queue — NEW / unactioned calls
     fetch('/api/callback')
       .then(r => r.json())
       .then((live: FollowUpItem[]) => {
@@ -75,14 +72,16 @@ export default function DashboardClient() {
     return () => clearInterval(interval)
   }, [fetchLiveData])
 
-  // Derived KPIs
-  const callsCovered = interactions.length
-  const urgentFlagged = interactions.filter(i => i.urgency === 'CRITICAL' || i.urgency === 'URGENT').length
-  const routineHandled = interactions.filter(i => i.urgency === 'ROUTINE' && i.status === 'HANDLED').length
-  const callbacksRequired = followUps.filter(i => i.type === 'URGENT_CALLBACK' || i.type === 'ROUTINE_CALLBACK').length
-  const totalCoverageMinutes = COVERAGE_USAGE.reduce((s, u) => s + u.minutes, 0)
-  const hoursProtected = (totalCoverageMinutes / 60).toFixed(1)
+  // ── KPIs ─────────────────────────────────────────────────────
+  const callsCovered     = interactions.length
+  const urgentFlagged    = interactions.filter(i => i.urgency === 'CRITICAL' || i.urgency === 'URGENT').length
+  const routineHandled   = interactions.filter(i => i.urgency === 'ROUTINE' && i.status === 'HANDLED').length
+  const callbacksNeeded  = followUps.filter(i => i.type === 'URGENT_CALLBACK' || i.type === 'ROUTINE_CALLBACK').length
+  const messagesCaptured = interactions.filter(i => i.status !== 'ESCALATED').length
+  const totalMins        = COVERAGE_USAGE.reduce((s, u) => s + u.minutes, 0)
+  const hoursActive      = (totalMins / 60).toFixed(1)
 
+  // ── Helpers ──────────────────────────────────────────────────
   const addToast = useCallback((message: string, variant: ToastItem['variant'] = 'success') => {
     const id = `t-${Date.now()}`
     setToasts(prev => [...prev, { id, message, variant }])
@@ -95,15 +94,19 @@ export default function DashboardClient() {
   }, [])
 
   const handleActivate = useCallback((reason: CoverageReason) => {
-    setSession(prev => ({ ...prev, status: 'ACTIVE', reason, startTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), durationMinutes: 0 }))
+    setSession(prev => ({
+      ...prev, status: 'ACTIVE', reason,
+      startTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      durationMinutes: 0,
+    }))
     logHandover(`Coverage activated — ${REASON_LABELS[reason]}.`, 'coverage')
-    addToast(`Coverage active — ${REASON_LABELS[reason]}`, 'success')
+    addToast(`VetDesk is now active — ${REASON_LABELS[reason]}`, 'success')
   }, [logHandover, addToast])
 
   const handleDeactivate = useCallback(() => {
     setSession(prev => ({ ...prev, status: 'INACTIVE' }))
-    logHandover('Coverage deactivated. Team back at reception.', 'coverage')
-    addToast('Coverage ended — team back on reception', 'info')
+    logHandover('Coverage ended. Reception back online.', 'coverage')
+    addToast('Coverage ended — reception back online', 'info')
   }, [logHandover, addToast])
 
   const handleFollowUpAction = useCallback((id: string, action: string) => {
@@ -120,72 +123,72 @@ export default function DashboardClient() {
     }
   }, [followUps, logHandover, addToast])
 
-  const sessionReasonLabel = REASON_LABELS[session.reason]
-
   return (
     <PageShell
-      title="Front Desk Coverage"
+      title="Coverage Overview"
       clinicName={session.clinicName}
-      coverage={{ status: session.status, reason: session.reason, startTime: session.status === 'ACTIVE' ? session.startTime : undefined }}
+      coverage={{
+        status: session.status,
+        reason: session.reason,
+        startTime: session.status === 'ACTIVE' ? session.startTime : undefined,
+      }}
       onNewCase={session.status === 'ACTIVE' ? handleDeactivate : undefined}
     >
       <div className="space-y-6">
 
-        {/* KPI Row */}
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+        {/* ── KPI Row ─────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
           <KpiCard
             title="Calls Covered"
-            value={String(callsCovered)}
+            value={callsCovered}
             context="today"
-            trend="+4 vs yesterday"
-            trendUp
-            icon={<Phone className="w-5 h-5" />}
+            icon={<Phone className="w-4 h-4" />}
             accentColor="blue"
           />
           <KpiCard
             title="Urgent Flagged"
-            value={String(urgentFlagged)}
-            context="need attention"
-            trend={urgentFlagged > 0 ? 'Requires review' : 'All clear'}
-            trendUp={urgentFlagged === 0}
-            icon={<AlertTriangle className="w-5 h-5" />}
+            value={urgentFlagged}
+            context="need review"
+            icon={<AlertTriangle className="w-4 h-4" />}
             accentColor="red"
             pulse={urgentFlagged > 0}
           />
           <KpiCard
             title="Routine Handled"
-            value={String(routineHandled)}
+            value={routineHandled}
             context="resolved"
-            trend="no follow-up needed"
-            trendNeutral
-            icon={<CheckCircle className="w-5 h-5" />}
+            icon={<CheckCircle className="w-4 h-4" />}
             accentColor="teal"
           />
           <KpiCard
-            title="Callbacks Required"
-            value={String(callbacksRequired)}
+            title="Callbacks Needed"
+            value={callbacksNeeded}
             context="awaiting"
-            trend="action needed"
-            trendUp={callbacksRequired === 0}
-            icon={<MessageSquare className="w-5 h-5" />}
+            icon={<MessageSquare className="w-4 h-4" />}
             accentColor="amber"
+            pulse={callbacksNeeded > 0}
           />
           <KpiCard
-            title="Hours Protected"
-            value={`${hoursProtected}h`}
-            context="coverage windows"
-            trend="reception covered"
-            trendNeutral
-            icon={<Clock className="w-5 h-5" />}
+            title="Messages Captured"
+            value={messagesCaptured}
+            context="logged"
+            icon={<Radio className="w-4 h-4" />}
+            accentColor="slate"
+          />
+          <KpiCard
+            title="Coverage Active"
+            value={`${hoursActive}h`}
+            context="today"
+            icon={<Clock className="w-4 h-4" />}
             accentColor="slate"
           />
         </div>
 
-        {/* Main Grid */}
+        {/* ── Main Grid ───────────────────────────────────────── */}
         <div className="grid grid-cols-12 gap-5">
 
-          {/* Left: Interactions Table */}
-          <div className="col-span-12 xl:col-span-8 space-y-5">
+          {/* Left: Today's Covered Calls */}
+          <div className="col-span-12 xl:col-span-8">
             <InteractionsTable
               interactions={interactions}
               onSelect={setSelectedId}
@@ -193,7 +196,7 @@ export default function DashboardClient() {
             />
           </div>
 
-          {/* Right: Status + Queue + Usage + Handover */}
+          {/* Right: Coverage Control + Follow-Up + Handover */}
           <div className="col-span-12 xl:col-span-4 space-y-4">
             <CoverageStatusCard
               session={session}
@@ -204,18 +207,20 @@ export default function DashboardClient() {
               items={followUps}
               onAction={handleFollowUpAction}
             />
-            <CoverageUsageCard usage={COVERAGE_USAGE} />
             <HandoverSummary
               items={handover}
               sessionStart={session.startTime}
-              sessionReason={sessionReasonLabel}
+              sessionReason={REASON_LABELS[session.reason]}
             />
           </div>
 
         </div>
       </div>
 
-      <ToastContainer toasts={toasts} onDismiss={(id) => setToasts(prev => prev.filter(t => t.id !== id))} />
+      <ToastContainer
+        toasts={toasts}
+        onDismiss={(id) => setToasts(prev => prev.filter(t => t.id !== id))}
+      />
     </PageShell>
   )
 }
