@@ -29,7 +29,7 @@ export default function CoverageStatusCard({ session, onActivate, onDeactivate }
   const isActive = session.status === 'ACTIVE'
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/70 shadow-[0_1px_3px_rgba(15,39,68,0.06)] overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200/70 shadow-[0_1px_3px_rgba(15,39,68,0.06)]">
 
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-50">
