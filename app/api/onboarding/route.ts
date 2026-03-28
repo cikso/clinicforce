@@ -26,10 +26,10 @@ export async function POST(req: NextRequest) {
 
     const admin = getSupabaseAdmin()
 
-    // Insert clinic
+    // Insert clinic — extra fields added after schema cache reloads
     const { data: clinic, error: clinicErr } = await admin
       .from('clinics')
-      .insert({ name: clinicName, phone, email, suburb, state })
+      .insert({ name: clinicName })
       .select('id')
       .single()
 
