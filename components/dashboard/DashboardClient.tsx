@@ -44,8 +44,18 @@ export default function DashboardClient() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [toasts, setToasts] = useState<ToastItem[]>([])
 
-  // Pull live callbacks from ElevenLabs webhook saves
-  useEffect(() => {
+  // Poll live calls from Supabase every 30s
+  const fetchLiveData = useCallback(() => {
+    // Interactions table — all calls
+    fetch('/api/calls')
+      .then(r => r.json())
+      .then((live: CoveredInteraction[]) => {
+        if (!Array.isArray(live) || live.length === 0) return
+        setInteractions(live)
+      })
+      .catch(() => {})
+
+    // Follow-up queue — NEW / unactioned calls
     fetch('/api/callback')
       .then(r => r.json())
       .then((live: FollowUpItem[]) => {
@@ -56,8 +66,14 @@ export default function DashboardClient() {
           return fresh.length > 0 ? [...fresh, ...prev] : prev
         })
       })
-      .catch(() => { /* network error — silently keep mock data */ })
+      .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    fetchLiveData()
+    const interval = setInterval(fetchLiveData, 30_000)
+    return () => clearInterval(interval)
+  }, [fetchLiveData])
 
   // Derived KPIs
   const callsCovered = interactions.length

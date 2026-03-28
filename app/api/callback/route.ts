@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import type { FollowUpItem, FollowUpType, Urgency } from '@/data/mock-dashboard'
 
-// ─── Supabase client (service role bypasses RLS for server-side writes) ─────
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -11,71 +10,115 @@ function getSupabase() {
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
-// ─── ElevenLabs create_callback_request payload ──────────────────────────────
-export interface CallbackRequest {
-  clinic_name?: string
-  owner_name: string
-  pet_name: string
-  species: string
-  phone_number: string
-  urgency: string   // "CRITICAL" | "URGENT" | "ROUTINE" — from ElevenLabs tool
-  summary: string
-}
-
-// Map ElevenLabs urgency string → our Urgency type
-function mapUrgency(raw: string): Urgency {
-  const u = raw?.toUpperCase()
+function mapUrgency(raw: string | undefined): Urgency {
+  const u = (raw ?? '').toUpperCase()
   if (u === 'CRITICAL' || u === 'EMERGENCY') return 'CRITICAL'
   if (u === 'URGENT') return 'URGENT'
   return 'ROUTINE'
 }
 
-// Map urgency → follow-up type
 function mapFollowUpType(urgency: Urgency): FollowUpType {
   if (urgency === 'CRITICAL' || urgency === 'URGENT') return 'URGENT_CALLBACK'
   return 'ROUTINE_CALLBACK'
 }
 
-// ─── POST — ElevenLabs webhook ───────────────────────────────────────────────
+function mapEnquiryType(reason: string | undefined): string {
+  if (!reason) return 'GENERAL_ENQUIRY'
+  const r = reason.toUpperCase()
+  if (r.includes('EMERGENCY') || r.includes('BLEED') || r.includes('COLLAPSE')) return 'EMERGENCY'
+  if (r.includes('APPOINTMENT') || r.includes('BOOK')) return 'APPOINTMENT'
+  if (r.includes('MEDICATION') || r.includes('PRESCRIPTION')) return 'MEDICATION'
+  if (r.includes('PRICE') || r.includes('COST') || r.includes('FEE')) return 'PRICING'
+  if (r.includes('URGENT') || r.includes('SICK') || r.includes('VOMIT') || r.includes('PAIN')) return 'URGENT_CONCERN'
+  if (r.includes('CALLBACK') || r.includes('CALL BACK')) return 'CALLBACK_REQUEST'
+  return 'GENERAL_ENQUIRY'
+}
+
+// ─── POST — ElevenLabs webhook (handles both formats) ────────────────────────
+// Format 1: ElevenLabs post-call webhook (analysis.data_collection_results)
+// Format 2: Direct tool call payload (owner_name, pet_name, etc.)
 export async function POST(req: NextRequest) {
   try {
-    const body: CallbackRequest = await req.json()
-    const { owner_name, pet_name, species, phone_number, urgency, summary } = body
+    const body = await req.json()
 
-    if (!owner_name || !phone_number || !summary) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    let caller_name: string
+    let caller_phone: string
+    let patient_name: string
+    let species: string
+    let urgency_raw: string
+    let summary: string
+    let call_reason: string
+    let conversation_id: string | undefined
+    let enquiry_type: string
+
+    // ── ElevenLabs post-call webhook format ──────────────────────────────────
+    if (body.type === 'post_call_transcription' && body.data) {
+      const data = body.data
+      const collected = data.analysis?.data_collection_results ?? {}
+      const get = (key: string) => collected[key]?.value ?? ''
+
+      caller_name    = get('owner_name') || get('caller_name') || 'Unknown'
+      caller_phone   = get('phone_number') || get('caller_phone') || ''
+      patient_name   = get('pet_name') || get('patient_name') || 'Unknown'
+      species        = get('species') || get('animal_type') || 'Unknown'
+      urgency_raw    = get('urgency') || get('priority') || 'ROUTINE'
+      call_reason    = get('call_reason') || get('reason') || get('concern') || ''
+      summary        = data.analysis?.transcript_summary || call_reason || 'Call completed'
+      conversation_id = data.conversation_id
+      enquiry_type   = mapEnquiryType(call_reason)
+    }
+    // ── Direct tool call format ──────────────────────────────────────────────
+    else if (body.owner_name || body.caller_name) {
+      caller_name    = body.owner_name || body.caller_name || 'Unknown'
+      caller_phone   = body.phone_number || body.caller_phone || ''
+      patient_name   = body.pet_name || body.patient_name || 'Unknown'
+      species        = body.species || 'Unknown'
+      urgency_raw    = body.urgency || 'ROUTINE'
+      call_reason    = body.call_reason || body.reason || ''
+      summary        = body.summary || call_reason || 'Call completed'
+      conversation_id = body.conversation_id
+      enquiry_type   = mapEnquiryType(call_reason || summary)
+    } else {
+      return NextResponse.json({ error: 'Unrecognised payload format' }, { status: 400 })
     }
 
+    if (!caller_name || caller_name === 'Unknown') {
+      caller_name = 'Unknown Caller'
+    }
+
+    const urgency = mapUrgency(urgency_raw)
     const supabase = getSupabase()
-    const mappedUrgency = mapUrgency(urgency)
 
     const { data, error } = await supabase
       .from('calls')
       .insert({
-        clinic_id: DEMO_CLINIC_ID,
-        caller_name: owner_name,
-        caller_phone: phone_number,
-        patient_name: pet_name || 'Unknown',
-        species: species || 'Unknown',
-        transcript: summary,
+        clinic_id:        DEMO_CLINIC_ID,
+        conversation_id,
+        caller_name,
+        caller_phone,
+        patient_name,
+        species,
+        enquiry_type,
+        call_reason,
+        transcript:        summary,
         ai_recommendation: summary,
-        risk: mappedUrgency,
-        ai_confidence: 0.9,
-        status: 'NEW',
-        started_at: new Date().toISOString(),
+        risk:              urgency,
+        ai_confidence:     0.9,
+        status:            'NEW',
+        started_at:        new Date().toISOString(),
       })
       .select('id')
       .single()
 
     if (error) {
       console.error('Callback insert error:', error)
-      return NextResponse.json({ error: 'Failed to save callback' }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to save call', detail: error.message }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, id: data.id })
   } catch (err) {
     console.error('Callback route error:', err)
-    return NextResponse.json({ error: 'Callback request failed' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }
 
@@ -93,31 +136,26 @@ export async function GET() {
       .limit(20)
 
     if (error || !data) {
-      console.error('Callback fetch error:', error)
       return NextResponse.json([])
     }
 
     const followUps: FollowUpItem[] = data.map((row) => {
       const urgency = mapUrgency(row.risk as string)
       return {
-        id: row.id as string,
-        callerName: (row.caller_name as string) ?? 'Unknown',
-        petName: (row.patient_name as string) ?? 'Unknown',
-        species: (row.species as string) ?? '',
-        summary: (row.transcript as string) ?? '',
+        id:          row.id as string,
+        callerName:  (row.caller_name as string) || 'Unknown',
+        petName:     (row.patient_name as string) || 'Unknown',
+        species:     (row.species as string) || '',
+        summary:     (row.transcript as string) || '',
         urgency,
-        type: mapFollowUpType(urgency),
-        receivedAt: new Date(row.started_at as string).toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-        phone: (row.caller_phone as string) ?? '',
+        type:        mapFollowUpType(urgency),
+        receivedAt:  new Date(row.started_at as string).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        phone:       (row.caller_phone as string) || '',
       }
     })
 
     return NextResponse.json(followUps)
-  } catch (err) {
-    console.error('Callback GET error:', err)
+  } catch {
     return NextResponse.json([])
   }
 }
