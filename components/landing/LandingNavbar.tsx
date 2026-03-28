@@ -37,11 +37,11 @@ export function LandingNavbar() {
 
         <div className="flex items-center gap-3 relative z-10">
           <Link
-            href="/overview"
+            href="/login"
             className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0A3622] text-[#F4F2ED] text-sm font-semibold hover:bg-[#125235] transition-colors shadow-sm"
           >
             <LayoutDashboard className="w-4 h-4" />
-            Dashboard
+            Clinic Login
           </Link>
           <LandingButton size="sm" className="hidden sm:flex bg-[#0A0A0A] text-[#F4F2ED] hover:bg-[#0A0A0A]/90 rounded-full px-6">Book Demo</LandingButton>
         </div>
