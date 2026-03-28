@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
   MessageSquare,
@@ -11,21 +11,50 @@ import {
   ClipboardList,
   CheckSquare,
   Settings,
+  LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
 
 const navItems = [
   { label: 'Coverage Console', href: '/overview',      icon: LayoutDashboard },
   { label: 'Interaction Log',  href: '/care-queue',    icon: MessageSquare },
-  { label: 'Follow-Up Queue',  href: '/calls',          icon: Phone },
-  { label: 'Bookings',         href: '/bookings',       icon: CalendarDays },
-  { label: 'Coverage Reports', href: '/media-review',   icon: BarChart3 },
-  { label: 'Handover Notes',   href: '/referrals',      icon: ClipboardList },
-  { label: 'Team Tasks',       href: '/tasks',          icon: CheckSquare },
+  { label: 'Follow-Up Queue',  href: '/calls',         icon: Phone },
+  { label: 'Bookings',         href: '/bookings',      icon: CalendarDays },
+  { label: 'Coverage Reports', href: '/media-review',  icon: BarChart3 },
+  { label: 'Handover Notes',   href: '/referrals',     icon: ClipboardList },
+  { label: 'Team Tasks',       href: '/tasks',         icon: CheckSquare },
 ]
 
-export default function Sidebar() {
+interface SidebarProps {
+  clinicName?: string
+  userName?: string
+  userRole?: string
+}
+
+export default function Sidebar({
+  clinicName = 'Your Clinic',
+  userName = 'Staff',
+  userRole = 'receptionist',
+}: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
+
+  const initials = userName
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+
+  const roleFmt = userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase()
 
   return (
     <aside className="flex flex-col w-64 shrink-0 h-screen bg-white border-r border-slate-200 overflow-y-auto">
@@ -38,9 +67,9 @@ export default function Sidebar() {
             <div className="w-0.5 h-3 bg-[#0ea5e9] absolute"></div>
           </div>
         </div>
-        <div>
+        <div className="min-w-0">
           <h1 className="font-bold text-xl tracking-tight text-[#0f5b8a] leading-tight">VetDesk</h1>
-          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Front Desk AI</p>
+          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest truncate">{clinicName}</p>
         </div>
       </div>
 
@@ -68,7 +97,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Settings + Staff footer */}
+      {/* Footer: Settings + User */}
       <div className="p-4 border-t border-slate-100 flex flex-col gap-2">
         <Link
           href="/settings"
@@ -78,20 +107,22 @@ export default function Sidebar() {
           Settings
         </Link>
 
-        <div className="mt-1 p-3 bg-slate-100 rounded-xl flex items-center gap-3">
-          {/* DiceBear avatar */}
-          <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://api.dicebear.com/7.x/avataaars/svg?seed=DrArisThorne&backgroundColor=0f5b8a"
-              alt="Dr. Aris Thorne"
-              className="w-full h-full object-cover"
-            />
+        {/* User card */}
+        <div className="mt-1 p-3 bg-slate-50 rounded-xl flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-[#0f5b8a] flex items-center justify-center shrink-0 text-white text-xs font-bold">
+            {initials}
           </div>
-          <div className="overflow-hidden">
-            <p className="text-sm font-bold text-slate-900 truncate">Dr. Aris Thorne</p>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider truncate">Night Lead</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-slate-900 truncate">{userName}</p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">{roleFmt}</p>
           </div>
+          <button
+            onClick={handleSignOut}
+            title="Sign out"
+            className="shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </aside>
