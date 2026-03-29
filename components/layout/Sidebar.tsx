@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -52,7 +52,7 @@ export default function Sidebar({
           </div>
         </div>
         <div className="min-w-0">
-          <h1 className="font-bold text-[15px] tracking-tight text-[#0f2744] leading-snug">VetDesk</h1>
+          <h1 className="font-bold text-[15px] tracking-tight text-[#0f2744] leading-snug">VetForce</h1>
           <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest truncate mt-px">{clinicName}</p>
         </div>
       </div>

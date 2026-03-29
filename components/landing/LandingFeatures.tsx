@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { motion } from 'motion/react'
 import { Mic, Activity, FileText, Settings, Database, ArrowUpRight } from 'lucide-react'
 
@@ -94,7 +94,7 @@ export function LandingFeatures() {
               </div>
               <h3 className="text-3xl font-medium mb-6 tracking-tight">Urgent Call Detection</h3>
               <p className="text-white/60 leading-relaxed font-light text-lg">
-                When something urgent comes in, VetDesk recognises it and escalates appropriately — routing time-sensitive cases to the right person without delay.
+                When something urgent comes in, VetForce recognises it and escalates appropriately — routing time-sensitive cases to the right person without delay.
               </p>
             </div>
             <div className="mt-16 p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md relative z-10">

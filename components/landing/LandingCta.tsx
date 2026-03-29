@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { motion } from 'motion/react'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import Link from 'next/link'
@@ -32,7 +32,7 @@ export function LandingCta() {
                 Ready to give your clinic uninterrupted front desk coverage?
               </h2>
               <p className="text-xl md:text-2xl text-white/50 mb-12 leading-relaxed font-light text-balance max-w-lg">
-                VetDesk handles every call with professionalism — so your team never misses what matters.
+                VetForce handles every call with professionalism — so your team never misses what matters.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-6 items-start">

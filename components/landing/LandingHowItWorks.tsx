@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { motion } from 'motion/react'
 
 export function LandingHowItWorks() {
@@ -6,7 +6,7 @@ export function LandingHowItWorks() {
     {
       number: '01',
       title: 'Answer',
-      description: 'VetDesk picks up the call warmly and immediately — no hold music, no phone trees. The caller feels heard from the first second.',
+      description: 'VetForce picks up the call warmly and immediately — no hold music, no phone trees. The caller feels heard from the first second.',
       align: 'md:items-start md:text-left',
       offset: 'md:ml-0 md:mr-auto',
     },
@@ -20,7 +20,7 @@ export function LandingHowItWorks() {
     {
       number: '03',
       title: 'Assess',
-      description: 'VetDesk identifies urgency — distinguishing routine enquiries from time-sensitive cases and flagging what needs immediate attention.',
+      description: 'VetForce identifies urgency — distinguishing routine enquiries from time-sensitive cases and flagging what needs immediate attention.',
       align: 'md:items-start md:text-left',
       offset: 'md:ml-0 md:mr-auto',
     },
@@ -46,7 +46,7 @@ export function LandingHowItWorks() {
             <div className="h-px w-12 bg-[#E25F38]/50" />
           </div>
           <h2 className="text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] font-medium mb-8 tracking-[-0.03em] leading-[0.85] text-balance">
-            How VetDesk works.
+            How VetForce works.
           </h2>
           <p className="text-xl md:text-2xl text-white/50 leading-relaxed font-light max-w-2xl mx-auto">
             A reception workflow that runs itself — from the first ring to the final handoff note.

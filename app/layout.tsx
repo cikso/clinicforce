@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'VetDesk — AI Front Desk for Veterinary Clinics',
-  description: 'VetDesk intelligently handles your calls, captures patient details, and triages urgency 24/7.',
+  title: 'VetForce — AI Front Desk for Veterinary Clinics',
+  description: 'VetForce intelligently handles your calls, captures patient details, and triages urgency 24/7.',
 }
 
 export default function RootLayout({

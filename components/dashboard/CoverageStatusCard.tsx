@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Clock, Phone, ChevronDown, Power, CheckCircle } from 'lucide-react'
@@ -94,7 +94,7 @@ export default function CoverageStatusCard({ session, onActivate, onDeactivate }
                 <Power className="w-4 h-4 text-slate-400" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-700">VetDesk is on standby</p>
+                <p className="text-sm font-semibold text-slate-700">VetForce is on standby</p>
                 <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">Activate when your team steps away from reception.</p>
               </div>
             </div>

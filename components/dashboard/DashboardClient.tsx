@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useCallback, useEffect } from 'react'
 import PageShell from '@/components/layout/PageShell'
@@ -119,7 +119,7 @@ export default function DashboardClient() {
     // Update local state immediately for instant UI response
     setSession(prev => ({ ...prev, status: 'ACTIVE', reason, startTime, durationMinutes: 0 }))
     logHandover(`Coverage activated — ${REASON_LABELS[reason]}.`, 'coverage')
-    addToast(`VetDesk is now active — ${REASON_LABELS[reason]}`, 'success')
+    addToast(`VetForce is now active — ${REASON_LABELS[reason]}`, 'success')
 
     // Persist to Supabase → Twilio will read this on the next incoming call
     fetch('/api/coverage', {

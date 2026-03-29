@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { ExternalLink } from 'lucide-react'
 import type { CoveredInteraction, IntakeSource, Urgency, InteractionStatus, EnquiryType } from '@/data/mock-dashboard'
@@ -63,7 +63,7 @@ export default function InteractionsTable({ interactions, onSelect, selectedId }
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <div>
             <h2 className="text-sm font-bold text-[#0f2744]">Today&apos;s Interactions</h2>
-            <p className="text-[11px] text-slate-400 mt-0.5">No interactions yet — VetDesk is standing by</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">No interactions yet — VetForce is standing by</p>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -71,7 +71,7 @@ export default function InteractionsTable({ interactions, onSelect, selectedId }
             <span className="text-base">📞</span>
           </div>
           <p className="text-sm font-semibold text-slate-600 mb-1">No calls captured yet</p>
-          <p className="text-[11px] text-slate-400">Interactions handled by VetDesk will appear here</p>
+          <p className="text-[11px] text-slate-400">Interactions handled by VetForce will appear here</p>
         </div>
       </div>
     )

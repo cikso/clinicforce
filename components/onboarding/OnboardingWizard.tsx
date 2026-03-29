@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -51,7 +51,7 @@ export default function OnboardingWizard() {
           <CheckCircle className="w-8 h-8 text-emerald-500" />
         </div>
         <h2 className="text-2xl font-bold text-[#0f2744] mb-3">
-          Welcome to VetDesk, {clinicName}!
+          Welcome to VetForce, {clinicName}!
         </h2>
         <p className="text-sm text-slate-500 mb-3 leading-relaxed">
           Your clinic coverage profile is set up and ready to go.
@@ -87,7 +87,7 @@ export default function OnboardingWizard() {
   return (
     <div className="w-full max-w-lg">
       <h2 className="text-2xl font-bold text-[#0f2744] mb-1">Tell us about your clinic</h2>
-      <p className="text-sm text-slate-500 mb-8">This sets up your VetDesk coverage profile.</p>
+      <p className="text-sm text-slate-500 mb-8">This sets up your VetForce coverage profile.</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -140,7 +140,7 @@ export default function OnboardingWizard() {
           className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#0f5b8a] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2"
         >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-          {loading ? 'Setting up...' : 'Launch VetDesk →'}
+          {loading ? 'Setting up...' : 'Launch VetForce →'}
         </button>
       </form>
     </div>

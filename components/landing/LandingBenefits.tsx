@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { motion } from 'motion/react'
 import { ShieldCheck, HeartPulse, Star, FileCheck } from 'lucide-react'
 
@@ -27,12 +27,12 @@ export function LandingBenefits() {
     {
       icon: ShieldCheck,
       title: 'Urgent Cases Never Wait',
-      desc: 'When a call signals something time-sensitive, VetDesk identifies it and escalates — so your team can respond before it becomes critical.',
+      desc: 'When a call signals something time-sensitive, VetForce identifies it and escalates — so your team can respond before it becomes critical.',
     },
     {
       icon: HeartPulse,
       title: 'Professional Coverage Anytime',
-      desc: 'Lunch breaks, staff meetings, sick days, and holidays — VetDesk keeps your front desk open and responsive around the clock.',
+      desc: 'Lunch breaks, staff meetings, sick days, and holidays — VetForce keeps your front desk open and responsive around the clock.',
     },
   ]
 

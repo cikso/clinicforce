@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Bell, Search, MapPin, Power } from 'lucide-react'
 import { mockAlerts } from '@/data/mock-alerts'
@@ -64,12 +64,12 @@ export default function TopBar({
           }`} />
           {isActive ? (
             <>
-              <span className="font-bold">VetDesk ON</span>
+              <span className="font-bold">VetForce ON</span>
               {reasonLabel && <span className="text-emerald-600/70 font-normal"> · {reasonLabel}</span>}
               {coverage.startTime && <span className="text-emerald-600/60 font-normal"> · {coverage.startTime}</span>}
             </>
           ) : (
-            <span>VetDesk <span className="font-bold">OFF</span> · Reception active</span>
+            <span>VetForce <span className="font-bold">OFF</span> · Reception active</span>
           )}
         </div>
       )}

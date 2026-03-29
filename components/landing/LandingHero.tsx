@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { motion } from 'motion/react'
 import { ArrowRight, Activity, ShieldCheck, Clock } from 'lucide-react'
 import Link from 'next/link'
@@ -42,7 +42,7 @@ export function LandingHero() {
               transition={{ duration: 1, delay: 0.2, ease: customEase }}
               className="text-xl md:text-2xl text-[#0A0A0A]/60 mb-14 max-w-xl leading-relaxed font-light"
             >
-              Whether your team is at lunch, in a meeting, or off the clock — VetDesk answers, captures, and handles every call.
+              Whether your team is at lunch, in a meeting, or off the clock — VetForce answers, captures, and handles every call.
             </motion.p>
 
             <motion.div
@@ -159,7 +159,7 @@ export function LandingHero() {
                 className="absolute -top-6 left-8 bg-white rounded-2xl p-5 shadow-[0_24px_48px_-12px_rgba(10,10,10,0.08)] border border-black/5 z-40 flex items-center gap-5"
               >
                 <div>
-                  <p className="text-sm font-semibold text-[#0A0A0A] mb-1">VetDesk Coverage</p>
+                  <p className="text-sm font-semibold text-[#0A0A0A] mb-1">VetForce Coverage</p>
                   <p className="text-[11px] text-[#0A0A0A]/50 font-medium">Active (Lunch Hour)</p>
                 </div>
                 <div className="w-12 h-6 bg-[#0A3622] rounded-full relative shadow-inner">

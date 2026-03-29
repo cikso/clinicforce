@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -26,7 +26,7 @@ export function LandingNavbar() {
           <div className="w-8 h-8 bg-[#0A0A0A] rounded-lg flex items-center justify-center shadow-sm">
             <div className="w-2.5 h-2.5 bg-[#E25F38] rounded-full" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-[#0A0A0A]">VetDesk</span>
+          <span className="font-bold text-xl tracking-tight text-[#0A0A0A]">VetForce</span>
         </div>
 
         <nav className="hidden md:flex items-center gap-8 relative z-10">

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { motion } from 'motion/react'
 import { ShieldCheck, Brain, Layers, Sparkles } from 'lucide-react'
 
@@ -55,7 +55,7 @@ export function LandingDifferentiation() {
                     </div>
                     <div>
                       <span className="text-xs font-medium text-[#E25F38] tracking-widest uppercase block mb-1">Core Engine</span>
-                      <span className="text-lg font-medium text-white tracking-wide">VetDesk Coverage</span>
+                      <span className="text-lg font-medium text-white tracking-wide">VetForce Coverage</span>
                     </div>
                   </div>
                   <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
@@ -89,13 +89,13 @@ export function LandingDifferentiation() {
           <div className="order-1 lg:order-2 lg:pl-12">
             <div className="flex items-center gap-4 mb-8">
               <div className="h-px w-12 bg-[#E25F38]/50" />
-              <span className="micro-label text-[#E25F38] block">VETDESK IN ACTION</span>
+              <span className="micro-label text-[#E25F38] block">VetForce IN ACTION</span>
             </div>
             <h2 className="text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] font-medium text-[#0A0A0A] mb-8 tracking-[-0.03em] leading-[0.85] text-balance">
               11:30 AM. Reception is flat out. The phone rings.
             </h2>
             <p className="text-xl md:text-2xl text-[#0A0A0A]/60 mb-16 leading-relaxed font-light max-w-2xl">
-              It could be a booking request, a billing question, or something urgent. Traditional voicemail can&apos;t tell the difference. VetDesk can.
+              It could be a booking request, a billing question, or something urgent. Traditional voicemail can&apos;t tell the difference. VetForce can.
             </p>
 
             <div className="space-y-12">
@@ -118,9 +118,9 @@ export function LandingDifferentiation() {
                   <Brain className="w-7 h-7 text-[#0A3622] relative z-10" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <h4 className="text-2xl font-medium text-[#0A0A0A] mb-3 tracking-tight">VetDesk Answers</h4>
+                  <h4 className="text-2xl font-medium text-[#0A0A0A] mb-3 tracking-tight">VetForce Answers</h4>
                   <p className="text-lg text-[#0A0A0A]/60 leading-relaxed font-light">
-                    VetDesk picks up on the second ring. It greets the client warmly, captures their name, their pet&apos;s details, and the reason for the call — naturally and professionally.
+                    VetForce picks up on the second ring. It greets the client warmly, captures their name, their pet&apos;s details, and the reason for the call — naturally and professionally.
                   </p>
                 </div>
               </div>
@@ -133,7 +133,7 @@ export function LandingDifferentiation() {
                 <div>
                   <h4 className="text-2xl font-medium text-[#0A0A0A] mb-3 tracking-tight">The Outcome</h4>
                   <p className="text-lg text-[#0A0A0A]/60 leading-relaxed font-light">
-                    If it&apos;s routine, a clean summary is queued for the team. If it&apos;s urgent, VetDesk flags it immediately and escalates to the right person. Either way — no voicemail delay, no dropped call, total continuity.
+                    If it&apos;s routine, a clean summary is queued for the team. If it&apos;s urgent, VetForce flags it immediately and escalates to the right person. Either way — no voicemail delay, no dropped call, total continuity.
                   </p>
                 </div>
               </div>

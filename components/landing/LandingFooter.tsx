@@ -1,4 +1,4 @@
-export function LandingFooter() {
+﻿export function LandingFooter() {
   return (
     <footer className="bg-[#F4F2ED] pt-32 pb-12 border-t border-black/5 relative overflow-hidden">
       <div className="bg-noise" />
@@ -10,10 +10,10 @@ export function LandingFooter() {
               <div className="w-10 h-10 rounded-xl bg-[#0A0A0A] flex items-center justify-center text-[#F4F2ED] shadow-sm">
                 <div className="w-3 h-3 bg-[#E25F38] rounded-full" />
               </div>
-              <span className="font-bold text-2xl tracking-tight text-[#0A0A0A]">VetDesk</span>
+              <span className="font-bold text-2xl tracking-tight text-[#0A0A0A]">VetForce</span>
             </div>
             <p className="text-lg text-[#0A0A0A]/60 leading-relaxed max-w-sm font-light mb-8">
-              VetDesk. The AI front desk for veterinary clinics.
+              VetForce. The AI front desk for veterinary clinics.
             </p>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full border border-black/5 flex items-center justify-center hover:bg-white transition-colors cursor-pointer">
@@ -57,7 +57,7 @@ export function LandingFooter() {
 
         <div className="border-t border-black/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-sm text-[#0A0A0A]/40 font-light">
-            © {new Date().getFullYear()} VetDesk Inc. All rights reserved.
+            © {new Date().getFullYear()} VetForce Inc. All rights reserved.
           </p>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-[#0A3622] animate-pulse" />

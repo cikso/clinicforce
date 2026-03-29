@@ -1,6 +1,6 @@
-// ElevenLabs Mirror Prompt
+﻿// ElevenLabs Mirror Prompt
 // -------------------------
-// This is a voice-optimised version of the VetDesk shared rules.
+// This is a voice-optimised version of the VetForce shared rules.
 // Paste the exported string directly into ElevenLabs as the system prompt.
 // Keep this file in sync with shared-rules.ts whenever rules change.
 
