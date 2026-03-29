@@ -3,9 +3,14 @@ import { createClient } from '@supabase/supabase-js'
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
-// ElevenLabs standard Twilio inbound endpoint.
-// They identify the correct agent from the "To" number in Twilio's POST params.
-const ELEVENLABS_INBOUND_URL = 'https://api.elevenlabs.io/v1/convai/twilio/inbound_call'
+// ElevenLabs Twilio inbound endpoint — set via env var so it matches your account region.
+// Find yours: ElevenLabs → Phone Numbers → click your number → copy the webhook URL shown.
+// Common values:
+//   https://api.elevenlabs.io/v1/convai/twilio/inbound_call   (global)
+//   https://api.us.elevenlabs.io/twilio/inbound_call           (US region)
+const ELEVENLABS_INBOUND_URL =
+  process.env.ELEVENLABS_INBOUND_URL ??
+  'https://api.elevenlabs.io/v1/convai/twilio/inbound_call'
 
 function getSupabase() {
   return createClient(
