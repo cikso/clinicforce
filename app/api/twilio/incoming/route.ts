@@ -44,7 +44,7 @@ export async function POST() {
     // Fall through to ElevenLabs as safe default — better Sarah answers than nothing
     return twiml(`
 <Response>
-  <Redirect>${ELEVENLABS_INBOUND_URL}</Redirect>
+  <Redirect method="POST">${ELEVENLABS_INBOUND_URL}</Redirect>
 </Response>`)
   }
 
@@ -60,9 +60,11 @@ export async function POST() {
 
     if (isActive) {
       // ── Coverage ON → hand off to ElevenLabs (Sarah answers) ──
+      // method="POST" is critical — Twilio defaults to GET which strips
+      // the call params ElevenLabs needs to identify the agent by number
       return twiml(`
 <Response>
-  <Redirect>${ELEVENLABS_INBOUND_URL}</Redirect>
+  <Redirect method="POST">${ELEVENLABS_INBOUND_URL}</Redirect>
 </Response>`)
     } else {
       // ── Coverage OFF → ring real clinic number ──────────────
@@ -80,7 +82,7 @@ export async function POST() {
     // Better an AI answers than the call is dropped.
     return twiml(`
 <Response>
-  <Redirect>${ELEVENLABS_INBOUND_URL}</Redirect>
+  <Redirect method="POST">${ELEVENLABS_INBOUND_URL}</Redirect>
 </Response>`)
   }
 }
