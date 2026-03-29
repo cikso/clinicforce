@@ -1,9 +1,9 @@
-﻿'use client'
+'use client'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard, MessageSquare, Phone,
+  LayoutDashboard, Inbox, Phone,
   BarChart3, ClipboardList, Settings, Users,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 const PRIMARY_NAV = [
   { label: 'Overview',  href: '/overview',     icon: LayoutDashboard },
   { label: 'Calls',     href: '/care-queue',   icon: Phone },
-  { label: 'Follow-Up', href: '/calls',        icon: MessageSquare },
+  { label: 'Call Inbox', href: '/calls',        icon: Inbox },
   { label: 'Handover',  href: '/referrals',    icon: ClipboardList },
   { label: 'Reports',   href: '/media-review', icon: BarChart3 },
 ]
@@ -43,7 +43,7 @@ export default function Sidebar({
   return (
     <aside className="flex flex-col w-56 shrink-0 h-screen bg-white border-r border-slate-200/80 overflow-y-auto">
 
-      {/* ── Brand ───────────────────────────────────────────── */}
+      {/* -- Brand --------------------------------------------- */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-100">
         <div className="w-8 h-8 rounded-lg bg-[#0f2744] flex items-center justify-center shrink-0">
           <div className="relative w-4 h-4 flex items-center justify-center">
@@ -57,7 +57,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* ── Primary Nav ─────────────────────────────────────── */}
+      {/* -- Primary Nav --------------------------------------- */}
       <nav className="flex-1 px-3 pt-5 pb-2">
         <p className="px-3 mb-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest select-none">
           Workspace
@@ -92,7 +92,7 @@ export default function Sidebar({
         </div>
       </nav>
 
-      {/* ── Admin Nav + Profile ──────────────────────────────── */}
+      {/* -- Admin Nav + Profile -------------------------------- */}
       <div className="px-3 py-4 border-t border-slate-100">
         <p className="px-3 mb-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest select-none">
           Admin

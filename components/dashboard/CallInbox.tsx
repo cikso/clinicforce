@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Phone, Calendar, CheckCheck, ChevronDown, ChevronUp, Inbox } from 'lucide-react'
+import Link from 'next/link'
+import { Phone, Calendar, CheckCheck, ChevronDown, ChevronUp, Inbox, ArrowRight } from 'lucide-react'
 import type { CallInboxItem } from '@/data/mock-dashboard'
 
 type Filter = 'all' | 'unread' | 'urgent'
@@ -26,12 +27,14 @@ function avatarColor(name: string) {
 }
 
 interface CallInboxProps {
-  items: CallInboxItem[]
-  onAction:   (id: string, action: 'CALL_BACK' | 'BOOK' | 'DONE') => void
-  onMarkRead: (id: string) => void
+  items:       CallInboxItem[]
+  onAction:    (id: string, action: 'CALL_BACK' | 'BOOK' | 'DONE') => void
+  onMarkRead:  (id: string) => void
+  limit?:      number   // cap rows (dashboard preview mode)
+  viewAllHref?: string  // if set, shows "View all" footer
 }
 
-export default function CallInbox({ items, onAction, onMarkRead }: CallInboxProps) {
+export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllHref }: CallInboxProps) {
   const [filter, setFilter]     = useState<Filter>('all')
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
@@ -43,6 +46,9 @@ export default function CallInbox({ items, onAction, onMarkRead }: CallInboxProp
     if (filter === 'urgent') return item.urgency === 'CRITICAL' || item.urgency === 'URGENT'
     return true
   })
+
+  const displayed  = limit ? filtered.slice(0, limit) : filtered
+  const hiddenCount = limit ? Math.max(0, filtered.length - limit) : 0
 
   function handleExpand(id: string) {
     if (expandedId === id) {
@@ -91,7 +97,7 @@ export default function CallInbox({ items, onAction, onMarkRead }: CallInboxProp
 
       {/* ── Items ────────────────────────────────────────────── */}
       <div className="divide-y divide-slate-100">
-        {filtered.length === 0 ? (
+        {displayed.length === 0 ? (
           <div className="px-5 py-12 text-center">
             <Inbox className="w-8 h-8 text-slate-200 mx-auto mb-2.5" />
             <p className="text-sm font-semibold text-slate-400">No calls to show</p>
@@ -100,7 +106,7 @@ export default function CallInbox({ items, onAction, onMarkRead }: CallInboxProp
             </p>
           </div>
         ) : (
-          filtered.map(item => {
+          displayed.map(item => {
             const isExpanded = expandedId === item.id
             const isUnread   = item.status === 'UNREAD'
             const isActioned = item.status === 'ACTIONED'
@@ -223,6 +229,17 @@ export default function CallInbox({ items, onAction, onMarkRead }: CallInboxProp
           })
         )}
       </div>
+
+      {/* ── View all footer ───────────────────────────────────── */}
+      {viewAllHref && (
+        <Link
+          href={viewAllHref}
+          className="flex items-center justify-center gap-1.5 px-5 py-3 border-t border-slate-100 text-[12px] font-semibold text-[#0891b2] hover:bg-slate-50 transition-colors rounded-b-xl"
+        >
+          {hiddenCount > 0 ? `View all calls (${hiddenCount} more)` : 'View all calls'}
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+      )}
     </div>
   )
 }

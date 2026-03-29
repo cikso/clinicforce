@@ -185,6 +185,8 @@ export default function DashboardClient() {
               items={inbox}
               onAction={handleInboxAction}
               onMarkRead={handleInboxMarkRead}
+              limit={4}
+              viewAllHref="/calls"
             />
           </div>
 
