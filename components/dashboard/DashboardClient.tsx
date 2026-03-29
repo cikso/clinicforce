@@ -4,20 +4,20 @@ import { useState, useCallback, useEffect } from 'react'
 import PageShell from '@/components/layout/PageShell'
 import KpiCard from '@/components/dashboard/KpiCard'
 import CoverageStatusCard from '@/components/dashboard/CoverageStatusCard'
-import InteractionsTable from '@/components/dashboard/InteractionsTable'
+import CallInbox from '@/components/dashboard/CallInbox'
 import FollowUpQueue from '@/components/dashboard/FollowUpQueue'
 import HandoverSummary from '@/components/dashboard/HandoverSummary'
 import ToastContainer from '@/components/dashboard/ToastContainer'
 import {
-  Phone, AlertTriangle, CheckCircle, MessageSquare, Clock,
+  Phone, AlertTriangle, MessageSquare, Clock,
 } from 'lucide-react'
 import {
-  INITIAL_INTERACTIONS,
+  INITIAL_INBOX,
   INITIAL_FOLLOWUPS,
   INITIAL_HANDOVER,
   INITIAL_COVERAGE_SESSION,
   COVERAGE_USAGE,
-  type CoveredInteraction,
+  type CallInboxItem,
   type FollowUpItem,
   type HandoverItem,
   type CoverageSession,
@@ -36,12 +36,11 @@ const REASON_LABELS: Record<CoverageReason, string> = {
 }
 
 export default function DashboardClient() {
-  const [interactions, setInteractions] = useState<CoveredInteraction[]>(INITIAL_INTERACTIONS)
+  const [inbox, setInbox]       = useState<CallInboxItem[]>(INITIAL_INBOX)
   const [followUps, setFollowUps] = useState<FollowUpItem[]>(INITIAL_FOLLOWUPS)
   const [handover, setHandover] = useState<HandoverItem[]>(INITIAL_HANDOVER)
-  const [session, setSession] = useState<CoverageSession>(INITIAL_COVERAGE_SESSION)
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [toasts, setToasts] = useState<ToastItem[]>([])
+  const [session, setSession]   = useState<CoverageSession>(INITIAL_COVERAGE_SESSION)
+  const [toasts, setToasts]     = useState<ToastItem[]>([])
 
   // ── Sync coverage state with Supabase on mount ───────────────
   useEffect(() => {
@@ -64,13 +63,13 @@ export default function DashboardClient() {
       .catch(() => {})
   }, [])
 
-  // Poll live calls from Supabase every 30s
+  // Poll inbox + follow-ups from Supabase every 30s
   const fetchLiveData = useCallback(() => {
-    fetch('/api/calls')
+    fetch('/api/inbox')
       .then(r => r.json())
-      .then((live: CoveredInteraction[]) => {
+      .then((live: CallInboxItem[]) => {
         if (!Array.isArray(live) || live.length === 0) return
-        setInteractions(live)
+        setInbox(live)
       })
       .catch(() => {})
 
@@ -94,12 +93,12 @@ export default function DashboardClient() {
   }, [fetchLiveData])
 
   // ── KPIs ─────────────────────────────────────────────────────
-  const callsCovered     = interactions.length
-  const urgentFlagged    = interactions.filter(i => i.urgency === 'CRITICAL' || i.urgency === 'URGENT').length
-  const routineHandled   = interactions.filter(i => i.urgency === 'ROUTINE' && i.status === 'HANDLED').length
-  const callbacksNeeded  = followUps.filter(i => i.type === 'URGENT_CALLBACK' || i.type === 'ROUTINE_CALLBACK').length
-  const totalMins        = COVERAGE_USAGE.reduce((s, u) => s + u.minutes, 0)
-  const hoursActive      = (totalMins / 60).toFixed(1)
+  const callsCovered    = inbox.length
+  const urgentFlagged   = inbox.filter(i => i.urgency === 'CRITICAL' || i.urgency === 'URGENT').length
+  const unreadMessages  = inbox.filter(i => i.status === 'UNREAD').length
+  const callbacksNeeded = followUps.filter(i => i.type === 'URGENT_CALLBACK' || i.type === 'ROUTINE_CALLBACK').length
+  const totalMins       = COVERAGE_USAGE.reduce((s, u) => s + u.minutes, 0)
+  const hoursActive     = (totalMins / 60).toFixed(1)
 
   // ── Helpers ──────────────────────────────────────────────────
   const addToast = useCallback((message: string, variant: ToastItem['variant'] = 'success') => {
@@ -158,6 +157,37 @@ export default function DashboardClient() {
     }
   }, [followUps, logHandover, addToast])
 
+  // ── Inbox handlers ────────────────────────────────────────────
+  const handleInboxMarkRead = useCallback((id: string) => {
+    setInbox(prev => prev.map(i => i.id === id && i.status === 'UNREAD' ? { ...i, status: 'READ' } : i))
+    fetch('/api/inbox', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: 'READ' }),
+    }).catch(() => {})
+  }, [])
+
+  const handleInboxAction = useCallback((id: string, action: 'CALL_BACK' | 'BOOK' | 'DONE') => {
+    const item = inbox.find(i => i.id === id)
+    if (!item) return
+    setInbox(prev => prev.map(i => i.id === id ? { ...i, status: 'ACTIONED' } : i))
+    fetch('/api/inbox', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: 'ACTIONED' }),
+    }).catch(() => {})
+    if (action === 'CALL_BACK') {
+      logHandover(`Callback actioned — ${item.callerName} / ${item.petName}`, 'callback')
+      addToast(`Callback marked for ${item.callerName}`, 'success')
+    } else if (action === 'BOOK') {
+      logHandover(`Booking requested — ${item.callerName} / ${item.petName}`, 'booking')
+      addToast(`Booking request logged for ${item.petName}`, 'success')
+    } else {
+      logHandover(`Message actioned — ${item.callerName}`, 'handled')
+      addToast(`Marked done — ${item.callerName}`, 'success')
+    }
+  }, [inbox, logHandover, addToast])
+
   return (
     <PageShell
       title="Coverage Overview"
@@ -189,11 +219,12 @@ export default function DashboardClient() {
             pulse={urgentFlagged > 0}
           />
           <KpiCard
-            title="Routine Handled"
-            value={routineHandled}
-            context="resolved"
-            icon={<CheckCircle className="w-4 h-4" />}
+            title="Unread Messages"
+            value={unreadMessages}
+            context="need review"
+            icon={<MessageSquare className="w-4 h-4" />}
             accentColor="green"
+            pulse={unreadMessages > 0}
           />
           <KpiCard
             title="Callbacks Needed"
@@ -215,12 +246,12 @@ export default function DashboardClient() {
         {/* ── Main Grid ───────────────────────────────────────── */}
         <div className="grid grid-cols-12 gap-4">
 
-          {/* Left: Today's Covered Calls */}
+          {/* Left: Call Inbox */}
           <div className="col-span-12 xl:col-span-8">
-            <InteractionsTable
-              interactions={interactions}
-              onSelect={setSelectedId}
-              selectedId={selectedId}
+            <CallInbox
+              items={inbox}
+              onAction={handleInboxAction}
+              onMarkRead={handleInboxMarkRead}
             />
           </div>
 

@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────────────────────
 
 export type Urgency = 'CRITICAL' | 'URGENT' | 'ROUTINE'
+export type InboxStatus = 'UNREAD' | 'READ' | 'ACTIONED'
 export type InteractionStatus = 'HANDLED' | 'CALLBACK_REQUIRED' | 'ESCALATED' | 'PENDING' | 'BOOKING_REQUESTED'
 export type EnquiryType = 'APPOINTMENT' | 'URGENT_CONCERN' | 'GENERAL_ENQUIRY' | 'CALLBACK_REQUEST' | 'EMERGENCY' | 'PRICING' | 'MEDICATION'
 export type IntakeSource = 'VOICE_AI' | 'WEB_CHAT' | 'PHONE' | 'FRONT_DESK' | 'REFERRAL'
@@ -58,6 +59,22 @@ export interface FollowUpItem {
   type: FollowUpType
   receivedAt: string
   phone: string
+}
+
+export interface CallInboxItem {
+  id:              string
+  callerName:      string
+  callerPhone:     string
+  petName:         string
+  petSpecies:      string
+  summary:         string
+  aiDetail:        string
+  actionRequired:  string
+  urgency:         Urgency
+  status:          InboxStatus
+  coverageReason:  CoverageReason
+  createdAt:       string
+  callDurationSeconds?: number
 }
 
 export interface HandoverItem {
@@ -351,6 +368,86 @@ export const STAFF_MEMBERS: StaffMember[] = [
   { id: 's2', name: 'Sarah Kim', role: 'Head Receptionist', available: false, avatar: 'SarahKim' },
   { id: 's3', name: 'Dr. James Miller', role: 'Veterinarian', available: true, avatar: 'DrMiller' },
   { id: 's4', name: 'Priya Nguyen', role: 'Veterinary Nurse', available: true, avatar: 'PriyaNguyen' },
+]
+
+// ─── Call Inbox ───────────────────────────────────────────────
+
+export const INITIAL_INBOX: CallInboxItem[] = [
+  {
+    id:             'ci-1',
+    callerName:     'James Park',
+    callerPhone:    '+61 4 4567 8901',
+    petName:        'Max',
+    petSpecies:     'Canine',
+    summary:        'Dog collapsed in backyard. Not responding normally. Gums pale.',
+    aiDetail:       'Caller reported Max (Border Collie, approx. 4 years) collapsed suddenly in the backyard and is not responding normally. Caller noted gums appear pale. Suspected cardiovascular or toxic emergency. Owner is driving in now — estimated arrival 10 minutes. Clinic should prepare for urgent intake.',
+    actionRequired: 'Prepare for urgent intake — owner en route (~10 mins)',
+    urgency:        'CRITICAL',
+    status:         'UNREAD',
+    coverageReason: 'LUNCH_BREAK',
+    createdAt:      '21m ago',
+    callDurationSeconds: 148,
+  },
+  {
+    id:             'ci-2',
+    callerName:     'Tom Rafferty',
+    callerPhone:    '+61 4 2345 6789',
+    petName:        'Whiskers',
+    petSpecies:     'Feline',
+    summary:        'Cat not eating for 2 days. Hiding under bed. Caller very concerned.',
+    aiDetail:       'Whiskers (Domestic Shorthair, ~4 years) has not eaten for approximately 48 hours and has been hiding under the bed — a change from her normal behaviour. Caller Tom is very concerned. Anorexia combined with behavioural withdrawal could indicate systemic illness, pain, dental disease, or stress response. Same-day assessment recommended.',
+    actionRequired: 'Call back — same-day triage appointment',
+    urgency:        'URGENT',
+    status:         'UNREAD',
+    coverageReason: 'LUNCH_BREAK',
+    createdAt:      '14m ago',
+    callDurationSeconds: 203,
+  },
+  {
+    id:             'ci-3',
+    callerName:     'Karen Watson',
+    callerPhone:    '+61 4 1234 5678',
+    petName:        'Buddy',
+    petSpecies:     'Canine',
+    summary:        'Requesting annual check-up for 3yr Labrador. Flexible on timing.',
+    aiDetail:       'Karen is requesting an annual wellness check-up for Buddy, a 3-year-old male Labrador. No clinical concerns raised. Owner is flexible on appointment time and happy to take the next available slot. Contact details captured.',
+    actionRequired: 'Book annual check-up — any available slot',
+    urgency:        'ROUTINE',
+    status:         'UNREAD',
+    coverageReason: 'LUNCH_BREAK',
+    createdAt:      '8m ago',
+    callDurationSeconds: 87,
+  },
+  {
+    id:             'ci-4',
+    callerName:     'Sarah Mitchell',
+    callerPhone:    '+61 4 3456 7890',
+    petName:        '—',
+    petSpecies:     '—',
+    summary:        'Asked about desexing costs for a 6-month-old female cat.',
+    aiDetail:       'General pricing enquiry. Sarah is considering desexing her 6-month-old female cat and wanted to know the approximate cost. No pet health concern raised. Contact details captured. Caller is happy to receive a callback with a quote.',
+    actionRequired: 'Call back with desexing quote',
+    urgency:        'ROUTINE',
+    status:         'READ',
+    coverageReason: 'LUNCH_BREAK',
+    createdAt:      '18m ago',
+    callDurationSeconds: 64,
+  },
+  {
+    id:             'ci-5',
+    callerName:     'Lisa Chen',
+    callerPhone:    '+61 4 5678 9012',
+    petName:        'Mochi',
+    petSpecies:     'Feline',
+    summary:        'Querying whether to give flea treatment before tonight\'s appointment.',
+    aiDetail:       'Lisa is calling about Mochi (British Shorthair), who has a scheduled appointment tonight. She wanted to know whether to administer the monthly flea treatment this morning as usual, or hold it until after the visit. AI advised to hold the treatment and let the vet confirm at the appointment. Message flagged for vet.',
+    actionRequired: 'Confirm with vet — hold flea treatment until appointment',
+    urgency:        'ROUTINE',
+    status:         'ACTIONED',
+    coverageReason: 'LUNCH_BREAK',
+    createdAt:      '29m ago',
+    callDurationSeconds: 55,
+  },
 ]
 
 // ─── Legacy exports (for backward compat) ────────────────────
