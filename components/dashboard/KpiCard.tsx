@@ -1,10 +1,13 @@
+import type { StatTrend } from '@/app/api/stats/route'
+
 interface KpiCardProps {
-  title: string
-  value: string | number
-  context: string
-  icon: React.ReactNode
+  title:        string
+  value:        string | number
+  context:      string
+  icon:         React.ReactNode
   accentColor?: 'teal' | 'amber' | 'red' | 'green' | 'slate'
-  pulse?: boolean
+  pulse?:       boolean
+  trend?:       StatTrend | null
 }
 
 const accentMap = {
@@ -15,9 +18,16 @@ const accentMap = {
   slate: { icon: 'text-slate-400',  border: 'border-l-slate-300',  value: 'text-slate-700' },
 }
 
+const trendStyle: Record<NonNullable<StatTrend['direction']>, string> = {
+  up:   'text-emerald-600',
+  down: 'text-rose-500',
+  same: 'text-slate-400',
+  new:  'text-[#0891b2]',
+}
+
 export default function KpiCard({
   title, value, context, icon,
-  accentColor = 'teal', pulse = false,
+  accentColor = 'teal', pulse = false, trend,
 }: KpiCardProps) {
   const a = accentMap[accentColor]
 
@@ -30,10 +40,18 @@ export default function KpiCard({
           <span className={`${a.icon} opacity-50`}>{icon}</span>
         </div>
       </div>
+
       <div className="flex items-baseline gap-1.5">
         <p className={`text-[28px] font-bold leading-none tracking-tight ${a.value}`}>{value}</p>
         <p className="text-[11px] text-slate-400">{context}</p>
       </div>
+
+      {/* Trend line */}
+      {trend?.direction != null && trend.label && (
+        <p className={`mt-2 text-[11px] font-medium leading-none ${trendStyle[trend.direction]}`}>
+          {trend.label}
+        </p>
+      )}
     </div>
   )
 }

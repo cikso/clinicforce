@@ -16,6 +16,14 @@ import {
 } from '@/data/mock-dashboard'
 import type { ToastItem } from '@/components/dashboard/ToastContainer'
 import { MODE_CONFIG } from '@/components/dashboard/CoverageStatusCard'
+import type { StatTrend } from '@/app/api/stats/route'
+
+interface StatsResponse {
+  callsCovered:   { today: number; trend: StatTrend }
+  urgentFlagged:  { today: number; trend: StatTrend }
+  unreadMessages: { today: number; trend: StatTrend }
+  coverageActive: { todayMins: number; trend: StatTrend }
+}
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
@@ -24,8 +32,9 @@ export default function DashboardClient() {
   const [mode,        setMode]        = useState<CoverageMode | null>(null)
   const [activatedAt, setActivatedAt] = useState<string | null>(null)
   const [toasts,      setToasts]      = useState<ToastItem[]>([])
+  const [stats,       setStats]       = useState<StatsResponse | null>(null)
 
-  // ── Sync mode from Supabase on mount ────────────────────────
+  // ── Sync mode + stats from Supabase on mount ───────────────
   useEffect(() => {
     fetch(`/api/clinic/${DEMO_CLINIC_ID}/mode`)
       .then(r => r.json())
@@ -33,6 +42,11 @@ export default function DashboardClient() {
         setMode(data.mode ?? null)
         setActivatedAt(data.activatedAt ?? null)
       })
+      .catch(() => {})
+
+    fetch('/api/stats')
+      .then(r => r.json())
+      .then((data: StatsResponse) => setStats(data))
       .catch(() => {})
   }, [])
 
@@ -52,12 +66,12 @@ export default function DashboardClient() {
     return () => clearInterval(interval)
   }, [fetchInbox])
 
-  // ── KPIs ─────────────────────────────────────────────────────
-  const callsCovered   = inbox.length
-  const urgentFlagged  = inbox.filter(i => i.urgency === 'CRITICAL' || i.urgency === 'URGENT').length
-  const unreadMessages = inbox.filter(i => i.status === 'UNREAD').length
-  const totalMins      = COVERAGE_USAGE.reduce((s, u) => s + u.minutes, 0)
-  const hoursActive    = (totalMins / 60).toFixed(1)
+  // ── KPIs — prefer server stats, fall back to client counts ──
+  const callsCovered   = stats?.callsCovered.today   ?? inbox.length
+  const urgentFlagged  = stats?.urgentFlagged.today  ?? inbox.filter(i => i.urgency === 'CRITICAL' || i.urgency === 'URGENT').length
+  const unreadMessages = stats?.unreadMessages.today ?? inbox.filter(i => i.status === 'UNREAD').length
+  const coverageMins   = stats?.coverageActive.todayMins ?? COVERAGE_USAGE.reduce((s, u) => s + u.minutes, 0)
+  const hoursActive    = (coverageMins / 60).toFixed(1)
 
   // ── Helpers ──────────────────────────────────────────────────
   const addToast = useCallback((message: string, variant: ToastItem['variant'] = 'success') => {
@@ -139,6 +153,7 @@ export default function DashboardClient() {
             context="today"
             icon={<Phone className="w-4 h-4" />}
             accentColor="teal"
+            trend={stats?.callsCovered.trend}
           />
           <KpiCard
             title="Urgent Flagged"
@@ -147,6 +162,7 @@ export default function DashboardClient() {
             icon={<AlertTriangle className="w-4 h-4" />}
             accentColor="red"
             pulse={urgentFlagged > 0}
+            trend={stats?.urgentFlagged.trend}
           />
           <KpiCard
             title="Unread Messages"
@@ -155,6 +171,7 @@ export default function DashboardClient() {
             icon={<MessageSquare className="w-4 h-4" />}
             accentColor="amber"
             pulse={unreadMessages > 0}
+            trend={stats?.unreadMessages.trend}
           />
           <KpiCard
             title="Coverage Active"
@@ -162,6 +179,7 @@ export default function DashboardClient() {
             context="today"
             icon={<Clock className="w-4 h-4" />}
             accentColor="slate"
+            trend={stats?.coverageActive.trend}
           />
         </div>
 
