@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Phone, Calendar, CheckCheck, ChevronDown, ChevronUp, Inbox, ArrowRight } from 'lucide-react'
+import { Phone, Calendar, CheckCheck, ChevronDown, ChevronUp, Inbox, ArrowRight, Clock } from 'lucide-react'
 import type { CallInboxItem } from '@/data/mock-dashboard'
 
 type Filter = 'all' | 'unread' | 'urgent'
@@ -17,6 +17,13 @@ const AVATAR_COLORS = [
   'bg-[#0f2744]', 'bg-[#0891b2]', 'bg-violet-700',
   'bg-emerald-700', 'bg-rose-700', 'bg-amber-700',
 ]
+
+function formatDuration(secs: number | null | undefined): string | null {
+  if (!secs || secs <= 0) return null
+  const m = Math.floor(secs / 60)
+  const s = secs % 60
+  return m > 0 ? `${m}m ${s}s` : `${s}s`
+}
 
 function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -148,13 +155,21 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
                     <p className="text-xs text-slate-500 truncate leading-relaxed">{item.summary}</p>
                   </div>
 
-                  {/* Right: badge + time */}
+                  {/* Right: badge + time + duration */}
                   <div className="flex flex-col items-end gap-1.5 shrink-0 ml-2">
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold ${urg.bg} ${urg.text} ${urg.border}`}>
                       <span className={`w-1 h-1 rounded-full ${urg.dot}`} />
                       {urg.label}
                     </span>
-                    <span className="text-[10px] text-slate-400 whitespace-nowrap">{item.createdAt}</span>
+                    <div className="flex items-center gap-1.5">
+                      {formatDuration(item.callDurationSeconds) && (
+                        <span className="flex items-center gap-0.5 text-[10px] text-slate-300">
+                          <Clock className="w-2.5 h-2.5" />
+                          {formatDuration(item.callDurationSeconds)}
+                        </span>
+                      )}
+                      <span className="text-[10px] text-slate-400 whitespace-nowrap">{item.createdAt}</span>
+                    </div>
                   </div>
 
                   {/* Chevron */}
