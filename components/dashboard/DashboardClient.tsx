@@ -12,47 +12,31 @@ import {
   INITIAL_COVERAGE_SESSION,
   COVERAGE_USAGE,
   type CallInboxItem,
-  type CoverageSession,
-  type CoverageReason,
+  type CoverageMode,
 } from '@/data/mock-dashboard'
 import type { ToastItem } from '@/components/dashboard/ToastContainer'
+import { MODE_CONFIG } from '@/components/dashboard/CoverageStatusCard'
 
-const REASON_LABELS: Record<CoverageReason, string> = {
-  LUNCH_BREAK:  'Lunch Break',
-  MEETING:      'Team Meeting',
-  SICK_LEAVE:   'Sick Leave',
-  OVERFLOW:     'Overflow Period',
-  AFTER_HOURS:  'After Hours',
-  MORNING_RUSH: 'Morning Rush',
-}
+const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
 export default function DashboardClient() {
-  const [inbox, setInbox]   = useState<CallInboxItem[]>(INITIAL_INBOX)
-  const [session, setSession] = useState<CoverageSession>(INITIAL_COVERAGE_SESSION)
-  const [toasts, setToasts]   = useState<ToastItem[]>([])
+  const [inbox,       setInbox]       = useState<CallInboxItem[]>(INITIAL_INBOX)
+  const [mode,        setMode]        = useState<CoverageMode | null>(null)
+  const [activatedAt, setActivatedAt] = useState<string | null>(null)
+  const [toasts,      setToasts]      = useState<ToastItem[]>([])
 
-  // ── Sync coverage state from Supabase on mount ───────────────
+  // ── Sync mode from Supabase on mount ────────────────────────
   useEffect(() => {
-    fetch('/api/coverage')
+    fetch(`/api/clinic/${DEMO_CLINIC_ID}/mode`)
       .then(r => r.json())
-      .then((data: { status: string; reason: string; started_at: string }) => {
-        if (data?.status === 'ACTIVE') {
-          setSession(prev => ({
-            ...prev,
-            status: 'ACTIVE',
-            reason: (data.reason as CoverageReason) ?? prev.reason,
-            startTime: data.started_at
-              ? new Date(data.started_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-              : prev.startTime,
-          }))
-        } else {
-          setSession(prev => ({ ...prev, status: 'INACTIVE' }))
-        }
+      .then((data: { mode: CoverageMode | null; activatedAt: string | null }) => {
+        setMode(data.mode ?? null)
+        setActivatedAt(data.activatedAt ?? null)
       })
       .catch(() => {})
   }, [])
 
-  // ── Poll inbox from Supabase every 30s ───────────────────────
+  // ── Poll inbox every 30s ─────────────────────────────────────
   const fetchInbox = useCallback(() => {
     fetch('/api/inbox')
       .then(r => r.json())
@@ -82,32 +66,41 @@ export default function DashboardClient() {
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000)
   }, [])
 
-  // ── Coverage handlers ─────────────────────────────────────────
-  const handleActivate = useCallback((reason: CoverageReason) => {
-    const startTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    setSession(prev => ({ ...prev, status: 'ACTIVE', reason, startTime, durationMinutes: 0 }))
-    addToast(`VetForce is now active — ${REASON_LABELS[reason]}`, 'success')
-    fetch('/api/coverage', {
-      method: 'POST',
+  const activatedAtLabel = activatedAt
+    ? new Date(activatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : null
+
+  // ── Mode handlers ─────────────────────────────────────────────
+  const handleModeSelect = useCallback((newMode: CoverageMode) => {
+    const now = new Date().toISOString()
+    setMode(newMode)
+    setActivatedAt(now)
+    addToast(`${MODE_CONFIG[newMode].label} coverage active`, 'success')
+    fetch(`/api/clinic/${DEMO_CLINIC_ID}/mode`, {
+      method:  'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reason }),
-    }).catch(() => console.warn('[coverage] Failed to persist activation'))
+      body:    JSON.stringify({ mode: newMode }),
+    }).catch(() => {})
   }, [addToast])
 
   const handleDeactivate = useCallback(() => {
-    setSession(prev => ({ ...prev, status: 'INACTIVE' }))
-    addToast('Coverage ended — reception back online', 'info')
-    fetch('/api/coverage', { method: 'DELETE' })
-      .catch(() => console.warn('[coverage] Failed to persist deactivation'))
+    setMode(null)
+    setActivatedAt(null)
+    addToast('Coverage deactivated — reception back online', 'info')
+    fetch(`/api/clinic/${DEMO_CLINIC_ID}/mode`, {
+      method:  'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ mode: null }),
+    }).catch(() => {})
   }, [addToast])
 
   // ── Inbox handlers ────────────────────────────────────────────
   const handleInboxMarkRead = useCallback((id: string) => {
     setInbox(prev => prev.map(i => i.id === id && i.status === 'UNREAD' ? { ...i, status: 'READ' } : i))
     fetch('/api/inbox', {
-      method: 'PATCH',
+      method:  'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status: 'READ' }),
+      body:    JSON.stringify({ id, status: 'READ' }),
     }).catch(() => {})
   }, [])
 
@@ -116,29 +109,25 @@ export default function DashboardClient() {
     if (!item) return
     setInbox(prev => prev.map(i => i.id === id ? { ...i, status: 'ACTIONED' } : i))
     fetch('/api/inbox', {
-      method: 'PATCH',
+      method:  'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status: 'ACTIONED' }),
+      body:    JSON.stringify({ id, status: 'ACTIONED' }),
     }).catch(() => {})
-    if (action === 'CALL_BACK') {
-      addToast(`Callback marked for ${item.callerName}`, 'success')
-    } else if (action === 'BOOK') {
-      addToast(`Booking request logged for ${item.petName}`, 'success')
-    } else {
-      addToast(`Marked done — ${item.callerName}`, 'success')
-    }
+    if (action === 'CALL_BACK')      addToast(`Callback marked for ${item.callerName}`, 'success')
+    else if (action === 'BOOK')      addToast(`Booking request logged for ${item.petName}`, 'success')
+    else                             addToast(`Marked done — ${item.callerName}`, 'success')
   }, [inbox, addToast])
 
   return (
     <PageShell
       title="Coverage Overview"
-      clinicName={session.clinicName}
+      clinicName={INITIAL_COVERAGE_SESSION.clinicName}
       coverage={{
-        status:    session.status,
-        reason:    session.reason,
-        startTime: session.status === 'ACTIVE' ? session.startTime : undefined,
+        status:    mode ? 'ACTIVE' : 'INACTIVE',
+        mode,
+        startTime: activatedAtLabel ?? undefined,
       }}
-      onNewCase={session.status === 'ACTIVE' ? handleDeactivate : undefined}
+      onNewCase={mode ? handleDeactivate : undefined}
     >
       <div className="space-y-5">
 
@@ -193,8 +182,9 @@ export default function DashboardClient() {
           {/* Right: Coverage Control */}
           <div className="col-span-12 xl:col-span-4">
             <CoverageStatusCard
-              session={session}
-              onActivate={handleActivate}
+              mode={mode}
+              activatedAtLabel={activatedAtLabel}
+              onModeSelect={handleModeSelect}
               onDeactivate={handleDeactivate}
             />
           </div>

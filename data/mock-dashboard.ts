@@ -8,6 +8,7 @@ export type InteractionStatus = 'HANDLED' | 'CALLBACK_REQUIRED' | 'ESCALATED' | 
 export type EnquiryType = 'APPOINTMENT' | 'URGENT_CONCERN' | 'GENERAL_ENQUIRY' | 'CALLBACK_REQUEST' | 'EMERGENCY' | 'PRICING' | 'MEDICATION'
 export type IntakeSource = 'VOICE_AI' | 'WEB_CHAT' | 'PHONE' | 'FRONT_DESK' | 'REFERRAL'
 export type CoverageReason = 'LUNCH_BREAK' | 'MEETING' | 'SICK_LEAVE' | 'OVERFLOW' | 'AFTER_HOURS' | 'MORNING_RUSH'
+export type CoverageMode   = 'DAYTIME' | 'LUNCH' | 'AFTER_HOURS'
 export type CoverageStatus = 'ACTIVE' | 'INACTIVE'
 export type FollowUpType = 'URGENT_CALLBACK' | 'ROUTINE_CALLBACK' | 'BOOKING_REQUEST' | 'MESSAGE_REVIEW'
 export type HandoverType = 'handled' | 'callback' | 'booking' | 'escalation' | 'coverage'

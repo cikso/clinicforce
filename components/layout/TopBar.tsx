@@ -1,32 +1,30 @@
-﻿'use client'
+'use client'
 
 import { Bell, Search, MapPin, Power } from 'lucide-react'
 import { mockAlerts } from '@/data/mock-alerts'
+import type { CoverageMode } from '@/data/mock-dashboard'
 
 const unacknowledgedCount = mockAlerts.filter((a) => !a.acknowledged).length
 
+const MODE_STATUS_LABELS: Record<CoverageMode, string> = {
+  DAYTIME:     'Daytime coverage active',
+  LUNCH:       'Lunch coverage active',
+  AFTER_HOURS: 'After-hours coverage active',
+}
+
 interface CoverageStatus {
-  status: 'ACTIVE' | 'INACTIVE'
-  reason?: string
+  status:     'ACTIVE' | 'INACTIVE'
+  mode?:      CoverageMode | null
   startTime?: string
 }
 
 interface TopBarProps {
-  title: string
-  subtitle?: string
+  title:             string
+  subtitle?:         string
   searchPlaceholder?: string
-  clinicName?: string
-  coverage?: CoverageStatus
-  onNewCase?: () => void
-}
-
-const REASON_LABELS: Record<string, string> = {
-  LUNCH_BREAK:  'Lunch Break',
-  MEETING:      'Team Meeting',
-  SICK_LEAVE:   'Sick Leave',
-  OVERFLOW:     'Overflow',
-  AFTER_HOURS:  'After Hours',
-  MORNING_RUSH: 'Morning Rush',
+  clinicName?:       string
+  coverage?:         CoverageStatus
+  onNewCase?:        () => void
 }
 
 export default function TopBar({
@@ -37,8 +35,7 @@ export default function TopBar({
   coverage,
   onNewCase,
 }: TopBarProps) {
-  const isActive    = coverage?.status === 'ACTIVE'
-  const reasonLabel = coverage?.reason ? (REASON_LABELS[coverage.reason] ?? coverage.reason) : ''
+  const isActive = coverage?.status === 'ACTIVE' && !!coverage?.mode
 
   return (
     <header className="h-[56px] bg-white flex items-center px-6 sticky top-0 z-10 shrink-0 border-b border-slate-200/80 gap-4">
@@ -59,17 +56,20 @@ export default function TopBar({
             ? 'bg-emerald-50 border-emerald-200/80 text-emerald-700'
             : 'bg-slate-50 border-slate-200 text-slate-500'
         }`}>
+          {/* Dot — pulsing teal when active, grey when off */}
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-            isActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'
+            isActive ? 'bg-[#0891b2] animate-pulse' : 'bg-slate-300'
           }`} />
-          {isActive ? (
+
+          {isActive && coverage.mode ? (
             <>
-              <span className="font-bold">VetForce ON</span>
-              {reasonLabel && <span className="text-emerald-600/70 font-normal"> · {reasonLabel}</span>}
-              {coverage.startTime && <span className="text-emerald-600/60 font-normal"> · {coverage.startTime}</span>}
+              <span className="font-bold">{MODE_STATUS_LABELS[coverage.mode]}</span>
+              {coverage.startTime && (
+                <span className="text-emerald-600/70 font-normal"> · since {coverage.startTime}</span>
+              )}
             </>
           ) : (
-            <span>VetForce <span className="font-bold">OFF</span> · Reception active</span>
+            <span>VetForce <span className="font-bold">off</span> · Reception active</span>
           )}
         </div>
       )}
@@ -108,7 +108,7 @@ export default function TopBar({
           </button>
         </div>
 
-        {/* End Coverage button — only visible when coverage is active */}
+        {/* End Coverage — only when a mode is active */}
         {isActive && (
           <button
             onClick={onNewCase}

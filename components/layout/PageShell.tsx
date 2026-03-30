@@ -1,8 +1,9 @@
 ﻿import TopBar from './TopBar'
+import type { CoverageMode } from '@/data/mock-dashboard'
 
 interface CoverageStatus {
-  status: 'ACTIVE' | 'INACTIVE'
-  reason?: string
+  status:    'ACTIVE' | 'INACTIVE'
+  mode?:     CoverageMode | null
   startTime?: string
 }
 
