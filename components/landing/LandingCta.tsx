@@ -1,70 +1,70 @@
-﻿'use client'
-import { motion } from 'motion/react'
-import { ArrowRight, Sparkles } from 'lucide-react'
-import Link from 'next/link'
-import { LandingButton } from './LandingButton'
+import { LandingReveal } from './LandingReveal'
 
 export function LandingCta() {
   return (
-    <section className="py-32 md:py-48 bg-[#F4F2ED] relative overflow-hidden">
-      <div className="bg-noise" />
-      <div className="container mx-auto px-6 max-w-[1400px] relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-[#0A0A0A] rounded-[3rem] p-12 md:p-24 relative overflow-hidden shadow-2xl"
-        >
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]" />
-          <div className="bg-noise opacity-20" />
+    <section style={{ maxWidth: 1300, margin: '0 auto', padding: '0 48px 120px' }}>
+      <LandingReveal>
+        <div style={{
+          background: '#161C2E',
+          border: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: 32, padding: '80px',
+          textAlign: 'center',
+          position: 'relative', overflow: 'hidden',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+        }}>
+          {/* Top glow */}
+          <div aria-hidden style={{ position: 'absolute', top: -120, left: '50%', transform: 'translateX(-50%)', width: 600, height: 300, background: 'radial-gradient(ellipse, rgba(0,200,150,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
-          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#E25F38]/10 rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/4" />
+          <h2 style={{ fontSize: 'clamp(36px, 4vw, 60px)', fontWeight: 800, letterSpacing: '-3px', lineHeight: 1.0, color: '#F0F4FF', marginBottom: 20, position: 'relative' }}>
+            Your clinic.<br />Always open.
+          </h2>
 
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
-            <div className="max-w-2xl text-left">
-              <div className="flex items-center gap-4 mb-8">
-                <Sparkles className="w-5 h-5 text-[#E25F38]" />
-                <span className="micro-label text-[#E25F38] block">Ready to upgrade?</span>
-              </div>
-              <h2 className="text-[4rem] md:text-[6rem] lg:text-[7.5rem] font-medium text-[#F4F2ED] mb-8 tracking-[-0.03em] leading-[0.85] text-balance">
-                Ready to give your clinic uninterrupted front desk coverage?
-              </h2>
-              <p className="text-xl md:text-2xl text-white/50 mb-12 leading-relaxed font-light text-balance max-w-lg">
-                VetForce handles every call with professionalism — so your team never misses what matters.
-              </p>
+          <p style={{ fontSize: 18, color: '#8B95B0', marginBottom: 40, fontWeight: 400, maxWidth: 500, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.6, position: 'relative' }}>
+            Start with one location. See results in the first week. No long-term commitment required.
+          </p>
 
-              <div className="flex flex-col sm:flex-row gap-6 items-start">
-                <LandingButton size="lg" variant="accent" className="group w-full sm:w-auto text-lg px-10 h-16">
-                  Book a Demo
-                  <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </LandingButton>
-                <LandingButton size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white text-lg px-10 h-16">
-                  See It in Action
-                </LandingButton>
-                <Link
-                  href="/overview"
-                  className="inline-flex items-center justify-center h-16 px-10 text-lg rounded-full border border-white/20 text-white/70 font-semibold hover:bg-white/10 transition-colors"
-                >
-                  View the Dashboard →
-                </Link>
-              </div>
-            </div>
-
-            <div className="hidden lg:block relative w-full max-w-md aspect-square">
-              <div className="absolute inset-0 border border-white/10 rounded-full animate-[spin_60s_linear_infinite]" />
-              <div className="absolute inset-8 border border-white/5 rounded-full animate-[spin_40s_linear_infinite_reverse]" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-32 h-32 bg-[#E25F38]/20 rounded-full blur-2xl" />
-                <div className="absolute w-16 h-16 bg-[#F4F2ED] rounded-full shadow-[0_0_40px_rgba(255,255,255,0.3)] flex items-center justify-center">
-                  <div className="w-4 h-4 rounded-full bg-[#E25F38] animate-pulse" />
-                </div>
-              </div>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, flexWrap: 'wrap', position: 'relative' }}>
+            <a
+              href="#"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                background: '#00C896', color: '#080B12',
+                fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 700,
+                padding: '14px 28px', borderRadius: 12, border: 'none',
+                textDecoration: 'none', letterSpacing: '-0.3px',
+                transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
+                boxShadow: '0 0 40px rgba(0,200,150,0.2)',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#00daa8'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,200,150,0.3)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#00C896'; e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 0 40px rgba(0,200,150,0.2)' }}
+            >
+              Book a Demo
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </a>
+            <a
+              href="/dashboard"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                color: '#8B95B0', fontSize: 15, fontWeight: 500,
+                fontFamily: "'Outfit', sans-serif",
+                padding: '14px 24px', borderRadius: 12, textDecoration: 'none',
+                border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.03)',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#F0F4FF'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = '#8B95B0'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+            >
+              View the dashboard
+            </a>
           </div>
-        </motion.div>
-      </div>
+
+          <p style={{ marginTop: 20, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#4A5470', letterSpacing: '0.5px', position: 'relative' }}>
+            NO SETUP FEES &nbsp;·&nbsp; NO CONTRACTS &nbsp;·&nbsp; LIVE IN &lt;24 HOURS
+          </p>
+        </div>
+      </LandingReveal>
     </section>
   )
 }

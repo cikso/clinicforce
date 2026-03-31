@@ -1,51 +1,89 @@
-﻿'use client'
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import { LandingButton } from './LandingButton'
-import { LayoutDashboard } from 'lucide-react'
+'use client'
 
 export function LandingNavbar() {
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
   return (
-    <header className="fixed top-0 w-full z-50 px-4 py-6 pointer-events-none flex justify-center">
-      <div className={cn(
-        'pointer-events-auto flex items-center justify-between transition-all duration-500 rounded-full border relative overflow-hidden',
-        scrolled
-          ? 'bg-white/80 backdrop-blur-xl border-black/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] px-6 py-3 w-full max-w-5xl'
-          : 'bg-transparent border-transparent px-6 py-4 w-full max-w-7xl'
-      )}>
-        <div className="flex items-center gap-3 relative z-10">
-          <div className="w-8 h-8 bg-[#0A0A0A] rounded-lg flex items-center justify-center shadow-sm">
-            <div className="w-2.5 h-2.5 bg-[#E25F38] rounded-full" />
-          </div>
-          <span className="font-bold text-xl tracking-tight text-[#0A0A0A]">VetForce</span>
+    <nav
+      style={{
+        position: 'fixed',
+        top: 16,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: 'calc(100% - 48px)',
+        maxWidth: 1200,
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '14px 24px',
+        background: 'rgba(8,11,18,0.72)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.12)',
+        borderRadius: 16,
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 24px 48px rgba(0,0,0,0.4)',
+      }}
+    >
+      {/* Logo */}
+      <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 17, letterSpacing: '-0.3px', color: '#F0F4FF', textDecoration: 'none' }}>
+        <div style={{ width: 28, height: 28, background: '#00C896', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M8 3v10M3 8h10" stroke="#080B12" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
         </div>
+        VetForce
+      </a>
 
-        <nav className="hidden md:flex items-center gap-8 relative z-10">
-          <a href="#features" className="text-sm font-medium text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors">Platform</a>
-          <a href="#solution" className="text-sm font-medium text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors">Coverage</a>
-          <a href="#how-it-works" className="text-sm font-medium text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors">How It Works</a>
-        </nav>
+      {/* Links */}
+      <ul style={{ display: 'flex', alignItems: 'center', gap: 32, listStyle: 'none', margin: 0, padding: 0 }}>
+        {(['Platform', 'How It Works', 'Outcomes'] as const).map(label => (
+          <li key={label}>
+            <a
+              href={`#${label.toLowerCase().replace(/ /g, '-')}`}
+              style={{ color: '#8B95B0', textDecoration: 'none', fontSize: 14, fontWeight: 500, transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#F0F4FF')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#8B95B0')}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
 
-        <div className="flex items-center gap-3 relative z-10">
-          <Link
-            href="/overview"
-            className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0A3622] text-[#F4F2ED] text-sm font-semibold hover:bg-[#125235] transition-colors shadow-sm"
-          >
-            <LayoutDashboard className="w-4 h-4" />
-            Clinic Login
-          </Link>
-          <LandingButton size="sm" className="hidden sm:flex bg-[#0A0A0A] text-[#F4F2ED] hover:bg-[#0A0A0A]/90 rounded-full px-6">Book Demo</LandingButton>
+      {/* Status pill + CTA */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          fontSize: 11, fontFamily: "'JetBrains Mono', monospace", fontWeight: 500,
+          color: '#00C896',
+          background: 'rgba(0,200,150,0.08)', border: '1px solid rgba(0,200,150,0.2)',
+          padding: '5px 12px', borderRadius: 100, letterSpacing: '0.5px',
+        }}>
+          <span style={{ width: 6, height: 6, background: '#00C896', borderRadius: '50%', display: 'inline-block', animation: 'lp-pulse-dot 2s ease-in-out infinite' }} />
+          SYSTEM ONLINE
         </div>
+        <a
+          href="#"
+          style={{ color: '#8B95B0', background: 'none', border: 'none', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer', padding: '8px 16px', borderRadius: 10, textDecoration: 'none', transition: 'color 0.2s' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#F0F4FF')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#8B95B0')}
+        >
+          Log in
+        </a>
+        <a
+          href="#"
+          style={{
+            background: '#00C896', color: '#080B12', border: 'none',
+            fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 700,
+            cursor: 'pointer', padding: '9px 20px', borderRadius: 10,
+            letterSpacing: '-0.2px', textDecoration: 'none',
+            transition: 'background 0.2s, transform 0.15s, box-shadow 0.2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#00daa8'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,200,150,0.25)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#00C896'; e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+        >
+          Book Demo
+        </a>
       </div>
-    </header>
+    </nav>
   )
 }

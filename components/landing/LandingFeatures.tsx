@@ -1,196 +1,213 @@
-﻿'use client'
-import { motion } from 'motion/react'
-import { Mic, Activity, FileText, Settings, Database, ArrowUpRight } from 'lucide-react'
+'use client'
+
+import { useRef } from 'react'
+import { LandingReveal } from './LandingReveal'
+
+const FEATURES = [
+  {
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2a8 8 0 100 16A8 8 0 0010 2z" stroke="#00C896" strokeWidth="1.5"/>
+        <path d="M10 6v4l3 2" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    title: 'Always-on Coverage',
+    desc: 'Activates the moment reception is unavailable. Lunch, meetings, sick days, after-hours. Every call answered, every time.',
+    span: 5,
+  },
+  {
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 3L3 17h14L10 3z" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M10 9v4M10 14.5v.5" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    title: 'Urgency Detection',
+    desc: 'Distinguishes a routine booking from a GDV presentation. Flags critical cases and escalates immediately.',
+    span: 4,
+  },
+  {
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <rect x="3" y="4" width="14" height="12" rx="2" stroke="#00C896" strokeWidth="1.5"/>
+        <path d="M7 9h6M7 12h4" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    title: 'Structured Handoff Notes',
+    desc: 'Every call ends with a clean SOAP-style summary — ready for your team to act on, not decode.',
+    span: 4,
+  },
+  {
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M4 4h12v9a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" stroke="#00C896" strokeWidth="1.5"/>
+        <path d="M8 17h4" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    title: 'PMS Integration',
+    desc: 'Designed to sync intake notes directly into Ezyvet, Provet Cloud, and leading practice management systems.',
+    span: 4,
+  },
+]
+
+const METRICS = [
+  { label: 'Response time', value: '0.4', unit: 'seconds' },
+  { label: 'Calls answered', value: '100', unit: 'percent' },
+  { label: 'Setup time', value: '<1', unit: 'business day' },
+  { label: 'Contracts required', value: 'None', unit: '' },
+  { label: 'Uptime', value: '99.9', unit: 'percent' },
+]
 
 export function LandingFeatures() {
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  const handleMouseMove = (i: number) => (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRefs.current[i]
+    if (!card) return
+    const rect = card.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1)
+    const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1)
+    card.style.setProperty('--mx', x + '%')
+    card.style.setProperty('--my', y + '%')
+  }
+
   return (
-    <section className="py-32 md:py-48 bg-white relative overflow-hidden" id="features">
-      <div className="bg-noise" />
-      <div className="container mx-auto px-6 max-w-[1400px] relative z-10">
-        <div className="mb-32 max-w-3xl">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="h-px w-12 bg-[#0A0A0A]/20" />
-            <span className="micro-label text-[#0A0A0A]/50 block">PURPOSE-BUILT FOR VETERINARY</span>
-          </div>
-          <h2 className="text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] font-medium text-[#0A0A0A] mb-8 tracking-[-0.03em] leading-[0.85] text-balance">
-            Everything your front desk does. Available on demand.
+    <section id="platform" style={{ maxWidth: 1300, margin: '0 auto', padding: '0 48px 120px' }}>
+      <LandingReveal>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'end', marginBottom: 56 }}>
+          <h2 style={{ fontSize: 'clamp(36px, 4vw, 58px)', fontWeight: 800, letterSpacing: '-2.5px', lineHeight: 1.05, color: '#F0F4FF', margin: 0 }}>
+            Built for the<br />operational reality<br />of vet medicine.
           </h2>
-          <p className="text-xl md:text-2xl text-[#0A0A0A]/60 leading-relaxed font-light max-w-2xl">
-            Not just a chatbot. A complete front desk capability — coverage, intake, routine handling, and clean handoff — purpose-built for veterinary clinics.
+          <p style={{ fontSize: 16, lineHeight: 1.7, color: '#8B95B0', alignSelf: 'end', margin: 0 }}>
+            Not a generic chatbot with a pet theme. Every feature is designed around the specific workflows, urgencies, and communication styles of veterinary front desks.
           </p>
         </div>
+      </LandingReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
-          {/* Feature 1 - Massive Hero Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="md:col-span-12 bg-[#F4F2ED] rounded-[2.5rem] p-10 md:p-16 lg:p-20 border border-black/5 flex flex-col lg:flex-row gap-16 items-center relative"
+      {/* Bento grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gridAutoRows: 240, gap: 16 }}>
+        {/* Card 1 — span 5 */}
+        <LandingReveal className="contents">
+          <div
+            ref={el => { cardRefs.current[0] = el }}
+            onMouseMove={handleMouseMove(0)}
+            style={{ gridColumn: 'span 5', gridRow: 'span 1', ...bentoCardStyle }}
           >
-            <div className="flex-1 z-20 max-w-xl">
-              <div className="w-16 h-16 rounded-full bg-white border border-black/5 flex items-center justify-center mb-10 shadow-sm relative">
-                <Mic className="w-6 h-6 text-[#0A0A0A]" />
-                <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#E25F38] border-2 border-[#F4F2ED]" />
+            <BentoSpotlight />
+            <div style={bentoIconStyle}>{FEATURES[0].icon}</div>
+            <div style={bentoTitleStyle}>{FEATURES[0].title}</div>
+            <div style={bentoDescStyle}>{FEATURES[0].desc}</div>
+          </div>
+        </LandingReveal>
+
+        {/* Card 2 — span 7 with mini chat */}
+        <LandingReveal delay={100} className="contents">
+          <div
+            ref={el => { cardRefs.current[1] = el }}
+            onMouseMove={handleMouseMove(1)}
+            style={{ gridColumn: 'span 7', gridRow: 'span 1', ...bentoCardStyle, position: 'relative' }}
+          >
+            <BentoSpotlight />
+            <div style={{ maxWidth: 260 }}>
+              <div style={bentoIconStyle}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M4 10h12M4 6h8M4 14h6" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
               </div>
-              <h3 className="text-4xl md:text-5xl font-medium text-[#0A0A0A] mb-6 tracking-tight">Instant Call Coverage</h3>
-              <p className="text-[#0A0A0A]/60 leading-relaxed font-light mb-10 text-xl">
-                Activates whenever your team is unavailable — lunch, meetings, sick leave, or after-hours. Every call is answered professionally, with full client and pet detail capture.
-              </p>
-              <ul className="space-y-5">
-                {['Flexible activation — any time reception is unavailable', 'Client & pet detail capture on every call', 'Routine enquiry handling — appointments, hours, services'].map((item, i) => (
-                  <li key={i} className="flex items-center gap-4 text-base font-medium text-[#0A0A0A]/80">
-                    <div className="w-2 h-2 rounded-full bg-[#0A3622]/20" /> {item}
-                  </li>
-                ))}
-              </ul>
+              <div style={bentoTitleStyle}>Natural Conversation Intake</div>
+              <div style={bentoDescStyle}>Captures owner name, pet name, breed, age, and reason for call — through natural conversation, not a phone tree.</div>
             </div>
+            {/* Mini chat UI */}
+            <div style={{ position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', gap: 8, width: 200 }}>
+              <div style={{ padding: '10px 14px', borderRadius: 10, fontSize: 12, lineHeight: 1.5, background: '#141928', color: '#8B95B0', border: '1px solid rgba(255,255,255,0.07)', alignSelf: 'flex-start', maxWidth: 170 }}>
+                "Hi, I'm calling about my cat Mango — she hasn't eaten in two days."
+              </div>
+              <div style={{ padding: '10px 14px', borderRadius: 10, fontSize: 11, lineHeight: 1.5, background: 'rgba(0,200,150,0.1)', color: '#00C896', border: '1px solid rgba(0,200,150,0.2)', alignSelf: 'flex-end', maxWidth: 160, fontFamily: "'JetBrains Mono', monospace" }}>
+                INTAKE CAPTURED — ESCALATING
+              </div>
+            </div>
+          </div>
+        </LandingReveal>
 
-            <div className="flex-1 w-full relative h-[400px] lg:h-[500px] flex items-center justify-center lg:justify-end z-10">
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#0A3622]/5 to-transparent rounded-full blur-3xl" />
+        {/* Cards 3–5 — span 4 each */}
+        {FEATURES.slice(1).map((f, i) => (
+          <LandingReveal key={f.title} delay={(i + 1) * 100} className="contents">
+            <div
+              ref={el => { cardRefs.current[i + 2] = el }}
+              onMouseMove={handleMouseMove(i + 2)}
+              style={{ gridColumn: 'span 4', gridRow: 'span 1', ...bentoCardStyle }}
+            >
+              <BentoSpotlight />
+              <div style={bentoIconStyle}>{f.icon}</div>
+              <div style={bentoTitleStyle}>{f.title}</div>
+              <div style={bentoDescStyle}>{f.desc}</div>
+            </div>
+          </LandingReveal>
+        ))}
 
-              <div className="relative w-full max-w-md bg-white rounded-[2rem] border border-black/5 premium-shadow p-8 lg:-mr-12 lg:translate-x-8">
-                <div className="flex items-center justify-between mb-8 pb-6 border-b border-black/5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-sm font-semibold text-[#0A0A0A] uppercase tracking-wider">Live Call</span>
+        {/* Metrics bar — span 12 */}
+        <LandingReveal className="contents">
+          <div style={{
+            gridColumn: 'span 12',
+            background: '#161C2E', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 24,
+            display: 'flex', alignItems: 'center', gap: 0,
+            padding: '28px 36px', height: 'auto',
+            flexWrap: 'wrap',
+          }}>
+            {METRICS.map((m, i) => (
+              <div key={m.label} style={{ display: 'flex', alignItems: 'center' }}>
+                {i > 0 && <div style={{ width: 1, height: 52, background: 'rgba(255,255,255,0.07)', margin: '0 32px' }} />}
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.5px', color: '#F0F4FF', marginBottom: 4 }}>{m.label}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 36, fontWeight: 500, color: i === 0 ? '#00C896' : '#F0F4FF', letterSpacing: '-2px', lineHeight: 1 }}>
+                    {m.value}
+                    {m.unit && <span style={{ fontSize: 16, color: '#4A5470', marginLeft: 4, letterSpacing: 0 }}>{m.unit}</span>}
                   </div>
-                  <span className="text-sm font-mono text-[#0A0A0A]/40">02:14</span>
                 </div>
-
-                <div className="space-y-6">
-                  <div className="flex gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E8E5DF] shrink-0" />
-                    <div className="bg-[#F4F2ED] p-4 rounded-2xl rounded-tl-none text-sm text-[#0A0A0A]/80 leading-relaxed">
-                      &quot;My dog just ate a whole bar of dark chocolate about 10 minutes ago. He&apos;s a 20lb terrier.&quot;
-                    </div>
-                  </div>
-                  <div className="flex gap-4 flex-row-reverse">
-                    <div className="w-8 h-8 rounded-full bg-[#0A3622] shrink-0 flex items-center justify-center">
-                      <Mic className="w-3 h-3 text-white" />
-                    </div>
-                    <div className="bg-[#0A3622] text-white p-4 rounded-2xl rounded-tr-none text-sm leading-relaxed">
-                      &quot;Of course — I&apos;ll take a note of that and let the team know. Can I take your name and your dog&apos;s details so we can have everything ready when you arrive?&quot;
-                    </div>
-                  </div>
-                </div>
               </div>
-            </div>
-          </motion.div>
-
-          {/* Feature 2 - Asymmetrical Dark Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="md:col-span-12 lg:col-span-5 bg-[#0A3622] rounded-[2.5rem] p-10 md:p-14 border border-black/5 text-white flex flex-col justify-between relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-            <div className="relative z-10">
-              <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center mb-10 border border-white/10 backdrop-blur-md">
-                <Activity className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-3xl font-medium mb-6 tracking-tight">Urgent Call Detection</h3>
-              <p className="text-white/60 leading-relaxed font-light text-lg">
-                When something urgent comes in, VetForce recognises it and escalates appropriately — routing time-sensitive cases to the right person without delay.
-              </p>
-            </div>
-            <div className="mt-16 p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-md relative z-10">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-sm text-white/60 font-medium tracking-wide uppercase">Urgency Level</span>
-                <span className="text-sm font-bold text-[#E25F38] bg-[#E25F38]/10 px-3 py-1 rounded-full">Critical</span>
-              </div>
-              <div className="w-full bg-black/20 rounded-full h-2 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{ width: '95%' }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.5, delay: 0.5, ease: 'easeOut' }}
-                  className="bg-[#E25F38] h-full rounded-full"
-                />
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Feature 3 - Asymmetrical Light Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="md:col-span-12 lg:col-span-7 bg-[#E8E5DF] rounded-[2.5rem] p-10 md:p-14 border border-black/5 flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-10 shadow-sm border border-black/5">
-                <FileText className="w-6 h-6 text-[#0A0A0A]" />
-              </div>
-              <h3 className="text-3xl font-medium text-[#0A0A0A] mb-6 tracking-tight">Callback Summaries</h3>
-              <p className="text-[#0A0A0A]/60 leading-relaxed font-light text-lg max-w-lg">
-                Every handled call ends with a clean handoff note sent to your team — caller name, pet details, reason for call, and next step. No voicemail, no scribbled messages.
-              </p>
-            </div>
-
-            <div className="mt-12 bg-white rounded-2xl p-6 border border-black/5 premium-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#F4F2ED] flex items-center justify-center">
-                    <span className="text-xs font-bold text-[#0A0A0A]">SOAP</span>
-                  </div>
-                  <span className="text-sm font-medium text-[#0A0A0A]">Auto-generated Note</span>
-                </div>
-                <ArrowUpRight className="w-4 h-4 text-[#0A0A0A]/40" />
-              </div>
-              <div className="space-y-3">
-                <div className="h-2 w-3/4 bg-[#E8E5DF] rounded-full" />
-                <div className="h-2 w-full bg-[#E8E5DF] rounded-full" />
-                <div className="h-2 w-5/6 bg-[#E8E5DF] rounded-full" />
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Feature 4 & 5 - Bottom Row */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="md:col-span-6 lg:col-span-6 bg-[#F4F2ED] rounded-[2.5rem] p-10 md:p-12 border border-black/5 relative overflow-hidden group"
-          >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#0A3622]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 transition-transform duration-700 group-hover:scale-110" />
-            <div className="relative z-10">
-              <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-8 shadow-sm border border-black/5">
-                <Settings className="w-5 h-5 text-[#0A0A0A]" />
-              </div>
-              <h3 className="text-2xl font-medium text-[#0A0A0A] mb-4 tracking-tight">Routine Enquiry Handling</h3>
-              <p className="text-[#0A0A0A]/60 leading-relaxed font-light text-lg">
-                Handles appointment requests, opening hours, pricing questions, and service enquiries — freeing your team to focus on the patients in front of them.
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="md:col-span-6 lg:col-span-6 bg-[#F4F2ED] rounded-[2.5rem] p-10 md:p-12 border border-black/5 lg:mt-12 relative overflow-hidden group"
-          >
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-[#E25F38]/5 rounded-full blur-3xl translate-y-1/3 translate-x-1/3 transition-transform duration-700 group-hover:scale-110" />
-            <div className="relative z-10">
-              <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-8 shadow-sm border border-black/5">
-                <Database className="w-5 h-5 text-[#0A0A0A]" />
-              </div>
-              <h3 className="text-2xl font-medium text-[#0A0A0A] mb-4 tracking-tight">Practice Management Integration</h3>
-              <p className="text-[#0A0A0A]/60 leading-relaxed font-light text-lg">
-                Designed to securely sync with leading Practice Management Software — logging intake summaries directly into the patient record.
-              </p>
-            </div>
-          </motion.div>
-
-        </div>
+            ))}
+          </div>
+        </LandingReveal>
       </div>
     </section>
   )
+}
+
+function BentoSpotlight() {
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: 'radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(0,200,150,0.04), transparent 60%)',
+      pointerEvents: 'none', borderRadius: 'inherit',
+      opacity: 0, transition: 'opacity 0.3s',
+    }} className="bento-spotlight" />
+  )
+}
+
+const bentoCardStyle: React.CSSProperties = {
+  background: '#161C2E',
+  border: '1px solid rgba(255,255,255,0.07)',
+  borderRadius: 24,
+  padding: 32,
+  overflow: 'hidden',
+  position: 'relative',
+  transition: 'border-color 0.3s, box-shadow 0.3s',
+}
+
+const bentoIconStyle: React.CSSProperties = {
+  width: 40, height: 40,
+  background: 'rgba(0,200,150,0.15)',
+  border: '1px solid rgba(0,200,150,0.15)',
+  borderRadius: 12,
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  marginBottom: 20,
+}
+
+const bentoTitleStyle: React.CSSProperties = {
+  fontSize: 17, fontWeight: 700, letterSpacing: '-0.5px',
+  color: '#F0F4FF', marginBottom: 8,
+}
+
+const bentoDescStyle: React.CSSProperties = {
+  fontSize: 14, lineHeight: 1.6, color: '#8B95B0', fontWeight: 400,
 }

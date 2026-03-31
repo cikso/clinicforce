@@ -33,6 +33,13 @@ function avatarColor(name: string) {
   return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length]
 }
 
+const EMPTY_SUMMARY = ['', 'no summary available.', 'call summary not available.']
+
+function summaryIsEmpty(s: string | null | undefined): boolean {
+  if (!s) return true
+  return EMPTY_SUMMARY.includes(s.trim().toLowerCase())
+}
+
 interface CallInboxProps {
   items:       CallInboxItem[]
   onAction:    (id: string, action: 'CALL_BACK' | 'BOOK' | 'DONE') => void
@@ -152,7 +159,14 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-500 truncate leading-relaxed">{item.summary}</p>
+                    {summaryIsEmpty(item.summary) ? (
+                      <div className="h-2.5 bg-slate-100 rounded-full animate-pulse w-3/4 mt-0.5" />
+                    ) : (
+                      <p className="text-xs text-slate-500 truncate leading-relaxed">{item.summary}</p>
+                    )}
+                    {item.callerPhone && item.callerPhone !== '—' && (
+                      <p className="text-[10px] text-slate-400 mt-0.5">{item.callerPhone}</p>
+                    )}
                   </div>
 
                   {/* Right: badge + time + duration */}

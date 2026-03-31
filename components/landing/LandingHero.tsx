@@ -1,172 +1,247 @@
-﻿'use client'
-import { motion } from 'motion/react'
-import { ArrowRight, Activity, ShieldCheck, Clock } from 'lucide-react'
-import Link from 'next/link'
-import { LandingButton } from './LandingButton'
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+
+const WAVE_HEIGHTS = [8,14,20,28,18,32,24,16,10,22,34,18,12,26,20,14,30,22,16,10,18,28,20,12,24,32,18,14,22,16,10,28,20,14,18,24,16,12,26,20]
+const AI_TEXT = "This sounds like it could be a GDV — I'm flagging this as urgent and notifying the team right now. Can you head to the clinic immediately?"
 
 export function LandingHero() {
-  const customEase = [0.16, 1, 0.3, 1] as const
+  const [timerSecs, setTimerSecs]   = useState(134)
+  const [aiTyped, setAiTyped]       = useState('')
+  const [showTyping, setShowTyping] = useState(true)
+  const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null)
+  const typeRef   = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => setTimerSecs(s => s + 1), 1000)
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [])
+
+  useEffect(() => {
+    typeRef.current = setTimeout(() => {
+      setShowTyping(false)
+      let i = 0
+      const type = () => {
+        if (i < AI_TEXT.length) {
+          setAiTyped(AI_TEXT.slice(0, ++i))
+          typeRef.current = setTimeout(type, 28)
+        }
+      }
+      type()
+    }, 1800)
+    return () => { if (typeRef.current) clearTimeout(typeRef.current) }
+  }, [])
+
+  const mm = String(Math.floor(timerSecs / 60)).padStart(2, '0')
+  const ss = String(timerSecs % 60).padStart(2, '0')
 
   return (
-    <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden bg-[#F4F2ED]">
-      <div className="bg-noise" />
-      <div className="container mx-auto px-6 max-w-[1400px] relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-0 items-center">
-          <div className="lg:col-span-7 max-w-3xl relative z-30 lg:pr-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: customEase }}
-              className="mb-10 flex items-center gap-4"
-            >
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0A3622]/5 border border-[#0A3622]/10">
-                <div className="w-2 h-2 rounded-full bg-[#0A3622] animate-pulse" />
-                <span className="micro-label text-[#0A3622] tracking-wide">System Online</span>
+    <section style={{
+      minHeight: '100dvh',
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      alignItems: 'center',
+      maxWidth: 1300,
+      margin: '0 auto',
+      padding: '120px 48px 80px',
+      gap: 80,
+      position: 'relative',
+    }}>
+      {/* Background glows */}
+      <div aria-hidden style={{ position: 'absolute', top: '20%', left: '-10%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(0,200,150,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <div aria-hidden style={{ position: 'absolute', top: '40%', right: '-5%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(100,120,255,0.04) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+      {/* ── LEFT ── */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500,
+          letterSpacing: '1.5px', textTransform: 'uppercase', color: '#00C896',
+          marginBottom: 28,
+          animation: 'lp-fade-up 0.6s ease forwards 0.2s', opacity: 0,
+        }}>
+          <span style={{ width: 24, height: 1, background: '#00C896', display: 'inline-block' }} />
+          Purpose-built for veterinary clinics
+        </div>
+
+        <h1 style={{
+          fontSize: 'clamp(44px, 5.5vw, 76px)', fontWeight: 800,
+          lineHeight: 1.0, letterSpacing: '-3px', color: '#F0F4FF',
+          marginBottom: 24,
+          animation: 'lp-fade-up 0.7s ease forwards 0.35s', opacity: 0,
+        }}>
+          The front desk<br />that never<br /><em style={{ fontStyle: 'normal', color: '#00C896' }}>clocks out.</em>
+        </h1>
+
+        <p style={{
+          fontSize: 18, fontWeight: 400, lineHeight: 1.65, color: '#8B95B0',
+          maxWidth: 480, marginBottom: 40,
+          animation: 'lp-fade-up 0.7s ease forwards 0.5s', opacity: 0,
+        }}>
+          VetForce handles every call your team can't take — intake, triage, urgency detection, and clean handoff. Installed in a day. Live the same week.
+        </p>
+
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
+          animation: 'lp-fade-up 0.7s ease forwards 0.65s', opacity: 0,
+        }}>
+          <a
+            href="#"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: '#00C896', color: '#080B12',
+              fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 700,
+              padding: '14px 28px', borderRadius: 12, border: 'none',
+              textDecoration: 'none', letterSpacing: '-0.3px',
+              transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
+              boxShadow: '0 0 40px rgba(0,200,150,0.2)',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#00daa8'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,200,150,0.3)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#00C896'; e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 0 40px rgba(0,200,150,0.2)' }}
+          >
+            Book a Demo
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+          <a
+            href="#"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              color: '#8B95B0', fontSize: 15, fontWeight: 500,
+              fontFamily: "'Outfit', sans-serif",
+              padding: '14px 24px', borderRadius: 12, textDecoration: 'none',
+              border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.03)',
+              transition: 'all 0.2s', letterSpacing: '-0.2px',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#F0F4FF'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#8B95B0'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M6.5 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/>
+            </svg>
+            Watch 90s demo
+          </a>
+        </div>
+
+        {/* Stat row */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 0,
+          marginTop: 52, paddingTop: 40,
+          borderTop: '1px solid rgba(255,255,255,0.07)',
+          animation: 'lp-fade-up 0.7s ease forwards 0.8s', opacity: 0,
+        }}>
+          {[
+            { num: '0.4s', label: 'Avg. response time' },
+            { num: '100%', label: 'Call answer rate' },
+            { num: '24/7', label: 'Active coverage' },
+          ].map((stat, i) => (
+            <div key={stat.num} style={{ display: 'flex', alignItems: 'center' }}>
+              {i > 0 && <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,0.12)', margin: '0 32px' }} />}
+              <div>
+                <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-1px', color: '#F0F4FF', lineHeight: 1 }}>{stat.num}</div>
+                <div style={{ fontSize: 12, color: '#4A5470', fontWeight: 500, marginTop: 4, letterSpacing: '0.2px' }}>{stat.label}</div>
               </div>
-              <div className="h-px w-12 bg-[#0A0A0A]/10 hidden sm:block" />
-              <span className="micro-label text-[#0A0A0A]/50 hidden sm:block">Built for the operational realities of veterinary medicine.</span>
-            </motion.div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.1, ease: customEase }}
-              className="text-[4rem] md:text-[5.5rem] lg:text-[7rem] leading-[0.85] font-bold text-[#0A0A0A] mb-10 tracking-[-0.04em]"
-            >
-              The on-demand front desk for modern veterinary clinics.
-            </motion.h1>
+      {/* ── RIGHT — Live call card ── */}
+      <div style={{ position: 'relative', animation: 'lp-fade-left 0.9s cubic-bezier(0.16,1,0.3,1) forwards 0.4s', opacity: 0 }}>
+        <div style={{
+          background: '#161C2E', border: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: 24, padding: 28,
+          boxShadow: '0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07)',
+          position: 'relative', overflow: 'hidden',
+        }}>
+          <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(0,200,150,0.4), transparent)' }} />
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2, ease: customEase }}
-              className="text-xl md:text-2xl text-[#0A0A0A]/60 mb-14 max-w-xl leading-relaxed font-light"
-            >
-              Whether your team is at lunch, in a meeting, or off the clock — VetForce answers, captures, and handles every call.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.3, ease: customEase }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
-              <a href="#how-it-works" className="inline-flex items-center justify-center h-16 px-10 text-lg rounded-full bg-[#0A0A0A] text-[#F4F2ED] font-semibold hover:bg-[#0A0A0A]/80 transition-colors group">
-                See How It Works
-                <ArrowRight className="ml-4 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </a>
-              <Link href="/overview" className="inline-flex items-center justify-center h-16 px-10 text-lg rounded-full border border-black/10 text-[#0A0A0A]/70 font-semibold hover:bg-black/5 transition-colors">
-                View Dashboard →
-              </Link>
-            </motion.div>
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, color: '#00C896', letterSpacing: '0.5px' }}>
+              <span style={{ position: 'relative', width: 8, height: 8, display: 'inline-block' }}>
+                <span style={{ position: 'absolute', inset: 0, background: '#00C896', borderRadius: '50%' }} />
+                <span style={{ position: 'absolute', inset: -3, border: '1.5px solid #00C896', borderRadius: '50%', opacity: 0.4, animation: 'lp-ring-pulse 2s ease-in-out infinite' }} />
+              </span>
+              LIVE CALL — HANDLING
+            </div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: '#4A5470' }}>{mm}:{ss}</div>
           </div>
 
-          <div className="lg:col-span-5 relative lg:h-[800px] flex items-center justify-center lg:justify-end lg:-ml-20 mt-16 lg:mt-0">
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1.2, delay: 0.2, ease: customEase }}
-              className="relative w-full max-w-[550px] aspect-[3/4] z-20"
-            >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-[#0A3622]/5 rounded-full blur-[120px] pointer-events-none" />
+          {/* Meta grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+            {[{ label: 'PATIENT', value: 'Buster, Great Dane' }, { label: 'OWNER', value: 'Michael Tan' }].map(m => (
+              <div key={m.label} style={{ background: '#141928', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '14px 16px' }}>
+                <div style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: '#4A5470', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 5 }}>{m.label}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#F0F4FF', letterSpacing: '-0.3px' }}>{m.value}</div>
+              </div>
+            ))}
+          </div>
 
-              <motion.div
-                animate={{ y: [0, -15, 0], rotate: [0, -1, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute top-0 right-0 w-[90%] h-[75%] bg-[#0A0A0A] rounded-[2.5rem] p-8 shadow-2xl border border-white/10 z-10 overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:24px_24px]" />
-                <div className="relative z-10">
-                  <div className="flex justify-between items-center mb-10">
-                    <span className="micro-label text-white/40">Coverage Active</span>
-                    <div className="flex gap-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#E25F38] animate-pulse" />
-                    </div>
-                  </div>
-                  <div className="space-y-6">
-                    <div className="h-px w-full bg-white/10 relative overflow-hidden">
-                      <motion.div className="absolute top-0 left-0 h-full w-1/4 bg-[#E25F38]" animate={{ x: ['-100%', '400%'] }} transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }} />
-                    </div>
-                    <div className="flex items-start gap-5">
-                      <Activity className="w-6 h-6 text-white/30 shrink-0 mt-1" />
-                      <div>
-                        <p className="text-[11px] text-white/50 font-mono mb-2 uppercase tracking-wider">Live Call Analysis</p>
-                        <p className="text-base text-white/90 font-medium leading-relaxed">&quot;He&apos;s been retching but nothing is coming up, and his stomach feels hard.&quot;</p>
-                      </div>
-                    </div>
-                    <div className="mt-10 p-5 bg-white/[0.03] rounded-2xl border border-white/5">
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="text-xs text-white/50 font-medium tracking-wide">Priority Level</span>
-                        <span className="text-sm font-bold text-[#E25F38]">98%</span>
-                      </div>
-                      <div className="w-full bg-white/5 rounded-full h-1.5">
-                        <div className="bg-[#E25F38] h-1.5 rounded-full w-[98%]" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+          {/* Waveform */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3, height: 32, marginBottom: 20 }}>
+            {WAVE_HEIGHTS.map((h, i) => (
+              <div key={i} style={{
+                width: 3, height: h, background: '#00C896', borderRadius: 2,
+                transformOrigin: 'center',
+                animation: `lp-wave ${1.2 + (i % 4) * 0.15}s ease-in-out infinite ${(i * 0.06).toFixed(2)}s`,
+              }} />
+            ))}
+          </div>
 
-              <motion.div
-                animate={{ y: [0, 12, 0], rotate: [0, 1, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                className="absolute bottom-12 left-0 w-[85%] bg-white/95 backdrop-blur-2xl rounded-[2rem] p-7 shadow-[0_24px_48px_-12px_rgba(10,10,10,0.08)] border border-black/5 z-20"
-              >
-                <div className="flex items-center gap-4 mb-6 pb-5 border-b border-black/5">
-                  <div className="w-12 h-12 rounded-full bg-[#E25F38]/10 flex items-center justify-center shrink-0">
-                    <ShieldCheck className="w-6 h-6 text-[#E25F38]" />
+          {/* Transcript */}
+          <div style={{ background: '#0D1220', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: 18, marginBottom: 20 }}>
+            <div style={{ display: 'flex', gap: 10, marginBottom: 14, alignItems: 'flex-start' }}>
+              <div style={{ width: 26, height: 26, borderRadius: 7, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '0.5px', background: 'rgba(255,200,100,0.15)', color: '#FFC864', border: '1px solid rgba(255,200,100,0.2)', marginTop: 1 }}>MT</div>
+              <div style={{ fontSize: 13, lineHeight: 1.55, color: '#D4BF8A', flex: 1, paddingTop: 2 }}>&ldquo;He&rsquo;s been retching but nothing&rsquo;s coming up — his stomach feels hard and distended.&rdquo;</div>
+            </div>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              <div style={{ width: 26, height: 26, borderRadius: 7, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '0.5px', background: 'rgba(0,200,150,0.15)', color: '#00C896', border: '1px solid rgba(0,200,150,0.2)', marginTop: 1 }}>VF</div>
+              <div style={{ fontSize: 13, lineHeight: 1.55, color: '#8B95B0', flex: 1, paddingTop: 2, minHeight: 22 }}>
+                {showTyping ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    {[0, 0.2, 0.4].map((delay, i) => (
+                      <span key={i} style={{ width: 5, height: 5, background: '#00C896', borderRadius: '50%', display: 'inline-block', animation: `lp-typing 1.2s ease-in-out infinite ${delay}s`, opacity: 0.5 }} />
+                    ))}
                   </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-[#0A0A0A] tracking-tight">Coverage Active</h3>
-                    <p className="text-xs text-[#0A0A0A]/50 mt-0.5">Caller Handled — Message Sent to Clinic</p>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-[#0A0A0A]/40 font-medium">Patient</span>
-                    <span className="text-sm font-medium text-[#0A0A0A]">Buster (Great Dane, 6y)</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-[#0A0A0A]/40 font-medium">Owner</span>
-                    <span className="text-sm font-medium text-[#0A0A0A]">Michael T. — Callback requested</span>
-                  </div>
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-xs text-[#0A0A0A]/40 font-medium">Action</span>
-                    <span className="text-xs font-semibold text-[#0A3622] bg-[#0A3622]/5 px-2.5 py-1 rounded-md">Summary sent to front desk</span>
-                  </div>
-                </div>
-              </motion.div>
+                ) : aiTyped}
+              </div>
+            </div>
+          </div>
 
-              <motion.div
-                animate={{ y: [0, -8, 0], x: [0, 5, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="absolute top-1/3 -left-12 bg-white rounded-2xl p-4 shadow-[0_24px_48px_-12px_rgba(10,10,10,0.08)] border border-black/5 z-30 flex items-center gap-3"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#E8E5DF] flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-[#0A0A0A]/60" />
-                </div>
-                <div>
-                  <p className="micro-label text-[#0A0A0A]/40 mb-0.5">Response Time</p>
-                  <p className="text-sm font-semibold text-[#0A0A0A]">0.4 Seconds</p>
-                </div>
-              </motion.div>
+          {/* Urgency */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: 'rgba(0,200,150,0.06)', border: '1px solid rgba(0,200,150,0.15)', borderRadius: 12 }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#4A5470', letterSpacing: '0.8px', textTransform: 'uppercase' }}>URGENCY ASSESSMENT</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 80, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{ height: '100%', background: '#00C896', borderRadius: 2, width: 0, animation: 'lp-fill-bar 1.2s cubic-bezier(0.16,1,0.3,1) forwards 1.2s' }} />
+              </div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: '#00C896' }}>HIGH</div>
+            </div>
+          </div>
+        </div>
 
-              <motion.div
-                animate={{ y: [0, 8, 0], x: [0, -5, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
-                className="absolute -top-6 left-8 bg-white rounded-2xl p-5 shadow-[0_24px_48px_-12px_rgba(10,10,10,0.08)] border border-black/5 z-40 flex items-center gap-5"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-[#0A0A0A] mb-1">VetForce Coverage</p>
-                  <p className="text-[11px] text-[#0A0A0A]/50 font-medium">Active (Lunch Hour)</p>
-                </div>
-                <div className="w-12 h-6 bg-[#0A3622] rounded-full relative shadow-inner">
-                  <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
-                </div>
-              </motion.div>
-            </motion.div>
+        {/* Floating notif */}
+        <div style={{
+          position: 'absolute', bottom: -18, right: 24,
+          background: '#0D1220', border: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: 14, padding: '12px 16px',
+          display: 'flex', alignItems: 'center', gap: 10,
+          boxShadow: '0 16px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)',
+          animation: 'lp-float-in 0.7s cubic-bezier(0.16,1,0.3,1) forwards 1.4s',
+          opacity: 0, transform: 'translateY(10px)',
+        }}>
+          <div style={{ width: 32, height: 32, background: 'rgba(0,200,150,0.15)', border: '1px solid rgba(0,200,150,0.2)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 5l5 4 5-4" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <rect x="2" y="3" width="12" height="10" rx="2" stroke="#00C896" strokeWidth="1.5"/>
+            </svg>
+          </div>
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#F0F4FF' }}>Summary sent to Dr. Patel</div>
+            <div style={{ fontSize: 11, color: '#4A5470', marginTop: 1 }}>Intake note + urgency flag — just now</div>
           </div>
         </div>
       </div>

@@ -1,69 +1,45 @@
-﻿export function LandingFooter() {
+export function LandingFooter() {
   return (
-    <footer className="bg-[#F4F2ED] pt-32 pb-12 border-t border-black/5 relative overflow-hidden">
-      <div className="bg-noise" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000002_1px,transparent_1px),linear-gradient(to_bottom,#00000002_1px,transparent_1px)] bg-[size:24px_24px]" />
-      <div className="container mx-auto px-6 max-w-[1400px] relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-24">
-          <div className="col-span-1 md:col-span-4 lg:col-span-5">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-[#0A0A0A] flex items-center justify-center text-[#F4F2ED] shadow-sm">
-                <div className="w-3 h-3 bg-[#E25F38] rounded-full" />
-              </div>
-              <span className="font-bold text-2xl tracking-tight text-[#0A0A0A]">VetForce</span>
-            </div>
-            <p className="text-lg text-[#0A0A0A]/60 leading-relaxed max-w-sm font-light mb-8">
-              VetForce. The AI front desk for veterinary clinics.
-            </p>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full border border-black/5 flex items-center justify-center hover:bg-white transition-colors cursor-pointer">
-                <span className="text-sm font-medium text-[#0A0A0A]/60">X</span>
-              </div>
-              <div className="w-12 h-12 rounded-full border border-black/5 flex items-center justify-center hover:bg-white transition-colors cursor-pointer">
-                <span className="text-sm font-medium text-[#0A0A0A]/60">in</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-span-1 md:col-span-2 lg:col-span-2">
-            <h4 className="micro-label text-[#0A0A0A]/40 mb-6">Product</h4>
-            <ul className="space-y-4">
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Features</a></li>
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Coverage Logic</a></li>
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Integrations</a></li>
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Security</a></li>
-            </ul>
-          </div>
-
-          <div className="col-span-1 md:col-span-2 lg:col-span-2">
-            <h4 className="micro-label text-[#0A0A0A]/40 mb-6">Company</h4>
-            <ul className="space-y-4">
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">About Us</a></li>
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Careers</a></li>
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Contact</a></li>
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Partners</a></li>
-            </ul>
-          </div>
-
-          <div className="col-span-1 md:col-span-4 lg:col-span-3">
-            <h4 className="micro-label text-[#0A0A0A]/40 mb-6">Legal</h4>
-            <ul className="space-y-4">
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Privacy Policy</a></li>
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">Terms of Service</a></li>
-              <li><a href="#" className="text-[#0A0A0A]/70 hover:text-[#0A0A0A] transition-colors font-light">HIPAA Compliance</a></li>
-            </ul>
-          </div>
+    <footer style={{
+      borderTop: '1px solid rgba(255,255,255,0.07)',
+      padding: 48,
+      maxWidth: 1300,
+      margin: '0 auto',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      flexWrap: 'wrap',
+      gap: 24,
+    }}>
+      {/* Brand */}
+      <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 15, color: '#F0F4FF', textDecoration: 'none', letterSpacing: '-0.2px' }}>
+        <div style={{ width: 28, height: 28, background: '#00C896', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M8 3v10M3 8h10" stroke="#080B12" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
         </div>
+        VetForce
+      </a>
 
-        <div className="border-t border-black/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-sm text-[#0A0A0A]/40 font-light">
-            © {new Date().getFullYear()} VetForce Inc. All rights reserved.
-          </p>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-[#0A3622] animate-pulse" />
-            <span className="text-sm text-[#0A0A0A]/40 font-light">All systems operational</span>
-          </div>
-        </div>
+      {/* Links */}
+      <ul style={{ display: 'flex', gap: 32, listStyle: 'none', margin: 0, padding: 0 }}>
+        {['Platform', 'Integrations', 'Privacy', 'Contact'].map(label => (
+          <li key={label}>
+            <a
+              href="#"
+              style={{ fontSize: 13, color: '#4A5470', textDecoration: 'none', transition: 'color 0.2s', fontWeight: 500 }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#8B95B0')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#4A5470')}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      {/* Copyright */}
+      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#4A5470', letterSpacing: '0.5px' }}>
+        © 2026 VetForce &nbsp;·&nbsp; ALL SYSTEMS OPERATIONAL
       </div>
     </footer>
   )

@@ -1,98 +1,92 @@
-﻿'use client'
-import { motion } from 'motion/react'
-import { ShieldCheck, HeartPulse, Star, FileCheck } from 'lucide-react'
+import { LandingReveal } from './LandingReveal'
+
+const OUTCOMES = [
+  {
+    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.5 3.5 6.5-7" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+    num: '+23%',
+    label: 'Increase in captured booking requests',
+  },
+  {
+    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v5l3 2" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="8" r="5" stroke="#00C896" strokeWidth="1.5"/></svg>,
+    num: '4.1 hrs',
+    label: 'Saved per week for front desk staff',
+  },
+  {
+    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-5 3 3 2.5-3 2.5 5" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+    num: '$2,800',
+    label: 'Avg. recovered monthly revenue',
+  },
+  {
+    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2C4.69 2 2 4.69 2 8s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 3v3.5l2.5 1.5" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+    num: '< 1 day',
+    label: 'Time to go live after onboarding',
+  },
+  {
+    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5" stroke="#00C896" strokeWidth="1.5"/><path d="M6 8l1.5 1.5L10 6" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+    num: '0 missed',
+    label: 'Urgent cases since deployment',
+  },
+]
 
 export function LandingBenefits() {
-  const benefits = [
-    {
-      icon: ShieldCheck,
-      title: 'Fewer Missed Calls',
-      desc: 'Every call is answered — appointment requests, routine questions, and urgent cases alike. Nothing falls through the cracks.',
-    },
-    {
-      icon: HeartPulse,
-      title: 'Reduced Front Desk Pressure',
-      desc: 'Your team can focus on the patients in front of them, without being pulled away by a constantly ringing phone.',
-    },
-    {
-      icon: Star,
-      title: 'Better Client Experience',
-      desc: 'Callers always reach someone professional. No hold music, no voicemail — just a warm, responsive interaction every time.',
-    },
-    {
-      icon: FileCheck,
-      title: 'Cleaner Follow-Up',
-      desc: 'Structured intake notes, not scribbled messages. Return from lunch to organised, prioritised summaries ready to action.',
-    },
-    {
-      icon: ShieldCheck,
-      title: 'Urgent Cases Never Wait',
-      desc: 'When a call signals something time-sensitive, VetForce identifies it and escalates — so your team can respond before it becomes critical.',
-    },
-    {
-      icon: HeartPulse,
-      title: 'Professional Coverage Anytime',
-      desc: 'Lunch breaks, staff meetings, sick days, and holidays — VetForce keeps your front desk open and responsive around the clock.',
-    },
-  ]
-
   return (
-    <section className="py-32 md:py-48 bg-[#E8E5DF] border-y border-black/5 relative overflow-hidden">
-      <div className="bg-noise" />
-      <div className="container mx-auto px-6 max-w-[1400px] relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-24 items-start">
+    <section id="outcomes" style={{ maxWidth: 1300, margin: '0 auto', padding: '120px 48px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+      {/* Left — testimonial */}
+      <LandingReveal>
+        <h2 style={{ fontSize: 'clamp(36px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-2.5px', lineHeight: 1.08, color: '#F0F4FF', marginBottom: 48 }}>
+          Practices see the difference<br />in the first week.
+        </h2>
 
-          <div className="lg:sticky lg:top-32 max-w-xl">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="h-px w-12 bg-[#E25F38]/50" />
-              <span className="micro-label text-[#E25F38] block">CLINIC OUTCOMES</span>
-            </div>
-            <h2 className="text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] font-medium text-[#0A0A0A] mb-8 tracking-[-0.03em] leading-[0.85] text-balance">
-              The front desk that never calls in sick.
-            </h2>
-            <p className="text-xl md:text-2xl text-[#0A0A0A]/60 leading-relaxed font-light mb-12 max-w-lg">
-              The ROI of a smarter front door isn&apos;t just financial. It&apos;s measured in team morale, patient outcomes, and client loyalty.
-            </p>
-
-            <div className="hidden lg:flex items-center gap-6">
-              <div className="flex -space-x-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="w-12 h-12 rounded-full border-2 border-[#E8E5DF] bg-white overflow-hidden">
-                    <img src={`https://picsum.photos/seed/vet${i}/100/100`} alt="Vet" className="w-full h-full object-cover grayscale opacity-80" referrerPolicy="no-referrer" />
-                  </div>
-                ))}
-              </div>
-              <div className="text-sm font-medium text-[#0A0A0A]/60">
-                Trusted by 500+ clinics
-              </div>
+        <div style={{
+          background: '#161C2E',
+          border: '1px solid rgba(255,255,255,0.12)',
+          borderRadius: 24, padding: 40,
+          boxShadow: '0 24px 48px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)',
+          position: 'relative', overflow: 'hidden',
+        }}>
+          <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(0,200,150,0.3), transparent)' }} />
+          <p style={{ fontSize: 18, lineHeight: 1.65, color: '#F0F4FF', fontWeight: 400, marginBottom: 28, letterSpacing: '-0.2px' }}>
+            &ldquo;We were losing <strong style={{ color: '#00C896', fontWeight: 600 }}>3 to 5 bookings a day</strong> during lunch. VetForce was running by Wednesday afternoon, and by Friday our front desk coordinator said it felt like we&rsquo;d hired someone new.&rdquo;
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #2A3550, #1C2438)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 15, color: '#8B95B0' }}>SR</div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#F0F4FF', letterSpacing: '-0.2px' }}>Sarah Redmond</div>
+              <div style={{ fontSize: 12, color: '#4A5470', marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>Practice Manager — Northbridge Animal Hospital</div>
             </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
-            {benefits.map((benefit, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="group relative"
-              >
-                <div className="mb-6 relative inline-block">
-                  <div className="w-16 h-16 rounded-2xl bg-white border border-black/5 flex items-center justify-center shadow-sm relative z-10 transition-transform duration-500 group-hover:-translate-y-1 overflow-hidden">
-                    <div className="absolute inset-0 bg-noise opacity-10" />
-                    <benefit.icon className="w-7 h-7 text-[#0A3622] relative z-10" strokeWidth={1.5} />
-                  </div>
-                  <div className="absolute inset-0 bg-[#E25F38]/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-                <h3 className="text-2xl font-medium text-[#0A0A0A] mb-4 tracking-tight">{benefit.title}</h3>
-                <p className="text-lg text-[#0A0A0A]/60 leading-relaxed font-light">{benefit.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-
         </div>
-      </div>
+      </LandingReveal>
+
+      {/* Right — outcome pills */}
+      <LandingReveal delay={200}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {OUTCOMES.map(o => (
+            <div
+              key={o.num}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 16,
+                padding: '18px 20px',
+                background: '#161C2E',
+                border: '1px solid rgba(255,255,255,0.07)',
+                borderRadius: 14,
+                transition: 'border-color 0.2s',
+                cursor: 'default',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(0,200,150,0.2)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)')}
+            >
+              <div style={{ width: 36, height: 36, background: 'rgba(0,200,150,0.15)', border: '1px solid rgba(0,200,150,0.15)', borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {o.icon}
+              </div>
+              <div>
+                <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-1px', color: '#00C896', lineHeight: 1 }}>{o.num}</div>
+                <div style={{ fontSize: 13, color: '#8B95B0', marginTop: 2, fontWeight: 400 }}>{o.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </LandingReveal>
     </section>
   )
 }
