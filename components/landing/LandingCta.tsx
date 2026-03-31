@@ -1,3 +1,5 @@
+'use client'
+
 import { LandingReveal } from './LandingReveal'
 
 export function LandingCta() {

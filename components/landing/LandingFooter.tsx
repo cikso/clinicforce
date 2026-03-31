@@ -1,3 +1,5 @@
+'use client'
+
 export function LandingFooter() {
   return (
     <footer style={{
