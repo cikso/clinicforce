@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import type { FollowUpItem, FollowUpType, Urgency } from '@/data/mock-dashboard'
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -10,151 +9,105 @@ function getSupabase() {
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
-function mapUrgency(raw: string | undefined): Urgency {
-  const u = (raw ?? '').toUpperCase()
-  if (u === 'CRITICAL' || u === 'EMERGENCY') return 'CRITICAL'
-  if (u === 'URGENT') return 'URGENT'
+function mapUrgency(raw: string | undefined): 'CRITICAL' | 'URGENT' | 'ROUTINE' {
+  const u = (raw ?? '').toLowerCase()
+  if (u === 'emergency') return 'CRITICAL'
+  if (u === 'urgent')    return 'URGENT'
   return 'ROUTINE'
 }
 
-function mapFollowUpType(urgency: Urgency): FollowUpType {
-  if (urgency === 'CRITICAL' || urgency === 'URGENT') return 'URGENT_CALLBACK'
-  return 'ROUTINE_CALLBACK'
+function actionFromUrgency(urgency: 'CRITICAL' | 'URGENT' | 'ROUTINE'): string {
+  if (urgency === 'CRITICAL') return 'Urgent callback required — same-day assessment'
+  if (urgency === 'URGENT')   return 'Call back today to follow up'
+  return 'Review and action when available'
 }
 
-function mapEnquiryType(reason: string | undefined): string {
-  if (!reason) return 'GENERAL_ENQUIRY'
-  const r = reason.toUpperCase()
-  if (r.includes('EMERGENCY') || r.includes('BLEED') || r.includes('COLLAPSE')) return 'EMERGENCY'
-  if (r.includes('APPOINTMENT') || r.includes('BOOK')) return 'APPOINTMENT'
-  if (r.includes('MEDICATION') || r.includes('PRESCRIPTION')) return 'MEDICATION'
-  if (r.includes('PRICE') || r.includes('COST') || r.includes('FEE')) return 'PRICING'
-  if (r.includes('URGENT') || r.includes('SICK') || r.includes('VOMIT') || r.includes('PAIN')) return 'URGENT_CONCERN'
-  if (r.includes('CALLBACK') || r.includes('CALL BACK')) return 'CALLBACK_REQUEST'
-  return 'GENERAL_ENQUIRY'
-}
-
-// ─── POST — ElevenLabs webhook (handles both formats) ────────────────────────
-// Format 1: ElevenLabs post-call webhook (analysis.data_collection_results)
-// Format 2: Direct tool call payload (owner_name, pet_name, etc.)
+// ─── POST /api/callback ───────────────────────────────────────────────────────
+// Called by Sarah (ElevenLabs) when she invokes the create_callback_request tool
+// during a live call.
+//
+// Expected body:
+//   clinic_name   string
+//   owner_name    string
+//   pet_name      string  (optional)
+//   species       string  (optional)
+//   phone_number  string  (required)
+//   urgency       "routine" | "urgent" | "emergency"
+//   summary       string
+//
+// Writes to: call_inbox (Supabase)
+// Fields:    caller_name, caller_phone, pet_name, pet_species, summary,
+//            ai_detail, action_required, urgency, status, clinic_id
+// ─────────────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  let body: Record<string, unknown>
+
   try {
-    const body = await req.json()
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 })
+  }
 
-    let caller_name: string
-    let caller_phone: string
-    let patient_name: string
-    let species: string
-    let urgency_raw: string
-    let summary: string
-    let call_reason: string
-    let conversation_id: string | undefined
-    let enquiry_type: string
+  // Log every incoming payload — visible in Vercel logs during testing
+  console.log('[/api/callback] Incoming body:', JSON.stringify(body, null, 2))
 
-    // ── ElevenLabs post-call webhook format ──────────────────────────────────
-    if (body.type === 'post_call_transcription' && body.data) {
-      const data = body.data
-      const collected = data.analysis?.data_collection_results ?? {}
-      const get = (key: string) => collected[key]?.value ?? ''
+  try {
+    const owner_name   = (body.owner_name   as string | undefined) ?? 'Unknown caller'
+    const phone_number = (body.phone_number as string | undefined) ?? '—'
+    const pet_name     = (body.pet_name     as string | undefined) ?? '—'
+    const species      = (body.species      as string | undefined) ?? '—'
+    const urgencyRaw   = (body.urgency      as string | undefined)
+    const summary      = (body.summary      as string | undefined) ?? ''
 
-      caller_name    = get('owner_name') || get('caller_name') || 'Unknown'
-      caller_phone   = get('phone_number') || get('caller_phone') || ''
-      patient_name   = get('pet_name') || get('patient_name') || 'Unknown'
-      species        = get('species') || get('animal_type') || 'Unknown'
-      urgency_raw    = get('urgency') || get('priority') || 'ROUTINE'
-      call_reason    = get('call_reason') || get('reason') || get('concern') || ''
-      summary        = data.analysis?.transcript_summary || call_reason || 'Call completed'
-      conversation_id = data.conversation_id
-      enquiry_type   = mapEnquiryType(call_reason)
-    }
-    // ── Direct tool call format ──────────────────────────────────────────────
-    else if (body.owner_name || body.caller_name) {
-      caller_name    = body.owner_name || body.caller_name || 'Unknown'
-      caller_phone   = body.phone_number || body.caller_phone || ''
-      patient_name   = body.pet_name || body.patient_name || 'Unknown'
-      species        = body.species || 'Unknown'
-      urgency_raw    = body.urgency || 'ROUTINE'
-      call_reason    = body.call_reason || body.reason || ''
-      summary        = body.summary || call_reason || 'Call completed'
-      conversation_id = body.conversation_id
-      enquiry_type   = mapEnquiryType(call_reason || summary)
-    } else {
-      return NextResponse.json({ error: 'Unrecognised payload format' }, { status: 400 })
-    }
+    const urgency        = mapUrgency(urgencyRaw)
+    const actionRequired = actionFromUrgency(urgency)
 
-    if (!caller_name || caller_name === 'Unknown') {
-      caller_name = 'Unknown Caller'
-    }
-
-    const urgency = mapUrgency(urgency_raw)
     const supabase = getSupabase()
 
-    const { data, error } = await supabase
-      .from('calls')
+    const { error } = await supabase
+      .from('call_inbox')
       .insert({
-        clinic_id:        DEMO_CLINIC_ID,
-        conversation_id,
-        caller_name,
-        caller_phone,
-        patient_name,
-        species,
-        enquiry_type,
-        call_reason,
-        transcript:        summary,
-        ai_recommendation: summary,
-        risk:              urgency,
-        ai_confidence:     0.9,
-        status:            'NEW',
-        started_at:        new Date().toISOString(),
+        clinic_id:       DEMO_CLINIC_ID,
+        caller_name:     owner_name,
+        caller_phone:    phone_number,
+        pet_name,
+        pet_species:     species,
+        summary:         summary.slice(0, 300),
+        ai_detail:       summary,
+        action_required: actionRequired,
+        urgency,
+        status:          'UNREAD',
       })
-      .select('id')
-      .single()
 
     if (error) {
-      console.error('Callback insert error:', error)
-      return NextResponse.json({ error: 'Failed to save call', detail: error.message }, { status: 500 })
+      console.error('[/api/callback] Supabase insert error:', error)
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true, id: data.id })
+    return NextResponse.json({ success: true }, { status: 200 })
   } catch (err) {
-    console.error('Callback route error:', err)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    console.error('[/api/callback] Unexpected error:', message)
+    return NextResponse.json({ success: false, error: message }, { status: 500 })
   }
 }
 
-// ─── GET — fetch pending callbacks for Follow-Up Queue ───────────────────────
+// ─── GET — fetch unread inbox items for dashboard polling ─────────────────────
 export async function GET() {
   try {
     const supabase = getSupabase()
 
     const { data, error } = await supabase
-      .from('calls')
-      .select('id, caller_name, caller_phone, patient_name, species, transcript, risk, started_at')
+      .from('call_inbox')
+      .select('id, caller_name, caller_phone, pet_name, pet_species, summary, urgency, created_at')
       .eq('clinic_id', DEMO_CLINIC_ID)
-      .eq('status', 'NEW')
-      .order('started_at', { ascending: false })
+      .eq('status', 'UNREAD')
+      .order('created_at', { ascending: false })
       .limit(20)
 
-    if (error || !data) {
-      return NextResponse.json([])
-    }
+    if (error || !data) return NextResponse.json([])
 
-    const followUps: FollowUpItem[] = data.map((row) => {
-      const urgency = mapUrgency(row.risk as string)
-      return {
-        id:          row.id as string,
-        callerName:  (row.caller_name as string) || 'Unknown',
-        petName:     (row.patient_name as string) || 'Unknown',
-        species:     (row.species as string) || '',
-        summary:     (row.transcript as string) || '',
-        urgency,
-        type:        mapFollowUpType(urgency),
-        receivedAt:  new Date(row.started_at as string).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        phone:       (row.caller_phone as string) || '',
-      }
-    })
-
-    return NextResponse.json(followUps)
+    return NextResponse.json(data)
   } catch {
     return NextResponse.json([])
   }
