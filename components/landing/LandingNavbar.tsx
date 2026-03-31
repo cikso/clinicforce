@@ -62,7 +62,7 @@ export function LandingNavbar() {
           SYSTEM ONLINE
         </div>
         <a
-          href="/auth/login"
+          href="/overview"
           style={{ color: '#8B95B0', background: 'none', border: 'none', fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 500, cursor: 'pointer', padding: '8px 16px', borderRadius: 10, textDecoration: 'none', transition: 'color 0.2s' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#F0F4FF')}
           onMouseLeave={e => (e.currentTarget.style.color = '#8B95B0')}

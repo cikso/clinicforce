@@ -46,7 +46,7 @@ export function LandingCta() {
               </svg>
             </a>
             <a
-              href="/dashboard"
+              href="/overview"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 color: '#8B95B0', fontSize: 15, fontWeight: 500,
