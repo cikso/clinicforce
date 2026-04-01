@@ -33,34 +33,59 @@ export async function POST(req: NextRequest) {
 
   const urgency = detectUrgency(transcript, aiSummary)
 
-  // ── Try to UPDATE existing row created by create_callback_request tool ──
-  // Match on conversation_id if available, otherwise fall back to insert
+  // ── Step 1: Try exact conversation_id match ──────────────────
   if (conversationId) {
-    const { data: existing } = await supabase
+    const { data: exactMatch } = await supabase
       .from('call_inbox')
       .select('id')
       .eq('elevenlabs_conversation_id', conversationId)
       .eq('clinic_id', DEMO_CLINIC_ID)
-      .limit(1)
-      .single()
+      .maybeSingle()
 
-    if (existing) {
-      // Row already exists from tool call — just enrich it with webhook data
+    if (exactMatch) {
       await supabase
         .from('call_inbox')
         .update({
-          ai_detail:             aiSummary,
-          call_duration_seconds: callDurationSecs,
+          ai_detail:                  aiSummary,
+          call_duration_seconds:      callDurationSecs,
           urgency,
         })
-        .eq('id', existing.id)
+        .eq('id', exactMatch.id)
 
-      console.log('[inbox/webhook] Enriched existing row:', existing.id)
-      return NextResponse.json({ ok: true, action: 'updated' })
+      console.log('[inbox/webhook] Enriched exact match row:', exactMatch.id)
+      return NextResponse.json({ ok: true, action: 'updated_exact' })
+    }
+
+    // ── Step 2: Match on recent tool-created row (no conversation_id, within 10 mins) ──
+    const tenMinsAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+
+    const { data: recentMatch } = await supabase
+      .from('call_inbox')
+      .select('id')
+      .eq('clinic_id', DEMO_CLINIC_ID)
+      .is('elevenlabs_conversation_id', null)
+      .gte('created_at', tenMinsAgo)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (recentMatch) {
+      await supabase
+        .from('call_inbox')
+        .update({
+          ai_detail:                  aiSummary,
+          call_duration_seconds:      callDurationSecs,
+          urgency,
+          elevenlabs_conversation_id: conversationId,
+        })
+        .eq('id', recentMatch.id)
+
+      console.log('[inbox/webhook] Enriched recent tool-created row:', recentMatch.id)
+      return NextResponse.json({ ok: true, action: 'updated_recent' })
     }
   }
 
-  // ── No existing row — create one (call ended without tool being invoked) ──
+  // ── Step 3: No match found — insert new row (tool never fired) ──
   const phoneCall = (metadata.phone_call as Record<string, unknown>) ?? {}
   const callerPhone =
     (phoneCall.caller_id as string) ??
@@ -96,7 +121,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  console.log('[inbox/webhook] Created new row (no tool call found)')
+  console.log('[inbox/webhook] Created new row (tool never fired)')
   return NextResponse.json({ ok: true, action: 'inserted' })
 }
 
