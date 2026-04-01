@@ -9,11 +9,11 @@ import {
 import { cn } from '@/lib/utils'
 
 const PRIMARY_NAV = [
-  { label: 'Overview',  href: '/overview',     icon: LayoutDashboard },
-  { label: 'Calls',     href: '/care-queue',   icon: Phone },
-  { label: 'Call Inbox', href: '/calls',        icon: Inbox },
-  { label: 'Handover',  href: '/referrals',    icon: ClipboardList },
-  { label: 'Reports',   href: '/media-review', icon: BarChart3 },
+  { label: 'Overview',   href: '/overview',     icon: LayoutDashboard },
+  { label: 'Calls',      href: '/care-queue',   icon: Phone },
+  { label: 'Call Inbox', href: '/calls',         icon: Inbox },
+  { label: 'Handover',   href: '/referrals',    icon: ClipboardList },
+  { label: 'Reports',    href: '/media-review', icon: BarChart3 },
 ]
 
 const ADMIN_NAV = [
@@ -23,14 +23,14 @@ const ADMIN_NAV = [
 
 interface SidebarProps {
   clinicName?: string
-  userName?: string
-  userRole?: string
+  userName?:   string
+  userRole?:   string
 }
 
 export default function Sidebar({
   clinicName = 'Your Clinic',
-  userName = 'Staff',
-  userRole = 'receptionist',
+  userName   = 'Staff',
+  userRole   = 'receptionist',
 }: SidebarProps) {
   const pathname = usePathname()
   const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -45,20 +45,18 @@ export default function Sidebar({
 
       {/* -- Brand --------------------------------------------- */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-800">
-        <div className="w-8 h-8 rounded-lg bg-teal-600/20 flex items-center justify-center shrink-0">
-          <div className="relative w-4 h-4 flex items-center justify-center">
-            <div className="absolute w-[11px] h-[1.5px] bg-teal-400 rounded-full" />
-            <div className="absolute w-[1.5px] h-[11px] bg-teal-400 rounded-full" />
-          </div>
-        </div>
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="shrink-0">
+          <circle cx="16" cy="16" r="15" fill="#0D9488"/>
+          <path d="M8 16 Q11 10 14 16 Q17 22 20 16 Q23 10 24 16" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
+        </svg>
         <div className="min-w-0">
-          <h1 className="font-semibold text-[15px] tracking-tight text-white leading-snug">VetForce</h1>
-          <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest truncate mt-px">{clinicName}</p>
+          <h1 className="font-semibold text-lg text-white leading-snug">VetForce</h1>
+          <p className="text-xs text-slate-400 truncate mt-px">{clinicName}</p>
         </div>
       </div>
 
       {/* -- Primary Nav --------------------------------------- */}
-      <nav className="flex-1 px-3 pt-5 pb-2">
+      <nav className="flex-1 px-2 pt-5 pb-2">
         <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
           Workspace
         </p>
@@ -70,15 +68,12 @@ export default function Sidebar({
                 key={href}
                 href={href}
                 className={cn(
-                  'group relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-all duration-150',
+                  'mx-2 group flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150',
                   active
                     ? 'bg-teal-600/20 text-teal-300 font-semibold'
-                    : 'text-slate-400 font-medium hover:bg-slate-800 hover:text-slate-200'
+                    : 'text-slate-400 font-medium hover:text-slate-200 hover:bg-slate-800/60'
                 )}
               >
-                {active && (
-                  <span className="absolute left-0 inset-y-[6px] w-[3px] bg-teal-400 rounded-r-full" />
-                )}
                 <Icon
                   className={cn(
                     'w-4 h-4 shrink-0 transition-colors',
@@ -93,7 +88,7 @@ export default function Sidebar({
       </nav>
 
       {/* -- Admin Nav + Profile -------------------------------- */}
-      <div className="px-3 py-4 border-t border-slate-800">
+      <div className="px-2 py-4 border-t border-slate-800">
         <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
           Admin
         </p>
@@ -105,15 +100,12 @@ export default function Sidebar({
                 key={href}
                 href={href}
                 className={cn(
-                  'group relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-all duration-150',
+                  'mx-2 group flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150',
                   active
                     ? 'bg-teal-600/20 text-teal-300 font-semibold'
-                    : 'text-slate-400 font-medium hover:bg-slate-800 hover:text-slate-200'
+                    : 'text-slate-400 font-medium hover:text-slate-200 hover:bg-slate-800/60'
                 )}
               >
-                {active && (
-                  <span className="absolute left-0 inset-y-[6px] w-[3px] bg-teal-400 rounded-r-full" />
-                )}
                 <Icon
                   className={cn(
                     'w-4 h-4 shrink-0 transition-colors',
@@ -127,7 +119,7 @@ export default function Sidebar({
         </div>
 
         {/* User card */}
-        <div className="px-3 py-2.5 bg-slate-800 rounded-xl flex items-center gap-2.5">
+        <div className="mx-2 px-3 py-2.5 bg-slate-800 rounded-xl flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-full bg-teal-600/30 flex items-center justify-center shrink-0 text-teal-300 text-[11px] font-bold">
             {initials}
           </div>

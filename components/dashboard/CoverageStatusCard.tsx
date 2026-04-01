@@ -27,7 +27,7 @@ export default function CoverageStatusCard({
   const isActive = mode !== null
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/70 shadow-[0_1px_3px_rgba(15,39,68,0.06)]">
+    <div className="bg-white rounded-xl">
 
       {/* ── Header ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-50">
@@ -44,30 +44,21 @@ export default function CoverageStatusCard({
 
       <div className="p-4 space-y-3">
 
-        {/* ── Three mode cards ─────────────────────────────── */}
-        <div className="grid grid-cols-3 gap-2">
-          {MODES.map(m => {
-            const cfg        = MODE_CONFIG[m]
-            const isSelected = mode === m
-            return (
-              <button
-                key={m}
-                onClick={() => onModeSelect(m)}
-                className={`rounded-xl border-2 p-3 text-left transition-all ${
-                  isSelected
-                    ? 'border-[#0891b2] bg-[#0891b2]/[0.06]'
-                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
-                }`}
-              >
-                <p className={`text-[11px] font-bold leading-tight ${
-                  isSelected ? 'text-[#0891b2]' : 'text-slate-700'
-                }`}>
-                  {cfg.label}
-                </p>
-                <p className="text-[10px] text-slate-400 mt-0.5 leading-tight">{cfg.subtitle}</p>
-              </button>
-            )
-          })}
+        {/* ── Segmented mode control ───────────────────────── */}
+        <div className="flex bg-slate-100 rounded-xl p-1">
+          {MODES.map(m => (
+            <button
+              key={m}
+              onClick={() => onModeSelect(m)}
+              className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                mode === m
+                  ? 'bg-white shadow-sm text-slate-900'
+                  : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              {MODE_CONFIG[m].label}
+            </button>
+          ))}
         </div>
 
         {/* ── Active since ─────────────────────────────────── */}

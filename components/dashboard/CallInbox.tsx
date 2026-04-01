@@ -74,7 +74,7 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/70 shadow-[0_1px_3px_rgba(15,39,68,0.06)]">
+    <div className="bg-white rounded-2xl">
 
       {/* ── Header ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
@@ -142,7 +142,7 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
                 {/* ── Row button ─────────────────────────────── */}
                 <button
                   onClick={() => handleExpand(item.id)}
-                  className="w-full px-5 py-3.5 flex items-start gap-3 text-left hover:bg-slate-50/80 transition-colors"
+                  className="w-full px-5 py-3.5 flex items-start gap-3 text-left hover:bg-slate-50 transition-colors"
                 >
                   {/* Unread dot */}
                   <div className="w-2 shrink-0 pt-[7px]">

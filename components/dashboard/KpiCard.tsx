@@ -12,7 +12,7 @@ interface KpiCardProps {
 
 const trendStyle: Record<NonNullable<StatTrend['direction']>, string> = {
   up:   'text-emerald-600',
-  down: 'text-rose-500',
+  down: 'text-red-500',
   same: 'text-slate-400',
   new:  'text-[#0891b2]',
 }

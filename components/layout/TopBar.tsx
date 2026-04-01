@@ -42,7 +42,7 @@ export default function TopBar({
 
       {/* Page title */}
       <div className="shrink-0">
-        <h2 className="text-[#0f2744] font-bold text-[15px] whitespace-nowrap leading-none">{title}</h2>
+        <h2 className="text-xl font-semibold text-slate-900 whitespace-nowrap leading-none">{title}</h2>
         {subtitle && <p className="text-[11px] text-slate-400 mt-0.5">{subtitle}</p>}
       </div>
 
@@ -53,7 +53,7 @@ export default function TopBar({
       {coverage && (
         <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-[11px] font-semibold shrink-0 transition-all ${
           isActive
-            ? 'bg-emerald-50 border-emerald-200/80 text-emerald-700'
+            ? 'bg-green-950 border-green-800 text-green-300'
             : 'bg-slate-50 border-slate-200 text-slate-500'
         }`}>
           {/* Dot — animate-ping when active, grey when off */}
@@ -70,7 +70,7 @@ export default function TopBar({
             <>
               <span className="font-bold">{MODE_STATUS_LABELS[coverage.mode]}</span>
               {coverage.startTime && (
-                <span className="text-emerald-600/70 font-normal"> · since {coverage.startTime}</span>
+                <span className="text-green-400/70 font-normal"> · since {coverage.startTime}</span>
               )}
             </>
           ) : (
