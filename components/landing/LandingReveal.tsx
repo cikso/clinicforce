@@ -15,10 +15,14 @@ export function LandingReveal({ children, delay = 0, className }: Props) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect() } },
-      { threshold: 0.05, rootMargin: '0px 0px -50px 0px' },
-    )
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          observer.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.01, rootMargin: '0px 0px -40px 0px' })
     observer.observe(el)
     return () => observer.disconnect()
   }, [])

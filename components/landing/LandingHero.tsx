@@ -58,7 +58,7 @@ export function LandingHero() {
           fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500,
           letterSpacing: '1.5px', textTransform: 'uppercase', color: '#00C896',
           marginBottom: 28,
-          animation: 'lp-fade-up 0.6s ease forwards 0.2s', opacity: 0,
+          animation: 'lp-fade-up 0.6s ease forwards 0.2s',
         }}>
           <span style={{ width: 24, height: 1, background: '#00C896', display: 'inline-block' }} />
           Purpose-built for veterinary clinics
@@ -68,7 +68,7 @@ export function LandingHero() {
           fontSize: 'clamp(44px, 5.5vw, 76px)', fontWeight: 800,
           lineHeight: 1.0, letterSpacing: '-3px', color: '#F0F4FF',
           marginBottom: 24,
-          animation: 'lp-fade-up 0.7s ease forwards 0.35s', opacity: 0,
+          animation: 'lp-fade-up 0.7s ease forwards 0.35s',
         }}>
           The front desk<br />that never<br /><em style={{ fontStyle: 'normal', color: '#00C896' }}>clocks out.</em>
         </h1>
@@ -76,14 +76,14 @@ export function LandingHero() {
         <p style={{
           fontSize: 18, fontWeight: 400, lineHeight: 1.65, color: '#8B95B0',
           maxWidth: 480, marginBottom: 40,
-          animation: 'lp-fade-up 0.7s ease forwards 0.5s', opacity: 0,
+          animation: 'lp-fade-up 0.7s ease forwards 0.5s',
         }}>
           VetForce handles every call your team can't take — intake, triage, urgency detection, and clean handoff. Installed in a day. Live the same week.
         </p>
 
         <div style={{
           display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
-          animation: 'lp-fade-up 0.7s ease forwards 0.65s', opacity: 0,
+          animation: 'lp-fade-up 0.7s ease forwards 0.65s',
         }}>
           <a
             href="#"
@@ -130,7 +130,7 @@ export function LandingHero() {
           display: 'flex', alignItems: 'center', gap: 0,
           marginTop: 52, paddingTop: 40,
           borderTop: '1px solid rgba(255,255,255,0.07)',
-          animation: 'lp-fade-up 0.7s ease forwards 0.8s', opacity: 0,
+          animation: 'lp-fade-up 0.7s ease forwards 0.8s',
         }}>
           {[
             { num: '0.4s', label: 'Avg. response time' },

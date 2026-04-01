@@ -5,6 +5,7 @@ import { LandingProblem }    from '@/components/landing/LandingProblem'
 import { LandingFeatures }   from '@/components/landing/LandingFeatures'
 import { LandingHowItWorks } from '@/components/landing/LandingHowItWorks'
 import { LandingBenefits }   from '@/components/landing/LandingBenefits'
+import { LandingPricing }    from '@/components/landing/LandingPricing'
 import { LandingCta }        from '@/components/landing/LandingCta'
 import { LandingFooter }     from '@/components/landing/LandingFooter'
 
@@ -39,6 +40,7 @@ export default function LandingPage() {
         <LandingFeatures />
         <LandingHowItWorks />
         <LandingBenefits />
+        <LandingPricing />
         <LandingCta />
       </main>
       <LandingFooter />
