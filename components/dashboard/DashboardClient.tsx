@@ -158,10 +158,9 @@ export default function DashboardClient() {
           <KpiCard
             title="Needs Review"
             value={urgentFlagged}
-            context="need review"
+            context="pending"
             icon={<AlertTriangle className="w-4 h-4" />}
             accentColor="red"
-            pulse={urgentFlagged > 0}
             trend={stats?.urgentFlagged.trend}
           />
           <KpiCard
@@ -170,7 +169,6 @@ export default function DashboardClient() {
             context="in inbox"
             icon={<MessageSquare className="w-4 h-4" />}
             accentColor="amber"
-            pulse={unreadMessages > 0}
             trend={stats?.unreadMessages.trend}
           />
           <KpiCard
