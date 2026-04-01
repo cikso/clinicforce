@@ -116,6 +116,9 @@
   * {
     @apply border-border outline-none;
   }
+  html, body {
+    box-shadow: none;
+  }
   body {
     @apply bg-background text-foreground;
   }

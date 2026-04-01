@@ -52,7 +52,7 @@ export function LandingHowItWorks() {
                   marginBottom: 32, position: 'relative', zIndex: 1,
                   ...(step.active
                     ? { background: 'rgba(0,200,150,0.15)', border: '1px solid rgba(0,200,150,0.3)', color: '#00C896' }
-                    : { background: '#161C2E', border: '1px solid rgba(255,255,255,0.12)', color: '#4A5470' }),
+                    : { background: '#161C2E', border: '1px solid rgba(255,255,255,0.12)', color: '#8B95B0' }),
                 }}>
                   {step.num}
                 </div>
