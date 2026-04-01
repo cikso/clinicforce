@@ -8,28 +8,6 @@ const supabase = createClient(
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
-// ── POST /api/inbox/webhook ────────────────────────────────────
-// Called by ElevenLabs when a conversation ends.
-//
-// ElevenLabs post-call webhook payload (workspace-level):
-// {
-//   event_id: string,
-//   event_timestamp: number,
-//   type: "post_call_transcription",
-//   data: {
-//     agent_id: string,
-//     conversation_id: string,
-//     status: string,
-//     transcript: [{ role: 'agent'|'user', message: string, time_in_call_secs: number }],
-//     metadata: {
-//       start_time_unix_secs: number,
-//       call_duration_secs: number,
-//       cost: number,
-//       phone_call: { type: string, direction: string, caller_id: string, callee_id: string }
-//     },
-//     analysis: { transcript_summary: string, ... }
-//   }
-// }
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>
   try {
@@ -38,44 +16,64 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  // ── Unwrap ElevenLabs envelope (data may be nested under body.data) ──
   const payload = (body.data as Record<string, unknown>) ?? body
-
   const conversationId = (payload.conversation_id as string) ?? null
-  const metadata       = (payload.metadata as Record<string, unknown>) ?? {}
-  const phoneCall      = (metadata.phone_call as Record<string, unknown>) ?? {}
-  const analysis       = (payload.analysis as Record<string, unknown>) ?? {}
-  const transcript     = (payload.transcript as Array<{ role: string; message: string }>) ?? []
+  const metadata = (payload.metadata as Record<string, unknown>) ?? {}
+  const analysis = (payload.analysis as Record<string, unknown>) ?? {}
+  const transcript = (payload.transcript as Array<{ role: string; message: string }>) ?? []
 
-  // Call duration — prefer metadata field, fall back to top-level
   const callDurationSecs =
     (metadata.call_duration_secs as number) ??
     (body.call_duration_secs as number) ??
     null
 
-  // Caller phone — from Twilio metadata first, then transcript heuristics
+  const aiSummary =
+    (analysis.transcript_summary as string) ||
+    buildFallbackSummary(transcript)
+
+  const urgency = detectUrgency(transcript, aiSummary)
+
+  // ── Try to UPDATE existing row created by create_callback_request tool ──
+  // Match on conversation_id if available, otherwise fall back to insert
+  if (conversationId) {
+    const { data: existing } = await supabase
+      .from('call_inbox')
+      .select('id')
+      .eq('elevenlabs_conversation_id', conversationId)
+      .eq('clinic_id', DEMO_CLINIC_ID)
+      .limit(1)
+      .single()
+
+    if (existing) {
+      // Row already exists from tool call — just enrich it with webhook data
+      await supabase
+        .from('call_inbox')
+        .update({
+          ai_detail:             aiSummary,
+          call_duration_seconds: callDurationSecs,
+          urgency,
+        })
+        .eq('id', existing.id)
+
+      console.log('[inbox/webhook] Enriched existing row:', existing.id)
+      return NextResponse.json({ ok: true, action: 'updated' })
+    }
+  }
+
+  // ── No existing row — create one (call ended without tool being invoked) ──
+  const phoneCall = (metadata.phone_call as Record<string, unknown>) ?? {}
   const callerPhone =
     (phoneCall.caller_id as string) ??
     extractPhone(transcript.map(t => t.message).join(' ')) ??
     '—'
 
-  // Summary from ElevenLabs analysis
-  const aiSummary =
-    (analysis.transcript_summary as string) ||
-    buildFallbackSummary(transcript)
-
-  // Extract structured caller/pet info from transcript
   const callerInfo = extractCallerInfo(transcript, callerPhone)
-
-  // Urgency
-  const urgency = detectUrgency(transcript, aiSummary)
 
   const actionRequired =
     urgency === 'CRITICAL' ? 'Urgent callback required — same-day assessment'
     : urgency === 'URGENT'  ? 'Call back today to follow up'
     :                         'Review and action when available'
 
-  // ── Insert into Supabase ────────────────────────────────────
   const { error } = await supabase
     .from('call_inbox')
     .insert({
@@ -98,7 +96,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json({ ok: true })
+  console.log('[inbox/webhook] Created new row (no tool call found)')
+  return NextResponse.json({ ok: true, action: 'inserted' })
 }
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -116,12 +115,11 @@ function extractCallerInfo(
   callerPhone: string,
 ) {
   const fullText = transcript.map(t => t.message).join(' ')
-
   return {
-    name:       extractName(transcript)           ?? 'Unknown caller',
+    name:       extractName(transcript) ?? 'Unknown caller',
     phone:      callerPhone,
-    petName:    extractPetName(fullText)          ?? '—',
-    petSpecies: extractPetSpecies(fullText)       ?? '—',
+    petName:    extractPetName(fullText) ?? '—',
+    petSpecies: extractPetSpecies(fullText) ?? '—',
   }
 }
 
@@ -162,7 +160,6 @@ function detectUrgency(
   summary: string,
 ): 'CRITICAL' | 'URGENT' | 'ROUTINE' {
   const combined = [...transcript.map(t => t.message), summary].join(' ').toLowerCase()
-
   const criticalKeywords = [
     'collapse', 'collapsed', 'unconscious', 'not breathing', 'seizure', 'convuls',
     'pale gums', 'bleeding heavily', 'hit by car', 'poisoned', 'toxic', 'emergency',
@@ -173,7 +170,6 @@ function detectUrgency(
     'limping', 'lethargic', 'swollen', 'painful', 'in pain', 'crying out',
     'hiding', 'very worried', 'really concerned', 'same day', 'blood in',
   ]
-
   if (criticalKeywords.some(k => combined.includes(k))) return 'CRITICAL'
   if (urgentKeywords.some(k => combined.includes(k)))   return 'URGENT'
   return 'ROUTINE'
