@@ -41,25 +41,25 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="flex flex-col w-56 shrink-0 h-screen bg-white border-r border-slate-200/80 overflow-y-auto">
+    <aside className="flex flex-col w-56 shrink-0 h-screen bg-slate-900 border-r border-slate-800 overflow-y-auto">
 
       {/* -- Brand --------------------------------------------- */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-100">
-        <div className="w-8 h-8 rounded-lg bg-[#0f2744] flex items-center justify-center shrink-0">
+      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-800">
+        <div className="w-8 h-8 rounded-lg bg-teal-600/20 flex items-center justify-center shrink-0">
           <div className="relative w-4 h-4 flex items-center justify-center">
-            <div className="absolute w-[11px] h-[1.5px] bg-[#0891b2] rounded-full" />
-            <div className="absolute w-[1.5px] h-[11px] bg-[#0891b2] rounded-full" />
+            <div className="absolute w-[11px] h-[1.5px] bg-teal-400 rounded-full" />
+            <div className="absolute w-[1.5px] h-[11px] bg-teal-400 rounded-full" />
           </div>
         </div>
         <div className="min-w-0">
-          <h1 className="font-bold text-[15px] tracking-tight text-[#0f2744] leading-snug">VetForce</h1>
-          <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest truncate mt-px">{clinicName}</p>
+          <h1 className="font-semibold text-[15px] tracking-tight text-white leading-snug">VetForce</h1>
+          <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest truncate mt-px">{clinicName}</p>
         </div>
       </div>
 
       {/* -- Primary Nav --------------------------------------- */}
       <nav className="flex-1 px-3 pt-5 pb-2">
-        <p className="px-3 mb-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest select-none">
+        <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
           Workspace
         </p>
         <div className="space-y-0.5">
@@ -72,17 +72,17 @@ export default function Sidebar({
                 className={cn(
                   'group relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-all duration-150',
                   active
-                    ? 'bg-[#0f2744]/[0.06] text-[#0f2744] font-semibold'
-                    : 'text-slate-500 font-medium hover:bg-slate-50 hover:text-slate-800'
+                    ? 'bg-teal-600/20 text-teal-300 font-semibold'
+                    : 'text-slate-400 font-medium hover:bg-slate-800 hover:text-slate-200'
                 )}
               >
                 {active && (
-                  <span className="absolute left-0 inset-y-[6px] w-[3px] bg-[#0891b2] rounded-r-full" />
+                  <span className="absolute left-0 inset-y-[6px] w-[3px] bg-teal-400 rounded-r-full" />
                 )}
                 <Icon
                   className={cn(
                     'w-4 h-4 shrink-0 transition-colors',
-                    active ? 'text-[#0891b2]' : 'text-slate-400 group-hover:text-slate-500'
+                    active ? 'text-teal-300' : 'text-slate-500 group-hover:text-slate-400'
                   )}
                 />
                 {label}
@@ -93,8 +93,8 @@ export default function Sidebar({
       </nav>
 
       {/* -- Admin Nav + Profile -------------------------------- */}
-      <div className="px-3 py-4 border-t border-slate-100">
-        <p className="px-3 mb-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest select-none">
+      <div className="px-3 py-4 border-t border-slate-800">
+        <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
           Admin
         </p>
         <div className="space-y-0.5 mb-4">
@@ -107,17 +107,17 @@ export default function Sidebar({
                 className={cn(
                   'group relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-all duration-150',
                   active
-                    ? 'bg-[#0f2744]/[0.06] text-[#0f2744] font-semibold'
-                    : 'text-slate-500 font-medium hover:bg-slate-50 hover:text-slate-800'
+                    ? 'bg-teal-600/20 text-teal-300 font-semibold'
+                    : 'text-slate-400 font-medium hover:bg-slate-800 hover:text-slate-200'
                 )}
               >
                 {active && (
-                  <span className="absolute left-0 inset-y-[6px] w-[3px] bg-[#0891b2] rounded-r-full" />
+                  <span className="absolute left-0 inset-y-[6px] w-[3px] bg-teal-400 rounded-r-full" />
                 )}
                 <Icon
                   className={cn(
                     'w-4 h-4 shrink-0 transition-colors',
-                    active ? 'text-[#0891b2]' : 'text-slate-400 group-hover:text-slate-500'
+                    active ? 'text-teal-300' : 'text-slate-500 group-hover:text-slate-400'
                   )}
                 />
                 {label}
@@ -127,13 +127,13 @@ export default function Sidebar({
         </div>
 
         {/* User card */}
-        <div className="px-3 py-2.5 bg-slate-50 rounded-xl flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-[#0f2744] flex items-center justify-center shrink-0 text-white text-[11px] font-bold">
+        <div className="px-3 py-2.5 bg-slate-800 rounded-xl flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-full bg-teal-600/30 flex items-center justify-center shrink-0 text-teal-300 text-[11px] font-bold">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-slate-800 truncate leading-tight">{userName}</p>
-            <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mt-px">{roleFmt}</p>
+            <p className="text-[13px] font-semibold text-slate-200 truncate leading-tight">{userName}</p>
+            <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mt-px">{roleFmt}</p>
           </div>
         </div>
       </div>

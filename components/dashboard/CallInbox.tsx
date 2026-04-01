@@ -8,7 +8,7 @@ import type { CallInboxItem } from '@/data/mock-dashboard'
 type Filter = 'all' | 'unread' | 'urgent'
 
 const URGENCY_CONFIG = {
-  CRITICAL: { label: 'Critical', bg: 'bg-rose-50',   text: 'text-rose-700',   border: 'border-rose-200/80',  dot: 'bg-rose-500'  },
+  CRITICAL: { label: 'Critical', bg: 'bg-red-500',   text: 'text-white',      border: 'border-red-500',      dot: 'bg-white'     },
   URGENT:   { label: 'Urgent',   bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200/80', dot: 'bg-amber-500' },
   ROUTINE:  { label: 'Routine',  bg: 'bg-slate-100', text: 'text-slate-500',  border: 'border-slate-200',    dot: 'bg-slate-300' },
 }
@@ -129,7 +129,15 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
             return (
               <div
                 key={item.id}
-                className={`transition-colors ${isExpanded ? 'bg-[#f7fbfd]' : isUnread ? 'bg-[#fafcfe]' : 'bg-white'}`}
+                className={`transition-colors ${
+                  item.urgency === 'CRITICAL'
+                    ? 'bg-red-50 border-l-4 border-red-500'
+                    : isExpanded
+                    ? 'bg-[#f7fbfd]'
+                    : isUnread
+                    ? 'bg-[#fafcfe]'
+                    : 'bg-white'
+                }`}
               >
                 {/* ── Row button ─────────────────────────────── */}
                 <button

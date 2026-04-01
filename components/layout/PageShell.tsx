@@ -30,7 +30,7 @@ export default function PageShell({ title, subtitle, children, searchPlaceholder
         coverage={coverage}
         onNewCase={onNewCase}
       />
-      <main className="flex-1 overflow-y-auto px-6 py-5 bg-[#f7f8fa]">
+      <main className="flex-1 overflow-y-auto px-6 py-5 bg-slate-50">
         {children}
         <footer className="mt-12 pt-6 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-slate-300">
           <div className="flex items-center gap-2">

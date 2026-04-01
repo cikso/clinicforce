@@ -56,10 +56,15 @@ export default function TopBar({
             ? 'bg-emerald-50 border-emerald-200/80 text-emerald-700'
             : 'bg-slate-50 border-slate-200 text-slate-500'
         }`}>
-          {/* Dot — pulsing teal when active, grey when off */}
-          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-            isActive ? 'bg-[#0891b2] animate-pulse' : 'bg-slate-300'
-          }`} />
+          {/* Dot — animate-ping when active, grey when off */}
+          {isActive ? (
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
+            </span>
+          ) : (
+            <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-slate-300" />
+          )}
 
           {isActive && coverage.mode ? (
             <>

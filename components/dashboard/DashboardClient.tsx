@@ -134,7 +134,7 @@ export default function DashboardClient() {
 
   return (
     <PageShell
-      title="Coverage Overview"
+      title="Command Centre"
       clinicName={INITIAL_COVERAGE_SESSION.clinicName}
       coverage={{
         status:    mode ? 'ACTIVE' : 'INACTIVE',
@@ -148,7 +148,7 @@ export default function DashboardClient() {
         {/* ── KPI Row ─────────────────────────────────────────── */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <KpiCard
-            title="Calls Covered"
+            title="Calls Handled"
             value={callsCovered}
             context="today"
             icon={<Phone className="w-4 h-4" />}
@@ -156,7 +156,7 @@ export default function DashboardClient() {
             trend={stats?.callsCovered.trend}
           />
           <KpiCard
-            title="Urgent Flagged"
+            title="Needs Review"
             value={urgentFlagged}
             context="need review"
             icon={<AlertTriangle className="w-4 h-4" />}
@@ -165,7 +165,7 @@ export default function DashboardClient() {
             trend={stats?.urgentFlagged.trend}
           />
           <KpiCard
-            title="Unread Messages"
+            title="Unread"
             value={unreadMessages}
             context="in inbox"
             icon={<MessageSquare className="w-4 h-4" />}
@@ -174,7 +174,7 @@ export default function DashboardClient() {
             trend={stats?.unreadMessages.trend}
           />
           <KpiCard
-            title="Coverage Active"
+            title="Coverage"
             value={`${hoursActive}h`}
             context="today"
             icon={<Clock className="w-4 h-4" />}
