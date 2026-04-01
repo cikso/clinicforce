@@ -23,8 +23,9 @@ export function LandingReveal({ children, delay = 0, className }: Props) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.style.opacity = '1'
-          ;(entry.target as HTMLElement).style.transform = 'translateY(0)'
+          const t = entry.target as HTMLElement
+          t.style.opacity = '1'
+          t.style.transform = 'translateY(0)'
           observer.unobserve(entry.target)
         }
       })
