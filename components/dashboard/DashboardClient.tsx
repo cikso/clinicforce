@@ -67,9 +67,9 @@ export default function DashboardClient() {
   }, [fetchInbox])
 
   // ── KPIs — prefer server stats, fall back to client counts ──
-  const callsCovered   = stats?.callsCovered.today   ?? inbox.length
-  const urgentFlagged  = stats?.urgentFlagged.today  ?? inbox.filter(i => i.urgency === 'CRITICAL' || i.urgency === 'URGENT').length
-  const unreadMessages = stats?.unreadMessages.today ?? inbox.filter(i => i.status === 'UNREAD').length
+  const callsCovered   = stats?.callsCovered.today   || inbox.length
+  const urgentFlagged  = stats?.urgentFlagged.today  || inbox.filter(i => i.urgency === 'CRITICAL' || i.urgency === 'URGENT').length
+  const unreadMessages = stats?.unreadMessages.today || inbox.filter(i => i.status === 'UNREAD').length
   const coverageMins   = stats?.coverageActive.todayMins ?? COVERAGE_USAGE.reduce((s, u) => s + u.minutes, 0)
   const hoursActive    = (coverageMins / 60).toFixed(1)
 

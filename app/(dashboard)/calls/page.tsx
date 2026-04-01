@@ -70,14 +70,14 @@ export default function CallsPage() {
       {/* ── Stats strip ───────────────────────────────────────── */}
       <div className="grid grid-cols-4 gap-3 mb-5">
         {[
-          { label: 'Total Calls',  value: total,    color: 'text-[#0f2744]' },
-          { label: 'Unread',       value: unread,   color: unread   > 0 ? 'text-[#0891b2]' : 'text-slate-400' },
-          { label: 'Urgent',       value: urgent,   color: urgent   > 0 ? 'text-rose-600'  : 'text-slate-400' },
-          { label: 'Actioned',     value: actioned, color: 'text-emerald-600' },
-        ].map(({ label, value, color }) => (
-          <div key={label} className="bg-white rounded-xl border border-slate-200/70 shadow-[0_1px_3px_rgba(15,39,68,0.06)] px-4 py-3">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{label}</p>
-            <p className={`text-2xl font-bold ${color}`}>{value}</p>
+          { label: 'Total Calls', value: total    },
+          { label: 'Unread',      value: unread   },
+          { label: 'Urgent',      value: urgent   },
+          { label: 'Actioned',    value: actioned },
+        ].map(({ label, value }) => (
+          <div key={label} className="bg-white rounded-2xl border border-slate-200 px-5 py-4 shadow-[0_1px_3px_rgba(15,39,68,0.04)]">
+            <p className="text-xs font-medium text-slate-400 uppercase tracking-widest mb-3">{label}</p>
+            <p className="text-5xl font-bold leading-none tracking-tight text-slate-900">{value}</p>
           </div>
         ))}
       </div>
