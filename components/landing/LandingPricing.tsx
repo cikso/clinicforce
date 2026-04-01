@@ -3,11 +3,11 @@
 import { LandingReveal } from './LandingReveal'
 
 const STARTER_FEATURES = [
-  'After-hours coverage',
+  'After-hours coverage (6pm–8am)',
   'Lunch break coverage',
   'Up to 300 calls / month',
-  'AI triage & urgency detection',
-  'Handover notes to your team',
+  'AI triage + urgency detection',
+  'Handover notes for your team',
   'Email support',
 ]
 
@@ -15,15 +15,16 @@ const GROWTH_FEATURES = [
   'Everything in Starter',
   'Daytime overflow coverage',
   'Unlimited calls',
-  'Appointment booking',
   'Priority support',
+  'Appointment booking via Sarah',
+  'PMS handover note export',
 ]
 
 function CheckIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-      <circle cx="8" cy="8" r="7" fill="rgba(0,200,150,0.15)" stroke="rgba(0,200,150,0.3)" strokeWidth="1"/>
-      <path d="M5 8l2 2 4-4" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="8" cy="8" r="7" fill="rgba(0,200,150,0.15)" stroke="rgba(0,200,150,0.3)" strokeWidth="1" />
+      <path d="M5 8l2 2 4-4" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -45,10 +46,14 @@ export function LandingPricing() {
           </div>
           <h2 style={{
             fontSize: 'clamp(36px, 4vw, 58px)', fontWeight: 800,
-            letterSpacing: '-2.5px', lineHeight: 1.05, color: '#F0F4FF', margin: 0,
+            letterSpacing: '-2.5px', lineHeight: 1.05, color: '#F0F4FF',
+            margin: '0 0 16px',
           }}>
             Simple, transparent pricing.
           </h2>
+          <p style={{ fontSize: 17, color: '#8B95B0', fontWeight: 400, margin: 0 }}>
+            No setup fees. No lock-in. Live in under 24 hours.
+          </p>
         </div>
       </LandingReveal>
 
@@ -66,11 +71,11 @@ export function LandingPricing() {
             <div style={{ marginBottom: 32 }}>
               <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#4A5470', marginBottom: 16 }}>Starter</div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontSize: 52, fontWeight: 800, letterSpacing: '-3px', color: '#F0F4FF', lineHeight: 1 }}>$99</span>
+                <span style={{ fontSize: 52, fontWeight: 800, letterSpacing: '-3px', color: '#F0F4FF', lineHeight: 1 }}>$399</span>
                 <span style={{ fontSize: 15, color: '#4A5470', fontWeight: 400 }}>/mo</span>
               </div>
               <p style={{ fontSize: 14, color: '#4A5470', marginTop: 10, lineHeight: 1.5, fontWeight: 400 }}>
-                Everything you need to stop missing calls after hours.
+                Perfect for single-location clinics.
               </p>
             </div>
 
@@ -126,11 +131,11 @@ export function LandingPricing() {
             <div style={{ marginBottom: 32 }}>
               <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#00C896', marginBottom: 16 }}>Growth</div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontSize: 52, fontWeight: 800, letterSpacing: '-3px', color: '#F0F4FF', lineHeight: 1 }}>$199</span>
+                <span style={{ fontSize: 52, fontWeight: 800, letterSpacing: '-3px', color: '#F0F4FF', lineHeight: 1 }}>$499</span>
                 <span style={{ fontSize: 15, color: '#4A5470', fontWeight: 400 }}>/mo</span>
               </div>
               <p style={{ fontSize: 14, color: '#4A5470', marginTop: 10, lineHeight: 1.5, fontWeight: 400 }}>
-                Full-day coverage for clinics that want zero missed calls.
+                For busy clinics that need full-day coverage.
               </p>
             </div>
 
@@ -167,13 +172,17 @@ export function LandingPricing() {
         <div style={{ textAlign: 'center', marginTop: 40 }}>
           <p style={{ fontSize: 15, color: '#8B95B0', marginBottom: 12, fontWeight: 400 }}>
             Multi-location or enterprise?{' '}
-            <a href="#" style={{ color: '#00C896', textDecoration: 'none', fontWeight: 500 }}
+            <a
+              href="mailto:hello@vetforce.ai"
+              style={{ color: '#00C896', textDecoration: 'none', fontWeight: 500 }}
               onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline' }}
               onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none' }}
-            >Let&rsquo;s talk.</a>
+            >
+              Let&rsquo;s talk. →
+            </a>
           </p>
           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#4A5470', letterSpacing: '0.5px' }}>
-            NO SETUP FEES &nbsp;·&nbsp; NO CONTRACTS &nbsp;·&nbsp; CANCEL ANYTIME
+            NO SETUP FEES &nbsp;·&nbsp; NO LOCK-IN CONTRACTS &nbsp;·&nbsp; CANCEL ANYTIME
           </p>
         </div>
       </LandingReveal>

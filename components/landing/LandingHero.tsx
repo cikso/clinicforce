@@ -149,7 +149,7 @@ export function LandingHero() {
       </div>
 
       {/* ── RIGHT — Live call card ── */}
-      <div style={{ position: 'relative', animation: 'lp-fade-left 0.9s cubic-bezier(0.16,1,0.3,1) forwards 0.4s', opacity: 0 }}>
+      <div style={{ position: 'relative', animation: 'lp-fade-left 0.9s cubic-bezier(0.16,1,0.3,1) forwards 0.4s' }}>
         <div style={{
           background: '#161C2E', border: '1px solid rgba(255,255,255,0.12)',
           borderRadius: 24, padding: 28,
@@ -231,7 +231,6 @@ export function LandingHero() {
           display: 'flex', alignItems: 'center', gap: 10,
           boxShadow: '0 16px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)',
           animation: 'lp-float-in 0.7s cubic-bezier(0.16,1,0.3,1) forwards 1.4s',
-          opacity: 0, transform: 'translateY(10px)',
         }}>
           <div style={{ width: 32, height: 32, background: 'rgba(0,200,150,0.15)', border: '1px solid rgba(0,200,150,0.2)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
