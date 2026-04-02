@@ -22,7 +22,7 @@ export function LandingCta() {
             Start with one location. See results in the first week. No long-term commitment required.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, flexWrap: 'wrap', position: 'relative' }}>
-            
+            <a
               href="https://calendly.com/ciks35/30min"
               target="_blank"
               rel="noopener noreferrer"
@@ -43,7 +43,7 @@ export function LandingCta() {
                 <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </a>
-            
+            <a
               href="/overview"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
