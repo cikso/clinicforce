@@ -9,6 +9,26 @@ function getSupabase() {
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
+// ─── Phone normalisation ──────────────────────────────────────────────────────
+function normaliseAustralianPhone(raw: string): string {
+  if (!raw || raw === '—') return '—'
+  const digits = raw.replace(/\D/g, '')
+  // Convert +61 international to local 0x format
+  const local = digits.startsWith('61') && digits.length === 11
+    ? '0' + digits.slice(2)
+    : digits
+  // Mobile: 04XX XXX XXX
+  if (local.startsWith('04') && local.length === 10) {
+    return `${local.slice(0, 4)} ${local.slice(4, 7)} ${local.slice(7)}`
+  }
+  // Landline: (0X) XXXX XXXX
+  if (local.startsWith('0') && local.length === 10) {
+    return `(${local.slice(0, 2)}) ${local.slice(2, 6)} ${local.slice(6)}`
+  }
+  // Return cleaned digits if format not recognised
+  return local
+}
+
 function mapUrgency(raw: string | undefined): 'CRITICAL' | 'URGENT' | 'ROUTINE' {
   const u = (raw ?? '').toLowerCase()
   if (u === 'emergency') return 'CRITICAL'
@@ -36,8 +56,6 @@ function actionFromUrgency(urgency: 'CRITICAL' | 'URGENT' | 'ROUTINE'): string {
 //   summary       string
 //
 // Writes to: call_inbox (Supabase)
-// Fields:    caller_name, caller_phone, pet_name, pet_species, summary,
-//            ai_detail, action_required, urgency, status, clinic_id
 // ─────────────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>
@@ -48,17 +66,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  // Log every incoming payload — visible in Vercel logs during testing
   console.log('[/api/callback] Incoming body:', JSON.stringify(body, null, 2))
 
   try {
     const owner_name   = (body.owner_name   as string | undefined) ?? 'Unknown caller'
-    const phone_number = (body.phone_number as string | undefined) ?? '—'
+    const rawPhone     = (body.phone_number as string | undefined) ?? '—'
     const pet_name     = (body.pet_name     as string | undefined) ?? '—'
     const species      = (body.species      as string | undefined) ?? '—'
     const urgencyRaw   = (body.urgency      as string | undefined)
     const summary      = (body.summary      as string | undefined) ?? ''
 
+    const phone_number   = normaliseAustralianPhone(rawPhone)
     const urgency        = mapUrgency(urgencyRaw)
     const actionRequired = actionFromUrgency(urgency)
 
