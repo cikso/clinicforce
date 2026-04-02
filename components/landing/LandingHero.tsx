@@ -83,7 +83,7 @@ export function LandingHero() {
           display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
           animation: 'lp-fade-up 0.7s ease forwards 0.65s',
         }}>
-          
+          <a
             href="https://calendly.com/ciks35/30min"
             target="_blank"
             rel="noopener noreferrer"
@@ -104,7 +104,7 @@ export function LandingHero() {
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
-          
+          <a
             href="/overview"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
