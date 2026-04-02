@@ -8,6 +8,22 @@ const supabase = createClient(
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
+// ─── Phone normalisation ──────────────────────────────────────────────────────
+function normaliseAustralianPhone(raw: string): string {
+  if (!raw || raw === '—') return '—'
+  const digits = raw.replace(/\D/g, '')
+  const local = digits.startsWith('61') && digits.length === 11
+    ? '0' + digits.slice(2)
+    : digits
+  if (local.startsWith('04') && local.length === 10) {
+    return `${local.slice(0, 4)} ${local.slice(4, 7)} ${local.slice(7)}`
+  }
+  if (local.startsWith('0') && local.length === 10) {
+    return `(${local.slice(0, 2)}) ${local.slice(2, 6)} ${local.slice(6)}`
+  }
+  return local
+}
+
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>
   try {
@@ -16,11 +32,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const payload = (body.data as Record<string, unknown>) ?? body
+  const payload      = (body.data as Record<string, unknown>) ?? body
   const conversationId = (payload.conversation_id as string) ?? null
-  const metadata = (payload.metadata as Record<string, unknown>) ?? {}
-  const analysis = (payload.analysis as Record<string, unknown>) ?? {}
-  const transcript = (payload.transcript as Array<{ role: string; message: string }>) ?? []
+  const metadata     = (payload.metadata as Record<string, unknown>) ?? {}
+  const analysis     = (payload.analysis as Record<string, unknown>) ?? {}
+  const transcript   = (payload.transcript as Array<{ role: string; message: string }>) ?? []
 
   const callDurationSecs =
     (metadata.call_duration_secs as number) ??
@@ -31,9 +47,10 @@ export async function POST(req: NextRequest) {
     (analysis.transcript_summary as string) ||
     buildFallbackSummary(transcript)
 
-  const urgency = detectUrgency(transcript, aiSummary)
+  // ── Urgency: only check USER speech, not agent or AI summary ──
+  const urgency = detectUrgency(transcript)
 
-  // ── Step 1: Try exact conversation_id match ──────────────────
+  // ── Step 1: Exact conversation_id match ───────────────────────
   if (conversationId) {
     const { data: exactMatch } = await supabase
       .from('call_inbox')
@@ -46,8 +63,8 @@ export async function POST(req: NextRequest) {
       await supabase
         .from('call_inbox')
         .update({
-          ai_detail:                  aiSummary,
-          call_duration_seconds:      callDurationSecs,
+          ai_detail:             aiSummary,
+          call_duration_seconds: callDurationSecs,
           urgency,
         })
         .eq('id', exactMatch.id)
@@ -56,7 +73,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, action: 'updated_exact' })
     }
 
-    // ── Step 2: Match on recent tool-created row (no conversation_id, within 10 mins) ──
+    // ── Step 2: Recent tool-created row (no conversation_id, within 10 mins) ──
     const tenMinsAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
 
     const { data: recentMatch } = await supabase
@@ -85,14 +102,14 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ── Step 3: No match found — insert new row (tool never fired) ──
-  const phoneCall = (metadata.phone_call as Record<string, unknown>) ?? {}
-  const callerPhone =
+  // ── Step 3: No match — insert new row (tool never fired) ──────
+  const phoneCall  = (metadata.phone_call as Record<string, unknown>) ?? {}
+  const rawPhone   =
     (phoneCall.caller_id as string) ??
     extractPhone(transcript.map(t => t.message).join(' ')) ??
     '—'
-
-  const callerInfo = extractCallerInfo(transcript, callerPhone)
+  const callerPhone = normaliseAustralianPhone(rawPhone)
+  const callerInfo  = extractCallerInfo(transcript, callerPhone)
 
   const actionRequired =
     urgency === 'CRITICAL' ? 'Urgent callback required — same-day assessment'
@@ -125,7 +142,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: true, action: 'inserted' })
 }
 
-// ── Helpers ────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function buildFallbackSummary(transcript: Array<{ role: string; message: string }>): string {
   const userLines = transcript
@@ -180,14 +197,21 @@ function extractPetSpecies(text: string): string | null {
   return null
 }
 
+// ── Urgency detection — USER speech only, not agent or AI summary ─────────────
+// This prevents Sarah's greeting ("is this an emergency?") from
+// triggering false CRITICAL flags.
 function detectUrgency(
   transcript: Array<{ role: string; message: string }>,
-  summary: string,
 ): 'CRITICAL' | 'URGENT' | 'ROUTINE' {
-  const combined = [...transcript.map(t => t.message), summary].join(' ').toLowerCase()
+  const userText = transcript
+    .filter(t => t.role === 'user')
+    .map(t => t.message)
+    .join(' ')
+    .toLowerCase()
+
   const criticalKeywords = [
     'collapse', 'collapsed', 'unconscious', 'not breathing', 'seizure', 'convuls',
-    'pale gums', 'bleeding heavily', 'hit by car', 'poisoned', 'toxic', 'emergency',
+    'pale gums', 'bleeding heavily', 'hit by car', 'poisoned', 'toxic',
     'dying', "can't breathe", 'cannot breathe', 'unresponsive', 'swallowed something',
   ]
   const urgentKeywords = [
@@ -195,7 +219,8 @@ function detectUrgency(
     'limping', 'lethargic', 'swollen', 'painful', 'in pain', 'crying out',
     'hiding', 'very worried', 'really concerned', 'same day', 'blood in',
   ]
-  if (criticalKeywords.some(k => combined.includes(k))) return 'CRITICAL'
-  if (urgentKeywords.some(k => combined.includes(k)))   return 'URGENT'
+
+  if (criticalKeywords.some(k => userText.includes(k))) return 'CRITICAL'
+  if (urgentKeywords.some(k => userText.includes(k)))   return 'URGENT'
   return 'ROUTINE'
 }
