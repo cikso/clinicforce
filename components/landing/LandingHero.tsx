@@ -47,11 +47,9 @@ export function LandingHero() {
       gap: 80,
       position: 'relative',
     }}>
-      {/* Background glows */}
       <div aria-hidden style={{ position: 'absolute', top: '20%', left: '-10%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(0,200,150,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
       <div aria-hidden style={{ position: 'absolute', top: '40%', right: '-5%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(100,120,255,0.04) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-      {/* ── LEFT ── */}
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -107,7 +105,7 @@ export function LandingHero() {
             </svg>
           </a>
           
-            href="#"
+            href="/overview"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               color: '#8B95B0', fontSize: 15, fontWeight: 500,
@@ -123,11 +121,10 @@ export function LandingHero() {
               <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/>
               <path d="M6.5 5.5l4 2.5-4 2.5V5.5z" fill="currentColor"/>
             </svg>
-            Watch 90s demo
+            See it live
           </a>
         </div>
 
-        {/* Stat row */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 0,
           marginTop: 52, paddingTop: 40,
@@ -150,7 +147,6 @@ export function LandingHero() {
         </div>
       </div>
 
-      {/* ── RIGHT — Live call card ── */}
       <div style={{ position: 'relative', animation: 'lp-fade-left 0.9s cubic-bezier(0.16,1,0.3,1) forwards 0.4s' }}>
         <div style={{
           background: '#161C2E', border: '1px solid rgba(255,255,255,0.12)',
@@ -160,7 +156,6 @@ export function LandingHero() {
         }}>
           <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(0,200,150,0.4), transparent)' }} />
 
-          {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, color: '#00C896', letterSpacing: '0.5px' }}>
               <span style={{ position: 'relative', width: 8, height: 8, display: 'inline-block' }}>
@@ -172,7 +167,6 @@ export function LandingHero() {
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: '#4A5470' }}>{mm}:{ss}</div>
           </div>
 
-          {/* Meta grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
             {[{ label: 'PATIENT', value: 'Buster, Great Dane' }, { label: 'OWNER', value: 'Michael Tan' }].map(m => (
               <div key={m.label} style={{ background: '#141928', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '14px 16px' }}>
@@ -182,7 +176,6 @@ export function LandingHero() {
             ))}
           </div>
 
-          {/* Waveform */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, height: 32, marginBottom: 20 }}>
             {WAVE_HEIGHTS.map((h, i) => (
               <div key={i} style={{
@@ -193,7 +186,6 @@ export function LandingHero() {
             ))}
           </div>
 
-          {/* Transcript */}
           <div style={{ background: '#0D1220', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: 18, marginBottom: 20 }}>
             <div style={{ display: 'flex', gap: 10, marginBottom: 14, alignItems: 'flex-start' }}>
               <div style={{ width: 26, height: 26, borderRadius: 7, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, letterSpacing: '0.5px', background: 'rgba(255,200,100,0.15)', color: '#FFC864', border: '1px solid rgba(255,200,100,0.2)', marginTop: 1 }}>MT</div>
@@ -213,7 +205,6 @@ export function LandingHero() {
             </div>
           </div>
 
-          {/* Urgency */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', background: 'rgba(0,200,150,0.06)', border: '1px solid rgba(0,200,150,0.15)', borderRadius: 12 }}>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#4A5470', letterSpacing: '0.8px', textTransform: 'uppercase' }}>URGENCY ASSESSMENT</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -225,7 +216,6 @@ export function LandingHero() {
           </div>
         </div>
 
-        {/* Floating notif */}
         <div style={{
           position: 'absolute', bottom: -18, right: 24,
           background: '#0D1220', border: '1px solid rgba(255,255,255,0.12)',
