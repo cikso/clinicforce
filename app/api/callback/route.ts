@@ -66,6 +66,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 })
   }
 
+  // Traffic Cop: ignore post-call webhooks so they do not create duplicate rows.
+  if (body.type === 'post_call_transcription' || body.type === 'post_call_audio') {
+    return NextResponse.json({ success: true, skipped: true }, { status: 200 })
+  }
+
   console.log('[/api/callback] Incoming body:', JSON.stringify(body, null, 2))
 
   try {
@@ -106,6 +111,22 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('[/api/callback] Unexpected error:', message)
+
+    const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL
+    if (discordWebhookUrl) {
+      try {
+        await fetch(discordWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: `🚨 VETFORCE URGENT 🚨 Webhook failed to save to Supabase! Error: ${message}`,
+          }),
+        })
+      } catch (discordError) {
+        console.error('[/api/callback] Failed to send Discord alert:', discordError)
+      }
+    }
+
     return NextResponse.json({ success: false, error: message }, { status: 500 })
   }
 }
