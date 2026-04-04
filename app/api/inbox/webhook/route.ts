@@ -32,6 +32,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
+  // 🛑 THE SMART TRAFFIC COP 🛑
+  // Ignore audio and ping webhooks to prevent duplicate blank rows, 
+  // but let the post_call_transcription through to update the summary!
+  if (body.type === 'ping' || body.type === 'post_call_audio') {
+    console.log('[inbox/webhook] Ignored background webhook:', body.type)
+    return NextResponse.json({ ok: true, action: 'ignored' })
+  }
+
   const payload      = (body.data as Record<string, unknown>) ?? body
   const conversationId = (payload.conversation_id as string) ?? null
   const metadata     = (payload.metadata as Record<string, unknown>) ?? {}
