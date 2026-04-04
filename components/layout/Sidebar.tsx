@@ -12,7 +12,7 @@ const PRIMARY_NAV = [
   { label: 'Overview',     href: '/overview',     icon: LayoutDashboard },
   { label: 'Call Inbox',   href: '/calls',         icon: Inbox },
   { label: 'Action Queue', href: '/referrals',    icon: ListChecks },
-  { label: 'Insights',     href: '/media-review', icon: BarChart3 },
+  { label: 'Insights',     href: '/insights',     icon: BarChart3 },
 ]
 
 const ADMIN_NAV = [
