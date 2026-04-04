@@ -63,6 +63,7 @@ export async function POST(req: NextRequest) {
       await supabase
         .from('call_inbox')
         .update({
+          summary:               aiSummary.slice(0, 300), // Fixed: Now updates dashboard summary
           ai_detail:             aiSummary,
           call_duration_seconds: callDurationSecs,
           urgency,
@@ -90,6 +91,7 @@ export async function POST(req: NextRequest) {
       await supabase
         .from('call_inbox')
         .update({
+          summary:                    aiSummary.slice(0, 300), // Fixed: Now updates dashboard summary
           ai_detail:                  aiSummary,
           call_duration_seconds:      callDurationSecs,
           urgency,
@@ -198,8 +200,6 @@ function extractPetSpecies(text: string): string | null {
 }
 
 // ── Urgency detection — USER speech only, not agent or AI summary ─────────────
-// This prevents Sarah's greeting ("is this an emergency?") from
-// triggering false CRITICAL flags.
 function detectUrgency(
   transcript: Array<{ role: string; message: string }>,
 ): 'CRITICAL' | 'URGENT' | 'ROUTINE' {
