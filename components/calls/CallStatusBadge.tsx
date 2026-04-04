@@ -2,20 +2,16 @@ import { cn } from '@/lib/utils'
 import type { CallStatus } from '@/lib/types'
 
 const config: Record<CallStatus, { label: string; className: string }> = {
-  UNREVIEWED: {
-    label: 'Unreviewed',
+  UNREAD: {
+    label: 'Unread',
     className: 'bg-amber-50 text-amber-700 border-amber-200',
   },
-  REVIEWED: {
+  READ: {
     label: 'Reviewed',
     className: 'bg-blue-50 text-blue-700 border-blue-200',
   },
-  ESCALATED: {
-    label: 'Escalated',
-    className: 'bg-red-50 text-red-700 border-red-200',
-  },
-  RESOLVED: {
-    label: 'Resolved',
+  ACTIONED: {
+    label: 'Actioned',
     className: 'bg-gray-100 text-gray-500 border-gray-200',
   },
 }
@@ -26,7 +22,7 @@ interface CallStatusBadgeProps {
 }
 
 export default function CallStatusBadge({ status, className }: CallStatusBadgeProps) {
-  const { label, className: base } = config[status]
+  const { label, className: base } = config[status] ?? config['UNREAD']
   return (
     <span
       className={cn(

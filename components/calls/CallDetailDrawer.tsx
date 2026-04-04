@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/sheet'
 import type { Call } from '@/lib/types'
 import CallStatusBadge from './CallStatusBadge'
-import PatientAvatar from '@/components/shared/PatientAvatar'
 import { formatRelative, formatDuration, formatTime } from '@/lib/formatters'
 import {
   Phone,
@@ -64,6 +63,10 @@ interface CallDetailDrawerProps {
   onClose: () => void
 }
 
+function initials(name: string) {
+  return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
 export default function CallDetailDrawer({ call, open, onClose }: CallDetailDrawerProps) {
   const [done, setDone] = useState<Set<ActionKey>>(new Set())
 
@@ -73,6 +76,8 @@ export default function CallDetailDrawer({ call, open, onClose }: CallDetailDraw
       next.has(key) ? next.delete(key) : next.add(key)
       return next
     })
+
+  const isUrgent = call?.urgency === 'CRITICAL' || call?.urgency === 'URGENT'
 
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
@@ -90,17 +95,16 @@ export default function CallDetailDrawer({ call, open, onClose }: CallDetailDraw
             <div className="px-5 py-4 border-b border-border">
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex items-start gap-3">
-                  {call.patient ? (
-                    <PatientAvatar name={call.patient.name} species={call.patient.species} size="md" />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0">
-                      <Phone className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                  )}
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-[11px] font-bold text-white"
+                    style={{ background: isUrgent ? '#DC2626' : '#0D9488' }}
+                  >
+                    {initials(call.callerName)}
+                  </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="text-base font-bold text-foreground">{call.callerName}</h2>
-                      {call.urgencyFlag && (
+                      {isUrgent && (
                         <AlertTriangle className="w-4 h-4 text-red-500" strokeWidth={2.5} />
                       )}
                     </div>
@@ -114,34 +118,47 @@ export default function CallDetailDrawer({ call, open, onClose }: CallDetailDraw
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-muted/50 rounded-lg px-2 py-2">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Received</p>
-                  <p className="text-xs font-semibold text-foreground">{formatRelative(call.timestamp)}</p>
+                  <p className="text-xs font-semibold text-foreground">{formatRelative(call.createdAt)}</p>
                 </div>
                 <div className="bg-muted/50 rounded-lg px-2 py-2">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Time</p>
-                  <p className="text-xs font-semibold text-foreground">{formatTime(call.timestamp)}</p>
+                  <p className="text-xs font-semibold text-foreground">{formatTime(call.createdAt)}</p>
                 </div>
                 <div className="bg-muted/50 rounded-lg px-2 py-2">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Duration</p>
-                  <p className="text-xs font-semibold text-foreground">{formatDuration(call.durationSeconds)}</p>
+                  <p className="text-xs font-semibold text-foreground">
+                    {call.callDurationSeconds != null ? formatDuration(call.callDurationSeconds) : '—'}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Linked patient */}
-            {call.patient && (
+            {/* Pet info */}
+            {call.petName && call.petName !== '—' && (
               <div className="px-5 py-3.5 border-b border-border">
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Linked patient
+                  Patient
                 </p>
                 <div className="flex items-center gap-2">
-                  <PatientAvatar name={call.patient.name} species={call.patient.species} size="sm" />
-                  <div>
-                    <p className="text-xs font-semibold text-foreground">{call.patient.name}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {call.patient.species} · {call.patient.breed} · {call.patient.age}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">Owner: {call.patient.ownerName}</p>
+                  <div className="w-7 h-7 rounded-full bg-teal-50 flex items-center justify-center text-sm shrink-0">
+                    🐾
                   </div>
+                  <div>
+                    <p className="text-xs font-semibold text-foreground">{call.petName}</p>
+                    <p className="text-[11px] text-muted-foreground">{call.petSpecies}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Action required */}
+            {call.actionRequired && call.actionRequired !== '—' && (
+              <div className="px-5 py-3.5 border-b border-border">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+                  Action required
+                </p>
+                <div className="inline-flex items-center bg-[#FAEEDA] text-[#633806] text-xs font-semibold px-3 py-1.5 rounded-full">
+                  {call.actionRequired}
                 </div>
               </div>
             )}
@@ -156,9 +173,14 @@ export default function CallDetailDrawer({ call, open, onClose }: CallDetailDraw
                   AI triage summary
                 </p>
               </div>
-              <div className="bg-blue-50/60 border border-blue-100 rounded-lg px-3 py-2.5">
-                <p className="text-xs text-foreground leading-relaxed">{call.aiSummary}</p>
+              <div className="bg-emerald-50/60 border-l-2 border-[#1D9E75] rounded-r-lg px-3 py-2.5">
+                <p className="text-xs text-foreground leading-relaxed">{call.summary}</p>
               </div>
+              {call.aiDetail && call.aiDetail !== call.summary && (
+                <p className="text-[11px] text-muted-foreground leading-relaxed mt-2 px-1">
+                  {call.aiDetail}
+                </p>
+              )}
               <p className="text-[10px] text-muted-foreground/60 mt-1.5">
                 Auto-generated from call transcript. Staff to verify before acting.
               </p>

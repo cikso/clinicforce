@@ -13,9 +13,9 @@ import { formatRelative } from '@/lib/formatters'
 export default function CallsClient() {
   const [tab, setTab] = useState<'live' | 'archived'>('live')
 
-  const liveCalls = mockCalls.filter((c) => c.status !== 'RESOLVED')
-  const archivedCalls = mockCalls.filter((c) => c.status === 'RESOLVED')
-  const displayCalls = tab === 'live' ? liveCalls : archivedCalls
+  const liveCalls     = mockCalls.filter((c) => c.status !== 'ACTIONED')
+  const archivedCalls = mockCalls.filter((c) => c.status === 'ACTIONED')
+  const displayCalls  = tab === 'live' ? liveCalls : archivedCalls
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -141,13 +141,13 @@ export default function CallsClient() {
 }
 
 function CallCard({ call }: { call: Call }) {
-  const isCritical = call.urgencyLevel === 'CRITICAL'
-  const isUrgent = call.urgencyLevel === 'URGENT'
+  const isCritical = call.urgency === 'CRITICAL'
+  const isUrgent   = call.urgency === 'URGENT'
 
   const borderColor = isCritical || isUrgent ? 'border-l-[#e11d48]' : 'border-l-teal-500'
-  const badgeBg = isCritical || isUrgent ? 'bg-rose-100 text-rose-700' : 'bg-teal-100 text-teal-700'
-  const iconBg = isCritical || isUrgent ? 'bg-rose-100 text-rose-600' : 'bg-teal-100 text-teal-600'
-  const badgeLabel = isCritical ? 'CRITICAL' : isUrgent ? 'URGENT' : 'GENERAL'
+  const badgeBg     = isCritical || isUrgent ? 'bg-rose-100 text-rose-700' : 'bg-teal-100 text-teal-700'
+  const iconBg      = isCritical || isUrgent ? 'bg-rose-100 text-rose-600' : 'bg-teal-100 text-teal-600'
+  const badgeLabel  = isCritical ? 'CRITICAL' : isUrgent ? 'URGENT' : 'ROUTINE'
 
   return (
     <div className={`bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200 border-l-[6px] ${borderColor} flex flex-col gap-4`}>
@@ -158,7 +158,7 @@ function CallCard({ call }: { call: Call }) {
           </div>
           <div>
             <h3 className="text-xl font-bold text-slate-900">{call.callerName}</h3>
-            <p className="text-sm text-slate-500">{call.callerPhone} • {formatRelative(call.timestamp)}</p>
+            <p className="text-sm text-slate-500">{call.callerPhone} • {formatRelative(call.createdAt)}</p>
           </div>
         </div>
         <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${badgeBg}`}>
@@ -166,15 +166,15 @@ function CallCard({ call }: { call: Call }) {
         </span>
       </div>
 
-      {call.patient && (
+      {call.petName && call.petName !== '—' && (
         <div className="flex items-center gap-2 text-[#0f5b8a] font-bold text-sm">
           <span>🐾</span>
-          Patient: {call.patient.name} ({call.patient.breed}, {call.patient.age})
+          Patient: {call.petName} ({call.petSpecies})
         </div>
       )}
 
       <div className="bg-slate-50 rounded-2xl p-4 text-slate-600 italic text-sm leading-relaxed">
-        {call.transcript}
+        {call.aiDetail || call.summary}
       </div>
 
       <div className="flex items-center justify-between mt-1">
@@ -198,19 +198,19 @@ function CallCard({ call }: { call: Call }) {
 }
 
 function StatusPill({ call }: { call: Call }) {
-  if (call.status === 'ESCALATED') {
+  if (call.urgency === 'CRITICAL') {
     return (
       <span className="flex items-center gap-1.5 bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full">
         <div className="w-2 h-2 rounded-full bg-rose-500"></div>
-        New Call
+        Critical
       </span>
     )
   }
-  if (call.status === 'UNREVIEWED') {
+  if (call.status === 'UNREAD') {
     return (
       <span className="flex items-center gap-1.5 bg-rose-100 text-rose-700 text-xs font-bold px-3 py-1.5 rounded-full">
         <RotateCcw className="w-3.5 h-3.5" />
-        Follow-up Required
+        Needs Action
       </span>
     )
   }
@@ -223,14 +223,14 @@ function StatusPill({ call }: { call: Call }) {
 }
 
 function ActionButton({ call }: { call: Call }) {
-  if (call.urgencyLevel === 'CRITICAL') {
+  if (call.urgency === 'CRITICAL') {
     return (
       <button className="px-6 py-2.5 bg-[#0f5b8a] text-white text-sm font-bold rounded-full hover:bg-[#0c4a70] transition-colors shadow-sm">
         Create Case
       </button>
     )
   }
-  if (call.status === 'UNREVIEWED') {
+  if (call.status === 'UNREAD') {
     return (
       <button className="px-6 py-2.5 bg-slate-200 text-slate-700 text-sm font-bold rounded-full hover:bg-slate-300 transition-colors">
         Mark Actioned

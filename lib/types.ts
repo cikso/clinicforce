@@ -2,7 +2,7 @@
 
 export type TriageLevel = 'URGENT' | 'HIGH' | 'ROUTINE' | 'FOLLOW_UP'
 export type Species = 'Canine' | 'Feline' | 'Avian' | 'Exotic'
-export type CallStatus = 'UNREVIEWED' | 'REVIEWED' | 'ESCALATED' | 'RESOLVED'
+export type CallStatus = 'UNREAD' | 'READ' | 'ACTIONED'
 export type BookingStatus =
   | 'CONFIRMED'
   | 'CHECKED_IN'
@@ -68,17 +68,17 @@ export interface UrgentAlert {
 
 export interface Call {
   id: string
-  patient: Patient | null
   callerName: string
   callerPhone: string
-  timestamp: string
-  durationSeconds: number
+  petName: string
+  petSpecies: string
+  summary: string
+  aiDetail: string
+  actionRequired: string
+  urgency: 'CRITICAL' | 'URGENT' | 'ROUTINE'
   status: CallStatus
-  aiSummary: string        // AI-generated triage summary
-  transcript: string       // excerpt shown in card
-  urgencyFlag: boolean
-  urgencyLevel: 'CRITICAL' | 'URGENT' | 'GENERAL'
-  recordingUrl: string | null
+  callDurationSeconds: number | null
+  createdAt: string
 }
 
 export interface Booking {
