@@ -3,17 +3,16 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard, Inbox, Phone,
-  BarChart3, ClipboardList, Settings, Users,
+  LayoutDashboard, Inbox,
+  BarChart3, ListChecks, Settings, Users,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const PRIMARY_NAV = [
-  { label: 'Overview',   href: '/overview',     icon: LayoutDashboard },
-  { label: 'Calls',      href: '/care-queue',   icon: Phone },
-  { label: 'Call Inbox', href: '/calls',         icon: Inbox },
-  { label: 'Handover',   href: '/referrals',    icon: ClipboardList },
-  { label: 'Reports',    href: '/media-review', icon: BarChart3 },
+  { label: 'Overview',     href: '/overview',     icon: LayoutDashboard },
+  { label: 'Call Inbox',   href: '/calls',         icon: Inbox },
+  { label: 'Action Queue', href: '/referrals',    icon: ListChecks },
+  { label: 'Insights',     href: '/media-review', icon: BarChart3 },
 ]
 
 const ADMIN_NAV = [
