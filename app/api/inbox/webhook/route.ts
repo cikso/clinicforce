@@ -8,6 +8,22 @@ const supabase = createClient(
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
+// ── Agent → vertical mapping ──────────────────────────────────────────────────
+// ElevenLabs sends `agent_id` at the top level of every webhook payload.
+// Add a key per agent using env vars — never hardcode IDs in source.
+// Fallback: 'vet' (safe default if agent_id is missing or unmapped).
+const AGENT_VERTICAL_MAP: Record<string, string> = {
+  ...(process.env.ELEVENLABS_AGENT_ID_VET    ? { [process.env.ELEVENLABS_AGENT_ID_VET]:    'vet'    } : {}),
+  ...(process.env.ELEVENLABS_AGENT_ID_DENTAL ? { [process.env.ELEVENLABS_AGENT_ID_DENTAL]: 'dental' } : {}),
+  ...(process.env.ELEVENLABS_AGENT_ID_GP     ? { [process.env.ELEVENLABS_AGENT_ID_GP]:     'gp'     } : {}),
+  ...(process.env.ELEVENLABS_AGENT_ID_CHIRO  ? { [process.env.ELEVENLABS_AGENT_ID_CHIRO]:  'chiro'  } : {}),
+}
+
+function resolveVertical(agentId: string | null | undefined): string {
+  if (!agentId) return 'vet'
+  return AGENT_VERTICAL_MAP[agentId] ?? 'vet'
+}
+
 // ─── Phone normalisation ──────────────────────────────────────────────────────
 function normaliseAustralianPhone(raw: string): string {
   if (!raw || raw === '—') return '—'
@@ -40,6 +56,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, action: 'ignored' })
   }
 
+  // agent_id is top-level in the ElevenLabs payload (same level as `type`)
+  const agentId      = (body.agent_id as string) ?? null
+  const vertical     = resolveVertical(agentId)
+
   const payload      = (body.data as Record<string, unknown>) ?? body
   const conversationId = (payload.conversation_id as string) ?? null
   const metadata     = (payload.metadata as Record<string, unknown>) ?? {}
@@ -71,14 +91,15 @@ export async function POST(req: NextRequest) {
       await supabase
         .from('call_inbox')
         .update({
-          summary:               aiSummary.slice(0, 300), // Fixed: Now updates dashboard summary
+          summary:               aiSummary.slice(0, 300),
           ai_detail:             aiSummary,
           call_duration_seconds: callDurationSecs,
           urgency,
+          vertical,
         })
         .eq('id', exactMatch.id)
 
-      console.log('[inbox/webhook] Enriched exact match row:', exactMatch.id)
+      console.log('[inbox/webhook] Enriched exact match row:', exactMatch.id, '| vertical:', vertical)
       return NextResponse.json({ ok: true, action: 'updated_exact' })
     }
 
@@ -99,15 +120,16 @@ export async function POST(req: NextRequest) {
       await supabase
         .from('call_inbox')
         .update({
-          summary:                    aiSummary.slice(0, 300), // Fixed: Now updates dashboard summary
+          summary:                    aiSummary.slice(0, 300),
           ai_detail:                  aiSummary,
           call_duration_seconds:      callDurationSecs,
           urgency,
+          vertical,
           elevenlabs_conversation_id: conversationId,
         })
         .eq('id', recentMatch.id)
 
-      console.log('[inbox/webhook] Enriched recent tool-created row:', recentMatch.id)
+      console.log('[inbox/webhook] Enriched recent tool-created row:', recentMatch.id, '| vertical:', vertical)
       return NextResponse.json({ ok: true, action: 'updated_recent' })
     }
   }
@@ -138,6 +160,7 @@ export async function POST(req: NextRequest) {
       ai_detail:                  aiSummary,
       action_required:            actionRequired,
       urgency,
+      vertical,
       status:                     'UNREAD',
       call_duration_seconds:      callDurationSecs,
       elevenlabs_conversation_id: conversationId,
