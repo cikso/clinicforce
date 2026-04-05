@@ -6,6 +6,7 @@ import TopBar from '@/components/layout/TopBar'
 import ToastContainer from '@/components/dashboard/ToastContainer'
 import { INITIAL_INBOX, type CallInboxItem } from '@/data/mock-dashboard'
 import type { ToastItem } from '@/components/dashboard/ToastContainer'
+import { useVertical } from '@/context/VerticalContext'
 
 // ── SASH hallucination guard ──────────────────────────────────────────────────
 // (02) 9889 0289 is the Southern Animal Specialist Hospital phone number.
@@ -114,6 +115,7 @@ function DetailPanel({
   item:     CallInboxItem
   onAction: (id: string, action: 'CALL_BACK' | 'BOOK' | 'DONE') => void
 }) {
+  const vertical   = useVertical()
   const isActioned = item.status === 'ACTIONED'
   const isUrgent   = item.urgency === 'CRITICAL' || item.urgency === 'URGENT'
   const primaryBg  = isUrgent ? '#DC2626' : '#0F6E56'
@@ -191,7 +193,7 @@ function DetailPanel({
           <div className="grid grid-cols-2 gap-2">
             {/* Owner */}
             <div className="bg-slate-50 rounded-lg p-3">
-              <p className="text-[10px] text-slate-400 mb-0.5">Owner</p>
+              <p className="text-[10px] text-slate-400 mb-0.5">{vertical.ownerLabel}</p>
               <p className="text-[13px] text-slate-800 font-medium truncate">{item.callerName}</p>
             </div>
             {/* Phone — with SASH hallucination guard */}
@@ -209,9 +211,9 @@ function DetailPanel({
                 <p className="text-[13px] font-mono text-slate-800 font-medium truncate">{item.callerPhone}</p>
               )}
             </div>
-            {/* Pet */}
+            {/* Patient */}
             <div className="bg-slate-50 rounded-lg p-3">
-              <p className="text-[10px] text-slate-400 mb-0.5">Pet</p>
+              <p className="text-[10px] text-slate-400 mb-0.5">{vertical.patientLabel}</p>
               <p className="text-[13px] text-slate-800 font-medium truncate">{item.petName !== '—' ? item.petName : '—'}</p>
             </div>
             {/* Species */}

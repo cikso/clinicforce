@@ -1,6 +1,9 @@
+'use client'
+
 import { Sparkles } from 'lucide-react'
 import { mockQueue } from '@/data/mock-queue'
 import Link from 'next/link'
+import { useVertical } from '@/context/VerticalContext'
 
 const triageBg: Record<string, string> = {
   URGENT: 'bg-red-50 text-red-700 border-red-200',
@@ -17,6 +20,7 @@ const triageDot: Record<string, string> = {
 }
 
 export default function CareQueuePanel() {
+  const vertical = useVertical()
   const top5 = [...mockQueue]
     .sort((a, b) => {
       const order: Record<string, number> = { URGENT: 0, HIGH: 1, ROUTINE: 2, FOLLOW_UP: 3 }
@@ -35,7 +39,7 @@ export default function CareQueuePanel() {
       <table className="w-full text-left">
         <thead>
           <tr className="border-b border-slate-100 text-[11px] uppercase tracking-widest text-slate-500 font-bold">
-            <th className="px-6 py-3">Patient</th>
+            <th className="px-6 py-3">{vertical.patientLabel}</th>
             <th className="px-4 py-3">Urgency</th>
             <th className="px-4 py-3">Wait</th>
             <th className="px-6 py-3">AI Summary</th>

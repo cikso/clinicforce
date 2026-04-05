@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Phone, Calendar, CheckCheck, ChevronDown, ChevronUp, Inbox, ArrowRight, Clock, AlertTriangle } from 'lucide-react'
 import type { CallInboxItem } from '@/data/mock-dashboard'
+import { useVertical } from '@/context/VerticalContext'
 
 type Filter = 'all' | 'unread' | 'urgent'
 
@@ -58,6 +59,7 @@ interface CallInboxProps {
 }
 
 export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllHref }: CallInboxProps) {
+  const vertical = useVertical()
   const [filter, setFilter]     = useState<Filter>('all')
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
@@ -111,7 +113,9 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
               {f === 'unread'
                 ? `Unread${unreadCount > 0 ? ` (${unreadCount})` : ''}`
                 : f === 'urgent'
-                ? `Urgent${urgentCount > 0 ? ` (${urgentCount})` : ''}`
+                ? <span title={vertical.urgencyCategories.join(' · ')}>
+                    {`Urgent${urgentCount > 0 ? ` (${urgentCount})` : ''}`}
+                  </span>
                 : 'All'}
             </button>
           ))}
