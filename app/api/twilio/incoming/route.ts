@@ -12,6 +12,18 @@ const ELEVENLABS_INBOUND_URL =
   process.env.ELEVENLABS_INBOUND_URL ??
   'https://api.elevenlabs.io/v1/convai/twilio/inbound_call'
 
+// Dynamic variables required by ElevenLabs first-message templates.
+// ElevenLabs reads these from query params on the inbound_call redirect URL.
+// Set CLINIC_NAME in Vercel env vars to match whatever {{clinic_name}} you
+// used in your ElevenLabs agent's first message.
+const CLINIC_NAME = encodeURIComponent(
+  process.env.CLINIC_NAME ?? 'the clinic'
+)
+
+function elevenLabsUrl() {
+  return `${ELEVENLABS_INBOUND_URL}?clinic_name=${CLINIC_NAME}`
+}
+
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,7 +61,7 @@ export async function POST() {
     // Fall through to ElevenLabs as safe default — better Sarah answers than nothing
     return twiml(`
 <Response>
-  <Redirect method="POST">${ELEVENLABS_INBOUND_URL}</Redirect>
+  <Redirect method="POST">${elevenLabsUrl()}</Redirect>
 </Response>`)
   }
 
@@ -69,7 +81,7 @@ export async function POST() {
       // the call params ElevenLabs needs to identify the agent by number
       return twiml(`
 <Response>
-  <Redirect method="POST">${ELEVENLABS_INBOUND_URL}</Redirect>
+  <Redirect method="POST">${elevenLabsUrl()}</Redirect>
 </Response>`)
     } else {
       // ── Coverage OFF → ring real clinic number ──────────────
@@ -87,7 +99,7 @@ export async function POST() {
     // Better an AI answers than the call is dropped.
     return twiml(`
 <Response>
-  <Redirect method="POST">${ELEVENLABS_INBOUND_URL}</Redirect>
+  <Redirect method="POST">${elevenLabsUrl()}</Redirect>
 </Response>`)
   }
 }

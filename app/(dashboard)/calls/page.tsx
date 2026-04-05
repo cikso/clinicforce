@@ -216,11 +216,18 @@ function DetailPanel({
               <p className="text-[10px] text-slate-400 mb-0.5">{vertical.patientLabel}</p>
               <p className="text-[13px] text-slate-800 font-medium truncate">{item.petName !== '—' ? item.petName : '—'}</p>
             </div>
-            {/* Species */}
-            <div className="bg-slate-50 rounded-lg p-3">
-              <p className="text-[10px] text-slate-400 mb-0.5">Species</p>
-              <p className="text-[13px] text-slate-800 font-medium truncate">{item.petSpecies !== '—' ? item.petSpecies : '—'}</p>
-            </div>
+            {/* Species — vet only. Other verticals show their handover fields instead. */}
+            {vertical.key === 'vet' ? (
+              <div className="bg-slate-50 rounded-lg p-3">
+                <p className="text-[10px] text-slate-400 mb-0.5">Species</p>
+                <p className="text-[13px] text-slate-800 font-medium truncate">{item.petSpecies !== '—' ? item.petSpecies : '—'}</p>
+              </div>
+            ) : (
+              <div className="bg-slate-50 rounded-lg p-3 col-span-2">
+                <p className="text-[10px] text-slate-400 mb-1">Key Handover Fields</p>
+                <p className="text-[11px] text-slate-600 leading-relaxed">{vertical.handoverFields.join(' · ')}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
