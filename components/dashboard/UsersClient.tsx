@@ -173,7 +173,7 @@ export default function UsersClient() {
           <p className="text-xs font-bold text-[#0f5b8a] uppercase tracking-wide mb-2">How staff accounts work</p>
           <ul className="space-y-1.5 text-xs text-slate-600">
             <li>1. Create an account with their name, email and a temporary password</li>
-            <li>2. Email them <strong>clinicforce.vercel.app/login</strong> with their credentials</li>
+            <li>2. Email them <strong>clinicforce.io/login</strong> with their credentials</li>
             <li>3. They sign in and can access the Coverage Console immediately</li>
           </ul>
         </div>

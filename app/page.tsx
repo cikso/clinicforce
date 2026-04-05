@@ -611,7 +611,7 @@ export default function LandingPage() {
                 <li>Custom PMS integration</li>
                 <li>White-label option available</li>
               </ul>
-              <button className="price-btn price-btn-outline" onClick={() => window.location.href = 'mailto:hello@clinicforce.ai'}>Contact Sales</button>
+              <button className="price-btn price-btn-outline" onClick={() => window.location.href = 'mailto:hello@clinicforce.io'}>Contact Sales</button>
             </div>
           </div>
           <p className="price-note">No setup fees · No lock-in contracts · Cancel anytime · Most clinics recover their full subscription cost in the first week</p>
@@ -722,7 +722,7 @@ export default function LandingPage() {
           </div>
           <div className="footer-bottom">
             <div>© 2026 ClinicForce · All rights reserved</div>
-            <div>hello@clinicforce.ai</div>
+            <div>hello@clinicforce.io</div>
           </div>
         </div>
       </footer>

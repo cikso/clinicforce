@@ -39,7 +39,7 @@ function twiml(xml: string) {
  * Setup required in Twilio Console:
  *   Phone Numbers → +61 2 5300 5033 → Voice
  *   "A call comes in" → Webhook → POST
- *   URL: https://clinicforce.vercel.app/api/twilio/incoming
+ *   URL: https://clinicforce.io/api/twilio/incoming
  */
 export async function POST() {
   const clinicNumber = process.env.CLINIC_REAL_NUMBER
