@@ -92,7 +92,7 @@ function InsightsSidebar() {
           <path d="M8 16 Q11 10 14 16 Q17 22 20 16 Q23 10 24 16" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
         </svg>
         <div className="min-w-0">
-          <h1 className="font-semibold text-lg text-white leading-snug">VetForce</h1>
+          <h1 className="font-semibold text-lg text-white leading-snug">ClinicForce</h1>
           <p className="text-xs truncate mt-px" style={{ color: '#6b7fa3' }}>Happy Paws</p>
         </div>
       </div>

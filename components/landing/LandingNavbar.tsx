@@ -30,7 +30,7 @@ export function LandingNavbar() {
             <path d="M8 3v10M3 8h10" stroke="#080B12" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
-        VetForce
+        ClinicForce
       </a>
 
       {/* Links */}

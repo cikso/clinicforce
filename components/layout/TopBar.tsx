@@ -74,7 +74,7 @@ export default function TopBar({
               )}
             </>
           ) : (
-            <span>VetForce <span className="font-bold">off</span> · Reception active</span>
+            <span>ClinicForce <span className="font-bold">off</span> · Reception active</span>
           )}
         </div>
       )}

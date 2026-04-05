@@ -4,7 +4,7 @@ const STEPS = [
   {
     num: '01', active: true,
     title: 'Answer',
-    desc: 'VetForce picks up within one ring. No hold music. No phone tree. The caller is greeted warmly and feels heard from the first word.',
+    desc: 'ClinicForce picks up within one ring. No hold music. No phone tree. The caller is greeted warmly and feels heard from the first word.',
   },
   {
     num: '02', active: false,
@@ -14,7 +14,7 @@ const STEPS = [
   {
     num: '03', active: false,
     title: 'Assess',
-    desc: 'Routine enquiry or potential emergency? VetForce reads the call and escalates time-sensitive cases immediately to the right person.',
+    desc: 'Routine enquiry or potential emergency? ClinicForce reads the call and escalates time-sensitive cases immediately to the right person.',
   },
   {
     num: '04', active: false,

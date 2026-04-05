@@ -48,7 +48,7 @@ export function LandingBenefits() {
         }}>
           <div aria-hidden style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(0,200,150,0.3), transparent)' }} />
           <p style={{ fontSize: 18, lineHeight: 1.65, color: '#F0F4FF', fontWeight: 400, marginBottom: 28, letterSpacing: '-0.2px' }}>
-            &ldquo;We were losing <strong style={{ color: '#00C896', fontWeight: 600 }}>3 to 5 bookings a day</strong> during lunch. VetForce was running by Wednesday afternoon, and by Friday our front desk coordinator said it felt like we&rsquo;d hired someone new.&rdquo;
+            &ldquo;We were losing <strong style={{ color: '#00C896', fontWeight: 600 }}>3 to 5 bookings a day</strong> during lunch. ClinicForce was running by Wednesday afternoon, and by Friday our front desk coordinator said it felt like we&rsquo;d hired someone new.&rdquo;
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #2A3550, #1C2438)', border: '1px solid rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 15, color: '#8B95B0' }}>SR</div>

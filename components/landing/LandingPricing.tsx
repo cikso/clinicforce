@@ -173,7 +173,7 @@ export function LandingPricing() {
           <p style={{ fontSize: 15, color: '#8B95B0', marginBottom: 12, fontWeight: 400 }}>
             Multi-location or enterprise?{' '}
             <a
-              href="mailto:hello@vetforce.ai"
+              href="mailto:hello@clinicforce.ai"
               style={{ color: '#00C896', textDecoration: 'none', fontWeight: 500 }}
               onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline' }}
               onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none' }}

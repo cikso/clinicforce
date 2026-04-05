@@ -101,7 +101,7 @@ export default function LandingPage() {
         <div className="nav-inner">
           <div className="nav-logo">
             <LogoMark />
-            VetForce
+            ClinicForce
           </div>
           <div className="nav-links">
             <a href="#features">Platform</a>
@@ -134,7 +134,7 @@ export default function LandingPage() {
                 <em>clocks out.</em>
               </h1>
               <p className="hero-sub">
-                VetForce handles every call your team can't take — intake, triage, urgency detection, booking, and clean handoff. Installed in a day. Live the same week.
+                ClinicForce handles every call your team can't take — intake, triage, urgency detection, booking, and clean handoff. Installed in a day. Live the same week.
               </p>
               <div className="hero-actions">
                 <button className="btn-lg" onClick={() => window.open(CALENDLY, '_blank')}>Book a Demo</button>
@@ -170,7 +170,7 @@ export default function LandingPage() {
                     <div className="terminal-dot" style={{ background: '#ffbd2e' }} />
                     <div className="terminal-dot" style={{ background: '#28c840' }} />
                   </div>
-                  <div className="terminal-title">VetForce / Live Call</div>
+                  <div className="terminal-title">ClinicForce / Live Call</div>
                   <div className="terminal-live">
                     <div className="live-pulse" />
                     LIVE
@@ -291,7 +291,7 @@ export default function LandingPage() {
             <div className="fade-in" style={{ animationDelay: '.15s' }}>
               <div className="problem-quote">
                 <div className="quote-text">
-                  "We were losing 3 to 5 bookings a day during lunch. VetForce was running by Wednesday afternoon, and by Friday our front desk coordinator said it felt like we'd hired someone new."
+                  "We were losing 3 to 5 bookings a day during lunch. ClinicForce was running by Wednesday afternoon, and by Friday our front desk coordinator said it felt like we'd hired someone new."
                 </div>
                 <div className="quote-attr">
                   <div className="quote-avatar">SR</div>
@@ -352,7 +352,7 @@ export default function LandingPage() {
                 <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
               <div className="feature-title">Overflow handling</div>
-              <div className="feature-desc">When your team is busy, VetForce steps in. Handles multiple simultaneous calls with zero hold time. Your callers never hear a busy signal again.</div>
+              <div className="feature-desc">When your team is busy, ClinicForce steps in. Handles multiple simultaneous calls with zero hold time. Your callers never hear a busy signal again.</div>
               <span className="feature-pill">Live now</span>
             </div>
           </div>
@@ -437,13 +437,13 @@ export default function LandingPage() {
           <div className="section-header fade-in">
             <div style={{ marginBottom: 16 }}><span className="tag">How it works</span></div>
             <h2 className="section-title">From first ring to<br /><em>clean handoff</em> in seconds.</h2>
-            <p className="section-sub">A reception workflow that runs itself — no configuration required after setup. VetForce handles the call end-to-end so your team picks up exactly where it left off.</p>
+            <p className="section-sub">A reception workflow that runs itself — no configuration required after setup. ClinicForce handles the call end-to-end so your team picks up exactly where it left off.</p>
           </div>
           <div className="steps-grid">
             <div className="step fade-in">
               <div className="step-num">01 — Answer</div>
               <div className="step-title">Instant pickup</div>
-              <div className="step-desc">VetForce answers within one ring. No hold music. No phone tree. The caller is greeted warmly and feels heard from the first word.</div>
+              <div className="step-desc">ClinicForce answers within one ring. No hold music. No phone tree. The caller is greeted warmly and feels heard from the first word.</div>
               <div className="step-visual"><span className="hl">INBOUND</span> · +61 2 8734 ****<br />Connected in <span className="hl">0.4s</span><br />"Hi, you've reached Greenfield Vet..."</div>
             </div>
             <div className="step fade-in" style={{ animationDelay: '.1s' }}>
@@ -455,7 +455,7 @@ export default function LandingPage() {
             <div className="step fade-in" style={{ animationDelay: '.2s' }}>
               <div className="step-num">03 — Assess</div>
               <div className="step-title">Urgency detection</div>
-              <div className="step-desc">Routine enquiry or potential emergency? VetForce reads the call and escalates time-sensitive cases immediately to the right person.</div>
+              <div className="step-desc">Routine enquiry or potential emergency? ClinicForce reads the call and escalates time-sensitive cases immediately to the right person.</div>
               <div className="step-visual"><span className="hl">URGENCY:</span> HIGH<br />Possible fracture / trauma<br />SMS → on-call vet · 2:41 PM</div>
             </div>
             <div className="step fade-in" style={{ animationDelay: '.3s' }}>
@@ -479,7 +479,7 @@ export default function LandingPage() {
               <div>
                 <span className="tag">Pilot clinic</span>
                 <div className="case-title" style={{ marginTop: 12 }}>An Australian vet clinic<br />saw results in the first week.</div>
-                <div className="case-subtitle">After deploying VetForce to handle lunch breaks, overflow, and after-hours calls, the practice recovered significant revenue and freed up their front desk team to focus on in-clinic care.</div>
+                <div className="case-subtitle">After deploying ClinicForce to handle lunch breaks, overflow, and after-hours calls, the practice recovered significant revenue and freed up their front desk team to focus on in-clinic care.</div>
               </div>
               <div className="case-clinic">
                 <div className="case-clinic-name">Sydney Metro Vet Clinic</div>
@@ -515,12 +515,12 @@ export default function LandingPage() {
           <div className="section-header fade-in">
             <div style={{ marginBottom: 16 }}><span className="tag">How we compare</span></div>
             <h2 className="section-title">Built for vet clinics.<br /><em>Not retrofitted.</em></h2>
-            <p className="section-sub">Generic AI answering services aren't built for the urgency, terminology, or workflows of veterinary practice. VetForce is.</p>
+            <p className="section-sub">Generic AI answering services aren't built for the urgency, terminology, or workflows of veterinary practice. ClinicForce is.</p>
           </div>
           <div className="compare-table fade-in">
             <div className="compare-head">
               <div className="compare-col-head" />
-              <div className="compare-col-head highlight">VetForce</div>
+              <div className="compare-col-head highlight">ClinicForce</div>
               <div className="compare-col-head">Dodo</div>
               <div className="compare-col-head">Generic AI</div>
               <div className="compare-col-head">Human answering</div>
@@ -611,7 +611,7 @@ export default function LandingPage() {
                 <li>Custom PMS integration</li>
                 <li>White-label option available</li>
               </ul>
-              <button className="price-btn price-btn-outline" onClick={() => window.location.href = 'mailto:hello@vetforce.ai'}>Contact Sales</button>
+              <button className="price-btn price-btn-outline" onClick={() => window.location.href = 'mailto:hello@clinicforce.ai'}>Contact Sales</button>
             </div>
           </div>
           <p className="price-note">No setup fees · No lock-in contracts · Cancel anytime · Most clinics recover their full subscription cost in the first week</p>
@@ -628,7 +628,7 @@ export default function LandingPage() {
           <div className="testi-grid">
             <div className="testi-card fade-in">
               <div className="testi-stars">★★★★★</div>
-              <div className="testi-text">"Before VetForce, we were missing calls every single lunch break. Now I actually leave the clinic knowing every call is being handled properly. It's genuinely felt like hiring another team member."</div>
+              <div className="testi-text">"Before ClinicForce, we were missing calls every single lunch break. Now I actually leave the clinic knowing every call is being handled properly. It's genuinely felt like hiring another team member."</div>
               <div className="testi-attr">
                 <div className="testi-avatar">SR</div>
                 <div>
@@ -684,7 +684,7 @@ export default function LandingPage() {
             <div>
               <div className="footer-logo">
                 <LogoMark />
-                VetForce
+                ClinicForce
               </div>
               <div className="footer-tagline">AI-powered front desk for veterinary clinics. Purpose-built for the urgencies and workflows of vet medicine.</div>
               <div className="footer-status">
@@ -721,8 +721,8 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="footer-bottom">
-            <div>© 2026 VetForce · All rights reserved</div>
-            <div>hello@vetforce.ai</div>
+            <div>© 2026 ClinicForce · All rights reserved</div>
+            <div>hello@clinicforce.ai</div>
           </div>
         </div>
       </footer>

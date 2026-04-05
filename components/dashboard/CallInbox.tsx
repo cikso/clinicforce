@@ -125,7 +125,7 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
             <Inbox className="w-8 h-8 text-slate-200 mx-auto mb-2.5" />
             <p className="text-sm font-semibold text-slate-400">No calls to show</p>
             <p className="text-xs text-slate-300 mt-0.5">
-              Calls handled by VetForce will appear here
+              Calls handled by ClinicForce will appear here
             </p>
           </div>
         ) : (

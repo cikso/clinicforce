@@ -20,7 +20,7 @@ export function LandingFooter() {
             <path d="M8 3v10M3 8h10" stroke="#080B12" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
-        VetForce
+        ClinicForce
       </a>
 
       {/* Links */}
@@ -41,7 +41,7 @@ export function LandingFooter() {
 
       {/* Copyright */}
       <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#4A5470', letterSpacing: '0.5px' }}>
-        © 2026 VetForce &nbsp;·&nbsp; ALL SYSTEMS OPERATIONAL
+        © 2026 ClinicForce &nbsp;·&nbsp; ALL SYSTEMS OPERATIONAL
       </div>
     </footer>
   )

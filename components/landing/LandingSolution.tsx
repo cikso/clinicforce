@@ -20,14 +20,14 @@ export function LandingSolution() {
     {
       num: '03',
       title: 'Urgency Assessment',
-      desc: 'When something urgent comes in, VetForce recognises it and escalates appropriately.',
+      desc: 'When something urgent comes in, ClinicForce recognises it and escalates appropriately.',
       width: 'lg:col-span-3',
       offset: 'lg:mt-8',
     },
     {
       num: '04',
       title: 'Structured Handoff',
-      desc: 'Delivers a clean intake summary to your team — so they pick up exactly where VetForce left off.',
+      desc: 'Delivers a clean intake summary to your team — so they pick up exactly where ClinicForce left off.',
       width: 'lg:col-span-2',
       offset: 'lg:mt-24',
     },
@@ -46,7 +46,7 @@ export function LandingSolution() {
             Seamless coverage. Zero dropped calls.
           </h2>
           <p className="text-xl md:text-2xl text-[#0A0A0A]/60 leading-relaxed font-light max-w-2xl">
-            VetForce acts as an invisible extension of your team — answering calls, capturing caller and patient details, handling routine enquiries, and escalating anything urgent. Turn it on when you need it, and your front desk never goes dark.
+            ClinicForce acts as an invisible extension of your team — answering calls, capturing caller and patient details, handling routine enquiries, and escalating anything urgent. Turn it on when you need it, and your front desk never goes dark.
           </p>
         </div>
 

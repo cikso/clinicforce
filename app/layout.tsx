@@ -5,8 +5,8 @@ import './globals.css'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 export const metadata: Metadata = {
-  title: 'VetForce — AI Front Desk for Veterinary Clinics',
-  description: 'VetForce intelligently handles your calls, captures patient details, and triages urgency 24/7.',
+  title: 'ClinicForce — AI Front Desk for Veterinary Clinics',
+  description: 'ClinicForce intelligently handles your calls, captures patient details, and triages urgency 24/7.',
 }
 
 export default function RootLayout({

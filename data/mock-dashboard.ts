@@ -1,5 +1,5 @@
 ﻿// ─────────────────────────────────────────────────────────────
-// VetForce — Coverage Console Mock Data
+// ClinicForce — Coverage Console Mock Data
 // ─────────────────────────────────────────────────────────────
 
 export type Urgency = 'CRITICAL' | 'URGENT' | 'ROUTINE'

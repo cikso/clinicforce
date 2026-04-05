@@ -32,7 +32,7 @@ export default function LoginForm() {
   return (
     <div className="w-full max-w-sm">
       <h2 className="text-2xl font-bold text-[#0f2744] mb-1">Clinic Login</h2>
-      <p className="text-sm text-slate-500 mb-8">Sign in to your VetForce dashboard</p>
+      <p className="text-sm text-slate-500 mb-8">Sign in to your ClinicForce dashboard</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
