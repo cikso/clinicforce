@@ -3,6 +3,8 @@ import ChatWidget from '@/components/chat/ChatWidget'
 import { VerticalProvider } from '@/context/VerticalContext'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const profile = await getClinicProfile()
 
