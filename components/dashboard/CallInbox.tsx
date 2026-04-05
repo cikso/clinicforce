@@ -2,15 +2,24 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Phone, Calendar, CheckCheck, ChevronDown, ChevronUp, Inbox, ArrowRight, Clock } from 'lucide-react'
+import { Phone, Calendar, CheckCheck, ChevronDown, ChevronUp, Inbox, ArrowRight, Clock, AlertTriangle } from 'lucide-react'
 import type { CallInboxItem } from '@/data/mock-dashboard'
 
 type Filter = 'all' | 'unread' | 'urgent'
 
 const URGENCY_CONFIG = {
-  CRITICAL: { label: 'Critical', bg: 'bg-red-500',   text: 'text-white',      border: 'border-red-500',      dot: 'bg-white'     },
-  URGENT:   { label: 'Urgent',   bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200/80', dot: 'bg-amber-500' },
-  ROUTINE:  { label: 'Routine',  bg: 'bg-slate-100', text: 'text-slate-500',  border: 'border-slate-200',    dot: 'bg-slate-300' },
+  CRITICAL: { label: 'EMERGENCY', bg: 'bg-red-100',   text: 'text-red-700',   border: 'border-red-200',   dot: 'bg-red-600',   pulse: true  },
+  URGENT:   { label: 'URGENT',    bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-200', dot: 'bg-amber-500', pulse: false },
+  ROUTINE:  { label: 'NEW',       bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-200', dot: 'bg-green-500', pulse: false },
+}
+
+// ── SASH hallucination guard ─────────────────────────────────────────────────
+// (02) 9889 0289 is the Southern Animal Specialist Hospital phone number.
+// If the AI captures this as a caller's number it is a system hallucination.
+const SASH_DIGITS = '0298890289'
+function isSashHallucination(phone: string | null | undefined): boolean {
+  if (!phone) return false
+  return phone.replace(/\D/g, '') === SASH_DIGITS
 }
 
 const AVATAR_COLORS = [
@@ -144,9 +153,11 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
                   onClick={() => handleExpand(item.id)}
                   className="w-full px-5 py-3.5 flex items-start gap-3 text-left hover:bg-slate-50 transition-colors"
                 >
-                  {/* Unread dot */}
+                  {/* Urgency / unread dot */}
                   <div className="w-2 shrink-0 pt-[7px]">
-                    {isUnread && <div className="w-2 h-2 rounded-full bg-[#0891b2]" />}
+                    {isUnread && (
+                      <div className={`w-2 h-2 rounded-full ${urg.dot}${urg.pulse ? ' animate-pulse' : ''}`} />
+                    )}
                   </div>
 
                   {/* Avatar */}
@@ -173,14 +184,22 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
                       <p className="text-xs text-slate-500 truncate leading-relaxed">{item.summary}</p>
                     )}
                     {item.callerPhone && item.callerPhone !== '—' && (
-                      <p className="text-[10px] text-slate-400 mt-0.5">{item.callerPhone}</p>
+                      isSashHallucination(item.callerPhone) ? (
+                        <p className="text-[10px] text-red-600 font-semibold mt-0.5 flex items-center gap-1">
+                          <AlertTriangle className="w-2.5 h-2.5 shrink-0" />
+                          {item.callerPhone}
+                          <span className="font-normal">(System Hallucination)</span>
+                        </p>
+                      ) : (
+                        <p className="text-[10px] text-slate-400 mt-0.5">{item.callerPhone}</p>
+                      )
                     )}
                   </div>
 
                   {/* Right: badge + time + duration */}
                   <div className="flex flex-col items-end gap-1.5 shrink-0 ml-2">
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold ${urg.bg} ${urg.text} ${urg.border}`}>
-                      <span className={`w-1 h-1 rounded-full ${urg.dot}`} />
+                      <span className={`w-1 h-1 rounded-full ${urg.dot}${urg.pulse ? ' animate-pulse' : ''}`} />
                       {urg.label}
                     </span>
                     <div className="flex items-center gap-1.5">
@@ -224,7 +243,17 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
                       {/* Phone */}
                       <div>
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Phone</p>
-                        <p className="text-xs font-semibold text-slate-700">{item.callerPhone}</p>
+                        {isSashHallucination(item.callerPhone) ? (
+                          <div className="flex items-start gap-1.5">
+                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="text-xs font-semibold text-red-600">{item.callerPhone}</p>
+                              <p className="text-[10px] text-red-500 mt-0.5">(System Hallucination — SASH Number)</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-xs font-semibold text-slate-700">{item.callerPhone}</p>
+                        )}
                       </div>
 
                       {/* Action buttons */}

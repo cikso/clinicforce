@@ -1,11 +1,20 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Phone, Calendar, CheckCheck, Info, Clock } from 'lucide-react'
+import { Phone, Calendar, CheckCheck, Info, Clock, AlertTriangle } from 'lucide-react'
 import TopBar from '@/components/layout/TopBar'
 import ToastContainer from '@/components/dashboard/ToastContainer'
 import { INITIAL_INBOX, type CallInboxItem } from '@/data/mock-dashboard'
 import type { ToastItem } from '@/components/dashboard/ToastContainer'
+
+// ── SASH hallucination guard ──────────────────────────────────────────────────
+// (02) 9889 0289 is the Southern Animal Specialist Hospital phone number.
+// If the AI captures this as a caller's number it is a system hallucination.
+const SASH_DIGITS = '0298890289'
+function isSashHallucination(phone: string | null | undefined): boolean {
+  if (!phone) return false
+  return phone.replace(/\D/g, '') === SASH_DIGITS
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -42,10 +51,12 @@ function ListRow({
           : 'hover:bg-slate-50 border-l-2 border-transparent'
       }`}
     >
-      {/* Unread dot / invisible spacer */}
-      <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[7px]"
-        style={{ background: isNew ? '#1D9E75' : 'transparent' }}
-      />
+      {/* Urgency / unread dot */}
+      <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 mt-[7px] ${
+        item.urgency === 'CRITICAL' ? 'bg-red-600 animate-pulse' :
+        item.urgency === 'URGENT'   ? 'bg-amber-500' :
+        isNew                       ? 'bg-green-500' : 'opacity-0'
+      }`} />
 
       {/* Avatar */}
       <div
@@ -84,11 +95,11 @@ function ListRow({
 
 function StatusBadge({ item }: { item: CallInboxItem }) {
   if (item.urgency === 'CRITICAL')
-    return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-red-600 border border-red-200">Critical</span>
+    return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-red-700 border border-red-200">EMERGENCY</span>
   if (item.urgency === 'URGENT')
-    return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-red-600 border border-red-200">Urgent</span>
+    return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700 border border-amber-200">URGENT</span>
   if (item.status === 'UNREAD')
-    return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">New</span>
+    return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-100 text-green-700 border border-green-200">NEW</span>
   if (item.status === 'READ')
     return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">Pending</span>
   return <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-500 border border-slate-200">Done</span>
@@ -124,10 +135,18 @@ function DetailPanel({
             </span>
           )}
           {item.callerPhone !== '—' && (
-            <span className="flex items-center gap-1">
-              <Phone className="w-3 h-3" />
-              {item.callerPhone}
-            </span>
+            isSashHallucination(item.callerPhone) ? (
+              <span className="flex items-center gap-1 text-red-600 font-semibold">
+                <AlertTriangle className="w-3 h-3 shrink-0" />
+                {item.callerPhone}
+                <span className="text-[10px] font-normal">(System Hallucination — SASH)</span>
+              </span>
+            ) : (
+              <span className="flex items-center gap-1">
+                <Phone className="w-3 h-3" />
+                {item.callerPhone}
+              </span>
+            )
           )}
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
@@ -170,19 +189,36 @@ function DetailPanel({
             Details
           </p>
           <div className="grid grid-cols-2 gap-2">
-            {[
-              { label: 'Owner',   value: item.callerName,                          mono: false },
-              { label: 'Phone',   value: item.callerPhone,                         mono: true  },
-              { label: 'Pet',     value: item.petName !== '—' ? item.petName : '—',     mono: false },
-              { label: 'Species', value: item.petSpecies !== '—' ? item.petSpecies : '—', mono: false },
-            ].map(({ label, value, mono }) => (
-              <div key={label} className="bg-slate-50 rounded-lg p-3">
-                <p className="text-[10px] text-slate-400 mb-0.5">{label}</p>
-                <p className={`text-[13px] text-slate-800 font-medium truncate ${mono ? 'font-mono' : ''}`}>
-                  {value}
-                </p>
-              </div>
-            ))}
+            {/* Owner */}
+            <div className="bg-slate-50 rounded-lg p-3">
+              <p className="text-[10px] text-slate-400 mb-0.5">Owner</p>
+              <p className="text-[13px] text-slate-800 font-medium truncate">{item.callerName}</p>
+            </div>
+            {/* Phone — with SASH hallucination guard */}
+            <div className="bg-slate-50 rounded-lg p-3">
+              <p className="text-[10px] text-slate-400 mb-0.5">Phone</p>
+              {isSashHallucination(item.callerPhone) ? (
+                <div className="flex items-start gap-1">
+                  <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-[13px] font-mono font-semibold text-red-600 truncate">{item.callerPhone}</p>
+                    <p className="text-[9px] text-red-500 leading-tight mt-0.5">System Hallucination — SASH Number</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-[13px] font-mono text-slate-800 font-medium truncate">{item.callerPhone}</p>
+              )}
+            </div>
+            {/* Pet */}
+            <div className="bg-slate-50 rounded-lg p-3">
+              <p className="text-[10px] text-slate-400 mb-0.5">Pet</p>
+              <p className="text-[13px] text-slate-800 font-medium truncate">{item.petName !== '—' ? item.petName : '—'}</p>
+            </div>
+            {/* Species */}
+            <div className="bg-slate-50 rounded-lg p-3">
+              <p className="text-[10px] text-slate-400 mb-0.5">Species</p>
+              <p className="text-[13px] text-slate-800 font-medium truncate">{item.petSpecies !== '—' ? item.petSpecies : '—'}</p>
+            </div>
           </div>
         </div>
       </div>
