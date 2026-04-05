@@ -5,7 +5,12 @@ import { getVertical } from '@/lib/verticals'
 const DEFAULT_DYNAMIC_VARIABLES = {
   clinic_name: 'Baulkham Hills Veterinary Hospital',
   subject_label: 'pet',
-} as const
+}
+
+type DynamicVariables = {
+  clinic_name: string
+  subject_label: string
+}
 
 function getSupabase() {
   return createClient(
@@ -71,7 +76,7 @@ async function extractToNumber(req: NextRequest): Promise<string | null> {
 
 async function handleInitiate(req: NextRequest) {
   const rawTo = await extractToNumber(req)
-  let dynamic_variables = DEFAULT_DYNAMIC_VARIABLES
+  let dynamic_variables: DynamicVariables = DEFAULT_DYNAMIC_VARIABLES
 
   try {
     const normalisedTo = rawTo ? normalisePhone(rawTo) : ''
