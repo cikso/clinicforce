@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
 
 export default function LoginForm({ next }: { next: string }) {
   const router = useRouter()
@@ -12,28 +11,37 @@ export default function LoginForm({ next }: { next: string }) {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+    setIsPending(true)
 
-    startTransition(async () => {
-      const supabase = createClient()
-
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
       })
 
-      if (signInError || !data.user) {
-        setError('Incorrect email or password. Please try again.')
+      if (!res.ok) {
+        const payload = await res.json().catch(() => null)
+        setError(payload?.error ?? 'Incorrect email or password. Please try again.')
         return
       }
 
       router.push(next.startsWith('/') ? next : '/overview')
       router.refresh()
-    })
+    } catch (err) {
+      console.error('[login] sign-in failed', err)
+      setError('Unable to sign in right now. Please try again in a moment.')
+    } finally {
+      setIsPending(false)
+    }
   }
 
   return (

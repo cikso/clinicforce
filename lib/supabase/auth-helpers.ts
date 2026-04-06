@@ -25,14 +25,16 @@ export async function getClinicProfile(): Promise<ClinicProfile | null> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  // Always use service role for profile lookup — bypasses RLS completely
-  const service = createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  )
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const queryClient = serviceRoleKey
+    ? createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+      )
+    : supabase
 
-  const { data, error } = await service
+  const { data, error } = await queryClient
     .from('clinic_users')
     .select(`
       id, name, role,
