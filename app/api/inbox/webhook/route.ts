@@ -88,6 +88,7 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
 
     if (exactMatch) {
+      const enriched = extractCallerInfo(transcript, '—')
       await supabase
         .from('call_inbox')
         .update({
@@ -96,6 +97,8 @@ export async function POST(req: NextRequest) {
           call_duration_seconds: callDurationSecs,
           urgency,
           vertical,
+          ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
+          ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
         })
         .eq('id', exactMatch.id)
 
@@ -117,6 +120,7 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
 
     if (recentMatch) {
+      const enriched = extractCallerInfo(transcript, '—')
       await supabase
         .from('call_inbox')
         .update({
@@ -126,6 +130,8 @@ export async function POST(req: NextRequest) {
           urgency,
           vertical,
           elevenlabs_conversation_id: conversationId,
+          ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
+          ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
         })
         .eq('id', recentMatch.id)
 
@@ -215,10 +221,25 @@ function extractPhone(text: string): string | null {
 }
 
 function extractPetName(text: string): string | null {
-  const m = text.match(
-    /(?:(?:my |our )(?:dog|cat|pet|rabbit|bird|puppy|kitten)(?:'s name)? is(?: called)?|called)\s+([A-Z][a-z]+)/i,
+  // "my dog Max" / "my cat, Bella" / "our rabbit named Thumper"
+  let m = text.match(
+    /\b(?:my|our|their)\s+(?:dog|cat|pet|rabbit|bird|puppy|kitten|guinea pig|hamster|horse|fish|lizard|snake|turtle)[,]?\s+(?:named?|called|is)?\s*([A-Z][a-zA-Z]+)/i,
   )
-  return m ? m[1] : null
+  if (m) return m[1]
+  // "his/her/its name is X" / "pet's name is X" / "the dog's name is X"
+  m = text.match(
+    /\b(?:his|her|its|the (?:dog|cat|bird|rabbit|pet|guinea pig|animal)'?s?)\s+name(?:\s+is)?\s+([A-Z][a-zA-Z]+)/i,
+  )
+  if (m) return m[1]
+  // "named X" or "called X" near a species word
+  m = text.match(/\b(?:named?|called)\s+([A-Z][a-zA-Z]+)/i)
+  if (m) return m[1]
+  // "their bird, Papppar" — animal followed by comma and capitalised name
+  m = text.match(
+    /\b(?:dog|cat|pet|rabbit|bird|puppy|kitten|guinea pig|hamster|horse)[,]\s+([A-Z][a-zA-Z]+)/i,
+  )
+  if (m) return m[1]
+  return null
 }
 
 function extractPetSpecies(text: string): string | null {

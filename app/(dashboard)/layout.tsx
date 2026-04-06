@@ -12,6 +12,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <VerticalProvider vertical={profile?.vertical ?? 'vet'}>
       <div className="h-screen flex overflow-hidden bg-slate-50">
         <Sidebar
+          clinicName={profile?.clinicName}
           userName={profile?.userName ?? 'Staff'}
           userRole={profile?.userRole ?? 'receptionist'}
         />
