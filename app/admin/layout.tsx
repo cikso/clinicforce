@@ -23,7 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq('user_id', user.id)
     .single()
 
-  if (!cu || cu.role !== 'clinic_admin') redirect('/overview')
+  if (!cu || !['clinic_admin', 'platform_owner'].includes(cu.role)) redirect('/overview')
 
   return (
     <>

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
   const { data: cu } = await supabase
     .from('clinic_users').select('role').eq('user_id', user.id).single()
-  if (!cu || cu.role !== 'clinic_admin') {
+  if (!cu || !['clinic_admin', 'platform_owner'].includes(cu.role)) {
     return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
   }
 
