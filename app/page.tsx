@@ -79,20 +79,6 @@ export default function LandingPage() {
     }
   }, [visibleMessages])
 
-  // Scroll fade-in using IntersectionObserver
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) e.target.classList.add('visible')
-        })
-      },
-      { threshold: 0.12 }
-    )
-    document.querySelectorAll('.lp-root .fade-in').forEach(el => observer.observe(el))
-    return () => observer.disconnect()
-  }, [])
-
   // Counter animation using IntersectionObserver
   useEffect(() => {
     const counterObserver = new IntersectionObserver(
