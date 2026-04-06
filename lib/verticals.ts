@@ -20,7 +20,7 @@ export const VERTICALS: Record<VerticalKey, VerticalConfig> = {
     label: 'Veterinary Clinic',
     pluralLabel: 'Veterinary Clinics',
     tagline: 'Built for vet clinics',
-    patientLabel: 'Patient (Animal)',
+    patientLabel: 'Pet Name',
     ownerLabel: 'Pet Owner',
     agentDescription: 'AI receptionist for veterinary clinics',
     urgencyCategories: ['Breathing difficulty', 'Suspected poisoning', 'Trauma / injury', 'Seizure', 'Collapse', 'Uncontrolled bleeding'],
