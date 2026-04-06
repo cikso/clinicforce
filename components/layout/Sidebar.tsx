@@ -21,6 +21,9 @@ const ADMIN_NAV = [
   { label: 'Settings', href: '/settings', icon: Settings },
 ]
 
+// Roles that can see Team + Settings
+const ADMIN_ROLES = ['platform_owner', 'clinic_admin', 'admin']
+
 interface SidebarProps {
   clinicName?: string
   userName?:   string
@@ -28,10 +31,11 @@ interface SidebarProps {
 }
 
 export default function Sidebar({
-  clinicName = 'Your Clinic',
+  clinicName = '',
   userName   = 'Staff',
   userRole   = 'receptionist',
 }: SidebarProps) {
+  const isAdmin = ADMIN_ROLES.includes(userRole)
   const pathname = usePathname()
   const router   = useRouter()
   const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -58,7 +62,9 @@ export default function Sidebar({
         </svg>
         <div className="min-w-0">
           <h1 className="font-semibold text-lg text-white leading-snug">ClinicForce</h1>
-          <p className="text-xs text-slate-400 truncate mt-px">{clinicName}</p>
+          {clinicName && (
+            <p className="text-xs text-slate-400 truncate mt-px">{clinicName}</p>
+          )}
         </div>
       </div>
 
@@ -96,10 +102,12 @@ export default function Sidebar({
 
       {/* -- Admin Nav + Profile -------------------------------- */}
       <div className="px-2 py-4 border-t border-slate-800">
-        <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
-          Admin
-        </p>
-        <div className="space-y-0.5 mb-4">
+        {isAdmin && (
+          <>
+            <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
+              Admin
+            </p>
+            <div className="space-y-0.5 mb-4">
           {ADMIN_NAV.map(({ label, href, icon: Icon }) => {
             const active = isActive(href)
             return (
@@ -123,7 +131,9 @@ export default function Sidebar({
               </Link>
             )
           })}
-        </div>
+            </div>
+          </>
+        )}
 
         {/* User card */}
         <div className="mx-2 px-3 py-2.5 bg-slate-800 rounded-xl flex items-center gap-2.5">

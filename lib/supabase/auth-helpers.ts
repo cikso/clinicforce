@@ -42,7 +42,7 @@ export async function getClinicProfile(): Promise<ClinicProfile | null> {
     userName: (data.name as string) ?? user.email ?? 'Staff',
     userRole: (data.role as string) ?? 'receptionist',
     clinicId: (clinic?.id as string) ?? '',
-    clinicName: (clinic?.name as string) ?? 'Your Clinic',
+    clinicName: (clinic?.name as string) ?? '',
     clinicPhone: (clinic?.phone as string) ?? '',
     clinicSuburb: (clinic?.suburb as string) ?? '',
     clinicState: (clinic?.state as string) ?? '',

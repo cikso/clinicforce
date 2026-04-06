@@ -25,8 +25,8 @@ export default async function SettingsPage() {
 
   if (!cu?.clinic_id) redirect('/overview')
 
-  // Only clinic_admin can access settings
-  if (cu.role !== 'clinic_admin') redirect('/overview')
+  // Only clinic_admin or platform_owner can access settings
+  if (!['clinic_admin', 'platform_owner'].includes(cu.role)) redirect('/overview')
 
   const { data: clinic } = await service
     .from('clinics')
