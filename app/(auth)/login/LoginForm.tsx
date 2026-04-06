@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -12,13 +12,14 @@ export default function LoginForm({ next }: { next: string }) {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+    setIsPending(true)
 
-    startTransition(async () => {
+    try {
       const supabase = createClient()
 
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
@@ -33,7 +34,12 @@ export default function LoginForm({ next }: { next: string }) {
 
       router.push(next.startsWith('/') ? next : '/overview')
       router.refresh()
-    })
+    } catch (err) {
+      console.error('[login] sign-in failed', err)
+      setError('Unable to sign in right now. Please try again in a moment.')
+    } finally {
+      setIsPending(false)
+    }
   }
 
   return (

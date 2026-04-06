@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-)
+function getSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!url || !key) return null
+  return createClient(url, key)
+}
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
@@ -47,6 +49,11 @@ function relativeTime(iso: string): string {
 
 // ── GET /api/insights ─────────────────────────────────────────────────────────
 export async function GET() {
+  const supabase = getSupabase()
+  if (!supabase) {
+    return NextResponse.json({ error: 'Supabase env vars are not configured' }, { status: 500 })
+  }
+
   const now           = new Date()
   const sevenDaysAgo  = new Date(now.getTime() - 7  * 86_400_000)
   const fourteenAgo   = new Date(now.getTime() - 14 * 86_400_000)
