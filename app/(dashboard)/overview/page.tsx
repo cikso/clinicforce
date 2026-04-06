@@ -1,4 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { redirect } from 'next/navigation'
 import DashboardClient from '@/components/dashboard/DashboardClient'
 import type { SetupStep } from '@/components/dashboard/GettingStartedPanel'
 
@@ -46,6 +48,33 @@ async function getSetupStatus() {
 }
 
 export default async function OverviewPage() {
+  // Server-side onboarding gate using service role (bypasses RLS)
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    const service = createServiceClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+    const { data: cu } = await service
+      .from('clinic_users')
+      .select('role, clinics(onboarding_completed)')
+      .eq('user_id', user.id)
+      .limit(1)
+      .single()
+
+    const role = cu?.role as string | undefined
+    const clinic = Array.isArray(cu?.clinics) ? cu?.clinics[0] : cu?.clinics
+    const onboardingCompleted = (clinic as { onboarding_completed?: boolean } | null)?.onboarding_completed ?? false
+
+    // Non-owner who hasn't finished onboarding → send them there
+    if (role !== 'platform_owner' && !onboardingCompleted) {
+      redirect('/onboarding/clinic-details')
+    }
+  }
+
   const setup = await getSetupStatus()
 
   let gettingStarted: { steps: SetupStep[]; clinicName: string } | null = null

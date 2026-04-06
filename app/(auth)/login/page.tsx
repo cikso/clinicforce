@@ -33,30 +33,8 @@ function LoginForm() {
         return
       }
 
-      // Check role + onboarding status
-      const { data: clinicUser } = await supabase
-        .from('clinic_users')
-        .select('clinic_id, role, clinics(onboarding_completed)')
-        .eq('user_id', data.user.id)
-        .limit(1)
-        .single()
-
-      // Platform owner skips onboarding entirely
-      if (clinicUser?.role === 'platform_owner') {
-        router.push('/overview')
-        router.refresh()
-        return
-      }
-
-      const onboardingCompleted =
-        (clinicUser?.clinics as { onboarding_completed?: boolean } | null)
-          ?.onboarding_completed ?? false
-
-      if (!onboardingCompleted) {
-        router.push('/onboarding/clinic-details')
-      } else {
-        router.push(next.startsWith('/') ? next : '/overview')
-      }
+      // Always go to overview — server-side layout handles onboarding redirect
+      router.push(next.startsWith('/') ? next : '/overview')
 
       router.refresh()
     })
