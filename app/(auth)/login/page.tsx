@@ -33,12 +33,20 @@ function LoginForm() {
         return
       }
 
-      // Check onboarding status via clinic_users → clinics
+      // Check role + onboarding status
       const { data: clinicUser } = await supabase
         .from('clinic_users')
-        .select('clinic_id, clinics(onboarding_completed)')
+        .select('clinic_id, role, clinics(onboarding_completed)')
         .eq('user_id', data.user.id)
+        .limit(1)
         .single()
+
+      // Platform owner skips onboarding entirely
+      if (clinicUser?.role === 'platform_owner') {
+        router.push('/overview')
+        router.refresh()
+        return
+      }
 
       const onboardingCompleted =
         (clinicUser?.clinics as { onboarding_completed?: boolean } | null)

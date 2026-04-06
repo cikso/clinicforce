@@ -34,12 +34,18 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(`${origin}/auth/update-password`)
       }
 
-      // Normal login/signup — check onboarding status
+      // Normal login/signup — check role + onboarding status
       const { data: clinicUser } = await supabase
         .from('clinic_users')
-        .select('clinic_id, clinics(onboarding_completed)')
+        .select('clinic_id, role, clinics(onboarding_completed)')
         .eq('user_id', data.user.id)
+        .limit(1)
         .single()
+
+      // Platform owner never goes through onboarding
+      if (clinicUser?.role === 'platform_owner') {
+        return NextResponse.redirect(`${origin}/overview`)
+      }
 
       const onboardingCompleted =
         (clinicUser?.clinics as { onboarding_completed?: boolean } | null)
