@@ -1,12 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Inbox,
-  BarChart3, ListChecks, Settings, Users,
+  BarChart3, ListChecks, Settings, Users, LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
 
 const PRIMARY_NAV = [
   { label: 'Overview',     href: '/overview',     icon: LayoutDashboard },
@@ -32,11 +33,18 @@ export default function Sidebar({
   userRole   = 'receptionist',
 }: SidebarProps) {
   const pathname = usePathname()
+  const router   = useRouter()
   const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
   const roleFmt  = userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase()
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(href + '/')
+  }
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
   }
 
   return (
@@ -126,6 +134,13 @@ export default function Sidebar({
             <p className="text-[13px] font-semibold text-slate-200 truncate leading-tight">{userName}</p>
             <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mt-px">{roleFmt}</p>
           </div>
+          <button
+            onClick={handleSignOut}
+            title="Sign out"
+            className="shrink-0 p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-slate-700 transition-colors"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 

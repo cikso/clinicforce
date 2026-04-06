@@ -24,7 +24,6 @@ export default function UsersClient() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('Receptionist')
-  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -38,7 +37,7 @@ export default function UsersClient() {
     const res = await fetch('/api/users/invite', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, role, password }),
+      body: JSON.stringify({ name, email, role }),
     })
     const data = await res.json()
 
@@ -55,8 +54,13 @@ export default function UsersClient() {
       role,
       addedAt: new Date().toLocaleDateString('en-AU'),
     }])
-    setSuccess(`Account created for ${name}. Send them their email and password.`)
-    setName(''); setEmail(''); setRole('Receptionist'); setPassword('')
+
+    if (data.emailSent === false) {
+      setSuccess(`Account created for ${name} but the welcome email could not be sent. Share the login URL with them manually: ${process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin}/login`)
+    } else {
+      setSuccess(`Account created and welcome email sent to ${email}. They'll receive a link to set their password.`)
+    }
+    setName(''); setEmail(''); setRole('Receptionist')
     setShowForm(false)
     setLoading(false)
   }
@@ -137,11 +141,10 @@ export default function UsersClient() {
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="jane@clinic.com.au"
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent transition-all" />
               </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Temporary Password *</label>
-                <input type="text" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Min. 6 characters"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent transition-all" />
-                <p className="text-[10px] text-slate-400 mt-1">You&apos;ll send this to the staff member manually — they can change it after logging in.</p>
+              <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl px-4 py-3">
+                <p className="text-[11px] text-emerald-700 font-medium">
+                  A welcome email will be sent automatically with a secure link for them to set their own password.
+                </p>
               </div>
 
               {error && <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-700">{error}</div>}
@@ -172,9 +175,9 @@ export default function UsersClient() {
         <div className="bg-[#f0f6ff] border border-[#c8e0f4] rounded-2xl p-5">
           <p className="text-xs font-bold text-[#0f5b8a] uppercase tracking-wide mb-2">How staff accounts work</p>
           <ul className="space-y-1.5 text-xs text-slate-600">
-            <li>1. Create an account with their name, email and a temporary password</li>
-            <li>2. Email them <strong>clinicforce.io/login</strong> with their credentials</li>
-            <li>3. They sign in and can access the Coverage Console immediately</li>
+            <li>1. Enter their name, email and role</li>
+            <li>2. A welcome email is sent automatically with a secure sign-in link</li>
+            <li>3. They click the link, set their password, and access the dashboard</li>
           </ul>
         </div>
 

@@ -17,6 +17,7 @@ import {
 import type { ToastItem } from '@/components/dashboard/ToastContainer'
 import { MODE_CONFIG } from '@/components/dashboard/CoverageStatusCard'
 import type { StatTrend } from '@/app/api/stats/route'
+import GettingStartedPanel, { type SetupStep } from '@/components/dashboard/GettingStartedPanel'
 
 interface StatsResponse {
   callsCovered:   { today: number; trend: StatTrend }
@@ -25,9 +26,13 @@ interface StatsResponse {
   coverageActive: { todayMins: number; trend: StatTrend }
 }
 
+interface DashboardClientProps {
+  gettingStarted?: { steps: SetupStep[]; clinicName: string } | null
+}
+
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
-export default function DashboardClient() {
+export default function DashboardClient({ gettingStarted }: DashboardClientProps = {}) {
   const [inbox,       setInbox]       = useState<CallInboxItem[]>(INITIAL_INBOX)
   const [mode,        setMode]        = useState<CoverageMode | null>(null)
   const [activatedAt, setActivatedAt] = useState<string | null>(null)
@@ -144,6 +149,14 @@ export default function DashboardClient() {
       onNewCase={mode ? handleDeactivate : undefined}
     >
       <div className="space-y-5">
+
+        {/* ── Getting Started ──────────────────────────────────── */}
+        {gettingStarted && !gettingStarted.steps.every(s => s.done) && (
+          <GettingStartedPanel
+            steps={gettingStarted.steps}
+            clinicName={gettingStarted.clinicName}
+          />
+        )}
 
         {/* ── KPI Row ─────────────────────────────────────────── */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

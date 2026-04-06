@@ -1,0 +1,137 @@
+import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
+import { NextResponse, type NextRequest } from 'next/server'
+import { cookies } from 'next/headers'
+
+export async function POST(request: NextRequest) {
+  let body: { token?: string; fullName?: string; password?: string }
+
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
+  }
+
+  const { token, fullName, password } = body
+
+  if (!token || !fullName || !password) {
+    return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 })
+  }
+
+  if (password.length < 8) {
+    return NextResponse.json(
+      { error: 'Password must be at least 8 characters.' },
+      { status: 400 }
+    )
+  }
+
+  // ── Service-role client (bypasses RLS) ────────────────────────────────────
+  const serviceRole = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+
+  // 1. Validate the invite token
+  const { data: invite, error: inviteError } = await serviceRole
+    .from('clinic_invites')
+    .select('id, email, role, clinic_id, expires_at, accepted_at')
+    .eq('token', token)
+    .is('accepted_at', null)
+    .single()
+
+  if (inviteError || !invite) {
+    return NextResponse.json(
+      { error: 'This invite link is invalid or has already been used.' },
+      { status: 404 }
+    )
+  }
+
+  if (new Date(invite.expires_at) < new Date()) {
+    return NextResponse.json(
+      { error: 'This invite link has expired. Please request a new one.' },
+      { status: 410 }
+    )
+  }
+
+  // 2. Create the auth user via admin API
+  const { data: newUser, error: createError } =
+    await serviceRole.auth.admin.createUser({
+      email: invite.email,
+      password,
+      email_confirm: true, // auto-confirm — invite already validates identity
+      user_metadata: { full_name: fullName },
+    })
+
+  if (createError || !newUser.user) {
+    // Handle "already registered" gracefully
+    if (createError?.message?.includes('already registered')) {
+      return NextResponse.json(
+        { error: 'An account with this email already exists. Try signing in.' },
+        { status: 409 }
+      )
+    }
+    console.error('[invite/accept] createUser error:', createError)
+    return NextResponse.json(
+      { error: 'Failed to create your account. Please try again.' },
+      { status: 500 }
+    )
+  }
+
+  const userId = newUser.user.id
+
+  // 3. Insert clinic_users row
+  const { error: cuError } = await serviceRole.from('clinic_users').insert({
+    user_id: userId,
+    clinic_id: invite.clinic_id,
+    role: invite.role,
+    name: fullName,
+  })
+
+  if (cuError) {
+    console.error('[invite/accept] clinic_users insert error:', cuError)
+    // Roll back — delete the auth user to keep state consistent
+    await serviceRole.auth.admin.deleteUser(userId)
+    return NextResponse.json(
+      { error: 'Failed to link your account to the clinic. Please try again.' },
+      { status: 500 }
+    )
+  }
+
+  // 4. Mark the invite as accepted
+  await serviceRole
+    .from('clinic_invites')
+    .update({ accepted_at: new Date().toISOString() })
+    .eq('id', invite.id)
+
+  // 5. Sign the user in (create session cookie) using the anon client
+  const cookieStore = await cookies()
+  const anonClient = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  const { error: signInError } = await anonClient.auth.signInWithPassword({
+    email: invite.email,
+    password,
+  })
+
+  if (signInError) {
+    // Account was created successfully — user can still sign in manually
+    console.warn('[invite/accept] auto sign-in failed:', signInError.message)
+  }
+
+  return NextResponse.json({ success: true })
+}

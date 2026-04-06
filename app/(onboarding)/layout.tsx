@@ -1,7 +1,18 @@
+import type { Metadata } from 'next'
+import OnboardingShell from './onboarding-shell'
+
+export const metadata: Metadata = {
+  title: 'ClinicForce — Setup',
+}
+
 export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#f5f6f8] flex items-center justify-center px-6 py-16">
-      {children}
-    </div>
+    <>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+      />
+      <OnboardingShell>{children}</OnboardingShell>
+    </>
   )
 }
