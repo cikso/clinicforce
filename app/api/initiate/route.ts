@@ -1,17 +1,99 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getVertical } from '@/lib/verticals'
+import { getVertical, VerticalKey } from '@/lib/verticals'
 
-const DEFAULT_DYNAMIC_VARIABLES = {
-  clinic_name: 'Baulkham Hills Veterinary Hospital',
-  subject_label: 'pet',
+// ─────────────────────────────────────────────────────────────
+// All 13 dynamic variables the ElevenLabs agent expects.
+// These defaults mirror the agent's dynamic_variable_placeholders
+// and are used when no clinic record is matched.
+// ─────────────────────────────────────────────────────────────
+const DEFAULTS: DynamicVariables = {
+  clinic_name:                'Baulkham Hills Veterinary Hospital',
+  clinic_address:             '332 Windsor Rd, Baulkham Hills NSW 2153',
+  clinic_phone:               '02 9639 6399',
+  clinic_hours:               'Monday to Friday 8am to 7pm, Saturday 9am to 5pm, Sunday and Public Holidays 9am to 5pm',
+  emergency_partner_name:     'Animal Referral Hospital',
+  emergency_partner_address:  '19 Old Northern Road, Baulkham Hills',
+  emergency_partner_phone:    '02 9639 7744',
+  clinic_services:            'vaccinations, general surgery, dental care, desexing, microchipping',
+  vertical_type:              'Veterinary',
+  professional_title:         'Veterinarian',
+  subject_label:              'pet',
+  subject_name:               "pet's name",
+  subject_type:               'species and breed',
 }
 
 type DynamicVariables = {
   clinic_name: string
+  clinic_address: string
+  clinic_phone: string
+  clinic_hours: string
+  emergency_partner_name: string
+  emergency_partner_address: string
+  emergency_partner_phone: string
+  clinic_services: string
+  vertical_type: string
+  professional_title: string
   subject_label: string
+  subject_name: string
+  subject_type: string
 }
 
+// ─────────────────────────────────────────────────────────────
+// Vertical-specific voice variables
+// ─────────────────────────────────────────────────────────────
+function getVerticalVariables(verticalKey: string): Pick<
+  DynamicVariables,
+  'vertical_type' | 'professional_title' | 'subject_label' | 'subject_name' | 'subject_type'
+> {
+  const v = getVertical(verticalKey)
+  switch (v.key as VerticalKey) {
+    case 'vet':
+      return {
+        vertical_type:      'Veterinary',
+        professional_title: 'Veterinarian',
+        subject_label:      'pet',
+        subject_name:       "pet's name",
+        subject_type:       'species and breed',
+      }
+    case 'dental':
+      return {
+        vertical_type:      'Dental',
+        professional_title: 'Dentist',
+        subject_label:      'patient',
+        subject_name:       "patient's name",
+        subject_type:       'date of birth',
+      }
+    case 'gp':
+      return {
+        vertical_type:      'Medical',
+        professional_title: 'General Practitioner',
+        subject_label:      'patient',
+        subject_name:       "patient's name",
+        subject_type:       'date of birth and Medicare number',
+      }
+    case 'chiro':
+      return {
+        vertical_type:      'Chiropractic',
+        professional_title: 'Chiropractor',
+        subject_label:      'patient',
+        subject_name:       "patient's name",
+        subject_type:       'date of birth',
+      }
+    default:
+      return {
+        vertical_type:      'Healthcare',
+        professional_title: 'Clinician',
+        subject_label:      'patient',
+        subject_name:       "patient's name",
+        subject_type:       'date of birth',
+      }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,20 +103,16 @@ function getSupabase() {
 
 function normalisePhone(raw: string): string {
   const digits = raw.replace(/\D/g, '')
-
-  if (digits.startsWith('61') && digits.length === 11) {
-    return `0${digits.slice(2)}`
-  }
-
+  // +61253005033 → 0253005033
+  if (digits.startsWith('61') && digits.length >= 11) return `0${digits.slice(2)}`
   return digits
 }
 
-function getSubjectLabel(vertical: unknown): string {
-  const key = typeof vertical === 'string' ? vertical : 'vet'
-  const config = getVertical(key)
-
-  if (config.key === 'vet') return 'pet'
-  return config.patientLabel.toLowerCase()
+function buildAddress(clinic: Record<string, unknown>): string {
+  const parts = [clinic.address, clinic.suburb, clinic.state, clinic.postcode]
+    .filter(Boolean)
+    .join(', ')
+  return parts || String(clinic.name ?? '')
 }
 
 async function extractToNumber(req: NextRequest): Promise<string | null> {
@@ -49,13 +127,21 @@ async function extractToNumber(req: NextRequest): Promise<string | null> {
   const contentType = req.headers.get('content-type') ?? ''
 
   if (contentType.includes('application/json')) {
-    const body = (await req.json()) as Record<string, unknown>
-    const value =
-      body.called_number ??
-      body.calledNumber ??
-      body.to ??
-      body.To
-    return typeof value === 'string' ? value : null
+    try {
+      const body = (await req.json()) as Record<string, unknown>
+      // ElevenLabs sends { "call": { "to_number": "..." } } for inbound Twilio calls
+      const call = body.call as Record<string, unknown> | undefined
+      const value =
+        call?.to_number ??
+        call?.phone_number ??
+        body.called_number ??
+        body.calledNumber ??
+        body.to ??
+        body.To
+      return typeof value === 'string' ? value : null
+    } catch {
+      return null
+    }
   }
 
   if (
@@ -74,9 +160,12 @@ async function extractToNumber(req: NextRequest): Promise<string | null> {
   return null
 }
 
-async function handleInitiate(req: NextRequest) {
+// ─────────────────────────────────────────────────────────────
+// Handler
+// ─────────────────────────────────────────────────────────────
+async function handleInitiate(req: NextRequest): Promise<NextResponse> {
   const rawTo = await extractToNumber(req)
-  let dynamic_variables: DynamicVariables = DEFAULT_DYNAMIC_VARIABLES
+  let dynamic_variables: DynamicVariables = DEFAULTS
 
   try {
     const normalisedTo = rawTo ? normalisePhone(rawTo) : ''
@@ -85,30 +174,44 @@ async function handleInitiate(req: NextRequest) {
       const supabase = getSupabase()
       const { data: clinics, error } = await supabase
         .from('clinics')
-        .select('*')
+        .select(
+          'name, phone, address, suburb, state, postcode, clinic_hours, after_hours_partner, after_hours_phone, emergency_partner_address, vertical, services, voice_phone',
+        )
 
       if (error) {
-        console.error('[/api/initiate] Failed to load clinics:', error)
+        console.error('[/api/initiate] Supabase error:', error)
       } else {
+        // Match on voice_phone (ElevenLabs number) first, then fall back to clinic phone
         const clinic = (clinics ?? []).find((row) => {
-          const phone = typeof row.phone === 'string' ? row.phone : ''
-          return normalisePhone(phone) === normalisedTo
+          const voicePhone = typeof row.voice_phone === 'string' ? normalisePhone(row.voice_phone) : ''
+          const clinicPhone = typeof row.phone === 'string' ? normalisePhone(row.phone) : ''
+          return voicePhone === normalisedTo || clinicPhone === normalisedTo
         })
 
         if (clinic) {
+          const vertVars = getVerticalVariables(clinic.vertical ?? 'vet')
           dynamic_variables = {
-            clinic_name: clinic.name ?? DEFAULT_DYNAMIC_VARIABLES.clinic_name,
-            subject_label: getSubjectLabel(clinic.vertical),
+            clinic_name:               String(clinic.name               ?? DEFAULTS.clinic_name),
+            clinic_address:            buildAddress(clinic as Record<string, unknown>),
+            clinic_phone:              String(clinic.phone              ?? DEFAULTS.clinic_phone),
+            clinic_hours:              String(clinic.clinic_hours       ?? DEFAULTS.clinic_hours),
+            emergency_partner_name:    String(clinic.after_hours_partner  ?? DEFAULTS.emergency_partner_name),
+            emergency_partner_address: String(clinic.emergency_partner_address ?? DEFAULTS.emergency_partner_address),
+            emergency_partner_phone:   String(clinic.after_hours_phone  ?? DEFAULTS.emergency_partner_phone),
+            clinic_services:           String(clinic.services           ?? DEFAULTS.clinic_services),
+            ...vertVars,
           }
         } else {
-          console.warn(`[/api/initiate] No clinic found for to number: ${rawTo}`)
+          console.warn(
+            `[/api/initiate] No clinic matched voice_phone or phone for: ${rawTo} (normalised: ${normalisedTo})`,
+          )
         }
       }
     } else {
-      console.warn('[/api/initiate] Missing or invalid to number, using defaults')
+      console.warn('[/api/initiate] No to-number in request — responding with defaults')
     }
-  } catch (error) {
-    console.error('[/api/initiate] Unexpected error:', error)
+  } catch (err) {
+    console.error('[/api/initiate] Unexpected error:', err)
   }
 
   return new NextResponse(
@@ -118,9 +221,7 @@ async function handleInitiate(req: NextRequest) {
     }),
     {
       status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     },
   )
 }
