@@ -73,6 +73,11 @@ export default async function OverviewPage() {
     if (role !== 'platform_owner' && !onboardingCompleted) {
       redirect('/onboarding/clinic-details')
     }
+
+    // Platform owner sees no getting started panel
+    if (role === 'platform_owner') {
+      return <DashboardClient gettingStarted={null} />
+    }
   }
 
   const setup = await getSetupStatus()

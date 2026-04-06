@@ -39,7 +39,7 @@ export default function Sidebar({
   const pathname = usePathname()
   const router   = useRouter()
   const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-  const roleFmt  = userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase()
+  const roleFmt  = userRole === 'platform_owner' ? 'Owner' : userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase()
 
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(href + '/')
