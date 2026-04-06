@@ -24,7 +24,7 @@ export default async function OnboardingLayout({ children }: { children: React.R
       .select('role')
       .eq('user_id', user.id)
       .limit(1)
-      .single()
+      .maybeSingle()
 
     // Platform owner never does onboarding
     if (cu?.role === 'platform_owner') {

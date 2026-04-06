@@ -40,7 +40,7 @@ export async function getClinicProfile(): Promise<ClinicProfile | null> {
     `)
     .eq('user_id', user.id)
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (error || !data) return null
 

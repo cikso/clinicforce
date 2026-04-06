@@ -58,25 +58,29 @@ export default async function OverviewPage() {
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       { auth: { autoRefreshToken: false, persistSession: false } }
     )
+
+    // Use maybeSingle — never throws, returns null if no row found
     const { data: cu } = await service
       .from('clinic_users')
       .select('role, clinics(onboarding_completed)')
       .eq('user_id', user.id)
       .limit(1)
-      .single()
+      .maybeSingle()
 
     const role = cu?.role as string | undefined
-    const clinic = Array.isArray(cu?.clinics) ? cu?.clinics[0] : cu?.clinics
-    const onboardingCompleted = (clinic as { onboarding_completed?: boolean } | null)?.onboarding_completed ?? false
 
-    // Non-owner who hasn't finished onboarding → send them there
-    if (role !== 'platform_owner' && !onboardingCompleted) {
-      redirect('/onboarding/clinic-details')
-    }
-
-    // Platform owner sees no getting started panel
+    // Platform owner: skip everything, go straight to dashboard
     if (role === 'platform_owner') {
       return <DashboardClient gettingStarted={null} />
+    }
+
+    // Only redirect to onboarding if we have data confirming it's not done
+    if (cu) {
+      const clinic = Array.isArray(cu.clinics) ? cu.clinics[0] : cu.clinics
+      const onboardingCompleted = (clinic as { onboarding_completed?: boolean } | null)?.onboarding_completed === true
+      if (!onboardingCompleted) {
+        redirect('/onboarding/clinic-details')
+      }
     }
   }
 
