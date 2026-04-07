@@ -1,40 +1,38 @@
 {
   "clinic_id": "demo-clinic",
   "clinic_name": "Baulkham Hills Veterinary Hospital",
-  "address": "TODO: fill in street address",
+  "address": "332 Windsor Rd",
   "suburb": "Baulkham Hills",
   "state": "NSW",
-  "postcode": "TODO: fill in postcode",
-  "phone": "TODO: fill in clinic phone",
+  "postcode": "2153",
+  "phone": "02 9639 6399",
   "email": "TODO: fill in clinic email",
   "website": "TODO: fill in clinic website",
   "timezone": "Australia/Sydney",
   "hours": {
-    "monday":    "TODO: fill in hours",
-    "tuesday":   "TODO: fill in hours",
-    "wednesday": "TODO: fill in hours",
-    "thursday":  "TODO: fill in hours",
-    "friday":    "TODO: fill in hours",
-    "saturday":  "TODO: fill in hours",
-    "sunday":    "TODO: fill in hours or remove if closed"
+    "monday":    "8:00am – 7:00pm",
+    "tuesday":   "8:00am – 7:00pm",
+    "wednesday": "8:00am – 7:00pm",
+    "thursday":  "8:00am – 7:00pm",
+    "friday":    "8:00am – 7:00pm",
+    "saturday":  "9:00am – 5:00pm"
   },
   "after_hours": {
-    "partner_name": "TODO: fill in after-hours emergency partner name",
-    "phone":        "TODO: fill in after-hours partner phone",
-    "address":      "TODO: fill in after-hours partner address",
-    "note":         "We are not open 24 hours. For emergencies outside our hours, please call our after-hours partner directly."
+    "partner_name": "Animal Referral Hospital",
+    "phone":        "02 9639 7744",
+    "address":      "15 Old Northern Road, Baulkham Hills NSW 2153",
+    "note":         "We are not open 24 hours. For emergencies outside our hours, please go directly to Animal Referral Hospital."
   },
   "supported_species": ["dogs", "cats", "rabbits", "birds", "guinea pigs", "small exotic animals"],
   "services": [
-    "Emergency and critical care",
-    "General consultations",
     "Vaccinations",
+    "General surgery",
+    "Dental care",
     "Desexing",
-    "Dental procedures",
     "Microchipping",
     "X-ray and ultrasound imaging",
     "In-house pathology",
-    "Surgery",
+    "Emergency and critical care",
     "Prescription diets and medications"
   ],
   "service_flags": {
@@ -45,9 +43,9 @@
     "payment_plans":       true
   },
   "booking_rules": {
-    "preferred_method":      "Phone or online booking",
-    "walk_in_note":          "Walk-ins are welcome but appointments are prioritised",
-    "cancellation_policy":   "Please give 24 hours notice to cancel or reschedule"
+    "preferred_method":    "Phone or online booking",
+    "walk_in_note":        "Walk-ins are welcome but appointments are prioritised",
+    "cancellation_policy": "Please give 24 hours notice to cancel or reschedule"
   },
   "payment_options": ["Cash", "EFTPOS", "Visa", "Mastercard", "Afterpay", "Vet Pay"],
   "intake_fields": ["pet name", "species", "breed", "age", "presenting concern", "owner name", "owner phone"]
