@@ -379,14 +379,14 @@ export function VetDeskLanding() {
                 </div>
 
                 <div className="space-y-2">
-                  {[
+                  {([
                     ['Overview', Hospital],
                     ['Calls', PhoneCall],
                     ['Action Queue', ClipboardList],
                     ['Clinic Knowledge', BookOpenText],
                     ['Settings', ShieldCheck],
-                  ].map(([label, Icon]) => {
-                    const ItemIcon = Icon as ComponentType<{ className?: string }>
+                  ] as [string, ComponentType<{ className?: string }>][]).map(([label, Icon]) => {
+                    const ItemIcon = Icon
                     return (
                       <div key={label} className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium ${label === 'Overview' ? 'bg-[#10243a] text-white' : 'text-[#61717f]'}`}>
                         <ItemIcon className="h-4 w-4" />
