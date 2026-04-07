@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
   }
 
   const cookieStore = await cookies()
+  const response = NextResponse.json({ ok: true })
   const supabase = createServerClient(
     supabaseUrl,
     supabaseAnonKey,
@@ -29,6 +30,9 @@ export async function POST(request: NextRequest) {
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) =>
             cookieStore.set(name, value, options)
+          )
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
           )
         },
       },
@@ -47,5 +51,5 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  return NextResponse.json({ ok: true })
+  return response
 }

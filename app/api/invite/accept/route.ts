@@ -106,6 +106,7 @@ export async function POST(request: NextRequest) {
 
   // 5. Sign the user in (create session cookie) using the anon client
   const cookieStore = await cookies()
+  const response = NextResponse.json({ success: true })
   const anonClient = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -117,6 +118,9 @@ export async function POST(request: NextRequest) {
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) =>
             cookieStore.set(name, value, options)
+          )
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
           )
         },
       },
@@ -133,5 +137,5 @@ export async function POST(request: NextRequest) {
     console.warn('[invite/accept] auto sign-in failed:', signInError.message)
   }
 
-  return NextResponse.json({ success: true })
+  return response
 }

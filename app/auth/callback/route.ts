@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const cookieStore = await cookies()
+    let response = NextResponse.redirect(`${origin}/auth/link-expired`)
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,6 +22,9 @@ export async function GET(request: NextRequest) {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             )
+            cookiesToSet.forEach(({ name, value, options }) =>
+              response.cookies.set(name, value, options)
+            )
           },
         },
       }
@@ -31,7 +35,8 @@ export async function GET(request: NextRequest) {
     if (!error && data.user) {
       // Password reset flow — send to the set-new-password page
       if (type === 'recovery') {
-        return NextResponse.redirect(`${origin}/auth/update-password`)
+        response = NextResponse.redirect(`${origin}/auth/update-password`)
+        return response
       }
 
       // Normal login/signup — check role + onboarding status
@@ -44,7 +49,8 @@ export async function GET(request: NextRequest) {
 
       // Platform owner never goes through onboarding
       if (clinicUser?.role === 'platform_owner') {
-        return NextResponse.redirect(`${origin}/overview`)
+        response = NextResponse.redirect(`${origin}/overview`)
+        return response
       }
 
       const onboardingCompleted =
@@ -52,11 +58,13 @@ export async function GET(request: NextRequest) {
           ?.onboarding_completed ?? false
 
       if (!onboardingCompleted) {
-        return NextResponse.redirect(`${origin}/onboarding/clinic-details`)
+        response = NextResponse.redirect(`${origin}/onboarding/clinic-details`)
+        return response
       }
 
       const redirectPath = next.startsWith('/') ? next : '/overview'
-      return NextResponse.redirect(`${origin}${redirectPath}`)
+      response = NextResponse.redirect(`${origin}${redirectPath}`)
+      return response
     }
   }
 
