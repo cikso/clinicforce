@@ -44,7 +44,11 @@ export async function getClinicProfile(): Promise<ClinicProfile | null> {
     .limit(1)
     .maybeSingle()
 
-  if (error || !data) return null
+  if (error) {
+    console.error('[getClinicProfile] query error:', error.message)
+    return null
+  }
+  if (!data) return null
 
   const clinic = Array.isArray(data.clinics) ? data.clinics[0] : (data.clinics as Record<string, unknown> | null)
   const role = (data.role as string) ?? 'receptionist'

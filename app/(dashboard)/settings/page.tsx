@@ -21,12 +21,24 @@ export default async function SettingsPage() {
     .from('clinic_users')
     .select('clinic_id, role')
     .eq('user_id', user.id)
-    .single()
-
-  if (!cu?.clinic_id) redirect('/overview')
+    .maybeSingle()
 
   // Only clinic_admin or platform_owner can access settings
-  if (!['clinic_admin', 'platform_owner'].includes(cu.role)) redirect('/overview')
+  if (!cu || !['clinic_admin', 'platform_owner'].includes(cu.role)) redirect('/overview')
+
+  // Platform owner has no clinic — show platform-level settings placeholder
+  if (cu.role === 'platform_owner') {
+    return (
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '40px 24px', fontFamily: '"DM Sans", sans-serif' }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', margin: '0 0 8px' }}>Platform Settings</h1>
+        <p style={{ fontSize: 14, color: '#6B7280' }}>
+          You are logged in as the platform owner. Clinic-specific settings are managed per clinic via the Admin panel.
+        </p>
+      </div>
+    )
+  }
+
+  if (!cu.clinic_id) redirect('/overview')
 
   const { data: clinic } = await service
     .from('clinics')
