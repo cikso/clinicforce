@@ -85,10 +85,10 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
   }
 
   return (
-    <div className="bg-white rounded-lg border border-[#e9ecef] shadow-[0_1px_3px_rgba(0,0,0,0.07)]">
+    <div className="bg-white rounded-2xl">
 
       {/* ── Header ───────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#f0f0f0]">
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
         <div className="flex items-center gap-2.5">
           <span className="text-[13px] font-bold text-[#0f2744]">Call Inbox</span>
           {unreadCount > 0 && (
@@ -304,7 +304,7 @@ export default function CallInbox({ items, onAction, onMarkRead, limit, viewAllH
       {viewAllHref && (
         <Link
           href={viewAllHref}
-          className="flex items-center justify-center gap-1.5 px-5 py-3 border-t border-[#f0f0f0] text-[12px] font-semibold text-[#007bff] hover:bg-[#f8f9fa] transition-colors rounded-b-lg"
+          className="flex items-center justify-center gap-1.5 px-5 py-3 border-t border-slate-100 text-[12px] font-semibold text-[#0891b2] hover:bg-slate-50 transition-colors rounded-b-xl"
         >
           {hiddenCount > 0 ? `View all calls (${hiddenCount} more)` : 'View all calls'}
           <ArrowRight className="w-3.5 h-3.5" />
