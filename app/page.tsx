@@ -1,5 +1,5 @@
-import { VetDeskLanding } from '@/components/landing/VetDeskLanding'
+import { ClinicForceLanding } from '@/components/landing/VetDeskLanding'
 
 export default function HomePage() {
-  return <VetDeskLanding />
+  return <ClinicForceLanding />
 }

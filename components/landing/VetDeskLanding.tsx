@@ -31,7 +31,7 @@ const painPoints = [
 ] as const
 
 const workflowSteps = [
-  ['01', 'Answers the call immediately', 'VetDesk picks up overflow, after-hours, and short-staffed call volume without sending owners into a dead end.'],
+  ['01', 'Answers the call immediately', 'ClinicForce picks up overflow, after-hours, and short-staffed call volume without sending owners into a dead end.'],
   ['02', 'Captures the reason and relevant details', 'Owner name, pet details, symptoms, booking intent, and clinic-specific questions are handled in a calm, consistent flow.'],
   ['03', 'Flags urgency or escalates when needed', 'Routine enquiries stay routine. Higher-risk calls are surfaced quickly with context attached for the clinic team.'],
   ['04', 'Logs the outcome into the workflow', 'The clinic receives a clear note, next action, and operational status instead of a vague voicemail or missing context.'],
@@ -43,7 +43,7 @@ const featureCards = [
   ['Urgent triage support', 'Surface higher-priority calls with a clearer escalation path and more structured context.', BellRing],
   ['Booking capture', 'Capture appointments that would otherwise go to voicemail, drop off, or call another clinic.', CalendarCheck2],
   ['Call summaries', 'Every interaction ends with a concise, readable handoff note your team can act on quickly.', ClipboardList],
-  ['Receptionist control toggle', 'Let the clinic decide when VetDesk takes overflow, after-hours, or wider call coverage.', ToggleLeft],
+  ['Receptionist control toggle', 'Let the clinic decide when ClinicForce takes overflow, after-hours, or wider call coverage.', ToggleLeft],
   ['Action queue for follow-up', 'Organise callbacks, same-day concerns, and unresolved items in one operational queue.', MessageSquareMore],
   ['Clinic-specific knowledge base', 'Responses reflect your hours, services, policies, and front-desk workflow rather than a generic script.', BookOpenText],
 ] as const
@@ -63,7 +63,7 @@ const trustItems = [
 ]
 
 const testimonials = [
-  ['VetDesk made our lunch hour feel manageable again. We stopped treating voicemail as our overflow plan and started seeing a cleaner queue every afternoon.', 'Sarah Redmond', 'Practice Manager', 'Sydney Metro Mixed Practice'],
+  ['ClinicForce made our lunch hour feel manageable again. We stopped treating voicemail as our overflow plan and started seeing a cleaner queue every afternoon.', 'Sarah Redmond', 'Practice Manager', 'Sydney Metro Mixed Practice'],
   ['What stood out was the structure. Calls were not just answered. They were routed properly, summarised properly, and easy for the team to act on.', 'Dr James Harlow', 'Clinic Director', 'Companion Animal Clinic Group'],
 ] as const
 
@@ -105,16 +105,16 @@ function FeatureCard({
   )
 }
 
-export function VetDeskLanding() {
+export function ClinicForceLanding() {
   return (
     <main className="min-h-screen bg-[#f6f8fb] text-[#0d1b2a]">
       <div className="mx-auto max-w-7xl px-6 pb-20 pt-6 sm:px-8 lg:px-12">
         <header className="sticky top-0 z-30 mb-8 rounded-[28px] border border-[#dbe4eb]/80 bg-white/88 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-white/75">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#10243a] text-sm font-semibold tracking-[0.16em] text-white">VD</div>
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#10243a] text-sm font-semibold tracking-[0.16em] text-white">CF</div>
               <div>
-                <div className="text-base font-semibold tracking-[-0.03em] text-[#0d1b2a]">VetDesk</div>
+                <div className="text-base font-semibold tracking-[-0.03em] text-[#0d1b2a]">ClinicForce</div>
                 <div className="text-sm text-[#6a7785]">AI phone and front-desk assistant for veterinary clinics</div>
               </div>
             </div>
@@ -144,7 +144,7 @@ export function VetDeskLanding() {
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[#586778]">
-              VetDesk helps veterinary clinics answer calls, cover overflow, support after-hours,
+              ClinicForce helps veterinary clinics answer calls, cover overflow, support after-hours,
               capture bookings, and route urgent enquiries without putting more pressure on the
               reception team.
             </p>
@@ -215,7 +215,7 @@ export function VetDeskLanding() {
                         My dog is limping after the park and will not put weight on his back leg.
                       </div>
                       <div className="ml-auto max-w-[88%] rounded-2xl bg-[#eaf7f5] px-4 py-3 text-sm leading-6 text-[#11403d]">
-                        <p className="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#0d7b72]">VetDesk</p>
+                        <p className="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#0d7b72]">ClinicForce</p>
                         I can help with that. I am collecting details now and preparing a same-day handoff for the clinic team.
                       </div>
                     </div>
@@ -308,7 +308,7 @@ export function VetDeskLanding() {
           <SectionHeading
             eyebrow="How it works"
             title="A clear call workflow your team can understand in seconds."
-            body="VetDesk is designed to fit clinic operations, not interrupt them. The job is simple: answer quickly, gather what matters, escalate where needed, and leave the clinic with something useful."
+            body="ClinicForce is designed to fit clinic operations, not interrupt them. The job is simple: answer quickly, gather what matters, escalate where needed, and leave the clinic with something useful."
           />
 
           <div className="mt-12 grid gap-4 lg:grid-cols-4">
@@ -338,12 +338,12 @@ export function VetDeskLanding() {
 
         <section className="grid gap-10 rounded-[36px] border border-[#dbe4eb] bg-[#10243a] px-6 py-16 text-white shadow-[0_22px_55px_rgba(15,23,42,0.12)] sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-12">
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#7ad3c8]">Why clinics choose VetDesk</p>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#7ad3c8]">Why clinics choose ClinicForce</p>
             <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
               Premium software is not just about answering calls. It is about making the clinic run more cleanly.
             </h2>
             <p className="mt-5 max-w-xl text-base leading-7 text-[#c6d3df] sm:text-lg">
-              Clinics choose VetDesk because it reduces call leakage, creates more consistent handling, and gives reception teams room to work without losing control of inbound demand.
+              Clinics choose ClinicForce because it reduces call leakage, creates more consistent handling, and gives reception teams room to work without losing control of inbound demand.
             </p>
           </div>
 
@@ -371,9 +371,9 @@ export function VetDeskLanding() {
             <div className="grid xl:grid-cols-[280px_minmax(0,1fr)]">
               <aside className="border-b border-[#e1e8ee] bg-[#fbfcfd] p-6 xl:border-b-0 xl:border-r">
                 <div className="mb-8 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#10243a] text-sm font-semibold tracking-[0.16em] text-white">VD</div>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#10243a] text-sm font-semibold tracking-[0.16em] text-white">CF</div>
                   <div>
-                    <p className="font-semibold tracking-[-0.03em] text-[#10243a]">VetDesk</p>
+                    <p className="font-semibold tracking-[-0.03em] text-[#10243a]">ClinicForce</p>
                     <p className="text-sm text-[#6f7c89]">Northside Veterinary</p>
                   </div>
                 </div>
@@ -544,7 +544,7 @@ export function VetDeskLanding() {
             <div className="max-w-3xl">
               <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#0d7b72]">Final step</p>
               <h2 className="text-balance text-4xl font-semibold tracking-[-0.05em] text-[#0d1b2a] sm:text-5xl">
-                See how VetDesk fits into your clinic before another week of missed calls.
+                See how ClinicForce fits into your clinic before another week of missed calls.
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-[#556475]">
                 Book a walkthrough to see how coverage, escalation, bookings, and handoff can work for your clinic without creating more front-desk complexity.

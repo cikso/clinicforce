@@ -6,21 +6,21 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.clinicforce.io'),
-  title: 'VetDesk — Phone and Front-Desk Assistant for Veterinary Clinics',
+  title: 'ClinicForce — Phone and Front-Desk Assistant for Veterinary Clinics',
   description:
-    'VetDesk helps veterinary clinics answer calls, handle overflow, support after-hours, capture bookings, and route urgent enquiries with more control.',
+    'ClinicForce helps veterinary clinics answer calls, handle overflow, support after-hours, capture bookings, and route urgent enquiries with more control.',
   openGraph: {
     url: 'https://www.clinicforce.io',
-    siteName: 'VetDesk',
-    title: 'VetDesk — Phone and Front-Desk Assistant for Veterinary Clinics',
+    siteName: 'ClinicForce',
+    title: 'ClinicForce — Phone and Front-Desk Assistant for Veterinary Clinics',
     description:
-      'VetDesk helps veterinary clinics answer calls, handle overflow, support after-hours, capture bookings, and route urgent enquiries with more control.',
+      'ClinicForce helps veterinary clinics answer calls, handle overflow, support after-hours, capture bookings, and route urgent enquiries with more control.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'VetDesk — Phone and Front-Desk Assistant for Veterinary Clinics',
+    title: 'ClinicForce — Phone and Front-Desk Assistant for Veterinary Clinics',
     description:
-      'VetDesk helps veterinary clinics answer calls, handle overflow, support after-hours, capture bookings, and route urgent enquiries with more control.',
+      'ClinicForce helps veterinary clinics answer calls, handle overflow, support after-hours, capture bookings, and route urgent enquiries with more control.',
   },
 }
 

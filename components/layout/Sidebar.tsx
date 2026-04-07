@@ -21,10 +21,8 @@ const ADMIN_NAV = [
   { label: 'Settings', href: '/settings', icon: Settings },
 ]
 
-// Roles that can see Team + Settings
 const ADMIN_ROLES = ['platform_owner', 'clinic_admin', 'admin']
 
-// Platform-owner-only nav
 const PLATFORM_NAV = [
   { label: 'Platform Admin', href: '/admin', icon: Building2 },
 ]
@@ -40,7 +38,7 @@ export default function Sidebar({
   userName   = 'Staff',
   userRole   = 'receptionist',
 }: SidebarProps) {
-  const isAdmin = ADMIN_ROLES.includes(userRole)
+  const isAdmin  = ADMIN_ROLES.includes(userRole)
   const pathname = usePathname()
   const router   = useRouter()
   const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -57,25 +55,26 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="flex flex-col w-56 shrink-0 h-screen bg-slate-900 border-r border-slate-800 overflow-y-auto">
+    <aside className="flex flex-col w-60 shrink-0 h-screen bg-white border-r border-[#dddbda] overflow-y-auto">
 
       {/* -- Brand --------------------------------------------- */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-800">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="shrink-0">
-          <circle cx="16" cy="16" r="15" fill="#0D9488"/>
-          <path d="M8 16 Q11 10 14 16 Q17 22 20 16 Q23 10 24 16" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
-        </svg>
+      <div className="flex items-center gap-3 px-5 py-[18px] border-b border-[#dddbda]">
+        <div className="w-8 h-8 rounded-md bg-[#0176d3] flex items-center justify-center shrink-0">
+          <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
+            <path d="M8 16 Q11 10 14 16 Q17 22 20 16 Q23 10 24 16" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+          </svg>
+        </div>
         <div className="min-w-0">
-          <h1 className="font-semibold text-lg text-white leading-snug">ClinicForce</h1>
+          <h1 className="font-bold text-[15px] text-slate-900 leading-snug tracking-tight">ClinicForce</h1>
           {clinicName && (
-            <p className="text-xs text-slate-400 truncate mt-px">{clinicName}</p>
+            <p className="text-[11px] text-slate-500 truncate mt-px">{clinicName}</p>
           )}
         </div>
       </div>
 
       {/* -- Primary Nav --------------------------------------- */}
-      <nav className="flex-1 px-2 pt-5 pb-2">
-        <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
+      <nav className="flex-1 px-3 pt-4 pb-2">
+        <p className="px-2 mb-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-[0.12em] select-none">
           Workspace
         </p>
         <div className="space-y-0.5">
@@ -86,16 +85,16 @@ export default function Sidebar({
                 key={href}
                 href={href}
                 className={cn(
-                  'mx-2 group flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150',
+                  'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors duration-100',
                   active
-                    ? 'bg-teal-600/20 text-teal-300 font-semibold'
-                    : 'text-slate-400 font-medium hover:text-slate-200 hover:bg-slate-800/60'
+                    ? 'bg-[#e8f4fd] text-[#0176d3] font-semibold'
+                    : 'text-slate-600 font-medium hover:bg-slate-50 hover:text-slate-900'
                 )}
               >
                 <Icon
                   className={cn(
-                    'w-4 h-4 shrink-0 transition-colors',
-                    active ? 'text-teal-300' : 'text-slate-500 group-hover:text-slate-400'
+                    'w-4 h-4 shrink-0',
+                    active ? 'text-[#0176d3]' : 'text-slate-400'
                   )}
                 />
                 {label}
@@ -106,14 +105,15 @@ export default function Sidebar({
       </nav>
 
       {/* -- Admin Nav + Profile -------------------------------- */}
-      <div className="px-2 py-4 border-t border-slate-800">
+      <div className="px-3 py-4 border-t border-[#dddbda] space-y-4">
+
         {/* Platform-owner-only section */}
         {userRole === 'platform_owner' && (
-          <>
-            <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
+          <div>
+            <p className="px-2 mb-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-[0.12em] select-none">
               Platform
             </p>
-            <div className="space-y-0.5 mb-4">
+            <div className="space-y-0.5">
               {PLATFORM_NAV.map(({ label, href, icon: Icon }) => {
                 const active = isActive(href)
                 return (
@@ -121,78 +121,68 @@ export default function Sidebar({
                     key={href}
                     href={href}
                     className={cn(
-                      'mx-2 group flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150',
+                      'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors duration-100',
                       active
-                        ? 'bg-teal-600/20 text-teal-300 font-semibold'
-                        : 'text-slate-400 font-medium hover:text-slate-200 hover:bg-slate-800/60'
+                        ? 'bg-[#e8f4fd] text-[#0176d3] font-semibold'
+                        : 'text-slate-600 font-medium hover:bg-slate-50 hover:text-slate-900'
                     )}
                   >
-                    <Icon
-                      className={cn(
-                        'w-4 h-4 shrink-0 transition-colors',
-                        active ? 'text-teal-300' : 'text-slate-500 group-hover:text-slate-400'
-                      )}
-                    />
+                    <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-[#0176d3]' : 'text-slate-400')} />
                     {label}
                   </Link>
                 )
               })}
             </div>
-          </>
+          </div>
         )}
 
         {isAdmin && (
-          <>
-            <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
+          <div>
+            <p className="px-2 mb-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-[0.12em] select-none">
               Admin
             </p>
-            <div className="space-y-0.5 mb-4">
-          {ADMIN_NAV.map(({ label, href, icon: Icon }) => {
-            const active = isActive(href)
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  'mx-2 group flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150',
-                  active
-                    ? 'bg-teal-600/20 text-teal-300 font-semibold'
-                    : 'text-slate-400 font-medium hover:text-slate-200 hover:bg-slate-800/60'
-                )}
-              >
-                <Icon
-                  className={cn(
-                    'w-4 h-4 shrink-0 transition-colors',
-                    active ? 'text-teal-300' : 'text-slate-500 group-hover:text-slate-400'
-                  )}
-                />
-                {label}
-              </Link>
-            )
-          })}
+            <div className="space-y-0.5">
+              {ADMIN_NAV.map(({ label, href, icon: Icon }) => {
+                const active = isActive(href)
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={cn(
+                      'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors duration-100',
+                      active
+                        ? 'bg-[#e8f4fd] text-[#0176d3] font-semibold'
+                        : 'text-slate-600 font-medium hover:bg-slate-50 hover:text-slate-900'
+                    )}
+                  >
+                    <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-[#0176d3]' : 'text-slate-400')} />
+                    {label}
+                  </Link>
+                )
+              })}
             </div>
-          </>
+          </div>
         )}
 
         {/* User card */}
-        <div className="mx-2 px-3 py-2.5 bg-slate-800 rounded-xl flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-teal-600/30 flex items-center justify-center shrink-0 text-teal-300 text-[11px] font-bold">
+        <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-md bg-slate-50 border border-[#dddbda]">
+          <div className="w-8 h-8 rounded-full bg-[#0176d3] flex items-center justify-center shrink-0 text-white text-[11px] font-bold">
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-slate-200 truncate leading-tight">{userName}</p>
-            <p className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider mt-px">{roleFmt}</p>
+            <p className="text-[13px] font-semibold text-slate-800 truncate leading-tight">{userName}</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-px">{roleFmt}</p>
           </div>
           <button
             onClick={handleSignOut}
             title="Sign out"
-            className="shrink-0 p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-slate-700 transition-colors"
+            className="shrink-0 p-1.5 rounded-md text-slate-400 hover:text-red-500 hover:bg-white transition-colors"
           >
             <LogOut className="w-3.5 h-3.5" />
           </button>
         </div>
-      </div>
 
+      </div>
     </aside>
   )
 }

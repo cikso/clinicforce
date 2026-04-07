@@ -52,64 +52,64 @@
   --color-vet-surface: #FFFFFF;
 }
 
-/* VetFlow AI – design tokens aligned to Google AI Studio source of truth */
+/* ClinicForce – Salesforce Lightning-inspired design tokens */
 :root {
   /* Base surfaces */
-  --background: #f8fafc;           /* slate-50 — page bg */
-  --foreground: #0f172a;           /* slate-900 */
+  --background: #f4f6f9;           /* Salesforce page background */
+  --foreground: #080707;
 
   /* Card / popover */
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #080707;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  --popover-foreground: #080707;
 
-  /* Brand primary — #0f5b8a (Google source) */
-  --primary: #0f5b8a;
+  /* Brand primary — Salesforce Lightning blue */
+  --primary: #0176d3;
   --primary-foreground: #ffffff;
 
   /* Secondary / muted */
-  --secondary: #f1f5f9;            /* slate-100 */
-  --secondary-foreground: #334155; /* slate-700 */
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;     /* slate-500 */
+  --secondary: #f3f2ef;            /* Salesforce cloud gray */
+  --secondary-foreground: #444444;
+  --muted: #f3f2ef;
+  --muted-foreground: #706e6b;     /* Salesforce warm gray */
 
-  /* Accent — sky blue highlight */
-  --accent: #e0f2fe;               /* sky-100 */
-  --accent-foreground: #0f5b8a;
+  /* Accent — light blue tint */
+  --accent: #e8f4fd;
+  --accent-foreground: #0176d3;
 
   /* Destructive — red, urgent/emergency only */
-  --destructive: #b91c1c;          /* red-700 */
+  --destructive: #c23934;          /* Salesforce red */
   --destructive-foreground: #ffffff;
 
   /* Borders & inputs */
-  --border: #e2e8f0;               /* slate-200 */
-  --input: #e2e8f0;
-  --ring: #0f5b8a;
+  --border: #dddbda;               /* Salesforce neutral border */
+  --input: #dddbda;
+  --ring: #0176d3;
 
-  /* Border radius — more generous to match Google design */
-  --radius: 1rem;
+  /* Border radius — compact Salesforce look */
+  --radius: 0.5rem;
 
-  /* Sidebar — white, light border */
+  /* Sidebar — white, clean border */
   --sidebar: #ffffff;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #0f5b8a;
+  --sidebar-foreground: #080707;
+  --sidebar-primary: #0176d3;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f0f6ff;
-  --sidebar-accent-foreground: #0f5b8a;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #0f5b8a;
+  --sidebar-accent: #e8f4fd;
+  --sidebar-accent-foreground: #0176d3;
+  --sidebar-border: #dddbda;
+  --sidebar-ring: #0176d3;
 
   /* Brand accents */
-  --brand-sky: #0ea5e9;            /* sky-500 — CTA highlights */
-  --brand-teal: #0d9488;           /* teal-600 */
-  --urgent: #b91c1c;               /* red-700 */
-  --urgent-bg: #fff1f2;            /* rose-50 */
-  --urgent-border: #fecdd3;        /* rose-200 */
-  --high: #c2410c;                 /* orange-700 */
-  --high-bg: #fff7ed;              /* orange-50 */
-  --routine: #0f5b8a;
-  --routine-bg: #f0f6ff;
+  --brand-sky: #0176d3;
+  --brand-teal: #0d9488;           /* teal-600 — AI summary accent */
+  --urgent: #c23934;               /* Salesforce red */
+  --urgent-bg: #fef3f2;
+  --urgent-border: #fecdd3;
+  --high: #e8830a;
+  --high-bg: #fff4e6;
+  --routine: #0176d3;
+  --routine-bg: #e8f4fd;
 }
 
 @layer base {
