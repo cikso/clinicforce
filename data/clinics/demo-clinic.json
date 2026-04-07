@@ -1,28 +1,28 @@
 {
   "clinic_id": "demo-clinic",
-  "clinic_name": "Downtown Emergency Veterinary Clinic",
-  "address": "142 Collins Street",
-  "suburb": "Melbourne CBD",
-  "state": "VIC",
-  "postcode": "3000",
-  "phone": "(03) 9123 4567",
-  "email": "hello@downtownvet.com.au",
-  "website": "https://clinicforce.io",
-  "timezone": "Australia/Melbourne",
+  "clinic_name": "Baulkham Hills Veterinary Hospital",
+  "address": "TODO: fill in street address",
+  "suburb": "Baulkham Hills",
+  "state": "NSW",
+  "postcode": "TODO: fill in postcode",
+  "phone": "TODO: fill in clinic phone",
+  "email": "TODO: fill in clinic email",
+  "website": "TODO: fill in clinic website",
+  "timezone": "Australia/Sydney",
   "hours": {
-    "monday": "8:00am – 8:00pm",
-    "tuesday": "8:00am – 8:00pm",
-    "wednesday": "8:00am – 8:00pm",
-    "thursday": "8:00am – 8:00pm",
-    "friday": "8:00am – 8:00pm",
-    "saturday": "9:00am – 5:00pm",
-    "sunday": "10:00am – 3:00pm"
+    "monday":    "TODO: fill in hours",
+    "tuesday":   "TODO: fill in hours",
+    "wednesday": "TODO: fill in hours",
+    "thursday":  "TODO: fill in hours",
+    "friday":    "TODO: fill in hours",
+    "saturday":  "TODO: fill in hours",
+    "sunday":    "TODO: fill in hours or remove if closed"
   },
   "after_hours": {
-    "partner_name": "Melbourne 24-Hour Animal Emergency Centre",
-    "phone": "(03) 9417 0700",
-    "address": "267 Fulham Road, Alphington VIC 3078",
-    "note": "We are not open 24 hours. For emergencies outside our hours, please call our after-hours partner directly."
+    "partner_name": "TODO: fill in after-hours emergency partner name",
+    "phone":        "TODO: fill in after-hours partner phone",
+    "address":      "TODO: fill in after-hours partner address",
+    "note":         "We are not open 24 hours. For emergencies outside our hours, please call our after-hours partner directly."
   },
   "supported_species": ["dogs", "cats", "rabbits", "birds", "guinea pigs", "small exotic animals"],
   "services": [
@@ -38,16 +38,16 @@
     "Prescription diets and medications"
   ],
   "service_flags": {
-    "emergency_24h": false,
-    "walk_ins_accepted": true,
-    "home_visits": false,
-    "online_booking": true,
-    "payment_plans": true
+    "emergency_24h":       false,
+    "walk_ins_accepted":   true,
+    "home_visits":         false,
+    "online_booking":      true,
+    "payment_plans":       true
   },
   "booking_rules": {
-    "preferred_method": "Phone or online booking",
-    "walk_in_note": "Walk-ins are welcome but appointments are prioritised",
-    "cancellation_policy": "Please give 24 hours notice to cancel or reschedule"
+    "preferred_method":      "Phone or online booking",
+    "walk_in_note":          "Walk-ins are welcome but appointments are prioritised",
+    "cancellation_policy":   "Please give 24 hours notice to cancel or reschedule"
   },
   "payment_options": ["Cash", "EFTPOS", "Visa", "Mastercard", "Afterpay", "Vet Pay"],
   "intake_fields": ["pet name", "species", "breed", "age", "presenting concern", "owner name", "owner phone"]
