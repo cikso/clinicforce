@@ -10,37 +10,43 @@ interface KpiCardProps {
   trend?:       StatTrend | null
 }
 
-const trendStyle: Record<NonNullable<StatTrend['direction']>, string> = {
-  up:   'text-emerald-600',
-  down: 'text-red-500',
-  same: 'text-slate-400',
-  new:  'text-[#0891b2]',
+const TREND_CONFIG: Record<NonNullable<StatTrend['direction']>, { color: string; arrow: string }> = {
+  up:   { color: 'text-[#28a745]', arrow: '↑' },
+  down: { color: 'text-[#dc3545]', arrow: '↓' },
+  same: { color: 'text-[#888]',    arrow: '→' },
+  new:  { color: 'text-[#007bff]', arrow: '↗' },
 }
 
 export default function KpiCard({
-  title, value, context,
-  pulse = false, trend,
+  title, value, context, pulse = false, trend,
 }: KpiCardProps) {
-  return (
-    <div className="bg-white rounded-2xl border border-slate-200 px-5 py-4 shadow-[0_1px_3px_rgba(15,39,68,0.04)] hover:shadow-[0_3px_8px_rgba(15,39,68,0.08)] transition-shadow">
+  const trendCfg = trend?.direction != null ? TREND_CONFIG[trend.direction] : null
 
-      {/* Title row */}
+  return (
+    <div className="bg-white rounded-lg border border-[#e9ecef] px-5 py-5 shadow-[0_1px_3px_rgba(0,0,0,0.07)] hover:shadow-[0_3px_8px_rgba(0,0,0,0.11)] transition-shadow">
+
+      {/* Title */}
       <div className="flex items-center gap-1.5 mb-3">
         {pulse && <span className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse shrink-0" />}
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-widest whitespace-nowrap leading-none">{title}</p>
+        <p className="text-[0.75rem] font-semibold text-[#555] uppercase tracking-widest leading-none">
+          {title}
+        </p>
       </div>
 
       {/* Number + context */}
-      <div className="flex items-baseline gap-2">
-        <p className="text-5xl font-bold leading-none tracking-tight text-slate-900">{value}</p>
-        <p className="text-sm text-slate-400">{context}</p>
+      <div className="flex items-baseline gap-2 mb-2.5">
+        <p className="text-[2.4rem] font-bold leading-none text-[#1a1a1a] tracking-tight">
+          {value}
+        </p>
+        <p className="text-[0.95rem] text-[#555]">{context}</p>
       </div>
 
       {/* Trend */}
-      {trend?.direction != null && trend.label && (
-        <p className={`mt-2.5 text-sm font-medium leading-none ${trendStyle[trend.direction]}`}>
-          {trend.label}
-        </p>
+      {trendCfg && trend?.label && (
+        <div className={`flex items-center gap-1 text-[0.82rem] font-semibold ${trendCfg.color}`}>
+          <span className="text-[1rem] leading-none">{trendCfg.arrow}</span>
+          <span>{trend.label}</span>
+        </div>
       )}
     </div>
   )
