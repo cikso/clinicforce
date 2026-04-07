@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, Inbox,
-  BarChart3, ListChecks, Settings, Users, LogOut,
+  BarChart3, ListChecks, Settings, Users, LogOut, Building2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -23,6 +23,11 @@ const ADMIN_NAV = [
 
 // Roles that can see Team + Settings
 const ADMIN_ROLES = ['platform_owner', 'clinic_admin', 'admin']
+
+// Platform-owner-only nav
+const PLATFORM_NAV = [
+  { label: 'Platform Admin', href: '/admin', icon: Building2 },
+]
 
 interface SidebarProps {
   clinicName?: string
@@ -102,6 +107,40 @@ export default function Sidebar({
 
       {/* -- Admin Nav + Profile -------------------------------- */}
       <div className="px-2 py-4 border-t border-slate-800">
+        {/* Platform-owner-only section */}
+        {userRole === 'platform_owner' && (
+          <>
+            <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
+              Platform
+            </p>
+            <div className="space-y-0.5 mb-4">
+              {PLATFORM_NAV.map(({ label, href, icon: Icon }) => {
+                const active = isActive(href)
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={cn(
+                      'mx-2 group flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all duration-150',
+                      active
+                        ? 'bg-teal-600/20 text-teal-300 font-semibold'
+                        : 'text-slate-400 font-medium hover:text-slate-200 hover:bg-slate-800/60'
+                    )}
+                  >
+                    <Icon
+                      className={cn(
+                        'w-4 h-4 shrink-0 transition-colors',
+                        active ? 'text-teal-300' : 'text-slate-500 group-hover:text-slate-400'
+                      )}
+                    />
+                    {label}
+                  </Link>
+                )
+              })}
+            </div>
+          </>
+        )}
+
         {isAdmin && (
           <>
             <p className="px-3 mb-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest select-none">
