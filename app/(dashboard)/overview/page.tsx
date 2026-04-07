@@ -3,6 +3,7 @@ import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import DashboardClient from '@/components/dashboard/DashboardClient'
 import type { SetupStep } from '@/components/dashboard/GettingStartedPanel'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
 export const dynamic = 'force-dynamic'
 
@@ -73,7 +74,14 @@ export default async function OverviewPage() {
 
     // Platform owner: skip everything, go straight to dashboard
     if (role === 'platform_owner') {
-      return <DashboardClient gettingStarted={null} />
+      const ownerProfile = await getClinicProfile()
+      return (
+        <DashboardClient
+          gettingStarted={null}
+          clinicName={ownerProfile?.clinicName || 'ClinicForce'}
+          userName={ownerProfile?.userName || 'ClinicForce'}
+        />
+      )
     }
 
     // Only redirect to onboarding if we have data confirming it's not done
@@ -143,5 +151,12 @@ export default async function OverviewPage() {
     }
   }
 
-  return <DashboardClient gettingStarted={gettingStarted} />
+  const profile = await getClinicProfile()
+  return (
+    <DashboardClient
+      gettingStarted={gettingStarted}
+      clinicName={profile?.clinicName}
+      userName={profile?.userName}
+    />
+  )
 }

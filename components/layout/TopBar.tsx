@@ -23,6 +23,7 @@ interface TopBarProps {
   subtitle?:         string
   searchPlaceholder?: string
   clinicName?:       string
+  userName?:         string
   coverage?:         CoverageStatus
   onNewCase?:        () => void
 }
@@ -31,10 +32,19 @@ export default function TopBar({
   title,
   subtitle,
   searchPlaceholder = 'Search calls...',
-  clinicName = 'Your Clinic',
+  clinicName = '',
+  userName = '',
   coverage,
   onNewCase,
 }: TopBarProps) {
+  // Avatar initials: use userName if available, fall back to clinicName
+  const avatarSource = userName || clinicName || 'CF'
+  const avatarInitials = avatarSource
+    .split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
   const isActive = coverage?.status === 'ACTIVE' && !!coverage?.mode
 
   return (
@@ -95,10 +105,12 @@ export default function TopBar({
       <div className="flex items-center gap-2 ml-auto shrink-0">
 
         {/* Clinic location */}
-        <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] text-slate-500">
-          <MapPin className="w-3 h-3 text-slate-400" />
-          <span className="font-medium">{clinicName}</span>
-        </div>
+        {(clinicName || userName) && (
+          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] text-slate-500">
+            <MapPin className="w-3 h-3 text-slate-400" />
+            <span className="font-medium">{clinicName || userName}</span>
+          </div>
+        )}
 
         {/* Bell */}
         <div className="relative">
@@ -126,7 +138,7 @@ export default function TopBar({
 
         {/* Avatar */}
         <div className="w-7 h-7 rounded-full bg-[#0f2744] flex items-center justify-center shrink-0 text-white text-[10px] font-bold ml-1">
-          {(clinicName ?? 'VC').slice(0, 1).toUpperCase()}
+          {avatarInitials}
         </div>
       </div>
     </header>

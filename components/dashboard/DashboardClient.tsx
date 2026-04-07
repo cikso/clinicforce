@@ -28,11 +28,15 @@ interface StatsResponse {
 
 interface DashboardClientProps {
   gettingStarted?: { steps: SetupStep[]; clinicName: string } | null
+  /** Real clinic name from the authenticated user's profile */
+  clinicName?: string
+  /** Real user display name from the authenticated user's profile */
+  userName?: string
 }
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
-export default function DashboardClient({ gettingStarted }: DashboardClientProps = {}) {
+export default function DashboardClient({ gettingStarted, clinicName, userName }: DashboardClientProps = {}) {
   const [inbox,       setInbox]       = useState<CallInboxItem[]>(INITIAL_INBOX)
   const [mode,        setMode]        = useState<CoverageMode | null>(null)
   const [activatedAt, setActivatedAt] = useState<string | null>(null)
@@ -140,7 +144,8 @@ export default function DashboardClient({ gettingStarted }: DashboardClientProps
   return (
     <PageShell
       title="Command Centre"
-      clinicName={INITIAL_COVERAGE_SESSION.clinicName}
+      clinicName={clinicName}
+      userName={userName}
       coverage={{
         status:    mode ? 'ACTIVE' : 'INACTIVE',
         mode,

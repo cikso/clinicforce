@@ -13,13 +13,14 @@ interface PageShellProps {
   children: React.ReactNode
   searchPlaceholder?: string
   clinicName?: string
+  userName?: string
   coverage?: CoverageStatus
   onNewCase?: () => void
   // legacy compat
   showAiBadge?: boolean
 }
 
-export default function PageShell({ title, subtitle, children, searchPlaceholder, clinicName, coverage, onNewCase }: PageShellProps) {
+export default function PageShell({ title, subtitle, children, searchPlaceholder, clinicName, userName, coverage, onNewCase }: PageShellProps) {
   return (
     <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
       <TopBar
@@ -27,6 +28,7 @@ export default function PageShell({ title, subtitle, children, searchPlaceholder
         subtitle={subtitle}
         searchPlaceholder={searchPlaceholder}
         clinicName={clinicName}
+        userName={userName}
         coverage={coverage}
         onNewCase={onNewCase}
       />
