@@ -58,6 +58,18 @@ function actionFromUrgency(urgency: 'CRITICAL' | 'URGENT' | 'ROUTINE'): string {
 // Writes to: call_inbox (Supabase)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  // ── Tool call secret validation ───────────────────────────────────────────────
+  // Set ELEVENLABS_TOOL_SECRET in your env vars and in ElevenLabs → Tools →
+  // create_callback_request → Authentication header. Rejects spoofed tool calls.
+  const toolSecret = process.env.ELEVENLABS_TOOL_SECRET
+  if (toolSecret) {
+    const incoming = req.headers.get('x-api-secret') ?? req.headers.get('x-tool-secret')
+    if (incoming !== toolSecret) {
+      console.warn('[/api/callback] Rejected — invalid tool secret')
+      return NextResponse.json({ success: false, error: 'Unauthorised' }, { status: 401 })
+    }
+  }
+
   let body: Record<string, unknown>
 
   try {

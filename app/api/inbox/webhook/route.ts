@@ -43,6 +43,18 @@ function normaliseAustralianPhone(raw: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  // ── Webhook secret validation ─────────────────────────────────────────────────
+  // Set ELEVENLABS_WEBHOOK_SECRET in your env vars and in ElevenLabs → Advanced →
+  // Post-call webhook → Secret header. Rejects any request not from ElevenLabs.
+  const webhookSecret = process.env.ELEVENLABS_WEBHOOK_SECRET
+  if (webhookSecret) {
+    const incoming = req.headers.get('x-elevenlabs-signature') ?? req.headers.get('x-webhook-secret')
+    if (incoming !== webhookSecret) {
+      console.warn('[inbox/webhook] Rejected — invalid webhook secret')
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+    }
+  }
+
   const supabase = getSupabase()
   if (!supabase) {
     return NextResponse.json({ error: 'Supabase env vars are not configured' }, { status: 500 })
