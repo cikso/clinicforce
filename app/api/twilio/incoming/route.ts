@@ -63,6 +63,61 @@ function formatHours(hours: Record<string, string>): string {
     .join(', ')
 }
 
+// ── Current mode: DAYTIME | LUNCH_OVERFLOW | AFTER_HOURS ─────────────────────
+// Calculated against the clinic's local time so the Coverage Entry Router
+// can select the correct greeting without any hardcoding.
+function resolveCurrentMode(
+  hours: Record<string, string>,
+  timezone: string,
+): 'DAYTIME' | 'LUNCH_OVERFLOW' | 'AFTER_HOURS' {
+  try {
+    const now     = new Date()
+    const locale  = new Intl.DateTimeFormat('en-AU', {
+      timeZone: timezone,
+      weekday: 'long',
+      hour:    'numeric',
+      minute:  'numeric',
+      hour12:  false,
+    }).formatToParts(now)
+
+    const dayPart    = locale.find(p => p.type === 'weekday')?.value?.toLowerCase() ?? ''
+    const hourPart   = parseInt(locale.find(p => p.type === 'hour')?.value   ?? '0', 10)
+    const minutePart = parseInt(locale.find(p => p.type === 'minute')?.value ?? '0', 10)
+    const timeNow    = hourPart * 60 + minutePart
+
+    // Parse stored hours string, e.g. "8:00am – 6:00pm"
+    const dayHours = hours[dayPart]
+    if (!dayHours) return 'AFTER_HOURS'
+
+    const rangeMatch = dayHours.match(
+      /(\d+)(?::(\d+))?\s*(am|pm)\s*[–\-]\s*(\d+)(?::(\d+))?\s*(am|pm)/i,
+    )
+    if (!rangeMatch) return 'AFTER_HOURS'
+
+    const to24 = (h: number, m: number, meridiem: string) => {
+      let hour = h
+      if (meridiem.toLowerCase() === 'pm' && h !== 12) hour += 12
+      if (meridiem.toLowerCase() === 'am' && h === 12) hour = 0
+      return hour * 60 + m
+    }
+
+    const openMin  = to24(parseInt(rangeMatch[1]), parseInt(rangeMatch[2] ?? '0'), rangeMatch[3])
+    const closeMin = to24(parseInt(rangeMatch[4]), parseInt(rangeMatch[5] ?? '0'), rangeMatch[6])
+
+    if (timeNow < openMin || timeNow >= closeMin) return 'AFTER_HOURS'
+
+    // Lunch overflow: 12:30pm – 1:30pm on weekdays only
+    const LUNCH_START = 12 * 60 + 30
+    const LUNCH_END   = 13 * 60 + 30
+    const isWeekday   = !['saturday', 'sunday'].includes(dayPart)
+    if (isWeekday && timeNow >= LUNCH_START && timeNow < LUNCH_END) return 'LUNCH_OVERFLOW'
+
+    return 'DAYTIME'
+  } catch {
+    return 'DAYTIME' // safe default if timezone parse fails
+  }
+}
+
 // ── Build the full ElevenLabs redirect URL with all dynamic variables ─────────
 function buildElevenLabsUrl(vertical: string): string {
   const config = getClinicConfig(DEMO_CLINIC_CFG_KEY)
@@ -80,7 +135,7 @@ function buildElevenLabsUrl(vertical: string): string {
     emergency_partner_phone:   config.after_hours.phone,
     clinic_services:           config.services.join(', '),
     subject_label:             meta.subjectLabel,
-    subject_name:              meta.subjectName,
+    current_mode:              resolveCurrentMode(config.hours, config.timezone),
   }
 
   const qs = Object.entries(vars)
