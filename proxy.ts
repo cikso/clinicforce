@@ -16,6 +16,14 @@ const DASHBOARD_ROUTES = [
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const host = request.headers.get('host')
+
+  if (host === 'clinicforce.io') {
+    const redirectUrl = request.nextUrl.clone()
+    redirectUrl.host = 'www.clinicforce.io'
+    redirectUrl.protocol = 'https:'
+    return NextResponse.redirect(redirectUrl, 308)
+  }
 
   let supabaseResponse = NextResponse.next({ request })
 
