@@ -1,12 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function LoginForm({ next }: { next: string }) {
-  const router = useRouter()
-
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -19,8 +16,10 @@ export default function LoginForm({ next }: { next: string }) {
     setIsPending(true)
 
     try {
+      const redirectPath = next.startsWith('/') ? next : '/overview'
       const res = await fetch('/api/auth/login', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: email.trim(),
@@ -34,8 +33,7 @@ export default function LoginForm({ next }: { next: string }) {
         return
       }
 
-      router.push(next.startsWith('/') ? next : '/overview')
-      router.refresh()
+      window.location.assign(redirectPath)
     } catch (err) {
       console.error('[login] sign-in failed', err)
       setError('Unable to sign in right now. Please try again in a moment.')
