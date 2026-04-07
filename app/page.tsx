@@ -1,575 +1,489 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import './landing.css'
 
 const CALENDLY = 'https://calendly.com/ciks35/30min'
 
-const MARQUEE_ITEMS = [
-  'Call Answering', 'Urgency Triage', 'Intake Capture', 'Appointment Booking',
-  'Structured Handoff', 'After-Hours Coverage', 'PMS Integration', 'SMS Follow-up',
-  'Overflow Handling', 'Staff Relief', 'Zero Missed Calls', 'Live in 24 Hours',
+const HERO_MESSAGES = [
+  {
+    speaker: 'Owner',
+    tone: 'caller',
+    text: "Hi, my dog's retching but nothing is coming up and his stomach looks swollen.",
+    delay: 400,
+  },
+  {
+    speaker: 'ClinicForce',
+    tone: 'ai',
+    text: 'Those symptoms can be urgent. I am flagging this now and notifying the on-call vet while I confirm a few details.',
+    delay: 2100,
+  },
+  {
+    speaker: 'Owner',
+    tone: 'caller',
+    text: "He's a Great Dane, four years old, and it's been getting worse for the last 20 minutes.",
+    delay: 4100,
+  },
+  {
+    speaker: 'ClinicForce',
+    tone: 'ai',
+    text: 'Thank you. This is marked high priority. Please head straight to the clinic. Dr Patel has been alerted with Buster\'s intake note.',
+    delay: 6200,
+  },
 ]
 
-const MESSAGES = [
-  { side: 'owner', initials: 'MT', text: "Hi, I'm calling about my dog Buster — he's been retching but nothing is coming up and his stomach looks distended.", delay: 400 },
-  { side: 'ai',    initials: 'CF', text: "I'm so sorry to hear that. Those symptoms — retching with a distended stomach — can be very serious. Can I confirm Buster's breed for me?", delay: 2800 },
-  { side: 'owner', initials: 'MT', text: "He's a Great Dane. About 4 years old.", delay: 5200 },
-  { side: 'ai',    initials: 'CF', text: "Thank you Michael. Given Buster's size and these symptoms, I'm flagging this as urgent and notifying the on-call vet right now. Can you head in immediately?", delay: 7000 },
+const PROOF_STEPS = [
+  {
+    step: '01',
+    title: 'Answer in one ring',
+    copy: 'The caller reaches a calm voice instantly, even during lunch breaks, consults, or after-hours overflow.',
+  },
+  {
+    step: '02',
+    title: 'Capture the right details',
+    copy: 'Owner, pet, symptoms, history, and booking intent are collected in natural conversation instead of a phone tree.',
+  },
+  {
+    step: '03',
+    title: 'Classify urgency live',
+    copy: 'Potential emergencies are separated from routine bookings and pushed to the right person with context attached.',
+  },
+  {
+    step: '04',
+    title: 'Hand off cleanly',
+    copy: 'Your team receives a structured note, urgency tag, and next action so no one starts the day decoding voicemail.',
+  },
 ]
 
-const LogoMark = () => (
-  <div className="nav-logo-mark">
-    <svg viewBox="0 0 16 16" fill="none" style={{ width: 16, height: 16 }}>
-      <path d="M8 1.5L14.2 5V11L8 14.5L1.8 11V5L8 1.5Z" stroke="#fff" strokeWidth="1.4" fill="none" />
-      <circle cx="8" cy="8" r="2" fill="#fff" />
-    </svg>
-  </div>
-)
+const PILLARS = [
+  {
+    title: 'Emergency-aware triage',
+    copy: 'Built around real veterinary urgency patterns, not generic contact centre scripts.',
+    label: 'Urgent cases',
+  },
+  {
+    title: 'Overflow without friction',
+    copy: 'ClinicForce catches lunch rushes, multiple simultaneous calls, and after-hours demand without putting owners on hold.',
+    label: 'Operational relief',
+  },
+  {
+    title: 'Reception-quality handoff',
+    copy: 'Every call becomes an actionable note your staff can actually work from the moment they open the dashboard.',
+    label: 'Team confidence',
+  },
+]
 
-const FEATURES = [
+const OUTCOMES = [
+  { value: '+23%', label: 'captured booking requests in week one' },
+  { value: '4.1 hrs', label: 'saved weekly for front-desk staff' },
+  { value: '$2.8k', label: 'average monthly revenue recovered' },
+  { value: '0', label: 'urgent cases missed since deployment' },
+]
+
+const PRICING = [
   {
-    icon: 'call',
-    title: 'AI Call Handling',
-    desc: 'Every inbound call answered within one ring — no hold music, no phone tree. Natural conversation captures owner name, patient details, and reason for visit instantly.',
+    name: 'Starter',
+    price: '$399',
+    note: 'For single-location clinics needing after-hours and lunch-break coverage.',
+    featured: false,
+    features: [
+      'After-hours coverage',
+      'Lunch break overflow',
+      'Up to 300 calls per month',
+      'Urgency detection and triage',
+      'Structured handoff notes',
+      'Dashboard access for your team',
+    ],
   },
   {
-    icon: 'nights_stay',
-    title: 'After-Hours Coverage',
-    desc: 'ClinicForce stays active when your front desk clocks off. Evenings, weekends, public holidays — every call is handled and a structured handover note is waiting for your team in the morning.',
+    name: 'Growth',
+    price: '$499',
+    note: 'For busy clinics that want full-day overflow support and deeper workflow coverage.',
+    featured: true,
+    features: [
+      'Everything in Starter',
+      'Unlimited calls',
+      'Daytime overflow coverage',
+      'Priority support',
+      'Appointment booking workflows',
+      'PMS-ready handoff export',
+    ],
   },
   {
-    icon: 'swap_calls',
-    title: 'Smart Overflow',
-    desc: 'When your team is in consult or on another line, ClinicForce steps in seamlessly. Multiple simultaneous calls handled without a single caller reaching voicemail.',
-  },
-  {
-    icon: 'emergency',
-    title: 'Urgency Detection',
-    desc: 'Routine booking or potential GDV? ClinicForce reads the call and escalates time-sensitive presentations immediately, notifying the on-call vet via SMS with full case context.',
+    name: 'Enterprise',
+    price: 'Custom',
+    note: 'For multi-site groups that need rollout support, reporting, and custom integrations.',
+    featured: false,
+    features: [
+      'Multi-location oversight',
+      'Group-level analytics',
+      'Custom onboarding support',
+      'Dedicated account management',
+      'Custom integration work',
+      'White-label options',
+    ],
   },
 ]
 
 export default function LandingPage() {
-  const [seconds, setSeconds] = useState(134)
-  const [visibleMessages, setVisibleMessages] = useState<typeof MESSAGES>([])
-  const convoRef = useRef<HTMLDivElement>(null)
+  const [callSeconds, setCallSeconds] = useState(146)
+  const [visibleMessages, setVisibleMessages] = useState<typeof HERO_MESSAGES>([])
 
-  // Live timer
   useEffect(() => {
-    const id = setInterval(() => setSeconds(s => s + 1), 1000)
-    return () => clearInterval(id)
+    const ticker = setInterval(() => setCallSeconds((current) => current + 1), 1000)
+    return () => clearInterval(ticker)
   }, [])
 
-  // Animated live chat messages
   useEffect(() => {
-    const timers = MESSAGES.map(msg =>
+    const timers = HERO_MESSAGES.map((message) =>
       setTimeout(() => {
-        setVisibleMessages(prev => [...prev, msg])
-      }, msg.delay)
+        setVisibleMessages((current) => [...current, message])
+      }, message.delay)
     )
+
     return () => timers.forEach(clearTimeout)
   }, [])
 
-  // Scroll convo to bottom on new message
-  useEffect(() => {
-    if (convoRef.current) {
-      convoRef.current.scrollTop = convoRef.current.scrollHeight
-    }
-  }, [visibleMessages])
-
-  // Counter animation using IntersectionObserver
-  useEffect(() => {
-    const counterObserver = new IntersectionObserver(
-      entries => {
-        entries.forEach(e => {
-          if (!e.isIntersecting) return
-          const el = e.target as HTMLElement
-          const target = parseInt(el.dataset.target ?? '0', 10)
-          const duration = 1800
-          const start = performance.now()
-          function update(time: number) {
-            const progress = Math.min((time - start) / duration, 1)
-            const eased = 1 - Math.pow(1 - progress, 3)
-            el.textContent = String(Math.round(eased * target))
-            if (progress < 1) requestAnimationFrame(update)
-          }
-          requestAnimationFrame(update)
-          counterObserver.unobserve(el)
-        })
-      },
-      { threshold: 0.5 }
-    )
-    document.querySelectorAll('.lp-root .counter').forEach(el => counterObserver.observe(el))
-    return () => counterObserver.disconnect()
-  }, [])
-
-  const timerStr = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
-  const marqueeItems = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS, ...MARQUEE_ITEMS]
+  const timerLabel = `${String(Math.floor(callSeconds / 60)).padStart(2, '0')}:${String(
+    callSeconds % 60
+  ).padStart(2, '0')}`
 
   return (
     <div className="lp-root">
-
-      {/* ─── Fixed Nav ─── */}
-      <nav>
-        <div className="nav-inner">
-          <div className="nav-logo">
-            <LogoMark />
+      <nav className="lp-nav">
+        <div className="container lp-nav-inner">
+          <a className="lp-brand" href="#hero">
+            <span className="lp-brand-mark">CF</span>
             ClinicForce
-          </div>
-          <div className="nav-links">
-            <a href="#features">Platform</a>
-            <a href="#industries">Industries</a>
-            <a href="#how">How It Works</a>
+          </a>
+
+          <div className="lp-nav-links">
+            <a href="#proof">Proof</a>
+            <a href="#platform">Platform</a>
             <a href="#pricing">Pricing</a>
           </div>
-          <div className="nav-actions">
-            <Link href="/overview" className="btn-ghost">
-              Clinic Login
+
+          <div className="lp-nav-actions">
+            <Link href="/login" className="lp-link-btn">
+              Log in
             </Link>
-            <button
-              className="btn-primary"
-              onClick={() => window.open(CALENDLY, '_blank')}
-            >
-              Book a Demo
-            </button>
+            <a className="lp-solid-btn" href={CALENDLY} target="_blank" rel="noreferrer">
+              Book a demo
+            </a>
           </div>
         </div>
       </nav>
 
-      {/* ─── Hero ─── */}
       <section className="hero" id="hero">
-        <div className="container">
-          <div className="hero-grid">
-
-            {/* Left: Copy */}
-            <div className="fade-in">
-              <div className="hero-eyebrow">
-                <span className="tag">
-                  <span className="live-pulse" />
-                  System online · Purpose-built for clinics
-                </span>
-              </div>
-              <h1 className="hero-headline">
-                The front desk<br />
-                that never{' '}
-                <em>clocks off.</em>
-              </h1>
-              <p className="hero-sub">
-                ClinicForce handles every call your team can&apos;t take — intake, triage, urgency detection, booking, and clean handoff. Installed in a day. Live the same week.
-              </p>
-              <div className="hero-actions">
-                <button
-                  className="btn-lg"
-                  onClick={() => window.open(CALENDLY, '_blank')}
-                >
-                  Book a Demo
-                </button>
-                <Link href="/overview" className="btn-outline">
-                  See the Dashboard
-                </Link>
-              </div>
-              <div className="hero-trust">
-                <div className="hero-trust-item">
-                  <div className="hero-trust-dot" />
-                  No lock-in
-                </div>
-                <div className="hero-trust-item">
-                  <div className="hero-trust-dot" />
-                  Live in 24 hours
-                </div>
-                <div className="hero-trust-item">
-                  <div className="hero-trust-dot" />
-                  No setup fees
-                </div>
-              </div>
-              <div className="hero-stats">
-                <div className="hero-stat">
-                  <span className="hero-stat-num">0.4s</span>
-                  <span className="hero-stat-label">Avg. response time</span>
-                </div>
-                <div className="hero-stat">
-                  <span className="hero-stat-num">100%</span>
-                  <span className="hero-stat-label">Call answer rate</span>
-                </div>
-                <div className="hero-stat">
-                  <span className="hero-stat-num">24/7</span>
-                  <span className="hero-stat-label">Active coverage</span>
-                </div>
-              </div>
+        <div className="container hero-grid">
+          <div className="hero-copy">
+            <div className="eyebrow">
+              <span className="live-dot" />
+              Vet-native front desk AI
             </div>
 
-            {/* Right: Live Call Terminal */}
-            <div className="fade-in" style={{ animationDelay: '.2s' }}>
-              <div className="terminal">
-                <div className="terminal-header">
-                  <div className="terminal-dots">
-                    <div className="terminal-dot" style={{ background: '#ff5f57' }} />
-                    <div className="terminal-dot" style={{ background: '#ffbd2e' }} />
-                    <div className="terminal-dot" style={{ background: '#28c840' }} />
-                  </div>
-                  <div className="terminal-title">ClinicForce / Live Call</div>
-                  <div className="terminal-live">
-                    <span className="live-pulse" />
-                    LIVE
-                  </div>
-                </div>
-                <div className="terminal-body">
-                  <div className="call-meta">
-                    <div className="call-meta-item">
-                      <div className="call-meta-label">Caller</div>
-                      <div className="call-meta-val">Michael Tan</div>
-                    </div>
-                    <div className="call-meta-item">
-                      <div className="call-meta-label">Patient</div>
-                      <div className="call-meta-val">Buster · GD</div>
-                    </div>
-                    <div className="call-meta-item">
-                      <div className="call-meta-label">Duration</div>
-                      <div className="call-meta-val call-timer">{timerStr}</div>
-                    </div>
-                  </div>
-                  <div className="call-convo" ref={convoRef}>
-                    {visibleMessages.map((msg, i) => (
-                      <div key={i} className={`call-line${msg.side === 'owner' ? ' owner' : ''}`}>
-                        {msg.side === 'owner' ? (
-                          <>
-                            <div className="call-bubble bubble-owner">{msg.text}</div>
-                            <div className="call-avatar avatar-owner">{msg.initials}</div>
-                          </>
-                        ) : (
-                          <>
-                            <div className="call-avatar avatar-ai">{msg.initials}</div>
-                            <div className="call-bubble bubble-ai">{msg.text}</div>
-                          </>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="call-status">
-                    <div className="status-left">
-                      <div className="status-badge badge-urgent">URGENT</div>
-                      <div className="status-text">Escalated to on-call vet</div>
-                    </div>
-                    <div className="status-right">Intake note sent</div>
-                  </div>
-                </div>
-              </div>
+            <h1>
+              The front desk for veterinary clinics that cannot afford to miss what matters.
+            </h1>
+
+            <p className="hero-sub">
+              ClinicForce answers overflow and after-hours calls, identifies urgency in real time,
+              captures the right intake details, and hands your team an action-ready note before the
+              call is even over.
+            </p>
+
+            <div className="hero-actions">
+              <a className="lp-solid-btn hero-primary" href={CALENDLY} target="_blank" rel="noreferrer">
+                Book a demo
+              </a>
+              <a className="lp-ghost-btn" href="#proof">
+                See a real workflow
+              </a>
             </div>
 
-          </div>
-        </div>
-      </section>
+            <div className="hero-proof-points">
+              <div>Live in under 24 hours</div>
+              <div>No setup fees</div>
+              <div>No lock-in contracts</div>
+            </div>
 
-      {/* ─── Marquee ─── */}
-      <div className="marquee-section">
-        <div className="marquee-track">
-          {marqueeItems.map((item, i) => (
-            <span key={i} className="marquee-item">
-              {item}<span className="marquee-sep"> · </span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* ─── Stats Bar ─── */}
-      <section className="stats-bar fade-in">
-        <div className="container">
-          <div className="stats-grid">
-            <div className="stat-block">
-              <div className="stat-num">
-                <span className="counter" data-target="47">0</span>
+            <div className="hero-stats">
+              <div className="hero-stat">
+                <strong>0.4s</strong>
+                <span>average answer time</span>
               </div>
-              <div className="stat-desc">Calls missed per clinic per week on average</div>
-            </div>
-            <div className="stat-block">
-              <div className="stat-num">
-                $<span className="counter" data-target="138">0</span>
+              <div className="hero-stat">
+                <strong>24/7</strong>
+                <span>coverage across overflow and after-hours</span>
               </div>
-              <div className="stat-desc">Revenue lost per missed booking</div>
-            </div>
-            <div className="stat-block">
-              <div className="stat-num">
-                <span className="counter" data-target="63">0</span>%
+              <div className="hero-stat">
+                <strong>SOAP-style</strong>
+                <span>handoff notes ready for your team</span>
               </div>
-              <div className="stat-desc">Of callers who don&apos;t leave a voicemail</div>
-            </div>
-            <div className="stat-block">
-              <div className="stat-num">
-                <span className="counter" data-target="81">0</span>%
-              </div>
-              <div className="stat-desc">Of receptionists cite phone overload as burnout driver</div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* ─── Social Proof ─── */}
-      <section className="social-proof-section">
-        <div className="container">
-          <div className="blockquote-wrap fade-in">
-            <span className="blockquote-mark">&ldquo;</span>
-            <blockquote className="blockquote-text">
-              The morning phone rush used to be the most stressful part of our day. Now, I walk in to a clean dashboard of prioritized handovers. ClinicForce literally saved my team&apos;s sanity.
-            </blockquote>
-            <div className="blockquote-attr">
-              <div className="blockquote-avatar">SJ</div>
-              <div>
-                <div className="blockquote-name">Sarah Jenkins</div>
-                <div className="blockquote-role">Practice Manager, Riverdale Medical Group</div>
+          <div className="hero-visual">
+            <div className="live-board">
+              <div className="live-board-header">
+                <div>
+                  <div className="panel-kicker">LIVE TRIAGE</div>
+                  <div className="panel-title">Buster · Great Dane · 4 yrs</div>
+                </div>
+                <div className="live-timer">{timerLabel}</div>
+              </div>
+
+              <div className="live-board-topline">
+                <div className="mini-card">
+                  <span className="mini-label">Caller</span>
+                  <strong>Michael Tan</strong>
+                </div>
+                <div className="mini-card">
+                  <span className="mini-label">Symptoms</span>
+                  <strong>Retching, distended abdomen</strong>
+                </div>
+              </div>
+
+              <div className="transcript-card">
+                {visibleMessages.map((message, index) => (
+                  <div
+                    key={`${message.speaker}-${index}`}
+                    className={`transcript-line ${message.tone === 'ai' ? 'ai' : 'caller'}`}
+                  >
+                    <span className="transcript-speaker">{message.speaker}</span>
+                    <p>{message.text}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="signal-grid">
+                <div className="signal-card signal-urgent">
+                  <span className="signal-label">Urgency</span>
+                  <strong>High</strong>
+                  <p>Possible GDV pattern detected from symptoms and breed.</p>
+                </div>
+                <div className="signal-card">
+                  <span className="signal-label">Escalation</span>
+                  <strong>SMS sent</strong>
+                  <p>Dr Patel notified with summary, caller details, and arrival instruction.</p>
+                </div>
+              </div>
+
+              <div className="handoff-preview">
+                <div className="handoff-preview-header">
+                  <span>Handoff note</span>
+                  <span className="handoff-badge">Ready for team</span>
+                </div>
+                <ul>
+                  <li>Chief concern: repeated non-productive retching</li>
+                  <li>Risk signal: giant breed + abdominal distension</li>
+                  <li>Disposition: immediate presentation advised</li>
+                </ul>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── Features ─── */}
-      <section className="features-section" id="features">
+      <section className="proof-strip">
+        <div className="container proof-strip-inner">
+          <div className="proof-strip-item">
+            <span className="proof-strip-number">38%</span>
+            <span>of missed calls happen during business hours</span>
+          </div>
+          <div className="proof-strip-item">
+            <span className="proof-strip-number">$2,800</span>
+            <span>average monthly revenue recovered per clinic</span>
+          </div>
+          <div className="proof-strip-item">
+            <span className="proof-strip-number">4.1 hrs</span>
+            <span>saved weekly for front-desk staff</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="workflow-section" id="proof">
         <div className="container">
-          <div className="section-header fade-in">
-            <div className="section-eyebrow">
-              <span className="tag">Platform</span>
-            </div>
-            <h2 className="section-title">Built for the way clinics<br />actually run.</h2>
-            <p className="section-sub">
-              Not a generic chatbot with a pet theme. Every feature is designed around the specific workflows, urgencies, and communication styles of veterinary front desks.
+          <div className="section-head">
+            <div className="eyebrow subtle">How the workflow proves itself</div>
+            <h2>From first ring to clean handoff in under three minutes.</h2>
+            <p>
+              This is where ClinicForce becomes more than a generic answering tool. It handles the
+              operational reality of veterinary calls: uncertain symptoms, urgent escalation, and
+              staff who need context instead of voicemail.
             </p>
           </div>
-          <div className="features-grid">
-            {FEATURES.map(f => (
-              <div key={f.title} className="feature-card fade-in">
-                <div className="feature-icon">
-                  <span className="material-symbols-outlined">{f.icon}</span>
-                </div>
-                <div className="feature-title">{f.title}</div>
-                <div className="feature-desc">{f.desc}</div>
+
+          <div className="workflow-grid">
+            {PROOF_STEPS.map((step) => (
+              <article className="workflow-card" key={step.step}>
+                <div className="workflow-step">{step.step}</div>
+                <h3>{step.title}</h3>
+                <p>{step.copy}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="workflow-proof-panel">
+            <div className="proof-panel-block">
+              <span className="proof-panel-label">Call classification</span>
+              <strong>Routine booking, same-day concern, or emergency pattern</strong>
+              <p>
+                ClinicForce does not just answer the phone. It decides what the clinic needs to know
+                now, what can wait, and who should receive the handoff.
+              </p>
+            </div>
+
+            <div className="proof-panel-divider" />
+
+            <div className="proof-panel-block">
+              <span className="proof-panel-label">Operational output</span>
+              <strong>SMS alert + dashboard note + next action</strong>
+              <p>
+                Every interaction resolves into something useful for staff: a booking path, a triage
+                escalation, or a complete note for follow-up.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="case-study-section">
+        <div className="container case-study-grid">
+          <div className="case-study-copy">
+            <div className="eyebrow subtle">Pilot clinic outcome</div>
+            <h2>One Australian clinic used ClinicForce during lunch rush and after-hours. The first-week impact was obvious.</h2>
+            <p>
+              Instead of stacking voicemail and hoping owners called back, the practice captured more
+              booking demand, reduced front-desk stress, and routed urgent cases with far more
+              confidence.
+            </p>
+
+            <blockquote>
+              "By Friday it already felt like we had added another capable front-desk operator. The
+              biggest difference was not just fewer missed calls. It was how much calmer the team
+              felt walking in each morning."
+            </blockquote>
+
+            <div className="case-study-attribution">
+              <strong>Sarah Redmond</strong>
+              <span>Practice Manager · Sydney metro mixed practice</span>
+            </div>
+          </div>
+
+          <div className="case-study-metrics">
+            {OUTCOMES.map((metric) => (
+              <div className="metric-card" key={metric.label}>
+                <strong>{metric.value}</strong>
+                <span>{metric.label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── Product Showcase ─── */}
-      <section className="showcase-section">
+      <section className="platform-section" id="platform">
         <div className="container">
-          <div className="showcase-grid">
+          <div className="section-head">
+            <div className="eyebrow subtle">Platform focus</div>
+            <h2>Three things a 9 to 5 answering service cannot do for a clinic like yours.</h2>
+            <p>
+              The point is not more AI. The point is better judgement, better handoff, and fewer
+              moments where your front desk becomes the bottleneck.
+            </p>
+          </div>
 
-            {/* Left: copy */}
-            <div className="fade-in">
-              <div className="section-eyebrow" style={{ marginBottom: 16 }}>
-                <span className="tag">Dashboard</span>
-              </div>
-              <h2 className="section-title">A clear view of every interaction.</h2>
-              <div className="showcase-checkpoints">
-                <div className="showcase-checkpoint">
-                  <div className="checkpoint-icon">
-                    <span className="material-symbols-outlined">check</span>
-                  </div>
-                  <div className="checkpoint-text">
-                    <strong>Structured handover notes</strong> waiting for your team every morning — no voicemails to decode, no details lost.
-                  </div>
-                </div>
-                <div className="showcase-checkpoint">
-                  <div className="checkpoint-icon">
-                    <span className="material-symbols-outlined">check</span>
-                  </div>
-                  <div className="checkpoint-text">
-                    <strong>Urgency-ranked queue</strong> so your team always knows which case needs attention first.
-                  </div>
-                </div>
-                <div className="showcase-checkpoint">
-                  <div className="checkpoint-icon">
-                    <span className="material-symbols-outlined">check</span>
-                  </div>
-                  <div className="checkpoint-text">
-                    <strong>Full call transcript and audio</strong> available on every interaction for review and compliance.
-                  </div>
-                </div>
-              </div>
-              <p className="showcase-desc">
-                Your clinic&apos;s entire call activity, prioritised and formatted — so nothing slips through and your team starts every shift already ahead.
-              </p>
-            </div>
-
-            {/* Right: Patient handover card */}
-            <div className="fade-in" style={{ animationDelay: '.15s' }}>
-              <div className="handover-card">
-                <div className="handover-header">
-                  <div className="handover-header-title">Patient Handover</div>
-                  <span className="handover-tag routine">Routine</span>
-                </div>
-                <div className="handover-body">
-                  <div className="handover-field">
-                    <div className="handover-label">Owner</div>
-                    <div className="handover-value">John Miller</div>
-                  </div>
-                  <div className="handover-field">
-                    <div className="handover-label">Patient</div>
-                    <div className="handover-value">Pepper · Domestic Shorthair · 3 yr</div>
-                  </div>
-                  <div className="handover-field">
-                    <div className="handover-label">Reason for Visit</div>
-                    <div className="handover-value">Dental cleaning — annual schedule</div>
-                  </div>
-                  <div className="handover-note">
-                    Owner confirmed Pepper is due for her annual dental. No current concerns. Happy to proceed under general anaesthetic. Requested morning appointment if available.
-                  </div>
-                </div>
-                <div className="handover-footer">
-                  <span className="handover-footer-text">Received 08:14 AM · Today</span>
-                  <span className="handover-footer-text">Awaiting scheduling</span>
-                </div>
-              </div>
-            </div>
-
+          <div className="pillar-grid">
+            {PILLARS.map((pillar) => (
+              <article className="pillar-card" key={pillar.title}>
+                <span className="pillar-label">{pillar.label}</span>
+                <h3>{pillar.title}</h3>
+                <p>{pillar.copy}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ─── How It Works ─── */}
-      <section className="how-section" id="how">
+      <section className="pricing-section" id="pricing">
         <div className="container">
-          <div className="section-header fade-in">
-            <div className="section-eyebrow" style={{ marginBottom: 16 }}>
-              <span className="tag">How it works</span>
-            </div>
-            <h2 className="section-title">From first ring to clean handover<br />in seconds.</h2>
-            <p className="section-sub">
-              A reception workflow that runs itself — no configuration required after setup. ClinicForce handles the call end-to-end so your team picks up exactly where it left off.
+          <div className="section-head centered">
+            <div className="eyebrow subtle">Pricing</div>
+            <h2>Simple pricing. Clear rollout. No long-term commitment.</h2>
+            <p>
+              Most clinics do not need a complicated packaging story. They need a fast decision and a
+              clear path to go live this week.
             </p>
           </div>
-          <div className="steps-grid">
-            <div className="step fade-in">
-              <div className="step-num">01 — Calls come in</div>
-              <div className="step-title">Instant pickup</div>
-              <div className="step-desc">ClinicForce answers within one ring — no hold music, no phone tree. The caller is greeted warmly and feels heard from the first word.</div>
-            </div>
-            <div className="step fade-in" style={{ animationDelay: '.1s' }}>
-              <div className="step-num">02 — AI answers</div>
-              <div className="step-title">Natural intake</div>
-              <div className="step-desc">Owner name, pet name, breed, age, and reason for the call — gathered through natural conversation, not a robotic form or menu.</div>
-            </div>
-            <div className="step fade-in" style={{ animationDelay: '.2s' }}>
-              <div className="step-num">03 — Urgency identified</div>
-              <div className="step-title">Smart assessment</div>
-              <div className="step-desc">Routine enquiry or potential emergency? ClinicForce reads the call and escalates time-sensitive cases immediately to the right person.</div>
-            </div>
-            <div className="step fade-in" style={{ animationDelay: '.3s' }}>
-              <div className="step-num">04 — Clean handover</div>
-              <div className="step-title">Structured note</div>
-              <div className="step-desc">A SOAP-style intake note lands in your team&apos;s queue — prioritised, complete, and ready to act on. No voicemail to decode.</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ─── Clinic Portal Section ─── */}
-      <section className="portal-section" id="portal">
-        <div className="container">
-          <div className="portal-card fade-in">
-            <div className="portal-lock">
-              <span className="material-symbols-outlined">lock</span>
-            </div>
-            <h2 className="portal-title">Already a ClinicForce customer?</h2>
-            <p className="portal-subtitle">
-              Access your clinic dashboard, view incoming calls, manage your team and monitor urgency alerts in real time.
-            </p>
-            <Link href="/overview" className="btn-portal">
-              Go to Dashboard
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
-            </Link>
-            <p className="portal-secondary">
-              Or contact support at{' '}
-              <a href="mailto:hello@clinicforce.io">hello@clinicforce.io</a>
-            </p>
-            <div className="portal-secure">
-              <span className="material-symbols-outlined">shield</span>
-              Secure clinic portal
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Dark CTA Band ─── */}
-      <section className="cta-section" id="pricing">
-        <div className="container">
-          <div className="cta-inner fade-in">
-            <h2 className="cta-title">Stop missing calls.<br />Start capturing them.</h2>
-            <p className="cta-sub">
-              Join 200+ clinics using ClinicForce to handle every call, capture every booking, and give their team their time back. No setup fees. Live in under 24 hours.
-            </p>
-            <div className="cta-actions">
-              <button
-                className="btn-cta-primary"
-                onClick={() => window.open(CALENDLY, '_blank')}
+          <div className="pricing-grid">
+            {PRICING.map((tier) => (
+              <article
+                key={tier.name}
+                className={`pricing-card${tier.featured ? ' featured' : ''}`}
               >
-                Book a Demo
-              </button>
-              <button className="btn-cta-link">
-                View Pricing
-              </button>
-            </div>
-            <p className="cta-note">No lock-in · No setup fees · Live in &lt;24 hours</p>
+                {tier.featured && <div className="pricing-badge">Most popular</div>}
+                <div className="pricing-head">
+                  <span className="pricing-name">{tier.name}</span>
+                  <strong>{tier.price}</strong>
+                  <p>{tier.note}</p>
+                </div>
+
+                <ul className="pricing-list">
+                  {tier.features.map((feature) => (
+                    <li key={feature}>{feature}</li>
+                  ))}
+                </ul>
+
+                <a className={tier.featured ? 'lp-solid-btn' : 'lp-ghost-btn'} href={CALENDLY} target="_blank" rel="noreferrer">
+                  {tier.name === 'Enterprise' ? 'Talk to sales' : 'Book a demo'}
+                </a>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ─── Footer ─── */}
-      <footer>
-        <div className="container">
-          <div className="footer-inner">
-            <div>
-              <div className="footer-logo">
-                <LogoMark />
-                ClinicForce
-              </div>
-              <div className="footer-tagline">
-                AI-powered front desk for veterinary clinics. Purpose-built for the urgencies and workflows of vet medicine.
-              </div>
-              <div className="footer-status">
-                <div className="status-dot" />
-                All systems operational
-              </div>
-            </div>
-            <div>
-              <div className="footer-col-title">Product</div>
-              <ul className="footer-links">
-                <li><a href="#features">AI Call Handling</a></li>
-                <li><a href="#features">After-Hours Coverage</a></li>
-                <li><a href="#features">Urgency Detection</a></li>
-                <li><a href="#how">How It Works</a></li>
-                <li><Link href="/overview">Dashboard</Link></li>
-              </ul>
-            </div>
-            <div>
-              <div className="footer-col-title">Industries</div>
-              <ul className="footer-links">
-                <li><a href="#">Veterinary Clinics</a></li>
-                <li><a href="#">Emergency Practices</a></li>
-                <li><a href="#">Specialist Referrals</a></li>
-                <li><a href="#">Multi-location Groups</a></li>
-              </ul>
-            </div>
-            <div>
-              <div className="footer-col-title">Company</div>
-              <ul className="footer-links">
-                <li><a href="#">About</a></li>
-                <li><a href="#">Case Studies</a></li>
-                <li><a href="#">Integrations</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-                <li><a href="mailto:hello@clinicforce.io">Contact</a></li>
-              </ul>
-            </div>
+      <section className="cta-section">
+        <div className="container cta-shell">
+          <div>
+            <div className="eyebrow subtle">Start this week</div>
+            <h2>Make the homepage promise true in the clinic: no missed context, no dead-end voicemail, no guessing what is urgent.</h2>
           </div>
-          <div className="footer-bottom">
-            <div>© 2026 ClinicForce · All rights reserved</div>
-            <div>hello@clinicforce.io</div>
+
+          <div className="cta-actions">
+            <a className="lp-solid-btn" href={CALENDLY} target="_blank" rel="noreferrer">
+              Book a demo
+            </a>
+            <Link href="/login" className="lp-link-btn dark">
+              Existing customer login
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <footer className="lp-footer">
+        <div className="container lp-footer-inner">
+          <div>
+            <div className="lp-brand footer-brand">
+              <span className="lp-brand-mark">CF</span>
+              ClinicForce
+            </div>
+            <p>
+              AI-powered front desk operations for veterinary clinics, built for urgent calls,
+              overloaded teams, and cleaner handoff.
+            </p>
+          </div>
+
+          <div className="footer-links">
+            <a href="#proof">Proof</a>
+            <a href="#platform">Platform</a>
+            <a href="#pricing">Pricing</a>
+            <a href="mailto:hello@clinicforce.io">hello@clinicforce.io</a>
           </div>
         </div>
       </footer>
-
     </div>
   )
 }
