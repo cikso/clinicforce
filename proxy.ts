@@ -12,6 +12,7 @@ const DASHBOARD_ROUTES = [
   '/users',
   '/insights',
   '/settings',
+  '/admin',
 ]
 
 export async function proxy(request: NextRequest) {
