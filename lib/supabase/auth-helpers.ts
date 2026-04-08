@@ -8,8 +8,6 @@ export interface ClinicProfile {
   clinicId: string
   clinicName: string
   clinicPhone: string
-  clinicSuburb: string
-  clinicState: string
   vertical: string
   isPlatformOwner: boolean
 }
@@ -38,7 +36,7 @@ export async function getClinicProfile(): Promise<ClinicProfile | null> {
     .from('clinic_users')
     .select(`
       id, name, role,
-      clinics ( id, name, phone, suburb, state, vertical )
+      clinics ( id, name, phone, vertical )
     `)
     .eq('user_id', user.id)
     .limit(1)
@@ -61,8 +59,6 @@ export async function getClinicProfile(): Promise<ClinicProfile | null> {
     clinicId: (clinic?.id as string) ?? '',
     clinicName: isPlatformOwner ? '' : ((clinic?.name as string) ?? ''),
     clinicPhone: (clinic?.phone as string) ?? '',
-    clinicSuburb: (clinic?.suburb as string) ?? '',
-    clinicState: (clinic?.state as string) ?? '',
     vertical: (clinic?.vertical as string) ?? 'vet',
     isPlatformOwner,
   }
