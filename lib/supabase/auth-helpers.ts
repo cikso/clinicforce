@@ -48,16 +48,27 @@ export async function getClinicProfile(): Promise<ClinicProfile | null> {
   }
   if (!data) return null
 
-  const clinic = Array.isArray(data.clinics) ? data.clinics[0] : (data.clinics as Record<string, unknown> | null)
+  let clinic = Array.isArray(data.clinics) ? data.clinics[0] : (data.clinics as Record<string, unknown> | null)
   const role = (data.role as string) ?? 'receptionist'
   const isPlatformOwner = role === 'platform_owner'
+
+  // Platform owner has no clinic association — fall back to the first real clinic
+  if (isPlatformOwner && !clinic) {
+    const { data: fallbackClinic } = await queryClient
+      .from('clinics')
+      .select('id, name, phone, vertical')
+      .not('slug', 'eq', 'clinicforce-platform')
+      .limit(1)
+      .maybeSingle()
+    if (fallbackClinic) clinic = fallbackClinic
+  }
 
   return {
     userId: user.id,
     userName: isPlatformOwner ? 'ClinicForce' : ((data.name as string) ?? user.email ?? 'Staff'),
     userRole: role,
     clinicId: (clinic?.id as string) ?? '',
-    clinicName: isPlatformOwner ? '' : ((clinic?.name as string) ?? ''),
+    clinicName: (clinic?.name as string) ?? '',
     clinicPhone: (clinic?.phone as string) ?? '',
     vertical: (clinic?.vertical as string) ?? 'vet',
     isPlatformOwner,

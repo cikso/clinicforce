@@ -51,9 +51,21 @@ async function getLayoutProfile(): Promise<UserProfile> {
 
     const role      = (cu.role as string) ?? 'receptionist'
     const name      = (cu.name as string) ?? user.email ?? 'Staff'
-    const clinic    = Array.isArray(cu.clinics) ? cu.clinics[0] : (cu.clinics as Record<string, unknown> | null)
+    let clinic      = Array.isArray(cu.clinics) ? cu.clinics[0] : (cu.clinics as Record<string, unknown> | null)
+
+    // Platform owner has no clinic association — fall back to the first real clinic
+    if (role === 'platform_owner' && !clinic) {
+      const { data: fallbackClinic } = await service
+        .from('clinics')
+        .select('id, name, vertical')
+        .not('slug', 'eq', 'clinicforce-platform')
+        .limit(1)
+        .maybeSingle()
+      if (fallbackClinic) clinic = fallbackClinic
+    }
+
     const clinicId   = (clinic?.id as string) ?? ''
-    const clinicName = role === 'platform_owner' ? '' : ((clinic?.name as string) ?? '')
+    const clinicName = (clinic?.name as string) ?? ''
     const vertical   = (clinic?.vertical as string) ?? 'vet'
     const userName   = role === 'platform_owner' ? 'ClinicForce' : name
 
