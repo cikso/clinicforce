@@ -52,15 +52,18 @@ export async function getClinicProfile(): Promise<ClinicProfile | null> {
   const role = (data.role as string) ?? 'receptionist'
   const isPlatformOwner = role === 'platform_owner'
 
-  // Platform owner has no clinic association — fall back to the first real clinic
+  // Platform owner has no clinic association — fall back to the active clinic
+  // (the one with a voice_agents entry, i.e. actually in use)
   if (isPlatformOwner && !clinic) {
-    const { data: fallbackClinic } = await queryClient
-      .from('clinics')
-      .select('id, name, phone, vertical')
-      .not('slug', 'eq', 'clinicforce-platform')
+    const { data: activeAgent } = await queryClient
+      .from('voice_agents')
+      .select('clinic_id, clinics(id, name, phone, vertical)')
+      .eq('is_active', true)
       .limit(1)
       .maybeSingle()
-    if (fallbackClinic) clinic = fallbackClinic
+    const agentClinic = activeAgent?.clinics
+    const resolved = Array.isArray(agentClinic) ? agentClinic[0] : agentClinic
+    if (resolved) clinic = resolved as Record<string, unknown>
   }
 
   return {
