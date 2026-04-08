@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getVertical, VerticalKey } from '@/lib/verticals'
 
+export const preferredRegion = 'syd1'
+
 // ─────────────────────────────────────────────────────────────
 // All 13 dynamic variables the ElevenLabs agent expects.
 // These defaults mirror the agent's dynamic_variable_placeholders

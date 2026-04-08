@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getClinicConfig } from '@/lib/brain/clinic/get-clinic-config'
 
+export const preferredRegion = 'syd1'
+
 const DEMO_CLINIC_ID      = 'a1b2c3d4-0000-0000-0000-000000000001'
 const DEMO_CLINIC_CFG_KEY = process.env.CLINIC_CONFIG_KEY ?? 'demo-clinic'
 
