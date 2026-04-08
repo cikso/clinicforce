@@ -82,12 +82,11 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Run on all routes except:
+     * Run on all routes (including /api) except:
      * - _next/static, _next/image (Next.js internals)
      * - favicon.ico
      * - Public assets
-     * - API routes (handled separately)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
   ],
 }
