@@ -175,7 +175,7 @@ async function handleInitiate(req: NextRequest): Promise<NextResponse> {
       const { data: clinics, error } = await supabase
         .from('clinics')
         .select(
-          'name, phone, address, suburb, state, postcode, clinic_hours, after_hours_partner, after_hours_phone, emergency_partner_address, vertical, services, voice_phone',
+          'name, phone, address, suburb, state, postcode, clinic_hours, after_hours_partner, after_hours_phone, emergency_partner_address, vertical, services, voice_phone, subject_label, professional_title',
         )
 
       if (error) {
@@ -195,11 +195,19 @@ async function handleInitiate(req: NextRequest): Promise<NextResponse> {
             clinic_address:            buildAddress(clinic as Record<string, unknown>),
             clinic_phone:              String(clinic.phone              ?? DEFAULTS.clinic_phone),
             clinic_hours:              String(clinic.clinic_hours       ?? DEFAULTS.clinic_hours),
-            emergency_partner_name:    String(clinic.after_hours_partner  ?? DEFAULTS.emergency_partner_name),
-            emergency_partner_address: String(clinic.emergency_partner_address ?? DEFAULTS.emergency_partner_address),
-            emergency_partner_phone:   String(clinic.after_hours_phone  ?? DEFAULTS.emergency_partner_phone),
+            // DB column → ElevenLabs variable name mapping:
+            // after_hours_partner → emergency_partner_name
+            // after_hours_phone   → emergency_partner_phone
+            emergency_partner_name:    String(clinic.after_hours_partner        ?? DEFAULTS.emergency_partner_name),
+            emergency_partner_address: String(clinic.emergency_partner_address  ?? DEFAULTS.emergency_partner_address),
+            emergency_partner_phone:   String(clinic.after_hours_phone          ?? DEFAULTS.emergency_partner_phone),
             clinic_services:           String(clinic.services           ?? DEFAULTS.clinic_services),
+            // Vertical-derived defaults for subject/professional vars
             ...vertVars,
+            // Per-clinic DB overrides take precedence when set
+            // (subject_label and professional_title are new columns — null means use vertical default)
+            ...(clinic.subject_label      ? { subject_label:      String(clinic.subject_label)      } : {}),
+            ...(clinic.professional_title ? { professional_title: String(clinic.professional_title) } : {}),
           }
         } else {
           console.warn(

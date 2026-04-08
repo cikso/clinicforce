@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import SettingsClient from './SettingsClient'
+import type { VoiceAgent } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,5 +42,12 @@ export default async function SettingsPage() {
 
   if (!clinic) redirect('/overview')
 
-  return <SettingsClient clinic={clinic} />
+  // Fetch voice agent using the authenticated client (RLS applies automatically)
+  const { data: voiceAgent } = await supabase
+    .from('voice_agents')
+    .select('id, clinic_id, elevenlabs_agent_id, twilio_phone_number, is_active, mode')
+    .eq('clinic_id', cu.clinic_id)
+    .maybeSingle<VoiceAgent>()
+
+  return <SettingsClient clinic={clinic} voiceAgent={voiceAgent ?? null} />
 }

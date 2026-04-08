@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   StepCard, Field, Input, Select, SubmitButton, ErrorBanner, BackButton,
   Toggle, stepHeading, stepSubheading,
-} from '../_components'
+} from '../../_components'
 
 const VERTICALS = [
   { value: 'vet',          label: 'Veterinary' },

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   StepCard, Field, SubmitButton, ErrorBanner, BackButton, Toggle,
   stepHeading, stepSubheading, inputBase,
-} from '../_components'
+} from '../../_components'
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   StepCard, Field, Input, SubmitButton, ErrorBanner,
   stepHeading, stepSubheading,
-} from '../_components'
+} from '../../_components'
 
 export default function ClinicDetailsPage() {
   const router = useRouter()

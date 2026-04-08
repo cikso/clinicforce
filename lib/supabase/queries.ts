@@ -1,5 +1,5 @@
 import { createClient } from './server'
-import type { Call } from '@/lib/types'
+import type { Call, Subscription } from '@/lib/types'
 
 const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
@@ -36,6 +36,26 @@ export async function fetchCallInbox(): Promise<Call[]> {
     callDurationSeconds: (row.call_duration_seconds as number | null) ?? null,
     createdAt:           (row.created_at        as string) ?? new Date().toISOString(),
   }))
+}
+
+// ── getSubscription ────────────────────────────────────────────────────────────
+// Returns the subscription row for the given clinic using the authenticated
+// session client so Supabase RLS is applied automatically.
+export async function getSubscription(clinicId: string): Promise<Subscription | null> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .select('id, clinic_id, plan, status, trial_ends_at')
+    .eq('clinic_id', clinicId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('getSubscription error:', error)
+    return null
+  }
+
+  return data as Subscription | null
 }
 
 // ── fetchDashboardCalls ────────────────────────────────────────────────────────

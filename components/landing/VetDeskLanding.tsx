@@ -1,5 +1,9 @@
+'use client'
+
+import { useState } from 'react'
 import type { ComponentType } from 'react'
 import Link from 'next/link'
+import DemoModal from './DemoModal'
 import {
   ArrowRight,
   BellRing,
@@ -19,8 +23,6 @@ import {
   ToggleLeft,
   Waves,
 } from 'lucide-react'
-
-const primaryCta = 'https://calendly.com/ciks35/30min'
 
 const painPoints = [
   ['Missed calls during peak hours', 'Calls come in while reception is checking in patients, handling payments, or speaking with clinicians. Demand does not stop just because the front desk is full.', PhoneCall],
@@ -106,8 +108,11 @@ function FeatureCard({
 }
 
 export function ClinicForceLanding() {
+  const [demoOpen, setDemoOpen] = useState(false)
+
   return (
     <main className="min-h-screen bg-[#f6f8fb] text-[#0d1b2a]">
+      <DemoModal isOpen={demoOpen} onClose={() => setDemoOpen(false)} />
       <div className="mx-auto max-w-7xl px-6 pb-20 pt-6 sm:px-8 lg:px-12">
         <header className="sticky top-0 z-30 mb-8 rounded-[28px] border border-[#dbe4eb]/80 bg-white/88 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-white/75">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -125,9 +130,9 @@ export function ClinicForceLanding() {
               <a href="#features" className="transition hover:text-[#10243a]">Features</a>
               <a href="#product-ui" className="transition hover:text-[#10243a]">Product</a>
               <Link href="/login" className="transition hover:text-[#10243a]">Log in</Link>
-              <a href={primaryCta} target="_blank" rel="noreferrer" className="inline-flex items-center rounded-2xl bg-[#10243a] px-5 py-3 text-white shadow-[0_12px_24px_rgba(16,36,58,0.12)] transition hover:bg-[#0d1b2a]">
+              <button onClick={() => setDemoOpen(true)} className="inline-flex items-center rounded-2xl bg-[#10243a] px-5 py-3 text-white shadow-[0_12px_24px_rgba(16,36,58,0.12)] transition hover:bg-[#0d1b2a]">
                 Book a Demo
-              </a>
+              </button>
             </nav>
           </div>
         </header>
@@ -150,9 +155,9 @@ export function ClinicForceLanding() {
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <a href={primaryCta} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-2xl bg-[#0d7b72] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(13,123,114,0.16)] transition hover:bg-[#0b6a62]">
+              <button onClick={() => setDemoOpen(true)} className="inline-flex items-center justify-center rounded-2xl bg-[#0d7b72] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(13,123,114,0.16)] transition hover:bg-[#0b6a62]">
                 Book a Demo
-              </a>
+              </button>
               <a href="#how-it-works" className="inline-flex items-center justify-center rounded-2xl border border-[#d8e0e8] bg-white px-6 py-4 text-sm font-semibold text-[#10243a] transition hover:border-[#c7d4df] hover:bg-[#f9fbfc]">
                 See How It Works
               </a>
@@ -552,10 +557,10 @@ export function ClinicForceLanding() {
             </div>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <a href={primaryCta} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-2xl bg-[#10243a] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(16,36,58,0.12)] transition hover:bg-[#0d1b2a]">
+              <button onClick={() => setDemoOpen(true)} className="inline-flex items-center justify-center rounded-2xl bg-[#10243a] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(16,36,58,0.12)] transition hover:bg-[#0d1b2a]">
                 Book a Demo
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
+              </button>
               <a href="#product-ui" className="inline-flex items-center justify-center rounded-2xl border border-[#cdd9e1] bg-white px-6 py-4 text-sm font-semibold text-[#10243a] transition hover:bg-[#f9fbfc]">
                 Review the Product
                 <ChevronRight className="ml-2 h-4 w-4" />

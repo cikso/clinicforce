@@ -8,8 +8,6 @@ function getSupabase() {
   return createClient(url, key)
 }
 
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
-
 // ── Agent → vertical mapping ──────────────────────────────────────────────────
 // ElevenLabs sends `agent_id` at the top level of every webhook payload.
 // Add a key per agent using env vars — never hardcode IDs in source.
@@ -56,7 +54,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 🛑 THE SMART TRAFFIC COP 🛑
-  // Ignore audio and ping webhooks to prevent duplicate blank rows, 
+  // Ignore audio and ping webhooks to prevent duplicate blank rows,
   // but let the post_call_transcription through to update the summary!
   if (body.type === 'ping' || body.type === 'post_call_audio') {
     console.log('[inbox/webhook] Ignored background webhook:', body.type)
@@ -70,8 +68,33 @@ export async function POST(req: NextRequest) {
   const payload      = (body.data as Record<string, unknown>) ?? body
   const conversationId = (payload.conversation_id as string) ?? null
   const metadata     = (payload.metadata as Record<string, unknown>) ?? {}
+  const phoneCall    = (metadata.phone_call as Record<string, unknown>) ?? {}
   const analysis     = (payload.analysis as Record<string, unknown>) ?? {}
   const transcript   = (payload.transcript as Array<{ role: string; message: string }>) ?? []
+
+  // ── Resolve clinic from the Twilio "To" number ────────────────────────────
+  // ElevenLabs includes the called Twilio number in phone_call.to (E.164).
+  // We use this to look up which clinic owns that number in voice_agents.
+  const toNumber = (phoneCall.to as string) ?? (body.to as string) ?? null
+
+  if (!toNumber) {
+    console.error('[inbox/webhook] No Twilio To number found in payload')
+    return NextResponse.json({ error: 'Unknown agent phone number' }, { status: 400 })
+  }
+
+  const { data: voiceAgent, error: vaError } = await supabase
+    .from('voice_agents')
+    .select('clinic_id')
+    .eq('twilio_phone_number', toNumber)
+    .limit(1)
+    .maybeSingle()
+
+  if (vaError || !voiceAgent?.clinic_id) {
+    console.error('[inbox/webhook] No voice_agent matched phone number:', toNumber)
+    return NextResponse.json({ error: 'Unknown agent phone number' }, { status: 400 })
+  }
+
+  const clinicId = voiceAgent.clinic_id
 
   const callDurationSecs =
     (metadata.call_duration_secs as number) ??
@@ -91,7 +114,7 @@ export async function POST(req: NextRequest) {
       .from('call_inbox')
       .select('id')
       .eq('elevenlabs_conversation_id', conversationId)
-      .eq('clinic_id', DEMO_CLINIC_ID)
+      .eq('clinic_id', clinicId)
       .maybeSingle()
 
     if (exactMatch) {
@@ -119,7 +142,7 @@ export async function POST(req: NextRequest) {
     const { data: recentMatch } = await supabase
       .from('call_inbox')
       .select('id')
-      .eq('clinic_id', DEMO_CLINIC_ID)
+      .eq('clinic_id', clinicId)
       .is('elevenlabs_conversation_id', null)
       .gte('created_at', tenMinsAgo)
       .order('created_at', { ascending: false })
@@ -148,7 +171,6 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Step 3: No match — insert new row (tool never fired) ──────
-  const phoneCall  = (metadata.phone_call as Record<string, unknown>) ?? {}
   const rawPhone   =
     (phoneCall.caller_id as string) ??
     extractPhone(transcript.map(t => t.message).join(' ')) ??
@@ -164,7 +186,7 @@ export async function POST(req: NextRequest) {
   const { error } = await supabase
     .from('call_inbox')
     .insert({
-      clinic_id:                  DEMO_CLINIC_ID,
+      clinic_id:                  clinicId,
       caller_name:                callerInfo.name,
       caller_phone:               callerInfo.phone,
       pet_name:                   callerInfo.petName,

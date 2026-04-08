@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import type { VoiceAgent } from '@/lib/types'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type DayKey = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
@@ -45,7 +46,7 @@ const VERTICALS = [
   { value: 'specialist',  label: 'Specialist' },
 ]
 
-type Tab = 'clinic' | 'hours' | 'calling'
+type Tab = 'clinic' | 'hours' | 'calling' | 'voice_agent'
 
 // ── Shared UI primitives ──────────────────────────────────────────────────
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -461,10 +462,10 @@ function CallHandlingTab({ clinic }: { clinic: Clinic }) {
         }}>
           <div>
             <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>
-              After-hours / emergency partner
+              Emergency partner
             </p>
             <p style={{ fontSize: 12, color: '#6B7280', margin: '2px 0 0' }}>
-              For urgent calls outside opening hours
+              Surfaced to callers for urgent after-hours referrals
             </p>
           </div>
           <button
@@ -500,7 +501,7 @@ function CallHandlingTab({ clinic }: { clinic: Clinic }) {
         {hasPartner ? (
           <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              <Field label="Partner clinic name *">
+              <Field label="Emergency partner name *">
                 <Input
                   required={hasPartner}
                   value={partner}
@@ -508,7 +509,7 @@ function CallHandlingTab({ clinic }: { clinic: Clinic }) {
                   placeholder="e.g. City Emergency Vet"
                 />
               </Field>
-              <Field label="Partner phone *">
+              <Field label="Emergency partner phone *">
                 <Input
                   required={hasPartner}
                   type="tel"
@@ -518,7 +519,7 @@ function CallHandlingTab({ clinic }: { clinic: Clinic }) {
                 />
               </Field>
             </div>
-            <Field label="Partner address">
+            <Field label="Emergency partner address">
               <Input
                 value={partnerAddress}
                 onChange={e => { setPartnerAddress(e.target.value); setStatus(null) }}
@@ -547,14 +548,84 @@ function CallHandlingTab({ clinic }: { clinic: Clinic }) {
   )
 }
 
+// ── Voice Agent Tab ───────────────────────────────────────────────────────
+function VoiceAgentTab({ voiceAgent }: { voiceAgent: VoiceAgent | null }) {
+  if (!voiceAgent) {
+    return (
+      <div style={{
+        padding: '24px',
+        textAlign: 'center',
+        color: '#6B7280',
+        fontSize: 14,
+        background: '#F9FAFB',
+        borderRadius: 10,
+        border: '1px dashed #E5E7EB',
+      }}>
+        No voice agent is configured for this clinic yet.
+      </div>
+    )
+  }
+
+  const rows: { label: string; value: React.ReactNode }[] = [
+    { label: 'Agent ID',     value: voiceAgent.elevenlabs_agent_id || '—' },
+    { label: 'Phone number', value: voiceAgent.twilio_phone_number  || '—' },
+    {
+      label: 'Status',
+      value: (
+        <span style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          fontSize: 13,
+          fontWeight: 600,
+          color: voiceAgent.is_active ? '#15803D' : '#9CA3AF',
+        }}>
+          <span style={{
+            width: 8, height: 8, borderRadius: '50%',
+            background: voiceAgent.is_active ? '#22C55E' : '#D1D5DB',
+            display: 'inline-block',
+          }} />
+          {voiceAgent.is_active ? 'Active' : 'Inactive'}
+        </span>
+      ),
+    },
+    { label: 'Mode', value: voiceAgent.mode || '—' },
+  ]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0, border: '1px solid #E5E7EB', borderRadius: 12, overflow: 'hidden' }}>
+      {rows.map((row, i) => (
+        <div
+          key={row.label}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '160px 1fr',
+            gap: 16,
+            padding: '14px 18px',
+            background: i % 2 === 0 ? '#fff' : '#F9FAFB',
+            borderBottom: i < rows.length - 1 ? '1px solid #F3F4F6' : 'none',
+            alignItems: 'center',
+          }}
+        >
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>{row.label}</span>
+          <span style={{ fontSize: 14, color: '#111827', fontFamily: typeof row.value === 'string' ? 'monospace' : 'inherit' }}>
+            {row.value}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ── Main settings page ────────────────────────────────────────────────────
-export default function SettingsClient({ clinic }: { clinic: Clinic }) {
+export default function SettingsClient({ clinic, voiceAgent }: { clinic: Clinic; voiceAgent: VoiceAgent | null }) {
   const [tab, setTab] = useState<Tab>('clinic')
 
   const tabs: { id: Tab; label: string }[] = [
-    { id: 'clinic',  label: 'Clinic Details' },
-    { id: 'hours',   label: 'Opening Hours' },
-    { id: 'calling', label: 'Call Handling' },
+    { id: 'clinic',       label: 'Clinic Details' },
+    { id: 'hours',        label: 'Opening Hours' },
+    { id: 'calling',      label: 'Call Handling' },
+    { id: 'voice_agent',  label: 'Voice Agent' },
   ]
 
   return (
@@ -612,9 +683,10 @@ export default function SettingsClient({ clinic }: { clinic: Clinic }) {
         padding: 28,
         boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
       }}>
-        {tab === 'clinic'  && <ClinicDetailsTab  clinic={clinic} />}
-        {tab === 'hours'   && <OpeningHoursTab   clinic={clinic} />}
-        {tab === 'calling' && <CallHandlingTab   clinic={clinic} />}
+        {tab === 'clinic'       && <ClinicDetailsTab  clinic={clinic} />}
+        {tab === 'hours'        && <OpeningHoursTab   clinic={clinic} />}
+        {tab === 'calling'      && <CallHandlingTab   clinic={clinic} />}
+        {tab === 'voice_agent'  && <VoiceAgentTab     voiceAgent={voiceAgent} />}
       </div>
     </div>
   )

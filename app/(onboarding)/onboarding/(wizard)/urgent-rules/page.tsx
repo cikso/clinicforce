@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   StepCard, Field, Select, SubmitButton, ErrorBanner, BackButton,
   stepHeading, stepSubheading,
-} from '../_components'
+} from '../../_components'
 
 const PRESET_SYMPTOMS = [
   'Collapse or loss of consciousness',
