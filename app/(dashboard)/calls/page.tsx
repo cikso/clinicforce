@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Phone, Calendar, CheckCheck, Info, Clock, AlertTriangle, Sparkles } from 'lucide-react'
 import TopBar from '@/components/layout/TopBar'
+import { useClinic } from '@/context/ClinicContext'
 import ToastContainer from '@/components/dashboard/ToastContainer'
 import { INITIAL_INBOX, type CallInboxItem } from '@/data/mock-dashboard'
 import type { ToastItem } from '@/components/dashboard/ToastContainer'
@@ -316,6 +317,7 @@ function EmptyDetail() {
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CallsPage() {
+  const { activeClinicId } = useClinic()
   const [inbox,      setInbox]      = useState<CallInboxItem[]>(INITIAL_INBOX)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [toasts,     setToasts]     = useState<ToastItem[]>([])
@@ -341,11 +343,17 @@ export default function CallsPage() {
       .catch(() => {})
   }, [])
 
+  const prevClinicRef = useRef(activeClinicId)
   useEffect(() => {
+    if (prevClinicRef.current !== activeClinicId) {
+      setInbox([])
+      setSelectedId(null)
+      prevClinicRef.current = activeClinicId
+    }
     fetchInbox()
     const interval = setInterval(fetchInbox, 30_000)
     return () => clearInterval(interval)
-  }, [fetchInbox])
+  }, [fetchInbox, activeClinicId])
 
   const handleMarkRead = useCallback((id: string) => {
     setInbox(prev =>

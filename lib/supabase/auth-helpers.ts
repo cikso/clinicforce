@@ -1,5 +1,6 @@
 import { createClient } from './server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { cookies } from 'next/headers'
 
 export interface ClinicProfile {
   userId: string
@@ -52,18 +53,33 @@ export async function getClinicProfile(): Promise<ClinicProfile | null> {
   const role = (data.role as string) ?? 'receptionist'
   const isPlatformOwner = role === 'platform_owner'
 
-  // Platform owner has no clinic association — fall back to the active clinic
-  // (the one with a voice_agents entry, i.e. actually in use)
-  if (isPlatformOwner && !clinic) {
-    const { data: activeAgent } = await queryClient
-      .from('voice_agents')
-      .select('clinic_id, clinics(id, name, phone, vertical)')
-      .eq('is_active', true)
-      .limit(1)
-      .maybeSingle()
-    const agentClinic = activeAgent?.clinics
-    const resolved = Array.isArray(agentClinic) ? agentClinic[0] : agentClinic
-    if (resolved) clinic = resolved as Record<string, unknown>
+  // Platform owner: respect the cf_active_clinic cookie if set,
+  // otherwise fall back to the active voice_agents clinic
+  if (isPlatformOwner) {
+    const cookieStore = await cookies()
+    const cookieClinicId = cookieStore.get('cf_active_clinic')?.value
+
+    if (cookieClinicId) {
+      const { data: picked } = await queryClient
+        .from('clinics')
+        .select('id, name, phone, vertical')
+        .eq('id', cookieClinicId)
+        .maybeSingle()
+      if (picked) clinic = picked as Record<string, unknown>
+    }
+
+    // No cookie or invalid cookie — fall back to active voice agent clinic
+    if (!clinic) {
+      const { data: activeAgent } = await queryClient
+        .from('voice_agents')
+        .select('clinic_id, clinics(id, name, phone, vertical)')
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle()
+      const agentClinic = activeAgent?.clinics
+      const resolved = Array.isArray(agentClinic) ? agentClinic[0] : agentClinic
+      if (resolved) clinic = resolved as Record<string, unknown>
+    }
   }
 
   return {

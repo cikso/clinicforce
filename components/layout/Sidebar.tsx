@@ -8,6 +8,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
+import { useClinic } from '@/context/ClinicContext'
+import ClinicSwitcher from '@/components/layout/ClinicSwitcher'
 
 const PRIMARY_NAV = [
   { label: 'Overview',     href: '/overview',     icon: LayoutDashboard },
@@ -40,6 +42,7 @@ export default function Sidebar({
   userRole           = 'receptionist',
   trialDaysRemaining,
 }: SidebarProps) {
+  const { isPlatformOwner: isOwner } = useClinic()
   const isAdmin  = ADMIN_ROLES.includes(userRole)
   const pathname = usePathname()
   const router   = useRouter()
@@ -68,9 +71,11 @@ export default function Sidebar({
         </div>
         <div className="min-w-0">
           <h1 className="font-bold text-[15px] text-slate-900 leading-snug tracking-tight">ClinicForce</h1>
-          {clinicName && (
+          {isOwner ? (
+            <ClinicSwitcher />
+          ) : clinicName ? (
             <p className="text-[11px] text-slate-500 truncate mt-px">{clinicName}</p>
-          )}
+          ) : null}
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useClinic } from '@/context/ClinicContext'
 import {
   BarChart3, Phone, Calendar, Bell, Search, Download,
   ChevronDown, Activity, Clock, Zap, Target, BookOpen,
@@ -136,18 +137,20 @@ function heatColor(val: number, max: number): string {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function InsightsPage() {
+  const { activeClinicId } = useClinic()
   const [dateRange, setDateRange] = useState('Last 7 Days')
   const [data,      setData]      = useState<InsightsData>(FALLBACK)
   const [loading,   setLoading]   = useState(true)
 
   useEffect(() => {
     setLoading(true)
+    setData(FALLBACK)
     fetch('/api/insights')
       .then(r => r.json())
       .then((live: InsightsData) => { if (live?.kpis) setData(live) })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [])
+  }, [activeClinicId])
 
   const { kpis, trends, areaData, callReasons, missedOpportunities, heatmap, aiPerformance } = data
   const maxReason = callReasons.length > 0 ? callReasons[0].count : 1
