@@ -3,6 +3,7 @@ import ChatWidget from '@/components/chat/ChatWidget'
 import { VerticalProvider } from '@/context/VerticalContext'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { getSubscription } from '@/lib/supabase/queries'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,6 +12,7 @@ interface UserProfile {
   userRole:   string
   clinicName: string
   vertical:   string
+  clinicId:   string
 }
 
 async function getLayoutProfile(): Promise<UserProfile> {
@@ -19,6 +21,7 @@ async function getLayoutProfile(): Promise<UserProfile> {
     userRole:   'receptionist',
     clinicName: '',
     vertical:   'vet',
+    clinicId:   '',
   }
 
   try {
@@ -49,11 +52,12 @@ async function getLayoutProfile(): Promise<UserProfile> {
     const role      = (cu.role as string) ?? 'receptionist'
     const name      = (cu.name as string) ?? user.email ?? 'Staff'
     const clinic    = Array.isArray(cu.clinics) ? cu.clinics[0] : (cu.clinics as Record<string, unknown> | null)
+    const clinicId   = (clinic?.id as string) ?? ''
     const clinicName = role === 'platform_owner' ? '' : ((clinic?.name as string) ?? '')
-    const vertical  = (clinic?.vertical as string) ?? 'vet'
-    const userName  = role === 'platform_owner' ? 'ClinicForce' : name
+    const vertical   = (clinic?.vertical as string) ?? 'vet'
+    const userName   = role === 'platform_owner' ? 'ClinicForce' : name
 
-    return { userName, userRole: role, clinicName, vertical }
+    return { userName, userRole: role, clinicName, vertical, clinicId }
   } catch {
     return fallback
   }
@@ -62,6 +66,16 @@ async function getLayoutProfile(): Promise<UserProfile> {
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const profile = await getLayoutProfile()
 
+  // Fetch subscription to show trial banner; uses authenticated client (RLS applies)
+  let trialDaysRemaining: number | undefined
+  if (profile.clinicId) {
+    const subscription = await getSubscription(profile.clinicId)
+    if (subscription?.status === 'trialing' && subscription.trial_ends_at) {
+      const msRemaining = new Date(subscription.trial_ends_at).getTime() - Date.now()
+      trialDaysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)))
+    }
+  }
+
   return (
     <VerticalProvider vertical={profile.vertical}>
       <div className="h-screen flex overflow-hidden bg-slate-50">
@@ -69,6 +83,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           clinicName={profile.clinicName}
           userName={profile.userName}
           userRole={profile.userRole}
+          trialDaysRemaining={trialDaysRemaining}
         />
         <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
           {children}

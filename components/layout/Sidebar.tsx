@@ -28,15 +28,17 @@ const PLATFORM_NAV = [
 ]
 
 interface SidebarProps {
-  clinicName?: string
-  userName?:   string
-  userRole?:   string
+  clinicName?:         string
+  userName?:           string
+  userRole?:           string
+  trialDaysRemaining?: number
 }
 
 export default function Sidebar({
-  clinicName = '',
-  userName   = 'Staff',
-  userRole   = 'receptionist',
+  clinicName         = '',
+  userName           = 'Staff',
+  userRole           = 'receptionist',
+  trialDaysRemaining,
 }: SidebarProps) {
   const isAdmin  = ADMIN_ROLES.includes(userRole)
   const pathname = usePathname()
@@ -161,6 +163,17 @@ export default function Sidebar({
                 )
               })}
             </div>
+          </div>
+        )}
+
+        {/* Trial banner */}
+        {trialDaysRemaining !== undefined && (
+          <div className="px-3 py-2.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-[12px] font-medium leading-snug">
+            <span className="font-semibold">Trial</span>
+            {' — '}
+            {trialDaysRemaining === 0
+              ? 'expires today'
+              : `${trialDaysRemaining} day${trialDaysRemaining === 1 ? '' : 's'} remaining`}
           </div>
         )}
 

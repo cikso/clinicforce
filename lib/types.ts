@@ -176,6 +176,28 @@ export interface Case {
   mediaAssets?: MediaItem[]
 }
 
+// ─── Voice Agent & Subscription ──────────────────────────────────────────────
+
+export type SubscriptionPlan   = 'trial' | 'starter' | 'growth' | 'enterprise'
+export type SubscriptionStatus = 'trialing' | 'active' | 'past_due' | 'cancelled'
+
+export interface VoiceAgent {
+  id:                  string
+  clinic_id:           string
+  elevenlabs_agent_id: string
+  twilio_phone_number: string
+  is_active:           boolean
+  mode:                string   // e.g. 'after_hours' | 'always_on' | 'overflow'
+}
+
+export interface Subscription {
+  id:             string
+  clinic_id:      string
+  plan:           SubscriptionPlan
+  status:         SubscriptionStatus
+  trial_ends_at:  string | null
+}
+
 // ─── Dashboard KPIs ───────────────────────────────────────────────────────────
 
 export interface DashboardStats {
