@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -7,8 +8,6 @@ function getSupabase() {
   if (!url || !key) return null
   return createClient(url, key)
 }
-
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
 // ── Intent categories ─────────────────────────────────────────────────────────
 const REASON_CATEGORIES: { label: string; pattern: RegExp }[] = [
@@ -54,6 +53,12 @@ export async function GET() {
     return NextResponse.json({ error: 'Supabase env vars are not configured' }, { status: 500 })
   }
 
+  const profile = await getClinicProfile()
+  if (!profile?.clinicId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const clinicId = profile.clinicId
+
   const now           = new Date()
   const sevenDaysAgo  = new Date(now.getTime() - 7  * 86_400_000)
   const fourteenAgo   = new Date(now.getTime() - 14 * 86_400_000)
@@ -64,7 +69,7 @@ export async function GET() {
     .select(
       'id, caller_name, caller_phone, urgency, status, call_duration_seconds, created_at, action_required, summary',
     )
-    .eq('clinic_id', DEMO_CLINIC_ID)
+    .eq('clinic_id', clinicId)
     .gte('created_at', fourteenAgo.toISOString())
     .order('created_at', { ascending: false })
 

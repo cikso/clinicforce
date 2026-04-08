@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
 function getSupabase() {
   return createClient(
@@ -107,6 +106,12 @@ function coverageMinsInWindow(
 // ── GET /api/stats ─────────────────────────────────────────────
 export async function GET() {
   try {
+    const profile = await getClinicProfile()
+    if (!profile?.clinicId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    const clinicId = profile.clinicId
+
     const supabase = getSupabase()
     const today     = sydneyDayBounds(0)
     const yesterday = sydneyDayBounds(1)
@@ -122,27 +127,27 @@ export async function GET() {
       supabase
         .from('call_inbox')
         .select('urgency, status')
-        .eq('clinic_id', DEMO_CLINIC_ID)
+        .eq('clinic_id', clinicId)
         .gte('created_at', today.start)
         .lt('created_at', today.end),
 
       supabase
         .from('call_inbox')
         .select('urgency, status')
-        .eq('clinic_id', DEMO_CLINIC_ID)
+        .eq('clinic_id', clinicId)
         .gte('created_at', yesterday.start)
         .lt('created_at', yesterday.end),
 
       supabase
         .from('coverage_sessions')
         .select('status, started_at, ended_at, updated_at')
-        .eq('clinic_id', DEMO_CLINIC_ID)
+        .eq('clinic_id', clinicId)
         .or(`started_at.gte.${today.start},ended_at.gte.${today.start}`),
 
       supabase
         .from('coverage_sessions')
         .select('status, started_at, ended_at, updated_at')
-        .eq('clinic_id', DEMO_CLINIC_ID)
+        .eq('clinic_id', clinicId)
         .or(`started_at.gte.${yesterday.start},ended_at.gte.${yesterday.start}`)
         .lt('started_at', today.start),
     ])

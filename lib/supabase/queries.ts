@@ -1,11 +1,10 @@
 import { createClient } from './server'
 import type { Call, Subscription } from '@/lib/types'
 
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
-
 // ── fetchCallInbox ─────────────────────────────────────────────────────────────
 // Returns the most recent call_inbox rows for the clinic as Call[]
-export async function fetchCallInbox(): Promise<Call[]> {
+export async function fetchCallInbox(clinicId: string): Promise<Call[]> {
+  if (!clinicId) return []
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -13,7 +12,7 @@ export async function fetchCallInbox(): Promise<Call[]> {
     .select(
       'id, caller_name, caller_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, call_duration_seconds, created_at'
     )
-    .eq('clinic_id', DEMO_CLINIC_ID)
+    .eq('clinic_id', clinicId)
     .order('created_at', { ascending: false })
     .limit(50)
 
@@ -60,14 +59,15 @@ export async function getSubscription(clinicId: string): Promise<Subscription | 
 
 // ── fetchDashboardCalls ────────────────────────────────────────────────────────
 // Alias kept for backward compatibility — delegates to fetchCallInbox
-export async function fetchDashboardCalls(): Promise<Call[]> {
-  return fetchCallInbox()
+export async function fetchDashboardCalls(clinicId: string): Promise<Call[]> {
+  return fetchCallInbox(clinicId)
 }
 
 // ── fetchDashboardCases ────────────────────────────────────────────────────────
 // Previously queried the old `cases` table; now reads from call_inbox
 // Filters to CRITICAL/URGENT items only (i.e. cases requiring attention)
-export async function fetchDashboardCases(): Promise<Call[]> {
+export async function fetchDashboardCases(clinicId: string): Promise<Call[]> {
+  if (!clinicId) return []
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -75,7 +75,7 @@ export async function fetchDashboardCases(): Promise<Call[]> {
     .select(
       'id, caller_name, caller_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, call_duration_seconds, created_at'
     )
-    .eq('clinic_id', DEMO_CLINIC_ID)
+    .eq('clinic_id', clinicId)
     .in('urgency', ['CRITICAL', 'URGENT'])
     .neq('status', 'ACTIONED')
     .order('created_at', { ascending: false })

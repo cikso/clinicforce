@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 const VALID_MODES    = ['DAYTIME', 'LUNCH', 'AFTER_HOURS'] as const
 
 function getSupabase() {
@@ -11,14 +10,21 @@ function getSupabase() {
   )
 }
 
+type RouteCtx = { params: Promise<{ clinicId: string }> }
+
 // GET /api/clinic/[clinicId]/mode
-export async function GET() {
+export async function GET(_req: NextRequest, ctx: RouteCtx) {
+  const { clinicId } = await ctx.params
+  if (!clinicId) {
+    return NextResponse.json({ error: 'Missing clinicId' }, { status: 400 })
+  }
+
   try {
     const supabase = getSupabase()
     const { data, error } = await supabase
       .from('coverage_sessions')
       .select('status, reason, started_at')
-      .eq('clinic_id', DEMO_CLINIC_ID)
+      .eq('clinic_id', clinicId)
       .single()
 
     if (error || !data || data.status !== 'ACTIVE') {
@@ -37,7 +43,12 @@ export async function GET() {
 
 // PATCH /api/clinic/[clinicId]/mode
 // Body: { mode: 'DAYTIME' | 'LUNCH' | 'AFTER_HOURS' | null }
-export async function PATCH(req: NextRequest) {
+export async function PATCH(req: NextRequest, ctx: RouteCtx) {
+  const { clinicId } = await ctx.params
+  if (!clinicId) {
+    return NextResponse.json({ error: 'Missing clinicId' }, { status: 400 })
+  }
+
   const body = await req.json().catch(() => ({}))
   const mode: string | null = body?.mode ?? null
   const now  = new Date().toISOString()
@@ -47,7 +58,7 @@ export async function PATCH(req: NextRequest) {
     const { error } = await supabase
       .from('coverage_sessions')
       .update({ status: 'INACTIVE', ended_at: now, updated_at: now })
-      .eq('clinic_id', DEMO_CLINIC_ID)
+      .eq('clinic_id', clinicId)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ mode: null, activatedAt: null })
   }
@@ -60,7 +71,7 @@ export async function PATCH(req: NextRequest) {
     .from('coverage_sessions')
     .upsert(
       {
-        clinic_id:  DEMO_CLINIC_ID,
+        clinic_id:  clinicId,
         status:     'ACTIVE',
         reason:     mode,
         started_at: now,

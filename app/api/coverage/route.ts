@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
 function getSupabase() {
   return createClient(
@@ -13,11 +12,16 @@ function getSupabase() {
 // GET /api/coverage — return current coverage status for this clinic
 export async function GET() {
   try {
+    const profile = await getClinicProfile()
+    if (!profile?.clinicId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const supabase = getSupabase()
     const { data, error } = await supabase
       .from('coverage_sessions')
       .select('status, reason, started_at, updated_at')
-      .eq('clinic_id', DEMO_CLINIC_ID)
+      .eq('clinic_id', profile.clinicId)
       .single()
 
     if (error || !data) {
@@ -34,6 +38,11 @@ export async function GET() {
 // Body: { reason: CoverageReason }
 export async function POST(req: Request) {
   try {
+    const profile = await getClinicProfile()
+    if (!profile?.clinicId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { reason } = await req.json()
 
     const supabase = getSupabase()
@@ -41,7 +50,7 @@ export async function POST(req: Request) {
       .from('coverage_sessions')
       .upsert(
         {
-          clinic_id:  DEMO_CLINIC_ID,
+          clinic_id:  profile.clinicId,
           status:     'ACTIVE',
           reason:     reason ?? 'MANUAL',
           started_at: new Date().toISOString(),
@@ -66,6 +75,11 @@ export async function POST(req: Request) {
 // DELETE /api/coverage — deactivate coverage
 export async function DELETE() {
   try {
+    const profile = await getClinicProfile()
+    if (!profile?.clinicId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const supabase = getSupabase()
     const { data, error } = await supabase
       .from('coverage_sessions')
@@ -74,7 +88,7 @@ export async function DELETE() {
         ended_at:   new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
-      .eq('clinic_id', DEMO_CLINIC_ID)
+      .eq('clinic_id', profile.clinicId)
       .select()
       .single()
 

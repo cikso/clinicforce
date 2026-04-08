@@ -7,8 +7,6 @@ function getSupabase() {
   return createClient(url, key)
 }
 
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
-
 function normaliseAustralianPhone(raw: string): string {
   if (!raw || raw === '—') return '—'
   const digits = raw.replace(/\D/g, '')
@@ -24,6 +22,26 @@ function normaliseAustralianPhone(raw: string): string {
   return local
 }
 
+/** Resolve clinic_id from body: direct clinic_id, or lookup by clinic_name. */
+async function resolveClinicId(
+  supabase: ReturnType<typeof getSupabase>,
+  body: Record<string, unknown>,
+): Promise<string | null> {
+  if (typeof body.clinic_id === 'string' && body.clinic_id) return body.clinic_id
+
+  if (typeof body.clinic_name === 'string' && body.clinic_name) {
+    const { data } = await supabase
+      .from('clinics')
+      .select('id')
+      .eq('name', body.clinic_name)
+      .limit(1)
+      .maybeSingle()
+    if (data?.id) return data.id as string
+  }
+
+  return null
+}
+
 // ─── POST /api/log-referral ───────────────────────────────────────────────────
 // Called by ElevenLabs when logging an emergency referral.
 //
@@ -36,6 +54,7 @@ function normaliseAustralianPhone(raw: string): string {
 //   reason                string
 //   summary               string
 //   clinic_name           string
+//   clinic_id             string  (optional — preferred for multi-tenant resolution)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>
@@ -49,6 +68,14 @@ export async function POST(req: NextRequest) {
   console.log('[/api/log-referral] Incoming body:', JSON.stringify(body, null, 2))
 
   try {
+    const supabase = getSupabase()
+
+    const clinicId = await resolveClinicId(supabase, body)
+    if (!clinicId) {
+      console.error('[/api/log-referral] Could not resolve clinic_id from body')
+      return NextResponse.json({ success: false, error: 'Could not resolve clinic_id' }, { status: 400 })
+    }
+
     const owner_name             = (body.owner_name            as string | undefined) ?? 'Unknown caller'
     const rawPhone               = (body.phone_number          as string | undefined) ?? '—'
     const pet_name               = (body.pet_name              as string | undefined) ?? '—'
@@ -62,12 +89,10 @@ export async function POST(req: NextRequest) {
       ? `Referred to: ${referral_destination}. ${summary}`
       : summary
 
-    const supabase = getSupabase()
-
     const { error } = await supabase
       .from('call_inbox')
       .insert({
-        clinic_id:       DEMO_CLINIC_ID,
+        clinic_id:       clinicId,
         caller_name:     owner_name,
         caller_phone:    phone_number,
         pet_name,
