@@ -462,10 +462,10 @@ function CallHandlingTab({ clinic }: { clinic: Clinic }) {
         }}>
           <div>
             <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>
-              After-hours / emergency partner
+              Emergency partner
             </p>
             <p style={{ fontSize: 12, color: '#6B7280', margin: '2px 0 0' }}>
-              For urgent calls outside opening hours
+              Surfaced to callers for urgent after-hours referrals
             </p>
           </div>
           <button
@@ -501,7 +501,7 @@ function CallHandlingTab({ clinic }: { clinic: Clinic }) {
         {hasPartner ? (
           <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              <Field label="Partner clinic name *">
+              <Field label="Emergency partner name *">
                 <Input
                   required={hasPartner}
                   value={partner}
@@ -509,7 +509,7 @@ function CallHandlingTab({ clinic }: { clinic: Clinic }) {
                   placeholder="e.g. City Emergency Vet"
                 />
               </Field>
-              <Field label="Partner phone *">
+              <Field label="Emergency partner phone *">
                 <Input
                   required={hasPartner}
                   type="tel"
@@ -519,7 +519,7 @@ function CallHandlingTab({ clinic }: { clinic: Clinic }) {
                 />
               </Field>
             </div>
-            <Field label="Partner address">
+            <Field label="Emergency partner address">
               <Input
                 value={partnerAddress}
                 onChange={e => { setPartnerAddress(e.target.value); setStatus(null) }}
