@@ -1,6 +1,12 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+/* ── Domain constants ─────────────────────────────────────────────── */
+const APP_HOST   = 'app.clinicforce.io'
+const WWW_HOST   = 'www.clinicforce.io'
+const BARE_HOST  = 'clinicforce.io'
+
+/* ── Routes served exclusively on the app subdomain ───────────────── */
 const DASHBOARD_ROUTES = [
   '/overview',
   '/calls',
@@ -15,17 +21,55 @@ const DASHBOARD_ROUTES = [
   '/admin',
 ]
 
+const AUTH_ROUTES = ['/login', '/forgot-password']
+
+const ONBOARDING_PREFIX = '/onboarding'
+
+/** True for any path that belongs on app.clinicforce.io */
+function isAppRoute(pathname: string) {
+  return (
+    DASHBOARD_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/')) ||
+    AUTH_ROUTES.some(r => pathname === r || pathname.startsWith(r + '/')) ||
+    pathname.startsWith(ONBOARDING_PREFIX) ||
+    pathname.startsWith('/auth/') ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/invite/')
+  )
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const host = request.headers.get('host')
+  const host = request.headers.get('host')?.replace(/:\d+$/, '') // strip port for localhost
 
-  if (host === 'clinicforce.io') {
-    const redirectUrl = request.nextUrl.clone()
-    redirectUrl.host = 'www.clinicforce.io'
-    redirectUrl.protocol = 'https:'
-    return NextResponse.redirect(redirectUrl, 308)
+  /* ── Bare domain → www (permanent) ─────────────────────────────── */
+  if (host === BARE_HOST) {
+    const url = request.nextUrl.clone()
+    url.host = WWW_HOST
+    url.port = ''
+    url.protocol = 'https:'
+    return NextResponse.redirect(url, 308)
   }
 
+  /* ── www: redirect app routes → app subdomain ──────────────────── */
+  if (host === WWW_HOST && isAppRoute(pathname)) {
+    const url = request.nextUrl.clone()
+    url.host = APP_HOST
+    url.port = ''
+    url.protocol = 'https:'
+    return NextResponse.redirect(url, 302)
+  }
+
+  /* ── app subdomain: redirect root → /overview ──────────────────── */
+  if (host === APP_HOST && pathname === '/') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/overview'
+    return NextResponse.redirect(url, 302)
+  }
+
+  /* ── Localhost / dev: no subdomain enforcement ─────────────────── */
+  // (falls through to auth logic below)
+
+  /* ── Supabase auth session refresh ─────────────────────────────── */
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -56,11 +100,11 @@ export async function proxy(request: NextRequest) {
 
   const isProtectedRoute =
     DASHBOARD_ROUTES.some((r) => pathname === r || pathname.startsWith(r + '/')) ||
-    pathname.startsWith('/onboarding')
+    pathname.startsWith(ONBOARDING_PREFIX)
 
-  const isAuthRoute = pathname === '/login' || pathname === '/forgot-password'
+  const isAuthRoute = AUTH_ROUTES.includes(pathname)
 
-  // No session -> redirect to login
+  // No session → redirect to login
   if (!user && isProtectedRoute) {
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = '/login'
@@ -68,7 +112,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  // Has session and hitting /login -> redirect to dashboard
+  // Has session and hitting /login → redirect to dashboard
   if (user && isAuthRoute) {
     const overviewUrl = request.nextUrl.clone()
     overviewUrl.pathname = '/overview'
@@ -81,12 +125,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Run on all routes (including /api) except:
-     * - _next/static, _next/image (Next.js internals)
-     * - favicon.ico
-     * - Public assets
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
   ],
 }

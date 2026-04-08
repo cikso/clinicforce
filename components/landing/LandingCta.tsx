@@ -44,7 +44,7 @@ export function LandingCta() {
               </svg>
             </a>
             <a
-              href="/overview"
+              href={`${process.env.NEXT_PUBLIC_APP_URL}/overview`}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 color: '#8B95B0', fontSize: 15, fontWeight: 500,

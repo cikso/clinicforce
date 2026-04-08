@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import type { ComponentType } from 'react'
-import Link from 'next/link'
 import DemoModal from './DemoModal'
 import {
   ArrowRight,
@@ -129,7 +128,7 @@ export function ClinicForceLanding() {
               <a href="#how-it-works" className="transition hover:text-[#10243a]">How it works</a>
               <a href="#features" className="transition hover:text-[#10243a]">Features</a>
               <a href="#product-ui" className="transition hover:text-[#10243a]">Product</a>
-              <Link href="/login" className="transition hover:text-[#10243a]">Log in</Link>
+              <a href={`${process.env.NEXT_PUBLIC_APP_URL}/login`} className="transition hover:text-[#10243a]">Log in</a>
               <button onClick={() => setDemoOpen(true)} className="inline-flex items-center rounded-2xl bg-[#10243a] px-5 py-3 text-white shadow-[0_12px_24px_rgba(16,36,58,0.12)] transition hover:bg-[#0d1b2a]">
                 Book a Demo
               </button>
