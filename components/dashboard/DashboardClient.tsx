@@ -32,11 +32,11 @@ interface DashboardClientProps {
   clinicName?: string
   /** Real user display name from the authenticated user's profile */
   userName?: string
+  /** Authenticated clinic ID for API calls */
+  clinicId?: string
 }
 
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
-
-export default function DashboardClient({ gettingStarted, clinicName, userName }: DashboardClientProps = {}) {
+export default function DashboardClient({ gettingStarted, clinicName, userName, clinicId }: DashboardClientProps = {}) {
   const [inbox,       setInbox]       = useState<CallInboxItem[]>(INITIAL_INBOX)
   const [mode,        setMode]        = useState<CoverageMode | null>(null)
   const [activatedAt, setActivatedAt] = useState<string | null>(null)
@@ -45,7 +45,9 @@ export default function DashboardClient({ gettingStarted, clinicName, userName }
 
   // ── Sync mode + stats from Supabase on mount ───────────────
   useEffect(() => {
-    fetch(`/api/clinic/${DEMO_CLINIC_ID}/mode`)
+    if (!clinicId) return
+
+    fetch(`/api/clinic/${clinicId}/mode`)
       .then(r => r.json())
       .then((data: { mode: CoverageMode | null; activatedAt: string | null }) => {
         setMode(data.mode ?? null)
@@ -57,7 +59,7 @@ export default function DashboardClient({ gettingStarted, clinicName, userName }
       .then(r => r.json())
       .then((data: StatsResponse) => setStats(data))
       .catch(() => {})
-  }, [])
+  }, [clinicId])
 
   // ── Poll inbox every 30s ─────────────────────────────────────
   const fetchInbox = useCallback(() => {
@@ -99,23 +101,27 @@ export default function DashboardClient({ gettingStarted, clinicName, userName }
     setMode(newMode)
     setActivatedAt(now)
     addToast(`${MODE_CONFIG[newMode].label} coverage active`, 'success')
-    fetch(`/api/clinic/${DEMO_CLINIC_ID}/mode`, {
-      method:  'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ mode: newMode }),
-    }).catch(() => {})
-  }, [addToast])
+    if (clinicId) {
+      fetch(`/api/clinic/${clinicId}/mode`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ mode: newMode }),
+      }).catch(() => {})
+    }
+  }, [addToast, clinicId])
 
   const handleDeactivate = useCallback(() => {
     setMode(null)
     setActivatedAt(null)
     addToast('Coverage deactivated — reception back online', 'info')
-    fetch(`/api/clinic/${DEMO_CLINIC_ID}/mode`, {
-      method:  'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ mode: null }),
-    }).catch(() => {})
-  }, [addToast])
+    if (clinicId) {
+      fetch(`/api/clinic/${clinicId}/mode`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ mode: null }),
+      }).catch(() => {})
+    }
+  }, [addToast, clinicId])
 
   // ── Inbox handlers ────────────────────────────────────────────
   const handleInboxMarkRead = useCallback((id: string) => {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
 export const preferredRegion = 'syd1'
 
@@ -8,8 +9,6 @@ function getSupabase() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   return createClient(url, key)
 }
-
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
 // ─── Phone normalisation ──────────────────────────────────────────────────────
 function normaliseAustralianPhone(raw: string): string {
@@ -44,12 +43,33 @@ function actionFromUrgency(urgency: 'CRITICAL' | 'URGENT' | 'ROUTINE'): string {
   return 'Review and action when available'
 }
 
+/** Resolve clinic_id from body: direct clinic_id, or lookup by clinic_name. */
+async function resolveClinicId(
+  supabase: ReturnType<typeof getSupabase>,
+  body: Record<string, unknown>,
+): Promise<string | null> {
+  if (typeof body.clinic_id === 'string' && body.clinic_id) return body.clinic_id
+
+  if (typeof body.clinic_name === 'string' && body.clinic_name) {
+    const { data } = await supabase
+      .from('clinics')
+      .select('id')
+      .eq('name', body.clinic_name)
+      .limit(1)
+      .maybeSingle()
+    if (data?.id) return data.id as string
+  }
+
+  return null
+}
+
 // ─── POST /api/callback ───────────────────────────────────────────────────────
 // Called by Sarah (ElevenLabs) when she invokes the create_callback_request tool
 // during a live call.
 //
 // Expected body:
 //   clinic_name   string
+//   clinic_id     string  (optional — preferred for multi-tenant resolution)
 //   owner_name    string
 //   pet_name      string  (optional)
 //   species       string  (optional)
@@ -76,6 +96,14 @@ export async function POST(req: NextRequest) {
   console.log('[/api/callback] Incoming body:', JSON.stringify(body, null, 2))
 
   try {
+    const supabase = getSupabase()
+
+    const clinicId = await resolveClinicId(supabase, body)
+    if (!clinicId) {
+      console.error('[/api/callback] Could not resolve clinic_id from body')
+      return NextResponse.json({ success: false, error: 'Could not resolve clinic_id' }, { status: 400 })
+    }
+
     const owner_name   = (body.owner_name   as string | undefined) ?? 'Unknown caller'
     const rawPhone     = (body.phone_number as string | undefined) ?? '—'
     const pet_name     = (body.pet_name     as string | undefined) ?? '—'
@@ -87,12 +115,10 @@ export async function POST(req: NextRequest) {
     const urgency        = mapUrgency(urgencyRaw)
     const actionRequired = actionFromUrgency(urgency)
 
-    const supabase = getSupabase()
-
     const { error } = await supabase
       .from('call_inbox')
       .insert({
-        clinic_id:       DEMO_CLINIC_ID,
+        clinic_id:       clinicId,
         caller_name:     owner_name,
         caller_phone:    phone_number,
         pet_name,
@@ -136,12 +162,17 @@ export async function POST(req: NextRequest) {
 // ─── GET — fetch unread inbox items for dashboard polling ─────────────────────
 export async function GET() {
   try {
+    const profile = await getClinicProfile()
+    if (!profile?.clinicId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const supabase = getSupabase()
 
     const { data, error } = await supabase
       .from('call_inbox')
       .select('id, caller_name, caller_phone, pet_name, pet_species, summary, urgency, created_at')
-      .eq('clinic_id', DEMO_CLINIC_ID)
+      .eq('clinic_id', profile.clinicId)
       .eq('status', 'UNREAD')
       .order('created_at', { ascending: false })
       .limit(20)

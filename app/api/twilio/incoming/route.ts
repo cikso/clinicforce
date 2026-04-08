@@ -1,11 +1,7 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getClinicConfig } from '@/lib/brain/clinic/get-clinic-config'
 
 export const preferredRegion = 'syd1'
-
-const DEMO_CLINIC_ID      = 'a1b2c3d4-0000-0000-0000-000000000001'
-const DEMO_CLINIC_CFG_KEY = process.env.CLINIC_CONFIG_KEY ?? 'demo-clinic'
 
 // ElevenLabs Twilio inbound endpoint — set via env var so it matches your account region.
 // Find yours: ElevenLabs → Phone Numbers → click your number → copy the webhook URL shown.
@@ -66,21 +62,35 @@ function formatHours(hours: Record<string, string>): string {
 }
 
 // ── Build the full ElevenLabs redirect URL with all dynamic variables ─────────
-function buildElevenLabsUrl(vertical: string): string {
-  const config = getClinicConfig(DEMO_CLINIC_CFG_KEY)
-  const meta   = VERTICAL_META[vertical] ?? VERTICAL_META.vet
+function buildElevenLabsUrl(
+  clinic: {
+    name: string
+    phone: string
+    address: string
+    suburb: string
+    state: string
+    postcode: string
+    business_hours: Record<string, string> | null
+    after_hours_partner: string | null
+    after_hours_phone: string | null
+    after_hours_address: string | null
+    services: string[] | null
+    vertical: string
+  },
+): string {
+  const meta = VERTICAL_META[clinic.vertical] ?? VERTICAL_META.vet
 
   const vars: Record<string, string> = {
-    clinic_name:               config.clinic_name,
+    clinic_name:               clinic.name,
     vertical_type:             meta.verticalType,
     professional_title:        meta.professionalTitle,
-    clinic_address:            `${config.address}, ${config.suburb} ${config.state} ${config.postcode}`,
-    clinic_phone:              config.phone,
-    clinic_hours:              formatHours(config.hours),
-    emergency_partner_name:    config.after_hours.partner_name,
-    emergency_partner_address: config.after_hours.address,
-    emergency_partner_phone:   config.after_hours.phone,
-    clinic_services:           config.services.join(', '),
+    clinic_address:            `${clinic.address ?? ''}, ${clinic.suburb ?? ''} ${clinic.state ?? ''} ${clinic.postcode ?? ''}`.trim(),
+    clinic_phone:              clinic.phone ?? '',
+    clinic_hours:              clinic.business_hours ? formatHours(clinic.business_hours) : '',
+    emergency_partner_name:    clinic.after_hours_partner ?? '',
+    emergency_partner_address: clinic.after_hours_address ?? '',
+    emergency_partner_phone:   clinic.after_hours_phone ?? '',
+    clinic_services:           (clinic.services ?? []).join(', '),
     subject_label:             meta.subjectLabel,
     subject_name:              meta.subjectName,
   }
@@ -111,7 +121,8 @@ function twiml(xml: string) {
  * Routing layer between Twilio and ElevenLabs.
  *
  * Flow:
- *   Incoming call → Twilio (+61253005033)
+ *   Incoming call → Twilio
+ *     → resolve clinic from voice_agents by called number
  *     → checks coverage_sessions + clinic vertical in Supabase
  *     → if ACTIVE:   redirect to ElevenLabs with all dynamic vars → Sarah answers
  *     → if INACTIVE: dial real clinic number → desk phone rings
@@ -121,47 +132,79 @@ function twiml(xml: string) {
  *   "A call comes in" → Webhook → POST
  *   URL: https://www.clinicforce.io/api/twilio/incoming
  */
-export async function POST() {
+export async function POST(req: NextRequest) {
   const clinicNumber = process.env.CLINIC_REAL_NUMBER
-
-  if (!clinicNumber) {
-    console.error('[twilio/incoming] Missing CLINIC_REAL_NUMBER env var')
-    // Safe default — better Sarah answers than the call is dropped
-    return twiml(`
-<Response>
-  <Redirect method="POST">${buildElevenLabsUrl('vet')}</Redirect>
-</Response>`)
-  }
 
   try {
     const supabase = getSupabase()
 
-    // Fetch coverage status and clinic vertical in parallel
+    // Twilio sends form-encoded data including the called number (To)
+    const formData = await req.formData().catch(() => null)
+    const toNumber = formData?.get('To') as string | null
+
+    if (!toNumber) {
+      console.error('[twilio/incoming] No To number in Twilio request')
+      // Safe fallback — better to handle than drop
+      if (clinicNumber) {
+        return twiml(`
+<Response>
+  <Dial timeout="30" action="/api/twilio/status">
+    <Number>${clinicNumber}</Number>
+  </Dial>
+</Response>`)
+      }
+      return twiml(`<Response><Say>Sorry, we could not route your call. Please try again later.</Say></Response>`)
+    }
+
+    // Resolve clinic from the called Twilio number via voice_agents
+    const { data: voiceAgent } = await supabase
+      .from('voice_agents')
+      .select('clinic_id')
+      .eq('twilio_phone_number', toNumber)
+      .limit(1)
+      .maybeSingle()
+
+    if (!voiceAgent?.clinic_id) {
+      console.error('[twilio/incoming] No voice_agent matched phone number:', toNumber)
+      if (clinicNumber) {
+        return twiml(`
+<Response>
+  <Dial timeout="30" action="/api/twilio/status">
+    <Number>${clinicNumber}</Number>
+  </Dial>
+</Response>`)
+      }
+      return twiml(`<Response><Say>Sorry, we could not route your call. Please try again later.</Say></Response>`)
+    }
+
+    const clinicId = voiceAgent.clinic_id as string
+
+    // Fetch coverage status and clinic details in parallel
     const [coverageResult, clinicResult] = await Promise.all([
       supabase
         .from('coverage_sessions')
         .select('status')
-        .eq('clinic_id', DEMO_CLINIC_ID)
+        .eq('clinic_id', clinicId)
         .single(),
       supabase
         .from('clinics')
-        .select('vertical')
-        .eq('id', DEMO_CLINIC_ID)
+        .select('name, phone, address, suburb, state, postcode, vertical, business_hours, after_hours_partner, after_hours_phone, after_hours_address, services')
+        .eq('id', clinicId)
         .single(),
     ])
 
     const isActive = coverageResult.data?.status === 'ACTIVE'
-    const vertical = (clinicResult.data?.vertical as string) ?? 'vet'
+    const clinic   = clinicResult.data
 
-    if (isActive) {
+    if (isActive && clinic) {
       // ── Coverage ON → hand off to ElevenLabs (Sarah answers) ──
       // method="POST" is critical — Twilio defaults to GET which strips
       // the call params ElevenLabs needs to identify the agent by number
       return twiml(`
 <Response>
-  <Redirect method="POST">${buildElevenLabsUrl(vertical)}</Redirect>
+  <Redirect method="POST">${buildElevenLabsUrl(clinic as Parameters<typeof buildElevenLabsUrl>[0])}</Redirect>
 </Response>`)
-    } else {
+    } else if (clinicNumber) {
       // ── Coverage OFF → ring real clinic number ──────────────
       return twiml(`
 <Response>
@@ -169,14 +212,29 @@ export async function POST() {
     <Number>${clinicNumber}</Number>
   </Dial>
 </Response>`)
+    } else if (clinic) {
+      // No env fallback number but we have clinic data — try clinic phone
+      return twiml(`
+<Response>
+  <Dial timeout="30" action="/api/twilio/status">
+    <Number>${clinic.phone}</Number>
+  </Dial>
+</Response>`)
+    } else {
+      return twiml(`<Response><Say>Sorry, we could not route your call. Please try again later.</Say></Response>`)
     }
 
   } catch (err) {
-    console.error('[twilio/incoming] Error — defaulting to ElevenLabs:', err)
-    // Safe fallback: if Supabase is unreachable, send to Sarah.
-    return twiml(`
+    console.error('[twilio/incoming] Error:', err)
+    // Safe fallback: if Supabase is unreachable, dial the clinic directly
+    if (clinicNumber) {
+      return twiml(`
 <Response>
-  <Redirect method="POST">${buildElevenLabsUrl('vet')}</Redirect>
+  <Dial timeout="30" action="/api/twilio/status">
+    <Number>${clinicNumber}</Number>
+  </Dial>
 </Response>`)
+    }
+    return twiml(`<Response><Say>Sorry, we are experiencing technical difficulties. Please try again later.</Say></Response>`)
   }
 }

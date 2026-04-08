@@ -80,6 +80,7 @@ export default async function OverviewPage() {
           gettingStarted={null}
           clinicName={ownerProfile?.clinicName || 'ClinicForce'}
           userName={ownerProfile?.userName || 'ClinicForce'}
+          clinicId={ownerProfile?.clinicId}
         />
       )
     }
@@ -157,6 +158,7 @@ export default async function OverviewPage() {
       gettingStarted={gettingStarted}
       clinicName={profile?.clinicName}
       userName={profile?.userName}
+      clinicId={profile?.clinicId}
     />
   )
 }

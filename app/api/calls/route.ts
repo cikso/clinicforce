@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 import type { CoveredInteraction, Urgency, InteractionStatus, EnquiryType, CoverageReason } from '@/data/mock-dashboard'
 
 function getSupabase() {
@@ -7,8 +8,6 @@ function getSupabase() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   return createClient(url, key)
 }
-
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
 function mapUrgency(raw: string | undefined): Urgency {
   const u = (raw ?? '').toUpperCase()
@@ -55,12 +54,18 @@ function timeAgo(dateStr: string): string {
 // GET /api/calls — returns recent call_inbox rows as CoveredInteraction[]
 export async function GET() {
   try {
+    const profile = await getClinicProfile()
+    if (!profile?.clinicId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    const clinicId = profile.clinicId
+
     const supabase = getSupabase()
 
     const { data, error } = await supabase
       .from('call_inbox')
       .select('id, caller_name, caller_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, coverage_reason, call_duration_seconds, created_at')
-      .eq('clinic_id', DEMO_CLINIC_ID)
+      .eq('clinic_id', clinicId)
       .order('created_at', { ascending: false })
       .limit(50)
 
@@ -105,6 +110,11 @@ export async function GET() {
 // PATCH /api/calls — update inbox item status
 export async function PATCH(req: Request) {
   try {
+    const profile = await getClinicProfile()
+    if (!profile?.clinicId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { id, status } = await req.json()
     if (!id || !status) {
       return NextResponse.json({ error: 'Missing id or status' }, { status: 400 })
@@ -115,7 +125,7 @@ export async function PATCH(req: Request) {
       .from('call_inbox')
       .update({ status, updated_at: new Date().toISOString() })
       .eq('id', id)
-      .eq('clinic_id', DEMO_CLINIC_ID)
+      .eq('clinic_id', profile.clinicId)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ success: true })

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -7,8 +8,6 @@ function getSupabase() {
   if (!url || !key) return null
   return createClient(url, key)
 }
-
-const DEMO_CLINIC_ID = 'a1b2c3d4-0000-0000-0000-000000000001'
 
 // ── GET /api/inbox ─────────────────────────────────────────────
 // Returns all call inbox items for the clinic, newest first
@@ -18,10 +17,15 @@ export async function GET() {
     return NextResponse.json({ error: 'Supabase env vars are not configured' }, { status: 500 })
   }
 
+  const profile = await getClinicProfile()
+  if (!profile?.clinicId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const { data, error } = await supabase
     .from('call_inbox')
     .select('*')
-    .eq('clinic_id', DEMO_CLINIC_ID)
+    .eq('clinic_id', profile.clinicId)
     .order('created_at', { ascending: false })
     .limit(100)
 
@@ -58,6 +62,11 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Supabase env vars are not configured' }, { status: 500 })
   }
 
+  const profile = await getClinicProfile()
+  if (!profile?.clinicId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const body = await req.json().catch(() => null)
   if (!body?.id || !body?.status) {
     return NextResponse.json({ error: 'id and status required' }, { status: 400 })
@@ -67,7 +76,7 @@ export async function PATCH(req: NextRequest) {
     .from('call_inbox')
     .update({ status: body.status, updated_at: new Date().toISOString() })
     .eq('id', body.id)
-    .eq('clinic_id', DEMO_CLINIC_ID)
+    .eq('clinic_id', profile.clinicId)
 
   if (error) {
     console.error('[inbox] PATCH error:', error)
