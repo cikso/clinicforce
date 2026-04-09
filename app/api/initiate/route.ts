@@ -5,19 +5,20 @@ import { getVertical, VerticalKey } from '@/lib/verticals'
 export const preferredRegion = 'syd1'
 
 // ─────────────────────────────────────────────────────────────
-// All 13 dynamic variables the ElevenLabs agent expects.
+// All 14 dynamic variables the ElevenLabs agent expects.
 // These defaults mirror the agent's dynamic_variable_placeholders
 // and are used when no clinic record is matched.
 // ─────────────────────────────────────────────────────────────
 const DEFAULTS: DynamicVariables = {
   clinic_name:                'Baulkham Hills Veterinary Hospital',
+  clinic_id:                  'demo-clinic',
   clinic_address:             '332 Windsor Rd, Baulkham Hills NSW 2153',
   clinic_phone:               '02 9639 6399',
   clinic_hours:               'Monday to Friday 8am to 7pm, Saturday 9am to 5pm, Sunday and Public Holidays 9am to 5pm',
   emergency_partner_name:     'Animal Referral Hospital',
   emergency_partner_address:  '19 Old Northern Road, Baulkham Hills',
-  emergency_partner_phone:    '02 9639 7744',
-  clinic_services:            'vaccinations, general surgery, dental care, desexing, microchipping',
+  emergency_partner_phone:    '0296397744',
+  clinic_services:            'wellness consultations, vaccinations, microchipping, desexing, dental care, digital X-ray',
   vertical_type:              'Veterinary',
   professional_title:         'Veterinarian',
   subject_label:              'pet',
@@ -27,6 +28,7 @@ const DEFAULTS: DynamicVariables = {
 
 type DynamicVariables = {
   clinic_name: string
+  clinic_id: string
   clinic_address: string
   clinic_phone: string
   clinic_hours: string
@@ -177,7 +179,7 @@ async function handleInitiate(req: NextRequest): Promise<NextResponse> {
       const { data: clinics, error } = await supabase
         .from('clinics')
         .select(
-          'name, phone, address, suburb, state, postcode, clinic_hours, after_hours_partner, after_hours_phone, emergency_partner_address, vertical, services, voice_phone, subject_label, professional_title',
+          'id, name, phone, address, suburb, state, postcode, clinic_hours, after_hours_partner, after_hours_phone, emergency_partner_address, vertical, services, voice_phone, subject_label, professional_title',
         )
 
       if (error) {
@@ -194,6 +196,7 @@ async function handleInitiate(req: NextRequest): Promise<NextResponse> {
           const vertVars = getVerticalVariables(clinic.vertical ?? 'vet')
           dynamic_variables = {
             clinic_name:               String(clinic.name               ?? DEFAULTS.clinic_name),
+            clinic_id:                 String(clinic.id                 ?? DEFAULTS.clinic_id),
             clinic_address:            buildAddress(clinic as Record<string, unknown>),
             clinic_phone:              String(clinic.phone              ?? DEFAULTS.clinic_phone),
             clinic_hours:              String(clinic.clinic_hours       ?? DEFAULTS.clinic_hours),
