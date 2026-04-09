@@ -1,68 +1,67 @@
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
-import DashboardClient from '@/components/dashboard/DashboardClient'
-import type { SetupStep } from '@/components/dashboard/GettingStartedPanel'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
+import StatCard from '@/app/components/ui/StatCard'
+import CoverageControl, { type CoverageMode } from '@/app/components/overview/CoverageControl'
+import ActionQueuePreview from '@/app/components/overview/ActionQueuePreview'
+import ActivityFeed from '@/app/components/overview/ActivityFeed'
 
 export const dynamic = 'force-dynamic'
 
-async function getSetupStatus() {
-  try {
-    const supabase = await createClient()
+/* ─── Sydney timezone helpers (matches /api/stats) ─── */
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return null
+function sydneyUTCOffset(dateStr: string): string {
+  const probe = new Date(`${dateStr}T12:00:00Z`)
+  const localStr = probe.toLocaleString('en-US', { timeZone: 'Australia/Sydney' })
+  const local = new Date(localStr)
+  const diffMins = Math.round((local.getTime() - probe.getTime()) / 60_000)
+  const sign = diffMins >= 0 ? '+' : '-'
+  const h = String(Math.floor(Math.abs(diffMins) / 60)).padStart(2, '0')
+  const m = String(Math.abs(diffMins) % 60).padStart(2, '0')
+  return `${sign}${h}:${m}`
+}
 
-    const { data: cu } = await supabase
-      .from('clinic_users')
-      .select('clinic_id')
-      .eq('user_id', user.id)
-      .single()
+function sydneyDayBounds(daysAgo: number): { start: string; end: string } {
+  const ref = new Date(Date.now() - daysAgo * 86_400_000)
+  const parts = new Intl.DateTimeFormat('en-AU', {
+    timeZone: 'Australia/Sydney',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(ref)
+  const y  = parts.find(p => p.type === 'year')!.value
+  const mo = parts.find(p => p.type === 'month')!.value
+  const d  = parts.find(p => p.type === 'day')!.value
+  const dateStr = `${y}-${mo}-${d}`
+  const offset = sydneyUTCOffset(dateStr)
+  const start  = new Date(`${dateStr}T00:00:00${offset}`)
+  const end    = new Date(start.getTime() + 86_400_000)
+  return { start: start.toISOString(), end: end.toISOString() }
+}
 
-    if (!cu?.clinic_id) return null
-
-    const { data: clinic } = await supabase
-      .from('clinics')
-      .select(`
-        id, name, onboarding_completed,
-        phone, address,
-        business_hours,
-        after_hours_partner, after_hours_phone,
-        voice_phone
-      `)
-      .eq('id', cu.clinic_id)
-      .single()
-
-    if (!clinic) return null
-
-    // Count calls received so far
-    const { count: callCount } = await supabase
-      .from('call_inbox')
-      .select('id', { count: 'exact', head: true })
-      .eq('clinic_id', cu.clinic_id)
-
-    return { clinic, callCount: callCount ?? 0 }
-  } catch {
-    return null
-  }
+function pctChange(today: number, yesterday: number): { value: string; direction: 'up' | 'down' | 'neutral' } {
+  if (yesterday === 0 && today === 0) return { value: 'No change', direction: 'neutral' }
+  if (yesterday === 0) return { value: `+${today} from yesterday`, direction: 'up' }
+  const pct = Math.round(((today - yesterday) / yesterday) * 100)
+  if (pct === 0) return { value: 'Same as yesterday', direction: 'neutral' }
+  if (pct > 0) return { value: `${pct}% from yesterday`, direction: 'up' }
+  return { value: `${Math.abs(pct)}% from yesterday`, direction: 'down' }
 }
 
 export default async function OverviewPage() {
-  // Server-side onboarding gate using service role (bypasses RLS)
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const service = serviceRoleKey
+    ? createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey,
+        { auth: { autoRefreshToken: false, persistSession: false } },
+      )
+    : null
 
-  if (user && serviceRoleKey) {
-    const service = createServiceClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      serviceRoleKey,
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    )
-
-    // Use maybeSingle — never throws, returns null if no row found
+  // Onboarding gate
+  if (user && service) {
     const { data: cu } = await service
       .from('clinic_users')
       .select('role, clinics(onboarding_completed)')
@@ -71,22 +70,7 @@ export default async function OverviewPage() {
       .maybeSingle()
 
     const role = cu?.role as string | undefined
-
-    // Platform owner: skip everything, go straight to dashboard
-    if (role === 'platform_owner') {
-      const ownerProfile = await getClinicProfile()
-      return (
-        <DashboardClient
-          gettingStarted={null}
-          clinicName={ownerProfile?.clinicName || 'ClinicForce'}
-          userName={ownerProfile?.userName || 'ClinicForce'}
-          clinicId={ownerProfile?.clinicId}
-        />
-      )
-    }
-
-    // Only redirect to onboarding if we have data confirming it's not done
-    if (cu) {
+    if (role !== 'platform_owner' && cu) {
       const clinic = Array.isArray(cu.clinics) ? cu.clinics[0] : cu.clinics
       const onboardingCompleted = (clinic as { onboarding_completed?: boolean } | null)?.onboarding_completed === true
       if (!onboardingCompleted) {
@@ -95,70 +79,234 @@ export default async function OverviewPage() {
     }
   }
 
-  const setup = await getSetupStatus()
+  const profile = await getClinicProfile()
+  const clinicId = profile?.clinicId ?? ''
+  const db = service ?? supabase
 
-  let gettingStarted: { steps: SetupStep[]; clinicName: string } | null = null
+  // ── Compute day boundaries ──
+  const today = sydneyDayBounds(0)
+  const yesterday = sydneyDayBounds(1)
 
-  if (setup) {
-    const { clinic, callCount } = setup
-    const clinicName = clinic.name ?? 'Your Clinic'
+  // ── Parallel queries ──
+  const [
+    todayCallsRes,
+    yesterdayCallsRes,
+    todayBookingsRes,
+    yesterdayBookingsRes,
+    pendingTasksRes,
+    todayTasksRes,
+    recentCallsRes,
+    coverageRes,
+    voiceAgentRes,
+    clinicRes,
+  ] = await Promise.all([
+    // Today's calls
+    clinicId ? db
+      .from('call_inbox')
+      .select('id, urgency, status, action_required')
+      .eq('clinic_id', clinicId)
+      .gte('created_at', today.start)
+      .lt('created_at', today.end) : Promise.resolve({ data: null }),
 
-    const steps: SetupStep[] = [
-      {
-        id:          'clinic-details',
-        label:       'Clinic details confirmed',
-        description: 'Add your clinic phone number and address so callers receive accurate information.',
-        done:        !!(clinic.phone && clinic.address),
-        href:        '/onboarding/clinic-details',
-        cta:         'Add details',
-      },
-      {
-        id:          'hours',
-        label:       'Opening hours configured',
-        description: 'Set your opening hours so your AI receptionist knows when your clinic is available.',
-        done:        !!clinic.business_hours,
-        href:        '/onboarding/hours',
-        cta:         'Set hours',
-      },
-      {
-        id:          'emergency',
-        label:       'Emergency partner set up',
-        description: 'Add your after-hours or emergency partner clinic for urgent call transfers.',
-        done:        !!(clinic.after_hours_partner && clinic.after_hours_phone),
-        href:        '/onboarding/call-handling',
-        cta:         'Add partner',
-      },
-      {
-        id:          'voice-phone',
-        label:       'Voice number connected',
-        description: 'Connect your Twilio number so the AI receptionist can handle live inbound calls.',
-        done:        !!clinic.voice_phone,
-        href:        '/admin',
-        cta:         'Connect number',
-      },
-      {
-        id:          'first-call',
-        label:       'First call received',
-        description: 'Make a test call to your clinic number to confirm everything is working end-to-end.',
-        done:        callCount > 0,
-        href:        '/calls',
-        cta:         'View calls',
-      },
-    ]
+    // Yesterday's calls
+    clinicId ? db
+      .from('call_inbox')
+      .select('id, urgency, status')
+      .eq('clinic_id', clinicId)
+      .gte('created_at', yesterday.start)
+      .lt('created_at', yesterday.end) : Promise.resolve({ data: null }),
 
-    // Only show the panel if at least one step is incomplete
-    if (!steps.every(s => s.done)) {
-      gettingStarted = { steps, clinicName }
-    }
+    // Today's bookings
+    clinicId ? db
+      .from('bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('clinic_id', clinicId)
+      .gte('created_at', today.start)
+      .lt('created_at', today.end) : Promise.resolve({ data: null, count: 0 }),
+
+    // Yesterday's bookings
+    clinicId ? db
+      .from('bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('clinic_id', clinicId)
+      .gte('created_at', yesterday.start)
+      .lt('created_at', yesterday.end) : Promise.resolve({ data: null, count: 0 }),
+
+    // Pending tasks count
+    clinicId ? db
+      .from('tasks')
+      .select('id', { count: 'exact', head: true })
+      .eq('clinic_id', clinicId)
+      .eq('status', 'PENDING') : Promise.resolve({ data: null, count: 0 }),
+
+    // Tasks created today
+    clinicId ? db
+      .from('tasks')
+      .select('id', { count: 'exact', head: true })
+      .eq('clinic_id', clinicId)
+      .gte('created_at', today.start)
+      .lt('created_at', today.end) : Promise.resolve({ data: null, count: 0 }),
+
+    // Recent calls for activity feed (last 10)
+    clinicId ? db
+      .from('call_inbox')
+      .select('id, caller_name, summary, urgency, status, action_required, created_at, industry_data')
+      .eq('clinic_id', clinicId)
+      .order('created_at', { ascending: false })
+      .limit(10) : Promise.resolve({ data: null }),
+
+    // Coverage session
+    clinicId ? db
+      .from('coverage_sessions')
+      .select('status, reason, started_at')
+      .eq('clinic_id', clinicId)
+      .maybeSingle() : Promise.resolve({ data: null }),
+
+    // Voice agent
+    clinicId ? db
+      .from('voice_agents')
+      .select('mode, is_active')
+      .eq('clinic_id', clinicId)
+      .limit(1)
+      .maybeSingle() : Promise.resolve({ data: null }),
+
+    // Clinic (for call_handling_prefs and industry_config)
+    clinicId ? db
+      .from('clinics')
+      .select('call_handling_prefs, industry_config')
+      .eq('id', clinicId)
+      .maybeSingle() : Promise.resolve({ data: null }),
+  ])
+
+  // ── Process KPI data ──
+  const todayCalls = (todayCallsRes.data as Array<{ id: string; urgency: string; status: string; action_required: string | null }>) ?? []
+  const yesterdayCalls = (yesterdayCallsRes.data as Array<{ id: string }>) ?? []
+
+  const callsToday = todayCalls.length
+  const callsYesterday = yesterdayCalls.length
+  const callsDelta = pctChange(callsToday, callsYesterday)
+
+  const bookingsToday = (todayBookingsRes as { count?: number | null }).count ?? 0
+  const bookingsYesterday = (yesterdayBookingsRes as { count?: number | null }).count ?? 0
+  const bookingsDelta = pctChange(bookingsToday, bookingsYesterday)
+
+  // Missed = calls where action_required is set but not actioned, OR status is MISSED
+  const missedCalls = todayCalls.filter(c =>
+    c.status === 'MISSED' || (c.action_required && c.status !== 'ACTIONED')
+  ).length
+  const missedRevenue = missedCalls * 280
+
+  const pendingTasks = (pendingTasksRes as { count?: number | null }).count ?? 0
+  const todayNewTasks = (todayTasksRes as { count?: number | null }).count ?? 0
+
+  // ── Top 5 pending tasks for Action Queue ──
+  let topTasks: Array<{ id: string; title: string; description: string | null; priority: string; status: string; created_at: string; case_id: string | null }> = []
+  if (clinicId) {
+    const { data: taskRows } = await db
+      .from('tasks')
+      .select('id, title, description, priority, status, created_at, case_id')
+      .eq('clinic_id', clinicId)
+      .eq('status', 'PENDING')
+      .order('priority', { ascending: false })
+      .order('created_at', { ascending: true })
+      .limit(5)
+    topTasks = (taskRows ?? []) as typeof topTasks
   }
 
-  const profile = await getClinicProfile()
+  // ── Coverage data ──
+  const coverage = coverageRes.data as { status: string; reason: string; started_at: string | null } | null
+  const isActive = coverage?.status === 'ACTIVE'
+  const coverageMode: CoverageMode | null = isActive ? ((coverage?.reason as CoverageMode) ?? null) : null
+
+  // Count calls covered since session started
+  let callsCoveredSince = 0
+  if (isActive && coverage?.started_at && clinicId) {
+    const { count } = await db
+      .from('call_inbox')
+      .select('id', { count: 'exact', head: true })
+      .eq('clinic_id', clinicId)
+      .gte('created_at', coverage.started_at)
+    callsCoveredSince = count ?? 0
+  }
+
+  // ── Clinic prefs + industry config ──
+  const clinicData = clinicRes.data as { call_handling_prefs: Record<string, boolean> | null; industry_config: Record<string, unknown> | null } | null
+  const callHandlingPrefs = clinicData?.call_handling_prefs ?? {}
+  const industryConfig = clinicData?.industry_config ?? null
+  const extraFields = (industryConfig as { extra_fields?: unknown[] } | null)?.extra_fields
+  const hasExtraFields = Array.isArray(extraFields) && extraFields.length > 0
+
+  // ── Recent calls for activity feed ──
+  const recentCalls = (recentCallsRes.data ?? []) as Array<{
+    id: string
+    caller_name: string
+    summary: string
+    urgency: string
+    status: string
+    action_required: string | null
+    created_at: string
+    industry_data: Record<string, unknown> | null
+  }>
+
   return (
-    <DashboardClient
-      gettingStarted={gettingStarted}
-      clinicName={profile?.clinicName}
-      userName={profile?.userName}
-      clinicId={profile?.clinicId}
-    />
+    <div className="space-y-6">
+      {/* ── Row 1: KPI Stat Cards ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          label="Calls Handled"
+          value={callsToday}
+          unit="today"
+          delta={callsDelta}
+        />
+        <StatCard
+          label="Bookings Captured"
+          value={bookingsToday}
+          unit="today"
+          delta={bookingsDelta}
+        />
+        <StatCard
+          label="Missed Calls"
+          value={missedCalls}
+          unit="today"
+          highlight={missedCalls > 0}
+          delta={{
+            value: missedCalls > 0 ? `~$${missedRevenue.toLocaleString()} est. lost revenue` : 'No missed calls',
+            direction: missedCalls > 0 ? 'down' : 'neutral',
+          }}
+        />
+        <StatCard
+          label="Open Actions"
+          value={pendingTasks}
+          unit="pending"
+          delta={{
+            value: `${todayNewTasks} new today`,
+            direction: todayNewTasks > 0 ? 'up' : 'neutral',
+          }}
+        />
+      </div>
+
+      {/* ── Row 2: Coverage Control + Action Queue ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <CoverageControl
+          initialMode={coverageMode}
+          initialActiveSince={isActive ? coverage?.started_at ?? null : null}
+          initialActivatedBy={isActive ? 'Auto' : null}
+          initialCallsCovered={callsCoveredSince}
+          initialPrefs={callHandlingPrefs}
+          clinicId={clinicId}
+        />
+        <ActionQueuePreview
+          initialTasks={topTasks}
+          pendingCount={pendingTasks}
+          hasExtraFields={hasExtraFields}
+        />
+      </div>
+
+      {/* ── Row 3: Activity Feed ── */}
+      <ActivityFeed
+        calls={recentCalls}
+        hasExtraFields={hasExtraFields}
+      />
+    </div>
   )
 }
