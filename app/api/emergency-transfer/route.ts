@@ -54,13 +54,9 @@ export async function POST(req: NextRequest) {
 
   console.log('[/api/emergency-transfer] Incoming body:', JSON.stringify(body))
 
-  const rawEmergencyPhone = body.emergency_partner_phone
-  const clinicName        = body.clinic_name ?? 'unknown clinic'
-
-  if (!rawEmergencyPhone) {
-    console.error('[/api/emergency-transfer] Missing emergency_partner_phone')
-    return NextResponse.json({ success: false, error: 'Missing emergency_partner_phone' }, { status: 400 })
-  }
+  // Fallback to Baulkham Hills emergency partner if ElevenLabs doesn't pass the value
+  const rawEmergencyPhone = body.emergency_partner_phone ?? '0296397744'
+  const clinicName        = body.clinic_name ?? 'Baulkham Hills Veterinary Hospital'
 
   try {
     const { sid, authorization } = getCredentials()

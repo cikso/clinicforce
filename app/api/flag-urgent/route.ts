@@ -22,11 +22,13 @@ function normaliseAustralianPhone(raw: string): string {
   return local
 }
 
-/** Resolve clinic_id from body: direct clinic_id, or lookup by clinic_name. */
+const DEFAULT_CLINIC_ID = '2a35d093-803a-44fd-927a-075511f57736'
+
+/** Resolve clinic_id from body, falling back to the default clinic. */
 async function resolveClinicId(
   supabase: ReturnType<typeof getSupabase>,
   body: Record<string, unknown>,
-): Promise<string | null> {
+): Promise<string> {
   if (typeof body.clinic_id === 'string' && body.clinic_id) return body.clinic_id
 
   if (typeof body.clinic_name === 'string' && body.clinic_name) {
@@ -39,7 +41,7 @@ async function resolveClinicId(
     if (data?.id) return data.id as string
   }
 
-  return null
+  return DEFAULT_CLINIC_ID
 }
 
 // ─── POST /api/flag-urgent ────────────────────────────────────────────────────
@@ -70,10 +72,6 @@ export async function POST(req: NextRequest) {
     const supabase = getSupabase()
 
     const clinicId = await resolveClinicId(supabase, body)
-    if (!clinicId) {
-      console.error('[/api/flag-urgent] Could not resolve clinic_id from body')
-      return NextResponse.json({ success: false, error: 'Could not resolve clinic_id' }, { status: 400 })
-    }
 
     const owner_name   = (body.owner_name   as string | undefined) ?? 'Unknown caller'
     const rawPhone     = (body.phone_number as string | undefined) ?? '—'
