@@ -9,11 +9,14 @@ export interface ClinicOption {
   vertical: string
 }
 
+export type IndustryConfig = Record<string, unknown> | null
+
 interface ClinicContextValue {
   clinics: ClinicOption[]
   activeClinicId: string
   activeClinicName: string
   isPlatformOwner: boolean
+  industryConfig: IndustryConfig
   switchClinic: (clinicId: string) => void
 }
 
@@ -22,6 +25,7 @@ const ClinicContext = createContext<ClinicContextValue>({
   activeClinicId: '',
   activeClinicName: '',
   isPlatformOwner: false,
+  industryConfig: null,
   switchClinic: () => {},
 })
 
@@ -30,12 +34,14 @@ export function ClinicProvider({
   activeClinicId: initialClinicId,
   activeClinicName: initialClinicName,
   isPlatformOwner,
+  industryConfig = null,
   children,
 }: {
   clinics: ClinicOption[]
   activeClinicId: string
   activeClinicName: string
   isPlatformOwner: boolean
+  industryConfig?: IndustryConfig
   children: ReactNode
 }) {
   const router = useRouter()
@@ -63,7 +69,7 @@ export function ClinicProvider({
 
   return (
     <ClinicContext.Provider
-      value={{ clinics, activeClinicId, activeClinicName, isPlatformOwner, switchClinic }}
+      value={{ clinics, activeClinicId, activeClinicName, isPlatformOwner, industryConfig, switchClinic }}
     >
       {children}
     </ClinicContext.Provider>

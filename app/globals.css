@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -8,9 +8,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-geist-sans);
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-heading: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -50,66 +50,115 @@
   --color-vet-pine-light: #125235;
   --color-vet-accent: #E25F38;
   --color-vet-surface: #FFFFFF;
+
+  /* Design system colour tokens */
+  --color-brand: #0176D3;
+  --color-brand-light: #EBF5FF;
+  --color-brand-dark: #014486;
+  --color-success: #059669;
+  --color-success-light: #ECFDF5;
+  --color-warning: #D97706;
+  --color-warning-light: #FFFBEB;
+  --color-error: #DC2626;
+  --color-error-light: #FEF2F2;
+  --color-info: #7C3AED;
+  --color-info-light: #F5F3FF;
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F7F8FA;
+  --color-bg-sidebar: #F9FAFB;
+  --color-bg-hover: #F3F4F6;
+  --color-border-default: #E5E7EB;
+  --color-border-subtle: #F0F0F0;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-tertiary: #9CA3AF;
+
+  /* Shadow tokens */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
+  --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08);
 }
 
-/* ClinicForce – Salesforce Lightning-inspired design tokens */
+/* ClinicForce – Design system custom properties */
 :root {
-  /* Base surfaces */
-  --background: #f4f6f9;           /* Salesforce page background */
-  --foreground: #080707;
+  /* Backgrounds */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F8FA;
+  --bg-sidebar: #F9FAFB;
+  --bg-hover: #F3F4F6;
 
-  /* Card / popover */
+  /* Borders */
+  --border: #E5E7EB;
+  --border-subtle: #F0F0F0;
+
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+
+  /* Brand */
+  --brand: #0176D3;
+  --brand-light: #EBF5FF;
+  --brand-dark: #014486;
+
+  /* Status */
+  --success: #059669;
+  --success-light: #ECFDF5;
+  --warning: #D97706;
+  --warning-light: #FFFBEB;
+  --error: #DC2626;
+  --error-light: #FEF2F2;
+  --info: #7C3AED;
+  --info-light: #F5F3FF;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
+  --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08);
+
+  /* Salesforce-inspired base tokens (shadcn compat) */
+  --background: #F7F8FA;
+  --foreground: #111827;
   --card: #ffffff;
-  --card-foreground: #080707;
+  --card-foreground: #111827;
   --popover: #ffffff;
-  --popover-foreground: #080707;
-
-  /* Brand primary — Salesforce Lightning blue */
+  --popover-foreground: #111827;
   --primary: #0176d3;
   --primary-foreground: #ffffff;
-
-  /* Secondary / muted */
-  --secondary: #f3f2ef;            /* Salesforce cloud gray */
-  --secondary-foreground: #444444;
-  --muted: #f3f2ef;
-  --muted-foreground: #706e6b;     /* Salesforce warm gray */
-
-  /* Accent — light blue tint */
-  --accent: #e8f4fd;
+  --secondary: #F7F8FA;
+  --secondary-foreground: #374151;
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
+  --accent: #EBF5FF;
   --accent-foreground: #0176d3;
-
-  /* Destructive — red, urgent/emergency only */
-  --destructive: #c23934;          /* Salesforce red */
+  --destructive: #DC2626;
   --destructive-foreground: #ffffff;
-
-  /* Borders & inputs */
-  --border: #dddbda;               /* Salesforce neutral border */
-  --input: #dddbda;
+  --input: #E5E7EB;
   --ring: #0176d3;
-
-  /* Border radius — compact Salesforce look */
   --radius: 0.5rem;
 
-  /* Sidebar — white, clean border */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #080707;
+  /* Sidebar */
+  --sidebar: #F9FAFB;
+  --sidebar-foreground: #111827;
   --sidebar-primary: #0176d3;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e8f4fd;
+  --sidebar-accent: #EBF5FF;
   --sidebar-accent-foreground: #0176d3;
-  --sidebar-border: #dddbda;
+  --sidebar-border: #E5E7EB;
   --sidebar-ring: #0176d3;
 
-  /* Brand accents */
+  /* Legacy compat */
   --brand-sky: #0176d3;
-  --brand-teal: #0d9488;           /* teal-600 — AI summary accent */
-  --urgent: #c23934;               /* Salesforce red */
-  --urgent-bg: #fef3f2;
+  --brand-teal: #0d9488;
+  --urgent: #DC2626;
+  --urgent-bg: #FEF2F2;
   --urgent-border: #fecdd3;
-  --high: #e8830a;
-  --high-bg: #fff4e6;
-  --routine: #0176d3;
-  --routine-bg: #e8f4fd;
+  --high: #D97706;
+  --high-bg: #FFFBEB;
+  --routine: #059669;
+  --routine-bg: #ECFDF5;
 }
 
 @layer base {
@@ -121,6 +170,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   }
   html {
     @apply font-sans;
@@ -128,6 +178,15 @@
 }
 
 @layer utilities {
+  .font-heading {
+    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  }
+  .font-body {
+    font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  }
+  .font-mono-data {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+  }
   .glass-panel {
     @apply bg-white/60 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.04)];
   }
@@ -182,4 +241,10 @@
 @keyframes lp-wave {
   0%, 100% { transform: scaleY(0.35); opacity: 0.3; }
   50%       { transform: scaleY(1);   opacity: 0.7; }
+}
+
+/* ─── STATUS DOT PULSE ─── */
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
 }

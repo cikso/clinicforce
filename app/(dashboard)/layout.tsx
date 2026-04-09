@@ -1,10 +1,11 @@
-import Sidebar from '@/components/layout/Sidebar'
-import ChatWidget from '@/components/chat/ChatWidget'
 import { VerticalProvider } from '@/context/VerticalContext'
-import { ClinicProvider, type ClinicOption } from '@/context/ClinicContext'
+import { ClinicProvider, type ClinicOption, type IndustryConfig } from '@/context/ClinicContext'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 import { getSubscription } from '@/lib/supabase/queries'
+import { createClient } from '@/lib/supabase/server'
+import DashboardSidebar from '@/app/components/dashboard/DashboardSidebar'
+import DashboardTopbar from '@/app/components/dashboard/DashboardTopbar'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,22 +21,24 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   // Platform owner: load all clinics for the switcher dropdown
   let allClinics: ClinicOption[] = []
-  if (isPlatformOwner) {
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    if (serviceKey) {
-      const service = createServiceClient(
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const service = serviceKey
+    ? createServiceClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         serviceKey,
         { auth: { autoRefreshToken: false, persistSession: false } },
       )
-      const { data } = await service
-        .from('clinics')
-        .select('id, name, vertical')
-        .not('slug', 'eq', 'clinicforce-platform')
-        .order('name')
-      allClinics = (data ?? []) as ClinicOption[]
-    }
+    : null
+
+  if (isPlatformOwner && service) {
+    const { data } = await service
+      .from('clinics')
+      .select('id, name, vertical')
+      .not('slug', 'eq', 'clinicforce-platform')
+      .order('name')
+    allClinics = (data ?? []) as ClinicOption[]
   }
+
   // Regular users: single-clinic array
   if (!isPlatformOwner && clinicId) {
     allClinics = [{ id: clinicId, name: clinicName, vertical }]
@@ -51,6 +54,47 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
 
+  // Fetch industry_config from clinics table
+  let industryConfig: IndustryConfig = null
+  if (clinicId && service) {
+    const { data: clinicRow } = await service
+      .from('clinics')
+      .select('industry_config')
+      .eq('id', clinicId)
+      .maybeSingle()
+    industryConfig = (clinicRow?.industry_config as IndustryConfig) ?? null
+  }
+
+  // Fetch pending task count for action queue badge
+  let pendingTaskCount = 0
+  if (clinicId) {
+    const supabase = await createClient()
+    const { count } = await supabase
+      .from('tasks')
+      .select('id', { count: 'exact', head: true })
+      .eq('clinic_id', clinicId)
+      .eq('status', 'PENDING')
+    pendingTaskCount = count ?? 0
+  }
+
+  // Fetch Sarah AI status from voice_agents
+  let sarahStatus: { isActive: boolean; mode: string } | null = null
+  if (clinicId) {
+    const queryClient = service ?? await createClient()
+    const { data: agent } = await queryClient
+      .from('voice_agents')
+      .select('is_active, mode')
+      .eq('clinic_id', clinicId)
+      .limit(1)
+      .maybeSingle()
+    if (agent) {
+      sarahStatus = {
+        isActive: agent.is_active ?? false,
+        mode: (agent.mode as string) ?? 'after_hours',
+      }
+    }
+  }
+
   return (
     <VerticalProvider vertical={vertical}>
       <ClinicProvider
@@ -58,18 +102,21 @@ export default async function DashboardLayout({ children }: { children: React.Re
         activeClinicId={clinicId}
         activeClinicName={clinicName}
         isPlatformOwner={isPlatformOwner}
+        industryConfig={industryConfig}
       >
-        <div className="h-screen flex overflow-hidden bg-slate-50">
-          <Sidebar
+        <div className="h-screen flex overflow-hidden bg-[var(--bg-secondary)]">
+          <DashboardSidebar
             clinicName={clinicName}
             userName={userName}
-            userRole={userRole}
-            trialDaysRemaining={trialDaysRemaining}
+            pendingTaskCount={pendingTaskCount}
+            sarahStatus={sarahStatus}
           />
           <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-            {children}
+            <DashboardTopbar userName={userName} />
+            <main className="flex-1 overflow-y-auto p-6 bg-[var(--bg-secondary)]">
+              {children}
+            </main>
           </div>
-          <ChatWidget />
         </div>
       </ClinicProvider>
     </VerticalProvider>
