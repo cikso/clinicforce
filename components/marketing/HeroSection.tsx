@@ -373,7 +373,7 @@ const LiveCallCard = React.memo(function LiveCallCard() {
 
 // ─── Navbar ────────────────────────────────────────────────────────────────────
 
-function Navbar() {
+function Navbar({ onBookDemo }: { onBookDemo: () => void }) {
   return (
     <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -419,17 +419,17 @@ function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-3">
             <a
-              href="#"
+              href="https://app.clinicforce.io"
               className="hidden sm:block text-sm text-slate-500 hover:text-[#0A0A0A] transition-colors duration-150 font-medium px-3 py-2"
             >
-              Log in
+              Clinic Login
             </a>
-            <a
-              href="#"
-              className="text-sm font-semibold text-white bg-[#0EA5E9] hover:bg-[#0284C7] transition-colors duration-150 px-4 py-2 rounded-lg"
+            <button
+              onClick={onBookDemo}
+              className="text-sm font-semibold text-white bg-[#0EA5E9] hover:bg-[#0284C7] transition-colors duration-150 px-4 py-2 rounded-lg cursor-pointer"
             >
               Book a Demo
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -452,12 +452,13 @@ const industries: {
 
 // ─── HeroSection ──────────────────────────────────────────────────────────────
 
-export default function HeroSection() {
+export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void }) {
   const [activeIndustry, setActiveIndustry] = useState<Industry>('vet')
+  const handleBookDemo = onBookDemo ?? (() => {})
 
   return (
     <>
-      <Navbar />
+      <Navbar onBookDemo={handleBookDemo} />
       <section className="relative min-h-[100dvh] bg-[#FAFAFA] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-12 lg:gap-20 min-h-[calc(100dvh-4rem)] py-16 lg:py-0">
@@ -601,7 +602,7 @@ export default function HeroSection() {
                 variants={itemVariants}
                 className="flex items-center gap-5 flex-wrap"
               >
-                <MagneticButton>
+                <MagneticButton onClick={handleBookDemo}>
                   <span className="inline-flex items-center gap-2 bg-[#0EA5E9] hover:bg-[#0284C7] active:scale-[0.98] text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer select-none">
                     Book a Demo
                   </span>
@@ -684,7 +685,7 @@ export default function HeroSection() {
 
 // ─── MagneticButton (isolated client leaf) ────────────────────────────────────
 
-function MagneticButton({ children }: { children: React.ReactNode }) {
+function MagneticButton({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
   const ref = useRef<HTMLDivElement>(null)
 
   const rawX = useMotionValue(0)
@@ -716,7 +717,8 @@ function MagneticButton({ children }: { children: React.ReactNode }) {
       style={{ x, y }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="inline-block"
+      onClick={onClick}
+      className="inline-block cursor-pointer"
     >
       {children}
     </motion.div>

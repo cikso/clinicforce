@@ -113,7 +113,7 @@ export function ClinicForceLanding() {
   return (
     <main className="min-h-screen bg-[#f6f8fb] text-[#0d1b2a]">
       <DemoModal isOpen={demoOpen} onClose={() => setDemoOpen(false)} />
-      <HeroSection />
+      <HeroSection onBookDemo={() => setDemoOpen(true)} />
       <div className="mx-auto max-w-7xl px-6 pb-20 pt-16 sm:px-8 lg:px-12">
 
         <section id="problem" className="px-1 py-24 sm:py-28">
