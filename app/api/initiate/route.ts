@@ -113,7 +113,7 @@ function normalisePhone(raw: string): string {
 }
 
 function buildAddress(clinic: Record<string, unknown>): string {
-  const parts = [clinic.address, clinic.suburb, clinic.state, clinic.postcode]
+  const parts = [clinic.address, clinic.suburb]
     .filter(Boolean)
     .join(', ')
   return parts || String(clinic.name ?? '')
@@ -179,7 +179,7 @@ async function handleInitiate(req: NextRequest): Promise<NextResponse> {
       const { data: clinics, error } = await supabase
         .from('clinics')
         .select(
-          'id, name, phone, address, suburb, state, postcode, clinic_hours, after_hours_partner, after_hours_phone, emergency_partner_address, vertical, services, voice_phone, subject_label, professional_title',
+          'id, name, phone, address, suburb, clinic_hours, after_hours_partner, after_hours_phone, emergency_partner_address, vertical, services, voice_phone, subject_label, professional_title',
         )
 
       if (error) {

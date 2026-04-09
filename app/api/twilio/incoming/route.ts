@@ -69,12 +69,10 @@ function buildElevenLabsUrl(
     phone: string
     address: string
     suburb: string
-    state: string
-    postcode: string
     business_hours: Record<string, string> | null
     after_hours_partner: string | null
     after_hours_phone: string | null
-    after_hours_address: string | null
+    emergency_partner_address: string | null
     services: string[] | null
     vertical: string
   },
@@ -86,11 +84,11 @@ function buildElevenLabsUrl(
     clinic_id:                 clinic.id,
     vertical_type:             meta.verticalType,
     professional_title:        meta.professionalTitle,
-    clinic_address:            `${clinic.address ?? ''}, ${clinic.suburb ?? ''} ${clinic.state ?? ''} ${clinic.postcode ?? ''}`.trim(),
+    clinic_address:            `${clinic.address ?? ''}, ${clinic.suburb ?? ''}`.replace(/,\s*$/, '').trim(),
     clinic_phone:              clinic.phone ?? '',
     clinic_hours:              clinic.business_hours ? formatHours(clinic.business_hours) : '',
     emergency_partner_name:    clinic.after_hours_partner ?? '',
-    emergency_partner_address: clinic.after_hours_address ?? '',
+    emergency_partner_address: clinic.emergency_partner_address ?? '',
     emergency_partner_phone:   clinic.after_hours_phone ?? '',
     clinic_services:           (clinic.services ?? []).join(', '),
     subject_label:             meta.subjectLabel,
@@ -190,7 +188,7 @@ export async function POST(req: NextRequest) {
         .single(),
       supabase
         .from('clinics')
-        .select('id, name, phone, address, suburb, state, postcode, vertical, business_hours, after_hours_partner, after_hours_phone, after_hours_address, services')
+        .select('id, name, phone, address, suburb, vertical, business_hours, after_hours_partner, after_hours_phone, emergency_partner_address, services')
         .eq('id', clinicId)
         .single(),
     ])
