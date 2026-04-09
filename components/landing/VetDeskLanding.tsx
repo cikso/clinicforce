@@ -3,6 +3,11 @@
 import { useState } from 'react'
 import type { ComponentType } from 'react'
 import DemoModal from './DemoModal'
+import ComparisonSection from './ComparisonSection'
+import IntegrationLogos from './IntegrationLogos'
+import PricingSection from './PricingSection'
+import ROICalculator from './ROICalculator'
+import FAQSection from './FAQSection'
 import HeroSection from '@/components/marketing/HeroSection'
 import {
   ArrowRight,
@@ -154,6 +159,8 @@ export function ClinicForceLanding() {
           </div>
         </section>
 
+        <ComparisonSection />
+
         <section id="features" className="px-1 py-24 sm:py-28">
           <SectionHeading
             eyebrow="Features"
@@ -166,7 +173,15 @@ export function ClinicForceLanding() {
               <FeatureCard key={title} title={title} body={body} icon={icon} />
             ))}
           </div>
+
+          <IntegrationLogos />
         </section>
+
+        <PricingSection onBookDemo={() => setDemoOpen(true)} />
+
+        <ROICalculator />
+
+        <FAQSection />
 
         <section className="grid gap-10 rounded-[36px] border border-[#E8E4DE] bg-[#1A1A1A] px-6 py-16 text-white shadow-[0_22px_55px_rgba(0,0,0,0.12)] sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-12">
           <div>
@@ -195,87 +210,115 @@ export function ClinicForceLanding() {
         <section id="product-ui" className="px-1 py-24 sm:py-28">
           <SectionHeading
             eyebrow="Product UI"
-            title="A dashboard that looks and behaves like an operating tool, not a reporting afterthought."
-            body="The interface gives clinics a live view of call handling, action queues, reception controls, and activity history. The goal is clarity, not noise."
+            title="A dashboard designed for clarity, not noise."
+            body="The interface gives clinics a live view of call handling, action queues, coverage controls, and conversation history — all in a clean, light-themed workspace."
           />
 
           <div className="mt-12 overflow-hidden rounded-[36px] border border-[#dbe4eb] bg-white shadow-[0_20px_45px_rgba(15,23,42,0.05)]">
-            <div className="grid xl:grid-cols-[280px_minmax(0,1fr)]">
-              <aside className="border-b border-[#e1e8ee] bg-[#fbfcfd] p-6 xl:border-b-0 xl:border-r">
-                <div className="mb-8 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1B6B4A] text-sm font-semibold tracking-[0.16em] text-white">CF</div>
+            <div className="grid xl:grid-cols-[260px_minmax(0,1fr)]">
+              {/* Sidebar */}
+              <aside className="border-b border-[#E5E7EB] bg-white p-5 xl:border-b-0 xl:border-r">
+                <div className="mb-6 flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#0176D3]">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                      <path d="M10 2L3 6v8l7 4 7-4V6l-7-4z" fill="white" opacity="0.9" />
+                      <path d="M10 10V2L3 6l7 4z" fill="white" opacity="0.6" />
+                    </svg>
+                  </div>
                   <div>
-                    <p className="font-semibold tracking-[-0.03em] text-[#1A1A1A]">ClinicForce</p>
-                    <p className="text-sm text-[#6f7c89]">Northside Veterinary</p>
+                    <p className="text-[14px] font-bold text-[#111827]">ClinicForce</p>
+                    <p className="text-[12px] text-[#6B7280]">Northside Vet</p>
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {([
-                    ['Overview', Hospital],
-                    ['Calls', PhoneCall],
-                    ['Action Queue', ClipboardList],
-                    ['Clinic Knowledge', BookOpenText],
-                    ['Settings', ShieldCheck],
-                  ] as [string, ComponentType<{ className?: string }>][]).map(([label, Icon]) => {
-                    const ItemIcon = Icon
-                    return (
-                      <div key={label} className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium ${label === 'Overview' ? 'bg-[#1B6B4A] text-white' : 'text-[#61717f]'}`}>
-                        <ItemIcon className="h-4 w-4" />
-                        {label}
-                      </div>
-                    )
-                  })}
+                    ['Overview', true],
+                    ['Conversations', false],
+                    ['Action Queue', false],
+                    ['Bookings', false],
+                    ['Insights', false],
+                    ['Settings', false],
+                  ] as [string, boolean][]).map(([label, active]) => (
+                    <div
+                      key={label}
+                      className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-medium ${
+                        active
+                          ? 'bg-[#EBF5FF] text-[#0176D3]'
+                          : 'text-[#6B7280] hover:bg-[#F3F4F6]'
+                      }`}
+                    >
+                      {label}
+                    </div>
+                  ))}
                 </div>
 
-                <div className="mt-8 rounded-3xl border border-[#dbe5eb] bg-white p-5">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6f7c89]">Coverage status</p>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="text-sm text-[#1A1A1A]">Front-desk support</span>
-                    <span className="rounded-full bg-[#F0F7F4] px-3 py-1 text-xs font-semibold text-[#1B6B4A]">Active</span>
+                {/* Coverage widget */}
+                <div className="mt-6 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[#6B7280] mb-3">Coverage</p>
+                  <div className="flex gap-1.5">
+                    {['All Calls', 'Overflow', 'Off'].map((mode, i) => (
+                      <span
+                        key={mode}
+                        className={`rounded-md px-2.5 py-1.5 text-[11px] font-semibold ${
+                          i === 0
+                            ? 'bg-[#0176D3] text-white'
+                            : 'bg-white text-[#6B7280] border border-[#E5E7EB]'
+                        }`}
+                      >
+                        {mode}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </aside>
 
-              <div className="p-6 sm:p-8">
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+              {/* Main content */}
+              <div className="p-6 sm:p-8 bg-[#F9FAFB]">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
                   <div className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-3">
+                    {/* Stat cards */}
+                    <div className="grid gap-3 sm:grid-cols-3">
                       {[
-                        ['98%', 'Calls answered'],
-                        ['14', 'Bookings captured today'],
-                        ['5', 'Urgent cases routed'],
-                      ].map(([value, label]) => (
-                        <div key={label} className="rounded-3xl border border-[#dde5ec] bg-[#f8fafb] p-5">
-                          <div className="text-3xl font-semibold tracking-[-0.05em] text-[#1A1A1A]">{value}</div>
-                          <p className="mt-2 text-sm text-[#667381]">{label}</p>
+                        ['24', 'Calls Today', '+12%'],
+                        ['18', 'Bookings Captured', '+8%'],
+                        ['3', 'Urgent Triaged', '—'],
+                      ].map(([value, label, delta]) => (
+                        <div key={label} className="rounded-xl border border-[#E5E7EB] bg-white p-4">
+                          <p className="text-[11px] font-medium uppercase tracking-[0.5px] text-[#6B7280] mb-1">{label}</p>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-[28px] font-bold text-[#111827] leading-none">{value}</span>
+                            {delta !== '—' && (
+                              <span className="text-[12px] font-medium text-[#059669]">{delta}</span>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="rounded-3xl border border-[#dde5ec] p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6f7d8b]">Activity feed</p>
-                          <h3 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-[#1A1A1A]">What happened in the last hour</h3>
-                        </div>
-                        <span className="rounded-full bg-[#F0F7F4] px-3 py-1 text-xs font-semibold text-[#1B6B4A]">Live</span>
+                    {/* Activity feed */}
+                    <div className="rounded-xl border border-[#E5E7EB] bg-white p-5">
+                      <div className="flex items-center justify-between mb-4">
+                        <p className="text-[14px] font-semibold text-[#111827]">Recent Activity</p>
+                        <span className="flex items-center gap-1.5 rounded-full bg-[#ECFDF5] px-2.5 py-1 text-[11px] font-semibold text-[#059669]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#059669]" />
+                          Live
+                        </span>
                       </div>
-
-                      <div className="mt-5 space-y-4">
+                      <div className="space-y-3">
                         {[
-                          ['Urgent call escalated', 'Possible gastric distress routed to on-call clinician', '2 minutes ago'],
-                          ['Booking captured', 'Vaccination appointment request confirmed for Thursday', '11 minutes ago'],
-                          ['Routine enquiry resolved', 'Desexing preparation information sent to owner', '18 minutes ago'],
-                        ].map(([title, detail, time]) => (
-                          <div key={title} className="flex gap-4 rounded-2xl border border-[#e1e8ee] bg-[#fbfcfd] p-4">
-                            <div className="mt-1 h-2.5 w-2.5 rounded-full bg-[#1B6B4A]" />
+                          ['Urgent call escalated', 'Possible GDV — routed to on-call vet', '2m ago', '#DC2626'],
+                          ['Booking captured', 'Vaccination appointment confirmed for Thursday', '11m ago', '#0176D3'],
+                          ['Enquiry resolved', 'Desexing prep info sent to pet owner', '18m ago', '#059669'],
+                        ].map(([title, detail, time, color]) => (
+                          <div key={title} className="flex gap-3 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] p-3.5">
+                            <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
                             <div className="min-w-0 flex-1">
-                              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                                <p className="text-sm font-semibold text-[#1A1A1A]">{title}</p>
-                                <span className="text-xs font-medium text-[#6f7d8b]">{time}</span>
+                              <div className="flex items-center justify-between gap-2">
+                                <p className="text-[13px] font-semibold text-[#111827]">{title}</p>
+                                <span className="text-[11px] text-[#9CA3AF] whitespace-nowrap">{time}</span>
                               </div>
-                              <p className="mt-1 text-sm leading-6 text-[#61717f]">{detail}</p>
+                              <p className="mt-0.5 text-[12px] text-[#6B7280]">{detail}</p>
                             </div>
                           </div>
                         ))}
@@ -283,38 +326,43 @@ export function ClinicForceLanding() {
                     </div>
                   </div>
 
+                  {/* Right column */}
                   <div className="space-y-4">
-                    <div className="rounded-3xl border border-[#333333] bg-[#1A1A1A] p-6 text-white">
-                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8ba2b7]">AI status</p>
-                      <h3 className="mt-1 text-xl font-semibold tracking-[-0.03em]">Ready for clinic demand</h3>
-                      <div className="mt-5 space-y-3">
+                    {/* AI Agent status */}
+                    <div className="rounded-xl border border-[#E5E7EB] bg-white p-5">
+                      <div className="flex items-center justify-between mb-4">
+                        <p className="text-[14px] font-semibold text-[#111827]">Sarah AI</p>
+                        <span className="rounded-full bg-[#ECFDF5] px-2 py-0.5 text-[11px] font-semibold text-[#059669]">Active</span>
+                      </div>
+                      <div className="space-y-2.5">
                         {[
-                          ['Knowledge base synced', 'Today'],
-                          ['Overflow routing active', 'Now'],
-                          ['After-hours logic active', 'Today'],
-                        ].map(([label, status]) => (
-                          <div key={label} className="flex items-center justify-between rounded-2xl border border-[#333333] px-4 py-3">
-                            <span className="text-sm text-[#d1dbe5]">{label}</span>
-                            <span className="text-xs font-semibold text-[#86C5A6]">{status}</span>
+                          ['Mode', 'All Calls'],
+                          ['Calls handled', '21 today'],
+                          ['Avg. duration', '1m 24s'],
+                          ['Triage accuracy', '98%'],
+                        ].map(([label, val]) => (
+                          <div key={label} className="flex items-center justify-between rounded-lg bg-[#F9FAFB] px-3 py-2.5">
+                            <span className="text-[12px] text-[#6B7280]">{label}</span>
+                            <span className="text-[12px] font-semibold text-[#111827]">{val}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <div className="rounded-3xl border border-[#dde5ec] bg-white p-6">
-                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6f7d8b]">Reception controls</p>
-                      <div className="mt-4 space-y-3">
-                        {[
-                          ['Overflow mode', 'Enabled'],
-                          ['Booking capture', 'Enabled'],
-                          ['Clinician escalation', 'SMS + dashboard'],
-                          ['Owner follow-up queue', 'Enabled'],
-                        ].map(([label, value]) => (
-                          <div key={label} className="flex items-center justify-between rounded-2xl bg-[#f8fafb] px-4 py-3">
-                            <span className="text-sm text-[#1A1A1A]">{label}</span>
-                            <span className="text-xs font-semibold text-[#1B6B4A]">{value}</span>
-                          </div>
-                        ))}
+                    {/* Conversation preview */}
+                    <div className="rounded-xl border border-[#E5E7EB] bg-white p-5">
+                      <p className="text-[14px] font-semibold text-[#111827] mb-3">Latest Conversation</p>
+                      <div className="space-y-2.5">
+                        <div className="rounded-lg bg-[#EBF5FF] px-3 py-2.5">
+                          <p className="text-[12px] text-[#0176D3]">&quot;Hi, I&apos;m calling about my dog Max — he&apos;s been limping since this morning...&quot;</p>
+                        </div>
+                        <div className="rounded-lg bg-[#F9FAFB] px-3 py-2.5">
+                          <p className="text-[12px] text-[#374151]">&quot;I understand your concern about Max. Let me get some details to help the vet team...&quot;</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        <span className="rounded-md bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold text-[#92400E]">Urgent</span>
+                        <span className="rounded-md bg-[#EBF5FF] px-2 py-0.5 text-[10px] font-semibold text-[#0176D3]">Callback</span>
                       </div>
                     </div>
                   </div>

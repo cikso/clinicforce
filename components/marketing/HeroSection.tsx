@@ -398,22 +398,19 @@ function Navbar({ onBookDemo }: { onBookDemo: () => void }) {
 
           {/* Center nav links */}
           <div className="hidden md:flex items-center gap-7">
-            {['Product', 'Pricing', 'About'].map((link) => (
+            {([
+              ['Product', '#product-ui'],
+              ['Pricing', '#pricing'],
+              ['FAQ', '#faq'],
+            ] as [string, string][]).map(([label, href]) => (
               <a
-                key={link}
-                href="#"
+                key={label}
+                href={href}
                 className="text-sm text-slate-500 hover:text-[#1A1A1A] transition-colors duration-150 font-medium"
               >
-                {link}
+                {label}
               </a>
             ))}
-            <a
-              href="#"
-              className="flex items-center gap-0.5 text-sm text-slate-500 hover:text-[#1A1A1A] transition-colors duration-150 font-medium"
-            >
-              Industries
-              <ChevronDownIcon className="w-3 h-3 mt-px" />
-            </a>
           </div>
 
           {/* Right actions */}
@@ -609,10 +606,10 @@ export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void })
                 </MagneticButton>
 
                 <a
-                  href="#"
+                  href="#product-ui"
                   className="group inline-flex items-center gap-2 text-slate-500 hover:text-[#1A1A1A] font-medium text-sm transition-colors duration-150"
                 >
-                  Watch how it works
+                  See how it works
                   <motion.span
                     className="inline-flex"
                     animate={{ x: [0, 3, 0] }}
