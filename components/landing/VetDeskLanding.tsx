@@ -80,8 +80,8 @@ function SectionHeading({
 }) {
   return (
     <div className="max-w-3xl">
-      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#0d7b72]">{eyebrow}</p>
-      <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#0d1b2a] sm:text-4xl">{title}</h2>
+      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#1B6B4A]">{eyebrow}</p>
+      <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-4xl">{title}</h2>
       {body ? <p className="mt-5 max-w-2xl text-base leading-7 text-[#536171] sm:text-lg">{body}</p> : null}
     </div>
   )
@@ -98,10 +98,10 @@ function FeatureCard({
 }) {
   return (
     <article className="rounded-3xl border border-[#d9e2ea] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-      <div className="mb-5 inline-flex rounded-2xl bg-[#eef8f7] p-3 text-[#0d7b72]">
+      <div className="mb-5 inline-flex rounded-2xl bg-[#F0F7F4] p-3 text-[#1B6B4A]">
         <Icon className="h-5 w-5" />
       </div>
-      <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#0d1b2a]">{title}</h3>
+      <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">{title}</h3>
       <p className="mt-3 text-sm leading-6 text-[#5f6f7e]">{body}</p>
     </article>
   )
@@ -111,7 +111,7 @@ export function ClinicForceLanding() {
   const [demoOpen, setDemoOpen] = useState(false)
 
   return (
-    <main className="min-h-screen bg-[#f6f8fb] text-[#0d1b2a]">
+    <main className="min-h-screen bg-[#FAF8F4] text-[#1A1A1A]">
       <DemoModal isOpen={demoOpen} onClose={() => setDemoOpen(false)} />
       <HeroSection onBookDemo={() => setDemoOpen(true)} />
       <div className="mx-auto max-w-7xl px-6 pb-20 pt-16 sm:px-8 lg:px-12">
@@ -126,10 +126,10 @@ export function ClinicForceLanding() {
           <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
             {painPoints.map(([title, body, Icon]) => (
               <article key={title} className="rounded-3xl border border-[#dde5ec] bg-white p-6 shadow-[0_10px_25px_rgba(15,23,42,0.04)]">
-                <div className="mb-5 inline-flex rounded-2xl bg-[#f3f7fb] p-3 text-[#10243a]">
+                <div className="mb-5 inline-flex rounded-2xl bg-[#f3f7fb] p-3 text-[#1A1A1A]">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#0d1b2a]">{title}</h3>
+                <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">{title}</h3>
                 <p className="mt-3 text-sm leading-6 text-[#61717f]">{body}</p>
               </article>
             ))}
@@ -146,8 +146,8 @@ export function ClinicForceLanding() {
           <div className="mt-12 grid gap-4 lg:grid-cols-4">
             {workflowSteps.map(([step, title, body]) => (
               <article key={step} className="rounded-3xl border border-[#dde5ec] bg-[#f8fafb] p-6">
-                <div className="mb-5 text-sm font-semibold tracking-[0.22em] text-[#0d7b72]">{step}</div>
-                <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#10243a]">{title}</h3>
+                <div className="mb-5 text-sm font-semibold tracking-[0.22em] text-[#1B6B4A]">{step}</div>
+                <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">{title}</h3>
                 <p className="mt-3 text-sm leading-6 text-[#5f6f7e]">{body}</p>
               </article>
             ))}
@@ -168,9 +168,9 @@ export function ClinicForceLanding() {
           </div>
         </section>
 
-        <section className="grid gap-10 rounded-[36px] border border-[#dbe4eb] bg-[#10243a] px-6 py-16 text-white shadow-[0_22px_55px_rgba(15,23,42,0.12)] sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-12">
+        <section className="grid gap-10 rounded-[36px] border border-[#E8E4DE] bg-[#1A1A1A] px-6 py-16 text-white shadow-[0_22px_55px_rgba(0,0,0,0.12)] sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-12">
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#7ad3c8]">Why clinics choose ClinicForce</p>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#86C5A6]">Why clinics choose ClinicForce</p>
             <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
               Premium software is not just about answering calls. It is about making the clinic run more cleanly.
             </h2>
@@ -181,8 +181,8 @@ export function ClinicForceLanding() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             {trustReasons.map(([title, body]) => (
-              <article key={title} className="rounded-3xl border border-[#22384f] bg-[#12283f] p-6">
-                <div className="mb-4 inline-flex rounded-2xl bg-[#17314c] p-3 text-[#7ad3c8]">
+              <article key={title} className="rounded-3xl border border-[#333333] bg-[#262626] p-6">
+                <div className="mb-4 inline-flex rounded-2xl bg-[#2D2D2D] p-3 text-[#86C5A6]">
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
                 <h3 className="text-lg font-semibold tracking-[-0.03em]">{title}</h3>
@@ -203,9 +203,9 @@ export function ClinicForceLanding() {
             <div className="grid xl:grid-cols-[280px_minmax(0,1fr)]">
               <aside className="border-b border-[#e1e8ee] bg-[#fbfcfd] p-6 xl:border-b-0 xl:border-r">
                 <div className="mb-8 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#10243a] text-sm font-semibold tracking-[0.16em] text-white">CF</div>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1B6B4A] text-sm font-semibold tracking-[0.16em] text-white">CF</div>
                   <div>
-                    <p className="font-semibold tracking-[-0.03em] text-[#10243a]">ClinicForce</p>
+                    <p className="font-semibold tracking-[-0.03em] text-[#1A1A1A]">ClinicForce</p>
                     <p className="text-sm text-[#6f7c89]">Northside Veterinary</p>
                   </div>
                 </div>
@@ -220,7 +220,7 @@ export function ClinicForceLanding() {
                   ] as [string, ComponentType<{ className?: string }>][]).map(([label, Icon]) => {
                     const ItemIcon = Icon
                     return (
-                      <div key={label} className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium ${label === 'Overview' ? 'bg-[#10243a] text-white' : 'text-[#61717f]'}`}>
+                      <div key={label} className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium ${label === 'Overview' ? 'bg-[#1B6B4A] text-white' : 'text-[#61717f]'}`}>
                         <ItemIcon className="h-4 w-4" />
                         {label}
                       </div>
@@ -231,8 +231,8 @@ export function ClinicForceLanding() {
                 <div className="mt-8 rounded-3xl border border-[#dbe5eb] bg-white p-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6f7c89]">Coverage status</p>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-sm text-[#10243a]">Front-desk support</span>
-                    <span className="rounded-full bg-[#ecf8f5] px-3 py-1 text-xs font-semibold text-[#0d7b72]">Active</span>
+                    <span className="text-sm text-[#1A1A1A]">Front-desk support</span>
+                    <span className="rounded-full bg-[#F0F7F4] px-3 py-1 text-xs font-semibold text-[#1B6B4A]">Active</span>
                   </div>
                 </div>
               </aside>
@@ -247,7 +247,7 @@ export function ClinicForceLanding() {
                         ['5', 'Urgent cases routed'],
                       ].map(([value, label]) => (
                         <div key={label} className="rounded-3xl border border-[#dde5ec] bg-[#f8fafb] p-5">
-                          <div className="text-3xl font-semibold tracking-[-0.05em] text-[#10243a]">{value}</div>
+                          <div className="text-3xl font-semibold tracking-[-0.05em] text-[#1A1A1A]">{value}</div>
                           <p className="mt-2 text-sm text-[#667381]">{label}</p>
                         </div>
                       ))}
@@ -257,9 +257,9 @@ export function ClinicForceLanding() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6f7d8b]">Activity feed</p>
-                          <h3 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-[#10243a]">What happened in the last hour</h3>
+                          <h3 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-[#1A1A1A]">What happened in the last hour</h3>
                         </div>
-                        <span className="rounded-full bg-[#eef8f7] px-3 py-1 text-xs font-semibold text-[#0d7b72]">Live</span>
+                        <span className="rounded-full bg-[#F0F7F4] px-3 py-1 text-xs font-semibold text-[#1B6B4A]">Live</span>
                       </div>
 
                       <div className="mt-5 space-y-4">
@@ -269,10 +269,10 @@ export function ClinicForceLanding() {
                           ['Routine enquiry resolved', 'Desexing preparation information sent to owner', '18 minutes ago'],
                         ].map(([title, detail, time]) => (
                           <div key={title} className="flex gap-4 rounded-2xl border border-[#e1e8ee] bg-[#fbfcfd] p-4">
-                            <div className="mt-1 h-2.5 w-2.5 rounded-full bg-[#0d7b72]" />
+                            <div className="mt-1 h-2.5 w-2.5 rounded-full bg-[#1B6B4A]" />
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                                <p className="text-sm font-semibold text-[#10243a]">{title}</p>
+                                <p className="text-sm font-semibold text-[#1A1A1A]">{title}</p>
                                 <span className="text-xs font-medium text-[#6f7d8b]">{time}</span>
                               </div>
                               <p className="mt-1 text-sm leading-6 text-[#61717f]">{detail}</p>
@@ -284,7 +284,7 @@ export function ClinicForceLanding() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="rounded-3xl border border-[#dde5ec] bg-[#10243a] p-6 text-white">
+                    <div className="rounded-3xl border border-[#333333] bg-[#1A1A1A] p-6 text-white">
                       <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8ba2b7]">AI status</p>
                       <h3 className="mt-1 text-xl font-semibold tracking-[-0.03em]">Ready for clinic demand</h3>
                       <div className="mt-5 space-y-3">
@@ -293,9 +293,9 @@ export function ClinicForceLanding() {
                           ['Overflow routing active', 'Now'],
                           ['After-hours logic active', 'Today'],
                         ].map(([label, status]) => (
-                          <div key={label} className="flex items-center justify-between rounded-2xl border border-[#223a52] px-4 py-3">
+                          <div key={label} className="flex items-center justify-between rounded-2xl border border-[#333333] px-4 py-3">
                             <span className="text-sm text-[#d1dbe5]">{label}</span>
-                            <span className="text-xs font-semibold text-[#7ad3c8]">{status}</span>
+                            <span className="text-xs font-semibold text-[#86C5A6]">{status}</span>
                           </div>
                         ))}
                       </div>
@@ -311,8 +311,8 @@ export function ClinicForceLanding() {
                           ['Owner follow-up queue', 'Enabled'],
                         ].map(([label, value]) => (
                           <div key={label} className="flex items-center justify-between rounded-2xl bg-[#f8fafb] px-4 py-3">
-                            <span className="text-sm text-[#10243a]">{label}</span>
-                            <span className="text-xs font-semibold text-[#0d7b72]">{value}</span>
+                            <span className="text-sm text-[#1A1A1A]">{label}</span>
+                            <span className="text-xs font-semibold text-[#1B6B4A]">{value}</span>
                           </div>
                         ))}
                       </div>
@@ -342,13 +342,13 @@ export function ClinicForceLanding() {
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               <div className="rounded-3xl border border-[#dde5ec] bg-[#f8fafb] p-5">
-                <ShieldCheck className="h-5 w-5 text-[#10243a]" />
-                <h3 className="mt-4 text-lg font-semibold tracking-[-0.03em] text-[#10243a]">Reliability first</h3>
+                <ShieldCheck className="h-5 w-5 text-[#1A1A1A]" />
+                <h3 className="mt-4 text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">Reliability first</h3>
                 <p className="mt-2 text-sm leading-6 text-[#62707f]">Clear escalation paths, structured outputs, and operational controls make the system easier to trust in a live clinic environment.</p>
               </div>
               <div className="rounded-3xl border border-[#dde5ec] bg-[#f8fafb] p-5">
-                <Hospital className="h-5 w-5 text-[#10243a]" />
-                <h3 className="mt-4 text-lg font-semibold tracking-[-0.03em] text-[#10243a]">Vertical-specific from day one</h3>
+                <Hospital className="h-5 w-5 text-[#1A1A1A]" />
+                <h3 className="mt-4 text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">Vertical-specific from day one</h3>
                 <p className="mt-2 text-sm leading-6 text-[#62707f]">Messaging, workflows, and handoff structure are designed around veterinary clinics rather than retrofitted from another industry.</p>
               </div>
             </div>
@@ -357,13 +357,13 @@ export function ClinicForceLanding() {
           <div className="grid gap-4">
             {testimonials.map(([quote, name, role, clinic]) => (
               <article key={name} className="rounded-3xl border border-[#dde5ec] bg-[#fbfcfd] p-6">
-                <div className="mb-5 flex items-center gap-2 text-[#0d7b72]">
+                <div className="mb-5 flex items-center gap-2 text-[#1B6B4A]">
                   <CheckCircle2 className="h-5 w-5" />
                   <span className="text-sm font-semibold">Built for veterinary clinics</span>
                 </div>
-                <p className="text-lg leading-8 tracking-[-0.02em] text-[#10243a]">"{quote}"</p>
+                <p className="text-lg leading-8 tracking-[-0.02em] text-[#1A1A1A]">"{quote}"</p>
                 <div className="mt-6 border-t border-[#e2e8ee] pt-5">
-                  <p className="font-semibold text-[#10243a]">{name}</p>
+                  <p className="font-semibold text-[#1A1A1A]">{name}</p>
                   <p className="text-sm text-[#667482]">{role} · {clinic}</p>
                 </div>
               </article>
@@ -372,10 +372,10 @@ export function ClinicForceLanding() {
         </section>
 
         <section className="px-1 py-24 sm:py-28">
-          <div className="rounded-[36px] border border-[#d7e2e8] bg-[#eff8f6] px-6 py-14 sm:px-8 lg:px-12">
+          <div className="rounded-[36px] border border-[#E8E4DE] bg-[#F0F7F4] px-6 py-14 sm:px-8 lg:px-12">
             <div className="max-w-3xl">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#0d7b72]">Final step</p>
-              <h2 className="text-balance text-4xl font-semibold tracking-[-0.05em] text-[#0d1b2a] sm:text-5xl">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#1B6B4A]">Final step</p>
+              <h2 className="text-balance text-4xl font-semibold tracking-[-0.05em] text-[#1A1A1A] sm:text-5xl">
                 See how ClinicForce fits into your clinic before another week of missed calls.
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-[#556475]">
@@ -384,11 +384,11 @@ export function ClinicForceLanding() {
             </div>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <button onClick={() => setDemoOpen(true)} className="inline-flex items-center justify-center rounded-2xl bg-[#10243a] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(16,36,58,0.12)] transition hover:bg-[#0d1b2a]">
+              <button onClick={() => setDemoOpen(true)} className="inline-flex items-center justify-center rounded-2xl bg-[#1B6B4A] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(27,107,74,0.2)] transition hover:bg-[#155C3E]">
                 Book a Demo
                 <ArrowRight className="ml-2 h-4 w-4" />
               </button>
-              <a href="#product-ui" className="inline-flex items-center justify-center rounded-2xl border border-[#cdd9e1] bg-white px-6 py-4 text-sm font-semibold text-[#10243a] transition hover:bg-[#f9fbfc]">
+              <a href="#product-ui" className="inline-flex items-center justify-center rounded-2xl border border-[#cdd9e1] bg-white px-6 py-4 text-sm font-semibold text-[#1A1A1A] transition hover:bg-[#f9fbfc]">
                 Review the Product
                 <ChevronRight className="ml-2 h-4 w-4" />
               </a>
