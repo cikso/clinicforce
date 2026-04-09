@@ -179,7 +179,7 @@ async function handleInitiate(req: NextRequest): Promise<NextResponse> {
       const { data: clinics, error } = await supabase
         .from('clinics')
         .select(
-          'id, name, phone, address, suburb, clinic_hours, after_hours_partner, after_hours_phone, emergency_partner_address, vertical, services, voice_phone, subject_label, professional_title',
+          'id, slug, name, phone, address, suburb, clinic_hours, after_hours_partner, after_hours_phone, emergency_partner_address, vertical, services, voice_phone, subject_label, professional_title',
         )
 
       if (error) {
@@ -196,7 +196,7 @@ async function handleInitiate(req: NextRequest): Promise<NextResponse> {
           const vertVars = getVerticalVariables(clinic.vertical ?? 'vet')
           dynamic_variables = {
             clinic_name:               String(clinic.name               ?? DEFAULTS.clinic_name),
-            clinic_id:                 String(clinic.id                 ?? DEFAULTS.clinic_id),
+            clinic_id:                 String(clinic.slug               ?? DEFAULTS.clinic_id),
             clinic_address:            buildAddress(clinic as Record<string, unknown>),
             clinic_phone:              String(clinic.phone              ?? DEFAULTS.clinic_phone),
             clinic_hours:              String(clinic.clinic_hours       ?? DEFAULTS.clinic_hours),
