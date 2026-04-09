@@ -36,7 +36,7 @@ function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNo
   return (
     <label
       htmlFor={htmlFor}
-      className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.1em] text-[#7a96b0]"
+      className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.1em] text-[#6B6B6B]"
     >
       {children}
     </label>
@@ -44,35 +44,35 @@ function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNo
 }
 
 const inputCls =
-  'w-full rounded-xl border border-white/10 bg-[#0a1628] px-4 py-3 text-sm text-white ' +
-  'placeholder:text-white/25 outline-none transition-colors ' +
-  'focus:border-[#00D4AA] focus:ring-0'
+  'w-full rounded-xl border border-[#E8E4DE] bg-white px-4 py-3 text-sm text-[#1A1A1A] ' +
+  'placeholder:text-[#BDBAB5] outline-none transition-colors ' +
+  'focus:border-[#1B6B4A] focus:ring-2 focus:ring-[#1B6B4A]/10'
 
 const selectCls =
-  'w-full rounded-xl border border-white/10 bg-[#0a1628] px-4 py-3 text-sm text-white ' +
+  'w-full rounded-xl border border-[#E8E4DE] bg-white px-4 py-3 text-sm text-[#1A1A1A] ' +
   'outline-none transition-colors appearance-none cursor-pointer ' +
-  'focus:border-[#00D4AA] focus:ring-0'
+  'focus:border-[#1B6B4A] focus:ring-2 focus:ring-[#1B6B4A]/10'
 
 // ── Success state ─────────────────────────────────────────────────────────────
 
 function SuccessView({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col items-center px-8 py-12 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00D4AA]/15 text-[#00D4AA]">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1B6B4A]/10 text-[#1B6B4A]">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 6 9 17l-5-5" />
         </svg>
       </div>
-      <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em] text-white">
+      <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em] text-[#1A1A1A]">
         Request received!
       </h3>
-      <p className="mt-2 text-sm leading-relaxed text-[#7a96b0]">
+      <p className="mt-2 text-sm leading-relaxed text-[#6B6B6B]">
         We&apos;ll be in touch within 24 hours to schedule a demo tailored to your clinic.
       </p>
       <button
         onClick={onClose}
-        className="mt-8 rounded-xl bg-white/8 px-6 py-2.5 text-sm font-medium text-white/70 transition hover:bg-white/12 hover:text-white"
+        className="mt-8 rounded-xl border border-[#E8E4DE] bg-white px-6 py-2.5 text-sm font-medium text-[#6B6B6B] transition hover:border-[#1B6B4A] hover:text-[#1B6B4A]"
       >
         Close
       </button>
@@ -103,7 +103,6 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
 
   function handleClose() {
     onClose()
-    // Reset after the close animation (next tick)
     setTimeout(() => { setForm(EMPTY); setSuccess(false); setError(null) }, 200)
   }
 
@@ -142,29 +141,34 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
     /* Backdrop */
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(5,12,24,0.75)', backdropFilter: 'blur(6px)' }}
+      style={{ background: 'rgba(26,26,26,0.55)', backdropFilter: 'blur(8px)' }}
       onClick={handleBackdrop}
       role="dialog"
       aria-modal="true"
       aria-label="Book a Demo"
     >
       {/* Modal card */}
-      <div className="relative w-full max-w-lg overflow-hidden rounded-[24px] border border-white/8 bg-[#10243a] shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-[24px] border border-[#E8E4DE] bg-[#FAF8F4] shadow-[0_32px_80px_rgba(0,0,0,0.18)]">
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/8 px-6 py-5">
-          <div>
-            <h2 className="text-base font-semibold tracking-[-0.03em] text-white">
-              Book a Demo
-            </h2>
-            <p className="mt-0.5 text-xs text-[#7a96b0]">
-              We&apos;ll show you how ClinicForce fits your clinic.
-            </p>
+        <div className="flex items-center justify-between border-b border-[#E8E4DE] px-6 py-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1B6B4A]">
+              <span className="text-[10px] font-bold tracking-wider text-white">CF</span>
+            </div>
+            <div>
+              <h2 className="text-base font-semibold tracking-[-0.03em] text-[#1A1A1A]">
+                Book a Demo
+              </h2>
+              <p className="mt-0.5 text-xs text-[#6B6B6B]">
+                We&apos;ll show you how ClinicForce fits your clinic.
+              </p>
+            </div>
           </div>
           <button
             onClick={handleClose}
             aria-label="Close modal"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-white/40 transition hover:bg-white/8 hover:text-white/80"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[#6B6B6B] transition hover:bg-[#E8E4DE] hover:text-[#1A1A1A]"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -257,7 +261,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                     <option value="allied_health">Allied Health</option>
                     <option value="specialist">Specialist</option>
                   </select>
-                  <svg className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30"
+                  <svg className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#BDBAB5]"
                     width="14" height="14" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M6 9l6 6 6-6" />
@@ -282,7 +286,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
                     <option value="6-15">6–15 staff</option>
                     <option value="15+">15+ staff</option>
                   </select>
-                  <svg className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30"
+                  <svg className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#BDBAB5]"
                     width="14" height="14" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M6 9l6 6 6-6" />
@@ -306,7 +310,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
 
             {/* Error */}
             {error && (
-              <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+              <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                 <svg className="mt-px shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
@@ -319,17 +323,16 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
             <button
               type="submit"
               disabled={saving}
-              className="mt-5 w-full rounded-xl py-3.5 text-sm font-semibold tracking-[-0.01em] transition"
+              className="mt-5 w-full rounded-xl py-3.5 text-sm font-semibold tracking-[-0.01em] text-white transition active:scale-[0.99]"
               style={{
-                background: saving ? 'rgba(0,212,170,0.55)' : '#00D4AA',
-                color: '#0a1628',
+                background: saving ? '#4A9B74' : '#1B6B4A',
                 cursor: saving ? 'not-allowed' : 'pointer',
               }}
             >
               {saving ? 'Sending…' : 'Request a Demo'}
             </button>
 
-            <p className="mt-3 text-center text-xs text-white/30">
+            <p className="mt-3 text-center text-xs text-[#BDBAB5]">
               No commitment. We&apos;ll reach out within 24 hours.
             </p>
           </form>
