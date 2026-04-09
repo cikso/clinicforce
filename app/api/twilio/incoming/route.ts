@@ -68,13 +68,16 @@ function buildElevenLabsUrl(
     name: string
     phone: string
     address: string
-    suburb: string
+    suburb: string | null
+    clinic_hours: string | null
     business_hours: Record<string, string> | null
     after_hours_partner: string | null
     after_hours_phone: string | null
     emergency_partner_address: string | null
-    services: string[] | null
+    services: string | null
     vertical: string
+    subject_label: string | null
+    professional_title: string | null
   },
 ): string {
   const meta = VERTICAL_META[clinic.vertical] ?? VERTICAL_META.vet
@@ -83,15 +86,15 @@ function buildElevenLabsUrl(
     clinic_name:               clinic.name,
     clinic_id:                 clinic.id,
     vertical_type:             meta.verticalType,
-    professional_title:        meta.professionalTitle,
-    clinic_address:            `${clinic.address ?? ''}, ${clinic.suburb ?? ''}`.replace(/,\s*$/, '').trim(),
+    professional_title:        clinic.professional_title ?? meta.professionalTitle,
+    clinic_address:            [clinic.address, clinic.suburb].filter(Boolean).join(', '),
     clinic_phone:              clinic.phone ?? '',
-    clinic_hours:              clinic.business_hours ? formatHours(clinic.business_hours) : '',
+    clinic_hours:              clinic.business_hours ? formatHours(clinic.business_hours) : (clinic.clinic_hours ?? ''),
     emergency_partner_name:    clinic.after_hours_partner ?? '',
     emergency_partner_address: clinic.emergency_partner_address ?? '',
     emergency_partner_phone:   clinic.after_hours_phone ?? '',
-    clinic_services:           (clinic.services ?? []).join(', '),
-    subject_label:             meta.subjectLabel,
+    clinic_services:           clinic.services ?? '',
+    subject_label:             clinic.subject_label ?? meta.subjectLabel,
     subject_name:              meta.subjectName,
   }
 
@@ -188,7 +191,7 @@ export async function POST(req: NextRequest) {
         .single(),
       supabase
         .from('clinics')
-        .select('id, name, phone, address, suburb, vertical, business_hours, after_hours_partner, after_hours_phone, emergency_partner_address, services')
+        .select('id, name, phone, address, suburb, vertical, clinic_hours, business_hours, after_hours_partner, after_hours_phone, emergency_partner_address, services, subject_label, professional_title')
         .eq('id', clinicId)
         .single(),
     ])
