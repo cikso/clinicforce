@@ -64,6 +64,7 @@ function formatHours(hours: Record<string, string>): string {
 // ── Build the full ElevenLabs redirect URL with all dynamic variables ─────────
 function buildElevenLabsUrl(
   clinic: {
+    id: string
     name: string
     phone: string
     address: string
@@ -82,6 +83,7 @@ function buildElevenLabsUrl(
 
   const vars: Record<string, string> = {
     clinic_name:               clinic.name,
+    clinic_id:                 clinic.id,
     vertical_type:             meta.verticalType,
     professional_title:        meta.professionalTitle,
     clinic_address:            `${clinic.address ?? ''}, ${clinic.suburb ?? ''} ${clinic.state ?? ''} ${clinic.postcode ?? ''}`.trim(),
@@ -188,7 +190,7 @@ export async function POST(req: NextRequest) {
         .single(),
       supabase
         .from('clinics')
-        .select('name, phone, address, suburb, state, postcode, vertical, business_hours, after_hours_partner, after_hours_phone, after_hours_address, services')
+        .select('id, name, phone, address, suburb, state, postcode, vertical, business_hours, after_hours_partner, after_hours_phone, after_hours_address, services')
         .eq('id', clinicId)
         .single(),
     ])
