@@ -2,11 +2,23 @@ import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
+function getStatus(inv: { accepted_at: string | null; expires_at: string }) {
+  if (inv.accepted_at) return 'accepted'
+  if (new Date(inv.expires_at) < new Date()) return 'expired'
+  return 'pending'
+}
+
+function statusStyles(s: string) {
+  if (s === 'accepted') return { bg: '#ECFDF5', color: '#059669', border: 'rgba(5,150,105,0.2)' }
+  if (s === 'expired') return { bg: 'var(--bg-secondary)', color: 'var(--text-tertiary)', border: 'var(--border)' }
+  return { bg: '#FFFBEB', color: '#D97706', border: 'rgba(217,119,6,0.2)' }
+}
+
 export default async function InvitesPage() {
   const service = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
+    { auth: { autoRefreshToken: false, persistSession: false } },
   )
 
   const { data: invites } = await service
@@ -15,84 +27,57 @@ export default async function InvitesPage() {
     .order('created_at', { ascending: false })
     .limit(100)
 
-  const now = new Date()
-
-  function getStatus(inv: { accepted_at: string | null; expires_at: string }) {
-    if (inv.accepted_at) return 'accepted'
-    if (new Date(inv.expires_at) < now) return 'expired'
-    return 'pending'
-  }
-
-  const statusStyle = (s: string): React.CSSProperties => ({
-    padding: '0.2rem 0.625rem',
-    borderRadius: 999,
-    fontFamily: "'DM Sans', sans-serif",
-    fontSize: '0.72rem',
-    fontWeight: 600,
-    backgroundColor:
-      s === 'accepted' ? 'rgba(27,107,74,0.07)'
-      : s === 'expired' ? '#F5F4F2'
-      : 'rgba(245,158,11,0.07)',
-    color:
-      s === 'accepted' ? '#1B6B4A'
-      : s === 'expired' ? '#9B9B9B'
-      : '#B45309',
-    border: `1px solid ${
-      s === 'accepted' ? 'rgba(27,107,74,0.2)'
-      : s === 'expired' ? '#E8E4DE'
-      : 'rgba(245,158,11,0.2)'
-    }`,
-  })
+  const pendingCount = invites?.filter((i) => getStatus(i) === 'pending').length ?? 0
 
   return (
-    <div style={{ maxWidth: 860 }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '2rem', fontWeight: 400, color: '#1A1A1A', marginBottom: '0.375rem' }}>
+    <div className="max-w-[860px]">
+      <div className="mb-6">
+        <h1 className="text-[22px] font-heading font-bold text-[var(--text-primary)] mb-1">
           All Invites
         </h1>
-        <p style={{ fontFamily: "'DM Sans'", fontSize: '0.9rem', color: '#6B6B6B' }}>
-          {invites?.filter(i => getStatus(i) === 'pending').length ?? 0} pending · {invites?.length ?? 0} total
+        <p className="text-[14px] text-[var(--text-secondary)]">
+          {pendingCount} pending · {invites?.length ?? 0} total
         </p>
       </div>
 
-      <div style={{ backgroundColor: '#ffffff', border: '1px solid #E8E4DE', borderRadius: 14, overflow: 'hidden' }}>
+      <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl overflow-hidden shadow-[var(--shadow-card)]">
         {/* Header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.5fr 80px 100px 120px', padding: '0.75rem 1.25rem', borderBottom: '1px solid #F0EDE8', backgroundColor: '#FAFAF9' }}>
+        <div className="hidden md:grid grid-cols-[2fr_1.5fr_80px_100px_120px] gap-3 px-5 py-3 border-b border-[var(--border)] bg-[var(--bg-secondary)]">
           {['Email', 'Clinic', 'Role', 'Status', 'Sent'].map((h) => (
-            <span key={h} style={{ fontFamily: "'DM Sans'", fontSize: '0.72rem', fontWeight: 600, color: '#9B9B9B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</span>
+            <span key={h} className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--text-tertiary)]">
+              {h}
+            </span>
           ))}
         </div>
 
         {!invites?.length ? (
-          <div style={{ padding: '3rem', textAlign: 'center' }}>
-            <p style={{ fontFamily: "'DM Sans'", color: '#9B9B9B', fontSize: '0.9rem' }}>No invites yet.</p>
+          <div className="py-12 text-center">
+            <p className="text-[14px] text-[var(--text-tertiary)]">No invites yet.</p>
           </div>
         ) : (
-          invites.map((inv, i) => {
+          invites.map((inv) => {
             const status = getStatus(inv)
+            const st = statusStyles(status)
             const clinicName = (inv.clinics as { name?: string } | null)?.name ?? '—'
             return (
               <div
                 key={inv.id}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '2fr 1.5fr 80px 100px 120px',
-                  padding: '0.875rem 1.25rem',
-                  alignItems: 'center',
-                  borderBottom: i < invites.length - 1 ? '1px solid #F0EDE8' : 'none',
-                }}
+                className="grid grid-cols-1 md:grid-cols-[2fr_1.5fr_80px_100px_120px] gap-1 md:gap-3 px-5 py-3.5 items-center border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--bg-secondary)] transition-colors"
               >
-                <span style={{ fontFamily: "'DM Sans'", fontSize: '0.875rem', color: '#1A1A1A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span className="text-[14px] text-[var(--text-primary)] truncate">
                   {inv.email}
                 </span>
-                <span style={{ fontFamily: "'DM Sans'", fontSize: '0.85rem', color: '#4B4B4B' }}>{clinicName}</span>
-                <span style={{ fontFamily: "'DM Sans'", fontSize: '0.82rem', color: '#6B6B6B' }}>
+                <span className="text-[13px] text-[var(--text-secondary)]">{clinicName}</span>
+                <span className="text-[13px] text-[var(--text-secondary)]">
                   {inv.role === 'clinic_admin' ? 'Admin' : 'Staff'}
                 </span>
-                <span style={statusStyle(status)}>
+                <span
+                  className="inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-semibold w-fit"
+                  style={{ backgroundColor: st.bg, color: st.color, border: `1px solid ${st.border}` }}
+                >
                   {status.charAt(0).toUpperCase() + status.slice(1)}
                 </span>
-                <span style={{ fontFamily: "'DM Sans'", fontSize: '0.8rem', color: '#9B9B9B' }}>
+                <span className="text-[13px] text-[var(--text-tertiary)]">
                   {new Date(inv.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
                 </span>
               </div>

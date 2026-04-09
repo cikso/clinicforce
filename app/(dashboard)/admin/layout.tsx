@@ -34,15 +34,5 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // platform_owner ONLY — clinic_admin and staff are redirected
   if (!cu || cu.role !== 'platform_owner') redirect('/overview')
 
-  return (
-    <>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
-        rel="stylesheet"
-      />
-      <div className="flex-1 overflow-y-auto bg-slate-50 p-8">
-        {children}
-      </div>
-    </>
-  )
+  return <>{children}</>
 }
