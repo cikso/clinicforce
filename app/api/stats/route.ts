@@ -9,13 +9,12 @@ function getSupabase() {
   )
 }
 
-// ── Sydney timezone helpers ────────────────────────────────────
+// ── Timezone-aware day boundary helpers ────────────────────────
 
-/** Returns the UTC offset string for Australia/Sydney on a given date,
- *  e.g. "+11:00" (AEDT) or "+10:00" (AEST). */
-function sydneyUTCOffset(dateStr: string): string {
+/** Returns the UTC offset string for a given timezone on a given date. */
+function tzUTCOffset(dateStr: string, tz: string): string {
   const probe = new Date(`${dateStr}T12:00:00Z`)
-  const localStr = probe.toLocaleString('en-US', { timeZone: 'Australia/Sydney' })
+  const localStr = probe.toLocaleString('en-US', { timeZone: tz })
   const local = new Date(localStr)
   const diffMins = Math.round((local.getTime() - probe.getTime()) / 60_000)
   const sign = diffMins >= 0 ? '+' : '-'
@@ -24,14 +23,13 @@ function sydneyUTCOffset(dateStr: string): string {
   return `${sign}${h}:${m}`
 }
 
-/** Returns UTC ISO start/end for a Sydney calendar day.
+/** Returns UTC ISO start/end for a calendar day in the given timezone.
  *  daysAgo = 0 → today, 1 → yesterday. */
-function sydneyDayBounds(daysAgo: number): { start: string; end: string } {
-  // Shift by whole days to get the right calendar date in Sydney
+function dayBounds(daysAgo: number, tz: string): { start: string; end: string } {
   const ref = new Date(Date.now() - daysAgo * 86_400_000)
 
   const parts = new Intl.DateTimeFormat('en-AU', {
-    timeZone: 'Australia/Sydney',
+    timeZone: tz,
     year: 'numeric', month: '2-digit', day: '2-digit',
   }).formatToParts(ref)
 
@@ -40,7 +38,7 @@ function sydneyDayBounds(daysAgo: number): { start: string; end: string } {
   const d  = parts.find(p => p.type === 'day')!.value
   const dateStr = `${y}-${mo}-${d}`
 
-  const offset = sydneyUTCOffset(dateStr)
+  const offset = tzUTCOffset(dateStr, tz)
   const start  = new Date(`${dateStr}T00:00:00${offset}`)
   const end    = new Date(start.getTime() + 86_400_000)
 
@@ -113,8 +111,17 @@ export async function GET() {
     const clinicId = profile.clinicId
 
     const supabase = getSupabase()
-    const today     = sydneyDayBounds(0)
-    const yesterday = sydneyDayBounds(1)
+
+    // Resolve clinic timezone (defaults to Australia/Sydney)
+    const { data: clinicRecord } = await supabase
+      .from('clinics')
+      .select('timezone')
+      .eq('id', clinicId)
+      .single()
+    const tz = (clinicRecord?.timezone as string) || 'Australia/Sydney'
+
+    const today     = dayBounds(0, tz)
+    const yesterday = dayBounds(1, tz)
     const nowISO    = new Date().toISOString()
 
     // Run all four queries in parallel

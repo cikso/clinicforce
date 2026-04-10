@@ -1,21 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  getServiceSupabase,
+  buildDynamicVariables,
+  CLINIC_SELECT_FIELDS,
+} from '@/lib/voice/shared'
 
+export const preferredRegion = 'syd1'
+
+/**
+ * POST /api/initiate
+ *
+ * ElevenLabs conversation initiation webhook. Called by ElevenLabs before
+ * every inbound call to fetch dynamic variables for the agent prompt.
+ *
+ * ElevenLabs sends { agent_id, ... } in the body. We look up the clinic
+ * via voice_agents.elevenlabs_agent_id and return the clinic's variables.
+ */
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => ({}))
-  console.log('ElevenLabs initiate webhook called:', JSON.stringify(body))
+  let body: Record<string, unknown>
+  try {
+    body = await req.json().catch(() => ({}))
+  } catch {
+    body = {}
+  }
+
+  console.log('[/api/initiate] Webhook called:', JSON.stringify({
+    agent_id: body.agent_id ?? null,
+    phone_number_id: body.phone_number_id ?? null,
+  }))
+
+  const supabase = getServiceSupabase()
+  const agentId = (body.agent_id as string) ?? null
+
+  // Resolve clinic from agent_id → voice_agents → clinics
+  let clinic: Record<string, unknown> | null = null
+
+  if (agentId) {
+    const { data: voiceAgent } = await supabase
+      .from('voice_agents')
+      .select('clinic_id')
+      .eq('elevenlabs_agent_id', agentId)
+      .limit(1)
+      .maybeSingle()
+
+    if (voiceAgent?.clinic_id) {
+      const { data } = await supabase
+        .from('clinics')
+        .select(CLINIC_SELECT_FIELDS)
+        .eq('id', voiceAgent.clinic_id)
+        .single()
+      clinic = data as Record<string, unknown> | null
+    }
+  }
+
+  if (!clinic) {
+    console.error('[/api/initiate] Could not resolve clinic for agent_id:', agentId)
+    return NextResponse.json({
+      type: 'conversation_initiation_client_data',
+      dynamic_variables: {},
+    })
+  }
 
   return NextResponse.json({
-    type: "conversation_initiation_client_data",
-    dynamic_variables: {
-      clinic_name: "Baulkham Hills Veterinary Hospital",
-      clinic_id: "clinic001",
-      clinic_phone: "02 9639 6399",
-      clinic_address: "332 Windsor Rd, Baulkham Hills NSW 2153",
-      clinic_hours: "Monday to Friday 8am to 7pm, Saturday 9am to 5pm, Sunday 9am to 5pm",
-      clinic_services: "wellness consultations, vaccinations, microchipping, desexing, dental care, surgery",
-      emergency_partner_name: "Animal Referral Hospital",
-      emergency_partner_address: "19 Old Northern Road, Baulkham Hills",
-      emergency_partner_phone: "02 9639 7744",
-    }
+    type: 'conversation_initiation_client_data',
+    dynamic_variables: buildDynamicVariables(clinic),
   })
 }

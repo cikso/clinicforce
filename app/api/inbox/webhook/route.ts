@@ -1,27 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { getServiceSupabase, normaliseAustralianPhone } from '@/lib/voice/shared'
 
 export const preferredRegion = 'syd1'
-
-function getSupabase() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) return null
-  return createClient(url, key)
-}
-
-// ── Agent → vertical mapping ──────────────────────────────────────────────────
-const AGENT_VERTICAL_MAP: Record<string, string> = {
-  ...(process.env.ELEVENLABS_AGENT_ID_VET    ? { [process.env.ELEVENLABS_AGENT_ID_VET]:    'vet'    } : {}),
-  ...(process.env.ELEVENLABS_AGENT_ID_DENTAL ? { [process.env.ELEVENLABS_AGENT_ID_DENTAL]: 'dental' } : {}),
-  ...(process.env.ELEVENLABS_AGENT_ID_GP     ? { [process.env.ELEVENLABS_AGENT_ID_GP]:     'gp'     } : {}),
-  ...(process.env.ELEVENLABS_AGENT_ID_CHIRO  ? { [process.env.ELEVENLABS_AGENT_ID_CHIRO]:  'chiro'  } : {}),
-}
-
-function resolveVertical(agentId: string | null | undefined): string {
-  if (!agentId) return 'vet'
-  return AGENT_VERTICAL_MAP[agentId] ?? 'vet'
-}
 
 // ── Coverage reason labels ───────────────────────────────────────────────────
 const COVERAGE_LABELS: Record<string, string> = {
@@ -31,27 +11,8 @@ const COVERAGE_LABELS: Record<string, string> = {
   emergency_only: 'Emergency Only',
 }
 
-// ─── Phone normalisation ──────────────────────────────────────────────────────
-function normaliseAustralianPhone(raw: string): string {
-  if (!raw || raw === '—') return '—'
-  const digits = raw.replace(/\D/g, '')
-  const local = digits.startsWith('61') && digits.length === 11
-    ? '0' + digits.slice(2)
-    : digits
-  if (local.startsWith('04') && local.length === 10) {
-    return `${local.slice(0, 4)} ${local.slice(4, 7)} ${local.slice(7)}`
-  }
-  if (local.startsWith('0') && local.length === 10) {
-    return `(${local.slice(0, 2)}) ${local.slice(2, 6)} ${local.slice(6)}`
-  }
-  return local
-}
-
 export async function POST(req: NextRequest) {
-  const supabase = getSupabase()
-  if (!supabase) {
-    return NextResponse.json({ error: 'Supabase env vars are not configured' }, { status: 500 })
-  }
+  const supabase = getServiceSupabase()
 
   let body: Record<string, unknown>
   try {
@@ -66,8 +27,6 @@ export async function POST(req: NextRequest) {
   }
 
   const agentId      = (body.agent_id as string) ?? null
-  const vertical     = resolveVertical(agentId)
-
   const payload      = (body.data as Record<string, unknown>) ?? body
   const conversationId = (payload.conversation_id as string) ?? null
   const metadata     = (payload.metadata as Record<string, unknown>) ?? {}
@@ -78,25 +37,55 @@ export async function POST(req: NextRequest) {
   // ── Resolve clinic from Twilio "To" number ────────────────────────────────
   const toNumber = (phoneCall.to as string) ?? (body.to as string) ?? null
 
-  if (!toNumber) {
-    console.error('[inbox/webhook] No Twilio To number found in payload')
-    return NextResponse.json({ error: 'Unknown agent phone number' }, { status: 400 })
+  // Try resolving clinic via phone number first, then via agent_id
+  let clinicId: string | null = null
+  let coverageReason: string | null = null
+  let vertical: string = 'vet'
+
+  if (toNumber) {
+    const { data: voiceAgent } = await supabase
+      .from('voice_agents')
+      .select('clinic_id, mode, elevenlabs_agent_id')
+      .eq('twilio_phone_number', toNumber)
+      .limit(1)
+      .maybeSingle()
+
+    if (voiceAgent?.clinic_id) {
+      clinicId = voiceAgent.clinic_id
+      coverageReason = COVERAGE_LABELS[voiceAgent.mode as string] ?? null
+    }
   }
 
-  const { data: voiceAgent, error: vaError } = await supabase
-    .from('voice_agents')
-    .select('clinic_id, mode')
-    .eq('twilio_phone_number', toNumber)
-    .limit(1)
-    .maybeSingle()
+  // Fallback: resolve via agent_id if phone lookup failed
+  if (!clinicId && agentId) {
+    const { data: voiceAgent } = await supabase
+      .from('voice_agents')
+      .select('clinic_id, mode')
+      .eq('elevenlabs_agent_id', agentId)
+      .limit(1)
+      .maybeSingle()
 
-  if (vaError || !voiceAgent?.clinic_id) {
-    console.error('[inbox/webhook] No voice_agent matched phone number:', toNumber, vaError)
-    return NextResponse.json({ error: 'Unknown agent phone number' }, { status: 400 })
+    if (voiceAgent?.clinic_id) {
+      clinicId = voiceAgent.clinic_id
+      coverageReason = COVERAGE_LABELS[voiceAgent.mode as string] ?? null
+    }
   }
 
-  const clinicId = voiceAgent.clinic_id
-  const coverageReason = COVERAGE_LABELS[voiceAgent.mode as string] ?? null
+  if (!clinicId) {
+    console.error('[inbox/webhook] Could not resolve clinic. to:', toNumber, 'agent_id:', agentId)
+    return NextResponse.json({ error: 'Could not resolve clinic' }, { status: 400 })
+  }
+
+  // Resolve vertical from clinic record
+  const { data: clinicRecord } = await supabase
+    .from('clinics')
+    .select('vertical')
+    .eq('id', clinicId)
+    .single()
+
+  if (clinicRecord?.vertical) {
+    vertical = clinicRecord.vertical as string
+  }
 
   const callDurationSecs =
     (metadata.call_duration_secs as number) ??

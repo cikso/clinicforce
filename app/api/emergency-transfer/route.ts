@@ -1,34 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-function validateSecret(req: NextRequest): boolean {
-  const secret = req.headers.get('x-api-secret')
-  return !!secret && secret === process.env.ELEVENLABS_TOOL_SECRET
-}
+import { validateSecret, getServiceSupabase } from '@/lib/voice/shared'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/emergency-transfer
 //
-// Called by ElevenLabs webhook tool `emergency_transfer` when the caller
-// confirms they want to be connected to the emergency partner clinic.
+// Called by ElevenLabs when the caller confirms they want to be connected
+// to the emergency partner clinic.
 //
-// ElevenLabs auto-fills the parameters from dynamic variables:
-//   emergency_partner_phone  ← {{emergency_partner_phone}} (per-clinic from initiation webhook)
+// ElevenLabs passes:
+//   emergency_partner_phone  ← {{emergency_partner_phone}} (per-clinic)
 //   clinic_name              ← {{clinic_name}}
+//   clinic_id                ← {{clinic_id}}
 //
 // This route:
-//   1. Finds the active in-progress Twilio call to our number
-//   2. Redirects it to the clinic's emergency partner via Twilio REST API
-//   3. ElevenLabs detects the stream ended and closes the conversation gracefully
-//
-// ─── Enterprise multi-clinic note ────────────────────────────────────────────
-// TWILIO_PHONE_NUMBER is the single ElevenLabs/Twilio number. For multi-number
-// deployments, pass `called_number` as a system-provided tool parameter and use
-// it to identify which Twilio number to query.
+//   1. Resolves the Twilio number for this clinic from voice_agents
+//   2. Finds the active in-progress Twilio call to that number
+//   3. Redirects it to the clinic's emergency partner
 // ─────────────────────────────────────────────────────────────────────────────
 
 type TransferBody = {
   emergency_partner_phone?: string
   clinic_name?: string
+  clinic_id?: string
 }
 
 function getCredentials() {
@@ -43,7 +36,6 @@ function toE164(phone: string): string {
   const digits = phone.replace(/\D/g, '')
   if (digits.startsWith('61') && digits.length >= 11) return `+${digits}`
   if (digits.startsWith('0')  && digits.length === 10) return `+61${digits.slice(1)}`
-  // Bare 9-digit Australian number without leading 0
   if (digits.length === 9 && !digits.startsWith('0')) return `+61${digits}`
   return `+${digits}`
 }
@@ -62,18 +54,46 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  console.log('[/api/emergency-transfer] Incoming body:', JSON.stringify(body))
+  const rawEmergencyPhone = body.emergency_partner_phone
+  const clinicName        = body.clinic_name ?? 'Unknown clinic'
+  const clinicId          = body.clinic_id
 
-  // Fallback to Baulkham Hills emergency partner if ElevenLabs doesn't pass the value
-  const rawEmergencyPhone = body.emergency_partner_phone ?? '0296397744'
-  const clinicName        = body.clinic_name ?? 'Baulkham Hills Veterinary Hospital'
+  if (!rawEmergencyPhone) {
+    console.error('[/api/emergency-transfer] No emergency_partner_phone provided')
+    return NextResponse.json({ success: false, error: 'Missing emergency_partner_phone' }, { status: 400 })
+  }
 
   try {
     const { sid, authorization } = getCredentials()
-    const ourNumber = toE164(process.env.TWILIO_PHONE_NUMBER ?? '+61253005033')
+
+    // Resolve the Twilio number for this clinic from voice_agents
+    let ourNumber: string | null = null
+
+    if (clinicId) {
+      const supabase = getServiceSupabase()
+      const { data: voiceAgent } = await supabase
+        .from('voice_agents')
+        .select('twilio_phone_number')
+        .eq('clinic_id', clinicId)
+        .limit(1)
+        .maybeSingle()
+      if (voiceAgent?.twilio_phone_number) {
+        ourNumber = toE164(voiceAgent.twilio_phone_number)
+      }
+    }
+
+    // Fallback to env var if clinic lookup didn't return a number
+    if (!ourNumber && process.env.TWILIO_PHONE_NUMBER) {
+      ourNumber = toE164(process.env.TWILIO_PHONE_NUMBER)
+    }
+
+    if (!ourNumber) {
+      return NextResponse.json({ success: false, error: 'No Twilio number found for clinic' }, { status: 400 })
+    }
+
     const emergencyPhone = toE164(rawEmergencyPhone)
 
-    // ── Step 1: Find the active inbound call to our Twilio number ──────────
+    // Find the active inbound call to our Twilio number
     const listUrl =
       `https://api.twilio.com/2010-04-01/Accounts/${sid}/Calls.json` +
       `?To=${encodeURIComponent(ourNumber)}&Status=in-progress&PageSize=5`
@@ -98,9 +118,7 @@ export async function POST(req: NextRequest) {
 
     const callSid = activeCalls[0].sid
 
-    // ── Step 2: Redirect the call to the emergency partner ─────────────────
-    // Twilio executes the new TwiML immediately, pulling the caller out of the
-    // ElevenLabs conference and connecting them to the emergency number.
+    // Redirect the call to the emergency partner
     const twiml = `<Response><Dial timeout="30" callerId="${ourNumber}">${emergencyPhone}</Dial></Response>`
 
     const updateRes = await fetch(
@@ -122,7 +140,7 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(
-      `[/api/emergency-transfer] ✅ Call ${callSid} transferred to ${emergencyPhone} for ${clinicName}`,
+      `[/api/emergency-transfer] Call ${callSid} transferred to ${emergencyPhone} for ${clinicName}`,
     )
 
     return NextResponse.json({

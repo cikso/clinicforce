@@ -1,39 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
+import {
+  getServiceSupabase,
+  validateSecret,
+  normaliseAustralianPhone,
+  resolveClinicId,
+} from '@/lib/voice/shared'
 
 export const preferredRegion = 'syd1'
-
-function validateSecret(req: NextRequest): boolean {
-  const secret = req.headers.get('x-api-secret')
-  return !!secret && secret === process.env.ELEVENLABS_TOOL_SECRET
-}
-
-function getSupabase() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  return createClient(url, key)
-}
-
-// ─── Phone normalisation ──────────────────────────────────────────────────────
-function normaliseAustralianPhone(raw: string): string {
-  if (!raw || raw === '—') return '—'
-  const digits = raw.replace(/\D/g, '')
-  // Convert +61 international to local 0x format
-  const local = digits.startsWith('61') && digits.length === 11
-    ? '0' + digits.slice(2)
-    : digits
-  // Mobile: 04XX XXX XXX
-  if (local.startsWith('04') && local.length === 10) {
-    return `${local.slice(0, 4)} ${local.slice(4, 7)} ${local.slice(7)}`
-  }
-  // Landline: (0X) XXXX XXXX
-  if (local.startsWith('0') && local.length === 10) {
-    return `(${local.slice(0, 2)}) ${local.slice(2, 6)} ${local.slice(6)}`
-  }
-  // Return cleaned digits if format not recognised
-  return local
-}
 
 function mapUrgency(raw: string | undefined): 'CRITICAL' | 'URGENT' | 'ROUTINE' {
   const u = (raw ?? '').toLowerCase()
@@ -48,46 +22,7 @@ function actionFromUrgency(urgency: 'CRITICAL' | 'URGENT' | 'ROUTINE'): string {
   return 'Review and action when available'
 }
 
-// Default clinic — used when ElevenLabs tools don't pass clinic_id/clinic_name.
-// Safe for single-clinic deployments; multi-tenant will pass the value explicitly.
-const DEFAULT_CLINIC_ID = '2a35d093-803a-44fd-927a-075511f57736'
-
-/** Resolve clinic_id from body, falling back to the default clinic. */
-async function resolveClinicId(
-  supabase: ReturnType<typeof getSupabase>,
-  body: Record<string, unknown>,
-): Promise<string> {
-  if (typeof body.clinic_id === 'string' && body.clinic_id) return body.clinic_id
-
-  if (typeof body.clinic_name === 'string' && body.clinic_name) {
-    const { data } = await supabase
-      .from('clinics')
-      .select('id')
-      .eq('name', body.clinic_name)
-      .limit(1)
-      .maybeSingle()
-    if (data?.id) return data.id as string
-  }
-
-  return DEFAULT_CLINIC_ID
-}
-
 // ─── POST /api/callback ───────────────────────────────────────────────────────
-// Called by Sarah (ElevenLabs) when she invokes the create_callback_request tool
-// during a live call.
-//
-// Expected body:
-//   clinic_name   string
-//   clinic_id     string  (optional — preferred for multi-tenant resolution)
-//   owner_name    string
-//   pet_name      string  (optional)
-//   species       string  (optional)
-//   phone_number  string  (required)
-//   urgency       "routine" | "urgent" | "emergency"
-//   summary       string
-//
-// Writes to: call_inbox (Supabase)
-// ─────────────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   if (!validateSecret(req)) {
     console.error('[/api/callback] 401 — invalid or missing x-api-secret')
@@ -102,17 +37,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  // Traffic Cop: ignore post-call webhooks so they do not create duplicate rows.
+  // Ignore post-call webhooks to avoid duplicate rows
   if (body.type === 'post_call_transcription' || body.type === 'post_call_audio') {
     return NextResponse.json({ success: true, skipped: true }, { status: 200 })
   }
 
-  console.log('[/api/callback] Incoming body:', JSON.stringify(body, null, 2))
-
   try {
-    const supabase = getSupabase()
+    const supabase = getServiceSupabase()
 
     const clinicId = await resolveClinicId(supabase, body)
+    if (!clinicId) {
+      console.error('[/api/callback] Could not resolve clinic from body:', {
+        clinic_id: body.clinic_id, clinic_name: body.clinic_name,
+      })
+      return NextResponse.json({ success: false, error: 'Could not resolve clinic' }, { status: 400 })
+    }
 
     const owner_name   = (body.owner_name   as string | undefined) ?? 'Unknown caller'
     const rawPhone     = (body.phone_number as string | undefined) ?? '—'
@@ -157,7 +96,7 @@ export async function POST(req: NextRequest) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            content: `🚨 VETFORCE URGENT 🚨 Webhook failed to save to Supabase! Error: ${message}`,
+            content: `Webhook failed to save to Supabase! Error: ${message}`,
           }),
         })
       } catch (discordError) {
@@ -177,7 +116,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const supabase = getSupabase()
+    const supabase = getServiceSupabase()
 
     const { data, error } = await supabase
       .from('call_inbox')
