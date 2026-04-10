@@ -34,8 +34,12 @@ export async function notifySlack(label: string, error: unknown): Promise<void> 
   try {
     // Dynamic import avoids bundling @trigger.dev/sdk into the Next.js
     // Turbopack build — the SDK is heavy (OpenTelemetry, ws, etc.) and
-    // only the Trigger.dev CLI should bundle it.
-    const { tasks } = await import('@trigger.dev/sdk/v3')
+    // only the Trigger.dev CLI should bundle it. The module specifier is
+    // built at runtime so TypeScript doesn't try to resolve the types
+    // during the Next.js type-check pass.
+    const sdkPath = ['@trigger.dev', 'sdk', 'v3'].join('/')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { tasks } = await (import(sdkPath) as Promise<any>)
     await tasks.trigger('notify-error', {
       label,
       message: error instanceof Error ? error.message : String(error),
