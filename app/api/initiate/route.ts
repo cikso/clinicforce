@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => ({}))
+  console.log('ElevenLabs initiate webhook called:', JSON.stringify(body))
+
   return NextResponse.json({
+    type: "conversation_initiation_client_data",
     dynamic_variables: {
       clinic_name: "Baulkham Hills Veterinary Hospital",
       clinic_id: "clinic001",
