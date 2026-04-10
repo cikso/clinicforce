@@ -5,6 +5,7 @@ import {
   normaliseAustralianPhone,
   resolveClinicId,
 } from '@/lib/voice/shared'
+import { withRetry } from '@/lib/utils/withRetry'
 
 // ─── POST /api/flag-urgent ────────────────────────────────────────────────────
 // Called by ElevenLabs when flagging a call as urgent/critical.
@@ -41,25 +42,24 @@ export async function POST(req: NextRequest) {
 
     const phone_number = normaliseAustralianPhone(rawPhone)
 
-    const { error } = await supabase
-      .from('call_inbox')
-      .insert({
-        clinic_id:       clinicId,
-        caller_name:     owner_name,
-        caller_phone:    phone_number,
-        pet_name,
-        pet_species:     species,
-        summary:         summary.slice(0, 300),
-        ai_detail:       summary,
-        action_required: 'URGENT — immediate callback required',
-        urgency:         'CRITICAL',
-        status:          'UNREAD',
-      })
+    await withRetry(async () => {
+      const { error } = await supabase
+        .from('call_inbox')
+        .insert({
+          clinic_id:       clinicId,
+          caller_name:     owner_name,
+          caller_phone:    phone_number,
+          pet_name,
+          pet_species:     species,
+          summary:         summary.slice(0, 300),
+          ai_detail:       summary,
+          action_required: 'URGENT — immediate callback required',
+          urgency:         'CRITICAL',
+          status:          'UNREAD',
+        })
 
-    if (error) {
-      console.error('[/api/flag-urgent] Supabase insert error:', error)
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
-    }
+      if (error) throw error
+    }, { label: 'flag-urgent/insert' })
 
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (err) {

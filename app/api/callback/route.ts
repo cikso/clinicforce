@@ -6,6 +6,7 @@ import {
   normaliseAustralianPhone,
   resolveClinicId,
 } from '@/lib/voice/shared'
+import { withRetry } from '@/lib/utils/withRetry'
 
 export const preferredRegion = 'syd1'
 
@@ -64,25 +65,24 @@ export async function POST(req: NextRequest) {
     const urgency        = mapUrgency(urgencyRaw)
     const actionRequired = actionFromUrgency(urgency)
 
-    const { error } = await supabase
-      .from('call_inbox')
-      .insert({
-        clinic_id:       clinicId,
-        caller_name:     owner_name,
-        caller_phone:    phone_number,
-        pet_name,
-        pet_species:     species,
-        summary:         summary.slice(0, 300),
-        ai_detail:       summary,
-        action_required: actionRequired,
-        urgency,
-        status:          'UNREAD',
-      })
+    await withRetry(async () => {
+      const { error } = await supabase
+        .from('call_inbox')
+        .insert({
+          clinic_id:       clinicId,
+          caller_name:     owner_name,
+          caller_phone:    phone_number,
+          pet_name,
+          pet_species:     species,
+          summary:         summary.slice(0, 300),
+          ai_detail:       summary,
+          action_required: actionRequired,
+          urgency,
+          status:          'UNREAD',
+        })
 
-    if (error) {
-      console.error('[/api/callback] Supabase insert error:', error)
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
-    }
+      if (error) throw error
+    }, { label: 'callback/insert' })
 
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (err) {

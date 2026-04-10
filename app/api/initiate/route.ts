@@ -4,6 +4,7 @@ import {
   buildDynamicVariables,
   CLINIC_SELECT_FIELDS,
 } from '@/lib/voice/shared'
+import { withRetry } from '@/lib/utils/withRetry'
 
 export const preferredRegion = 'syd1'
 
@@ -36,21 +37,23 @@ export async function POST(req: NextRequest) {
   let clinic: Record<string, unknown> | null = null
 
   if (agentId) {
-    const { data: voiceAgent } = await supabase
-      .from('voice_agents')
-      .select('clinic_id')
-      .eq('elevenlabs_agent_id', agentId)
-      .limit(1)
-      .maybeSingle()
+    clinic = await withRetry(async () => {
+      const { data: voiceAgent } = await supabase
+        .from('voice_agents')
+        .select('clinic_id')
+        .eq('elevenlabs_agent_id', agentId)
+        .limit(1)
+        .maybeSingle()
 
-    if (voiceAgent?.clinic_id) {
+      if (!voiceAgent?.clinic_id) return null
+
       const { data } = await supabase
         .from('clinics')
         .select(CLINIC_SELECT_FIELDS)
         .eq('id', voiceAgent.clinic_id)
         .single()
-      clinic = data as Record<string, unknown> | null
-    }
+      return data as Record<string, unknown> | null
+    }, { label: 'initiate/clinic-lookup' }).catch(() => null)
   }
 
   if (!clinic) {

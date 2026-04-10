@@ -39,6 +39,9 @@ export async function GET() {
   const elevenlabs_api_key = {
     status: process.env.ELEVENLABS_API_KEY ? 'ok' as const : 'missing' as const,
   }
+  const slack_webhook = {
+    status: process.env.SLACK_ALERT_WEBHOOK_URL ? 'ok' as const : 'missing' as const,
+  }
 
   // Overall status
   const dbDown = database.status === 'error'
@@ -52,7 +55,7 @@ export async function GET() {
       status,
       timestamp,
       version,
-      checks: { database, elevenlabs_secret, elevenlabs_api_key },
+      checks: { database, elevenlabs_secret, elevenlabs_api_key, slack_webhook },
     },
     { status: status === 'ok' ? 200 : 503 }
   )

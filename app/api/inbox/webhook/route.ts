@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase, normaliseAustralianPhone } from '@/lib/voice/shared'
+import { withRetry } from '@/lib/utils/withRetry'
 
 export const preferredRegion = 'syd1'
 
@@ -110,24 +111,26 @@ export async function POST(req: NextRequest) {
     if (exactMatch) {
       const enriched = extractCallerInfo(transcript, '—')
       const industryData = buildIndustryData(transcript)
-      const { error: updateErr } = await supabase
-        .from('call_inbox')
-        .update({
-          summary:               aiSummary.slice(0, 300),
-          ai_detail:             aiSummary,
-          call_duration_seconds: callDurationSecs,
-          urgency,
-          vertical,
-          coverage_reason:       coverageReason,
-          industry_data:         industryData,
-          ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
-          ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
-        })
-        .eq('id', exactMatch.id)
+      await withRetry(async () => {
+        const { error: updateErr } = await supabase
+          .from('call_inbox')
+          .update({
+            summary:               aiSummary.slice(0, 300),
+            ai_detail:             aiSummary,
+            call_duration_seconds: callDurationSecs,
+            urgency,
+            vertical,
+            coverage_reason:       coverageReason,
+            industry_data:         industryData,
+            ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
+            ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
+          })
+          .eq('id', exactMatch.id)
 
-      if (updateErr) {
-        console.error('[inbox/webhook] Update error (exact match):', updateErr)
-      }
+        if (updateErr) throw updateErr
+      }, { label: 'webhook/call-inbox-upsert' }).catch((err) => {
+        console.error('[inbox/webhook] Update error (exact match):', err)
+      })
       return NextResponse.json({ ok: true, action: 'updated_exact' })
     }
 
@@ -147,25 +150,27 @@ export async function POST(req: NextRequest) {
     if (recentMatch) {
       const enriched = extractCallerInfo(transcript, '—')
       const industryData = buildIndustryData(transcript)
-      const { error: updateErr } = await supabase
-        .from('call_inbox')
-        .update({
-          summary:                    aiSummary.slice(0, 300),
-          ai_detail:                  aiSummary,
-          call_duration_seconds:      callDurationSecs,
-          urgency,
-          vertical,
-          coverage_reason:            coverageReason,
-          industry_data:              industryData,
-          elevenlabs_conversation_id: conversationId,
-          ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
-          ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
-        })
-        .eq('id', recentMatch.id)
+      await withRetry(async () => {
+        const { error: updateErr } = await supabase
+          .from('call_inbox')
+          .update({
+            summary:                    aiSummary.slice(0, 300),
+            ai_detail:                  aiSummary,
+            call_duration_seconds:      callDurationSecs,
+            urgency,
+            vertical,
+            coverage_reason:            coverageReason,
+            industry_data:              industryData,
+            elevenlabs_conversation_id: conversationId,
+            ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
+            ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
+          })
+          .eq('id', recentMatch.id)
 
-      if (updateErr) {
-        console.error('[inbox/webhook] Update error (recent match):', updateErr)
-      }
+        if (updateErr) throw updateErr
+      }, { label: 'webhook/call-inbox-upsert' }).catch((err) => {
+        console.error('[inbox/webhook] Update error (recent match):', err)
+      })
       return NextResponse.json({ ok: true, action: 'updated_recent' })
     }
   }
@@ -184,31 +189,40 @@ export async function POST(req: NextRequest) {
     : urgency === 'URGENT'  ? 'Call back today to follow up'
     :                         'Review and action when available'
 
-  const { data: newRow, error: insertErr } = await supabase
-    .from('call_inbox')
-    .insert({
-      clinic_id:                  clinicId,
-      caller_name:                callerInfo.name,
-      caller_phone:               callerInfo.phone,
-      pet_name:                   callerInfo.petName,
-      pet_species:                callerInfo.petSpecies,
-      industry_data:              industryData,
-      summary:                    aiSummary.slice(0, 300),
-      ai_detail:                  aiSummary,
-      action_required:            actionRequired,
-      urgency,
-      vertical,
-      coverage_reason:            coverageReason,
-      status:                     'UNREAD',
-      call_duration_seconds:      callDurationSecs,
-      elevenlabs_conversation_id: conversationId,
-    })
-    .select('id')
-    .single()
+  let newRow: { id: string } | null = null
 
-  if (insertErr) {
-    console.error('[inbox/webhook] Insert error:', insertErr)
-    return NextResponse.json({ error: insertErr.message }, { status: 500 })
+  try {
+    const result = await withRetry(async () => {
+      const { data, error: insertErr } = await supabase
+        .from('call_inbox')
+        .insert({
+          clinic_id:                  clinicId,
+          caller_name:                callerInfo.name,
+          caller_phone:               callerInfo.phone,
+          pet_name:                   callerInfo.petName,
+          pet_species:                callerInfo.petSpecies,
+          industry_data:              industryData,
+          summary:                    aiSummary.slice(0, 300),
+          ai_detail:                  aiSummary,
+          action_required:            actionRequired,
+          urgency,
+          vertical,
+          coverage_reason:            coverageReason,
+          status:                     'UNREAD',
+          call_duration_seconds:      callDurationSecs,
+          elevenlabs_conversation_id: conversationId,
+        })
+        .select('id')
+        .single()
+
+      if (insertErr) throw insertErr
+      return data
+    }, { label: 'webhook/call-inbox-upsert' })
+    newRow = result
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[inbox/webhook] Insert error:', msg)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 
   // ── Auto-create task for calls needing follow-up ────────────────
