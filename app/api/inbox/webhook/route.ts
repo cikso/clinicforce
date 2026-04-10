@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServiceSupabase, normaliseAustralianPhone } from '@/lib/voice/shared'
+import { getServiceSupabase, normaliseAustralianPhone, validateSecret } from '@/lib/voice/shared'
 import { withRetry } from '@/lib/utils/withRetry'
 
 export const preferredRegion = 'syd1'
@@ -13,6 +13,11 @@ const COVERAGE_LABELS: Record<string, string> = {
 }
 
 export async function POST(req: NextRequest) {
+  if (!validateSecret(req)) {
+    console.error('[inbox/webhook] 401 — invalid or missing x-api-secret')
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const supabase = getServiceSupabase()
 
   let body: Record<string, unknown>

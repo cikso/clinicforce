@@ -16,6 +16,7 @@ export const notifyErrorTask = task({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
+      signal: AbortSignal.timeout(10_000),
     });
 
     return { sent: true };

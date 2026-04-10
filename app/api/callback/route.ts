@@ -98,6 +98,7 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify({
             content: `Webhook failed to save to Supabase! Error: ${message}`,
           }),
+          signal: AbortSignal.timeout(5_000),
         })
       } catch (discordError) {
         console.error('[/api/callback] Failed to send Discord alert:', discordError)

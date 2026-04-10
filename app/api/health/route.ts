@@ -16,7 +16,7 @@ export async function GET() {
       { auth: { autoRefreshToken: false, persistSession: false } }
     )
     const start = performance.now()
-    const { error } = await supabase.from('clinics').select('id').limit(1).single()
+    const { error } = await supabase.from('clinics').select('id').limit(1).maybeSingle()
     const latency_ms = Math.round(performance.now() - start)
 
     if (error) {

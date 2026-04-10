@@ -141,6 +141,7 @@ export async function POST(req: NextRequest) {
             dynamic_variables: dynamicVars,
           },
         }),
+        signal: AbortSignal.timeout(10_000),
       })
 
       if (!registerResponse.ok) {

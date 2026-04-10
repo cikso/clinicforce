@@ -3,6 +3,7 @@ import { classifyTriage } from '@/lib/brain/triage/classify'
 import { retrieveKbContext } from '@/lib/brain/kb/retrieve'
 import { getClinicConfig, formatClinicContext } from '@/lib/brain/clinic/get-clinic-config'
 import { sharedRules } from '@/lib/brain/prompts/shared-rules'
+import { validateSecret } from '@/lib/voice/shared'
 import OpenAI from 'openai'
 
 function getOpenAI() { return new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) }
@@ -25,6 +26,10 @@ export interface VoiceToolResponse {
 }
 
 export async function POST(req: NextRequest) {
+  if (!validateSecret(req)) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
     const body: VoiceToolRequest = await req.json()
     const { message, clinic_id } = body

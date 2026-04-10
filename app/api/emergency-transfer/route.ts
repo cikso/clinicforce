@@ -100,6 +100,7 @@ export async function POST(req: NextRequest) {
 
     const listRes = await fetch(listUrl, {
       headers: { Authorization: authorization },
+      signal: AbortSignal.timeout(10_000),
     })
 
     if (!listRes.ok) {
@@ -130,6 +131,7 @@ export async function POST(req: NextRequest) {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({ Twiml: twiml }).toString(),
+        signal: AbortSignal.timeout(10_000),
       },
     )
 

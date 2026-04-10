@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
 const VALID_MODES    = ['DAYTIME', 'LUNCH', 'AFTER_HOURS'] as const
 
@@ -44,9 +45,18 @@ export async function GET(_req: NextRequest, ctx: RouteCtx) {
 // PATCH /api/clinic/[clinicId]/mode
 // Body: { mode: 'DAYTIME' | 'LUNCH' | 'AFTER_HOURS' | null }
 export async function PATCH(req: NextRequest, ctx: RouteCtx) {
+  const profile = await getClinicProfile()
+  if (!profile?.clinicId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const { clinicId } = await ctx.params
   if (!clinicId) {
     return NextResponse.json({ error: 'Missing clinicId' }, { status: 400 })
+  }
+
+  if (profile.clinicId !== clinicId) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const body = await req.json().catch(() => ({}))
@@ -59,7 +69,10 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
       .from('coverage_sessions')
       .update({ status: 'INACTIVE', ended_at: now, updated_at: now })
       .eq('clinic_id', clinicId)
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) {
+      console.error('[clinic/mode] PATCH deactivate error:', error)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
     return NextResponse.json({ mode: null, activatedAt: null })
   }
 
@@ -81,6 +94,9 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
       { onConflict: 'clinic_id' },
     )
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    console.error('[clinic/mode] PATCH upsert error:', error)
+    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+  }
   return NextResponse.json({ mode, activatedAt: now })
 }

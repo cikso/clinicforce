@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { buildBrainContext, Channel } from '@/lib/brain/orchestrator'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
 function getOpenAI() { return new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) }
 
@@ -24,15 +25,20 @@ export interface ChatResponse {
 
 export async function POST(req: NextRequest) {
   try {
-    const body: ChatRequest = await req.json()
-    const { clinicId, message, history = [], channel = 'chat' } = body
+    const profile = await getClinicProfile()
+    if (!profile?.clinicId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
-    if (!clinicId || !message) {
-      return NextResponse.json({ error: 'Missing clinicId or message' }, { status: 400 })
+    const body: ChatRequest = await req.json()
+    const { message, history = [], channel = 'chat' } = body
+
+    if (!message) {
+      return NextResponse.json({ error: 'Missing message' }, { status: 400 })
     }
 
     // Build the master brain context
-    const brain = buildBrainContext(clinicId, message, channel)
+    const brain = buildBrainContext(profile.clinicId, message, channel)
 
     // Assemble the message thread
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [

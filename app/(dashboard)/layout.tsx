@@ -113,6 +113,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
       >
         <ToastProvider>
           <div className="h-screen flex overflow-hidden bg-[var(--bg-secondary)]">
+            <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-3 focus:bg-white focus:text-[var(--brand)] focus:rounded-md focus:shadow-lg">
+              Skip to content
+            </a>
             <DashboardSidebar
               clinicName={clinicName}
               userName={userName}
@@ -121,7 +124,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             />
             <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
               <DashboardTopbar userName={userName} />
-              <main className="flex-1 overflow-y-auto p-6 bg-[var(--bg-secondary)]">
+              <main id="main-content" className="flex-1 overflow-y-auto p-6 bg-[var(--bg-secondary)]">
                 {children}
               </main>
             </div>

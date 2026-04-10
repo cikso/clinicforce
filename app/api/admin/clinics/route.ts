@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
   )
 
   // Check slug uniqueness
-  const { data: existing } = await service.from('clinics').select('id').eq('slug', slug.trim()).single()
+  const { data: existing } = await service.from('clinics').select('id').eq('slug', slug.trim()).maybeSingle()
   if (existing) {
     return NextResponse.json({ error: 'This slug is already taken. Choose a different one.' }, { status: 409 })
   }

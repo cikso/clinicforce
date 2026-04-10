@@ -57,6 +57,7 @@ export default function DashboardTopbar({ userName }: DashboardTopbarProps) {
         <input
           type="text"
           placeholder="Search calls, patients..."
+          aria-label="Search calls, patients"
           className="bg-transparent text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] w-full outline-none"
         />
       </div>
@@ -74,7 +75,7 @@ export default function DashboardTopbar({ userName }: DashboardTopbarProps) {
       </button>
 
       {/* Notification bell */}
-      <button className="relative p-2 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]">
+      <button className="relative p-2 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]" aria-label="Notifications">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M13.5 6.5a4.5 4.5 0 1 0-9 0c0 5-2 6.5-2 6.5h13s-2-1.5-2-6.5" />
           <path d="M10.3 15a1.5 1.5 0 0 1-2.6 0" />
@@ -98,6 +99,7 @@ export default function DashboardTopbar({ userName }: DashboardTopbarProps) {
             <input
               type="text"
               placeholder="Search calls, patients..."
+              aria-label="Search calls, patients"
               className="bg-transparent text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] w-full outline-none"
               autoFocus
             />

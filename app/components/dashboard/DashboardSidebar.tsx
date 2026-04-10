@@ -221,6 +221,7 @@ export default function DashboardSidebar({
         onClick={() => setMobileOpen(true)}
         className="fixed top-3 left-3 z-50 p-2 rounded-lg bg-white border border-[var(--border)] shadow-sm md:hidden"
         aria-label="Open menu"
+        aria-expanded={mobileOpen}
       >
         {icons.menu}
       </button>
@@ -235,6 +236,8 @@ export default function DashboardSidebar({
 
       {/* Mobile drawer */}
       <aside
+        role={mobileOpen ? 'dialog' : undefined}
+        aria-modal={mobileOpen ? true : undefined}
         className={cn(
           'fixed inset-y-0 left-0 z-50 w-[240px] bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col',
           'transform transition-transform duration-200 ease-in-out md:hidden',
