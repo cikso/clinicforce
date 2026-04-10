@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -114,10 +113,10 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
     setError(null)
 
     try {
-      const supabase = createClient()
-      const { error: sbError } = await supabase
-        .from('demo_requests')
-        .insert({
+      const res = await fetch('/api/demo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           name:        form.name.trim(),
           email:       form.email.trim().toLowerCase(),
           phone:       form.phone.trim() || null,
@@ -126,9 +125,13 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
           clinic_size: form.clinic_size,
           message:     form.message.trim() || null,
           source:      'landing_page',
-        })
+        }),
+      })
 
-      if (sbError) throw new Error(sbError.message)
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Something went wrong')
+      }
       setSuccess(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')

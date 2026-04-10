@@ -6,6 +6,7 @@ import { getSubscription } from '@/lib/supabase/queries'
 import { createClient } from '@/lib/supabase/server'
 import DashboardSidebar from '@/app/components/dashboard/DashboardSidebar'
 import DashboardTopbar from '@/app/components/dashboard/DashboardTopbar'
+import { ToastProvider } from '@/app/components/ui/Toast'
 
 export const dynamic = 'force-dynamic'
 
@@ -104,20 +105,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
         isPlatformOwner={isPlatformOwner}
         industryConfig={industryConfig}
       >
-        <div className="h-screen flex overflow-hidden bg-[var(--bg-secondary)]">
-          <DashboardSidebar
-            clinicName={clinicName}
-            userName={userName}
-            pendingTaskCount={pendingTaskCount}
-            sarahStatus={sarahStatus}
-          />
-          <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-            <DashboardTopbar userName={userName} />
-            <main className="flex-1 overflow-y-auto p-6 bg-[var(--bg-secondary)]">
-              {children}
-            </main>
+        <ToastProvider>
+          <div className="h-screen flex overflow-hidden bg-[var(--bg-secondary)]">
+            <DashboardSidebar
+              clinicName={clinicName}
+              userName={userName}
+              pendingTaskCount={pendingTaskCount}
+              sarahStatus={sarahStatus}
+            />
+            <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
+              <DashboardTopbar userName={userName} />
+              <main className="flex-1 overflow-y-auto p-6 bg-[var(--bg-secondary)]">
+                {children}
+              </main>
+            </div>
           </div>
-        </div>
+        </ToastProvider>
       </ClinicProvider>
     </VerticalProvider>
   )

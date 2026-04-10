@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Card from '@/app/components/ui/Card'
 import Badge from '@/app/components/ui/Badge'
 import StatCard from '@/app/components/ui/StatCard'
@@ -45,6 +46,8 @@ function formatHour(h: number): string {
   if (h === 12) return '12 PM'
   return h < 12 ? `${h} AM` : `${h - 12} PM`
 }
+
+export const metadata: Metadata = { title: 'Bookings — ClinicForce' }
 
 export default function BookingsPage() {
   return (

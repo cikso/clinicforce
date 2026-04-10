@@ -1,9 +1,12 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 import ConversationsShell from '@/app/components/conversations/ConversationsShell'
+import { ConversationsSkeleton } from '@/app/components/ui/Skeleton'
 import { Suspense } from 'react'
 
+export const metadata: Metadata = { title: 'Conversations — ClinicForce' }
 export const dynamic = 'force-dynamic'
 
 async function ConversationsContent() {
@@ -68,11 +71,7 @@ async function ConversationsContent() {
 
 export default function ConversationsPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center h-[calc(100vh-56px)] -m-6">
-        <div className="text-[14px] text-[var(--text-secondary)]">Loading conversations...</div>
-      </div>
-    }>
+    <Suspense fallback={<ConversationsSkeleton />}>
       <ConversationsContent />
     </Suspense>
   )

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Card from '@/app/components/ui/Card'
 import Badge from '@/app/components/ui/Badge'
 import StatCard from '@/app/components/ui/StatCard'
@@ -45,6 +46,8 @@ const TEMPLATES = [
 ]
 
 /* ── Page ────────────────────────────────────────────────────────────────────── */
+
+export const metadata: Metadata = { title: 'SMS Hub — ClinicForce' }
 
 export default function SmsPage() {
   return (

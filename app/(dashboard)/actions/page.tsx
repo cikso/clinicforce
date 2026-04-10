@@ -1,8 +1,10 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 import ActionQueueList, { type TaskRow } from '@/app/components/actions/ActionQueueList'
 
+export const metadata: Metadata = { title: 'Action Queue — ClinicForce' }
 export const dynamic = 'force-dynamic'
 
 /* Sydney day bounds (reuse pattern from overview) */

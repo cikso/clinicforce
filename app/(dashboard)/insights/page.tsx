@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Card from '@/app/components/ui/Card'
 import StatCard from '@/app/components/ui/StatCard'
 import Badge from '@/app/components/ui/Badge'
@@ -75,6 +76,8 @@ function heatColor(val: number, max: number): string {
 }
 
 /* ── Page ────────────────────────────────────────────────────────────────────── */
+
+export const metadata: Metadata = { title: 'Insights — ClinicForce' }
 
 export default function InsightsPage() {
   const maxCalls = Math.max(...CALL_VOLUME.map((d) => d.calls))

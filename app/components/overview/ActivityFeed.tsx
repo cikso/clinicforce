@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Card from '@/app/components/ui/Card'
 import Badge from '@/app/components/ui/Badge'
 import Button from '@/app/components/ui/Button'
+import EmptyState from '@/app/components/ui/EmptyState'
 import { cn } from '@/lib/utils'
 
 interface CallRow {
@@ -63,7 +64,16 @@ export default function ActivityFeed({ calls, hasExtraFields }: ActivityFeedProp
       }}
     >
       {calls.length === 0 ? (
-        <p className="text-[14px] text-[var(--text-secondary)] text-center py-8">No calls recorded today.</p>
+        <EmptyState
+          icon={
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-tertiary)]">
+              <rect x="8" y="6" width="32" height="36" rx="4" />
+              <path d="M16 18h16M16 26h10" />
+            </svg>
+          }
+          title="No calls today"
+          description="When Sarah handles calls, they'll appear here."
+        />
       ) : (
         <div className="overflow-x-auto -mx-5">
           <table className="w-full min-w-[700px]">

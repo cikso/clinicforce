@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Card from '@/app/components/ui/Card'
 import Badge from '@/app/components/ui/Badge'
 import Button from '@/app/components/ui/Button'
@@ -124,6 +125,8 @@ function CategoryIcon({ icon }: { icon: string }) {
 }
 
 /* ── Page ────────────────────────────────────────────────────────────────────── */
+
+export const metadata: Metadata = { title: 'Knowledge Base — ClinicForce' }
 
 export default function KnowledgePage() {
   return (
