@@ -1,5 +1,3 @@
-import { tasks } from '@trigger.dev/sdk/v3'
-
 interface RetryOptions {
   retries?: number
   delayMs?: number
@@ -34,6 +32,10 @@ export async function withRetry<T>(
 
 export async function notifySlack(label: string, error: unknown): Promise<void> {
   try {
+    // Dynamic import avoids bundling @trigger.dev/sdk into the Next.js
+    // Turbopack build — the SDK is heavy (OpenTelemetry, ws, etc.) and
+    // only the Trigger.dev CLI should bundle it.
+    const { tasks } = await import('@trigger.dev/sdk/v3')
     await tasks.trigger('notify-error', {
       label,
       message: error instanceof Error ? error.message : String(error),

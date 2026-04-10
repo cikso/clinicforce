@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
-export const config = { runtime: 'nodejs' }
+export const runtime = 'nodejs'
 
 export async function GET() {
   const timestamp = new Date().toISOString()
