@@ -6,7 +6,7 @@ export const preferredRegion = 'syd1'
 
 function validateSecret(req: NextRequest): boolean {
   const secret = req.headers.get('x-api-secret')
-  return !!secret && secret === process.env.API_SECRET
+  return !!secret && secret === process.env.ELEVENLABS_TOOL_SECRET
 }
 
 function getSupabase() {
