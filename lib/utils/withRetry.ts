@@ -1,5 +1,4 @@
-// Required env var: SLACK_ALERT_WEBHOOK_URL (optional — alerts are silently
-// skipped if not set)
+import { tasks } from '@trigger.dev/sdk/v3'
 
 interface RetryOptions {
   retries?: number
@@ -34,23 +33,13 @@ export async function withRetry<T>(
 }
 
 export async function notifySlack(label: string, error: unknown): Promise<void> {
-  const webhookUrl = process.env.SLACK_ALERT_WEBHOOK_URL
-  if (!webhookUrl) {
-    console.error(`[notifySlack] SLACK_ALERT_WEBHOOK_URL not set — skipping alert for: ${label}`)
-    return
-  }
-
-  const msg = error instanceof Error ? error.message : String(error)
-
   try {
-    await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text: `🚨 ClinicForce API error — ${label}: ${msg}\nEnv: production\nTime: ${new Date().toISOString()}`,
-      }),
+    await tasks.trigger('notify-error', {
+      label,
+      message: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString(),
     })
   } catch (e) {
-    console.error('[notifySlack] Failed to send Slack alert:', e instanceof Error ? e.message : e)
+    console.error('[notifySlack] Failed to trigger notify-error task:', e instanceof Error ? e.message : e)
   }
 }
