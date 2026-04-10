@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+function validateSecret(req: NextRequest): boolean {
+  const secret = req.headers.get('x-api-secret')
+  return !!secret && secret === process.env.API_SECRET
+}
+
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -58,6 +63,11 @@ async function resolveClinicId(
 //   clinic_id     string  (optional — preferred for multi-tenant resolution)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  if (!validateSecret(req)) {
+    console.error('[/api/flag-urgent] 401 — invalid or missing x-api-secret')
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
+
   let body: Record<string, unknown>
 
   try {

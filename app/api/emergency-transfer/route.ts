@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+function validateSecret(req: NextRequest): boolean {
+  const secret = req.headers.get('x-api-secret')
+  return !!secret && secret === process.env.API_SECRET
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/emergency-transfer
 //
@@ -44,6 +49,11 @@ function toE164(phone: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  if (!validateSecret(req)) {
+    console.error('[/api/emergency-transfer] 401 — invalid or missing x-api-secret')
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
+
   let body: TransferBody
 
   try {
