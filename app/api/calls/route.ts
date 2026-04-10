@@ -120,6 +120,11 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'Missing id or status' }, { status: 400 })
     }
 
+    const ALLOWED_STATUSES = ['UNREAD', 'READ', 'ACTIONED', 'ARCHIVED']
+    if (!ALLOWED_STATUSES.includes(status)) {
+      return NextResponse.json({ error: 'Invalid status value' }, { status: 400 })
+    }
+
     const supabase = getSupabase()
     const { error } = await supabase
       .from('call_inbox')
@@ -127,7 +132,10 @@ export async function PATCH(req: Request) {
       .eq('id', id)
       .eq('clinic_id', profile.clinicId)
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) {
+      console.error('[/api/calls] PATCH Supabase error:', error)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
     return NextResponse.json({ success: true })
   } catch {
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })

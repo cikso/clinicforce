@@ -31,7 +31,7 @@ export async function GET() {
 
   if (error) {
     console.error('[inbox] GET error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Database error' }, { status: 500 })
   }
 
   // Map snake_case → camelCase for the frontend
@@ -72,6 +72,11 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'id and status required' }, { status: 400 })
   }
 
+  const ALLOWED_STATUSES = ['UNREAD', 'READ', 'ACTIONED', 'ARCHIVED']
+  if (!ALLOWED_STATUSES.includes(body.status)) {
+    return NextResponse.json({ error: 'Invalid status value' }, { status: 400 })
+  }
+
   const { error } = await supabase
     .from('call_inbox')
     .update({ status: body.status, updated_at: new Date().toISOString() })
@@ -80,7 +85,7 @@ export async function PATCH(req: NextRequest) {
 
   if (error) {
     console.error('[inbox] PATCH error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Database error' }, { status: 500 })
   }
 
   return NextResponse.json({ ok: true })

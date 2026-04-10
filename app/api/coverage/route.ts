@@ -63,7 +63,8 @@ export async function POST(req: Request) {
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('[/api/coverage] POST Supabase error:', error)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
     return NextResponse.json(data)
@@ -93,7 +94,8 @@ export async function DELETE() {
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('[/api/coverage] DELETE Supabase error:', error)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
     return NextResponse.json(data)

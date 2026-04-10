@@ -34,11 +34,24 @@ export async function POST(req: NextRequest) {
 
   const agentId      = (body.agent_id as string) ?? null
   const payload      = (body.data as Record<string, unknown>) ?? body
-  const conversationId = (payload.conversation_id as string) ?? null
+  const conversationId = (payload.conversation_id as string)
+    ?? (body.conversation_id as string)
+    ?? null
   const metadata     = (payload.metadata as Record<string, unknown>) ?? {}
   const phoneCall    = (metadata.phone_call as Record<string, unknown>) ?? {}
   const analysis     = (payload.analysis as Record<string, unknown>) ?? {}
+  const dataCollection = (analysis.data_collection as Record<string, unknown>) ?? {}
   const transcript   = (payload.transcript as Array<{ role: string; message: string }>) ?? []
+
+  console.log('[inbox/webhook] Pet-related payload fields:', JSON.stringify({
+    conversation_id: conversationId,
+    analysis_keys: Object.keys(analysis),
+    data_collection: dataCollection,
+    analysis_pet_name: analysis.pet_name ?? null,
+    analysis_species: analysis.species ?? null,
+    payload_pet_name: payload.pet_name ?? null,
+    payload_species: payload.species ?? null,
+  }))
 
   // ── Resolve clinic from Twilio "To" number ────────────────────────────────
   const toNumber = (phoneCall.to as string) ?? (body.to as string) ?? null
@@ -113,9 +126,11 @@ export async function POST(req: NextRequest) {
       .eq('clinic_id', clinicId)
       .maybeSingle()
 
+    const structured = { analysis, dataCollection, payload }
+
     if (exactMatch) {
-      const enriched = extractCallerInfo(transcript, '—')
-      const industryData = buildIndustryData(transcript)
+      const enriched = extractCallerInfo(transcript, '—', structured)
+      const industryData = buildIndustryData(transcript, structured)
       await withRetry(async () => {
         const { error: updateErr } = await supabase
           .from('call_inbox')
@@ -153,8 +168,8 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
 
     if (recentMatch) {
-      const enriched = extractCallerInfo(transcript, '—')
-      const industryData = buildIndustryData(transcript)
+      const enriched = extractCallerInfo(transcript, '—', structured)
+      const industryData = buildIndustryData(transcript, structured)
       await withRetry(async () => {
         const { error: updateErr } = await supabase
           .from('call_inbox')
@@ -186,8 +201,9 @@ export async function POST(req: NextRequest) {
     extractPhone(transcript.map(t => t.message).join(' ')) ??
     '—'
   const callerPhone = normaliseAustralianPhone(rawPhone)
-  const callerInfo  = extractCallerInfo(transcript, callerPhone)
-  const industryData = buildIndustryData(transcript)
+  const structured   = { analysis, dataCollection, payload }
+  const callerInfo   = extractCallerInfo(transcript, callerPhone, structured)
+  const industryData = buildIndustryData(transcript, structured)
 
   const actionRequired =
     urgency === 'CRITICAL' ? 'Urgent callback required — same-day assessment'
@@ -270,6 +286,20 @@ export async function POST(req: NextRequest) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/** Check analysis, data_collection, then payload for a non-empty string field */
+function resolveField(
+  keys: string[],
+  sources: { analysis: Record<string, unknown>; dataCollection: Record<string, unknown>; payload: Record<string, unknown> },
+): string | null {
+  for (const source of [sources.dataCollection, sources.analysis, sources.payload]) {
+    for (const key of keys) {
+      const val = source[key]
+      if (typeof val === 'string' && val.trim() && val !== '—') return val.trim()
+    }
+  }
+  return null
+}
+
 function buildFallbackSummary(transcript: Array<{ role: string; message: string }>): string {
   const userLines = transcript
     .filter(t => t.role === 'user')
@@ -278,25 +308,35 @@ function buildFallbackSummary(transcript: Array<{ role: string; message: string 
   return userLines.slice(0, 500) || 'No summary available.'
 }
 
-function buildIndustryData(transcript: Array<{ role: string; message: string }>) {
+function buildIndustryData(
+  transcript: Array<{ role: string; message: string }>,
+  structured: { analysis: Record<string, unknown>; dataCollection: Record<string, unknown>; payload: Record<string, unknown> },
+) {
   const fullText = transcript.map(t => t.message).join(' ')
+  const petName = resolveField(['pet_name'], structured) ?? extractPetName(fullText)
+  const petSpecies = resolveField(['species', 'pet_species'], structured) ?? extractPetSpecies(fullText)
+  const petBreed = resolveField(['pet_breed', 'breed'], structured) ?? extractPetBreed(fullText)
   return {
-    pet_name:    extractPetName(fullText) ?? null,
-    pet_species: extractPetSpecies(fullText) ?? null,
-    pet_breed:   extractPetBreed(fullText) ?? null,
+    pet_name:    petName ?? null,
+    pet_species: petSpecies ?? null,
+    pet_breed:   petBreed ?? null,
   }
 }
 
 function extractCallerInfo(
   transcript: Array<{ role: string; message: string }>,
   callerPhone: string,
+  structured: { analysis: Record<string, unknown>; dataCollection: Record<string, unknown>; payload: Record<string, unknown> },
 ) {
   const fullText = transcript.map(t => t.message).join(' ')
+  const name = resolveField(['caller_name', 'owner_name'], structured) ?? extractName(transcript) ?? 'Unknown caller'
+  const petName = resolveField(['pet_name'], structured) ?? extractPetName(fullText) ?? '—'
+  const petSpecies = resolveField(['species', 'pet_species'], structured) ?? extractPetSpecies(fullText) ?? '—'
   return {
-    name:       extractName(transcript) ?? 'Unknown caller',
+    name,
     phone:      callerPhone,
-    petName:    extractPetName(fullText) ?? '—',
-    petSpecies: extractPetSpecies(fullText) ?? '—',
+    petName,
+    petSpecies,
   }
 }
 

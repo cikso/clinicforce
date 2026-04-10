@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       console.error('[/api/log-referral] Supabase insert error:', error)
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+      return NextResponse.json({ success: false, error: 'Database error' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true }, { status: 200 })

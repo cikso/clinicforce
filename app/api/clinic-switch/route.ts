@@ -35,6 +35,8 @@ export async function POST(req: NextRequest) {
     path: '/',
     sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 30, // 30 days
+    secure: true,
+    httpOnly: true,
   })
 
   return NextResponse.json({ ok: true })
