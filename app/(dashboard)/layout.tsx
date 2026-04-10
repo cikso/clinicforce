@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { VerticalProvider } from '@/context/VerticalContext'
 import { ClinicProvider, type ClinicOption, type IndustryConfig } from '@/context/ClinicContext'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
@@ -11,6 +12,11 @@ import { ToastProvider } from '@/app/components/ui/Toast'
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  // Defence-in-depth: proxy.ts is the primary gate, this is the fallback
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
   const profile = await getClinicProfile()
 
   const userName   = profile?.userName   ?? 'Staff'
