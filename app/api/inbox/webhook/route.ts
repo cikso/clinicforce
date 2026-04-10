@@ -11,9 +11,6 @@ function getSupabase() {
 }
 
 // ── Agent → vertical mapping ──────────────────────────────────────────────────
-// ElevenLabs sends `agent_id` at the top level of every webhook payload.
-// Add a key per agent using env vars — never hardcode IDs in source.
-// Fallback: 'vet' (safe default if agent_id is missing or unmapped).
 const AGENT_VERTICAL_MAP: Record<string, string> = {
   ...(process.env.ELEVENLABS_AGENT_ID_VET    ? { [process.env.ELEVENLABS_AGENT_ID_VET]:    'vet'    } : {}),
   ...(process.env.ELEVENLABS_AGENT_ID_DENTAL ? { [process.env.ELEVENLABS_AGENT_ID_DENTAL]: 'dental' } : {}),
@@ -24,6 +21,14 @@ const AGENT_VERTICAL_MAP: Record<string, string> = {
 function resolveVertical(agentId: string | null | undefined): string {
   if (!agentId) return 'vet'
   return AGENT_VERTICAL_MAP[agentId] ?? 'vet'
+}
+
+// ── Coverage reason labels ───────────────────────────────────────────────────
+const COVERAGE_LABELS: Record<string, string> = {
+  all_calls:      'All Calls',
+  after_hours:    'After Hours',
+  overflow:       'Overflow',
+  emergency_only: 'Emergency Only',
 }
 
 // ─── Phone normalisation ──────────────────────────────────────────────────────
@@ -55,15 +60,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  // 🛑 THE SMART TRAFFIC COP 🛑
-  // Ignore audio and ping webhooks to prevent duplicate blank rows,
-  // but let the post_call_transcription through to update the summary!
+  // Ignore audio and ping webhooks
   if (body.type === 'ping' || body.type === 'post_call_audio') {
-    console.log('[inbox/webhook] Ignored background webhook:', body.type)
     return NextResponse.json({ ok: true, action: 'ignored' })
   }
 
-  // agent_id is top-level in the ElevenLabs payload (same level as `type`)
   const agentId      = (body.agent_id as string) ?? null
   const vertical     = resolveVertical(agentId)
 
@@ -74,9 +75,7 @@ export async function POST(req: NextRequest) {
   const analysis     = (payload.analysis as Record<string, unknown>) ?? {}
   const transcript   = (payload.transcript as Array<{ role: string; message: string }>) ?? []
 
-  // ── Resolve clinic from the Twilio "To" number ────────────────────────────
-  // ElevenLabs includes the called Twilio number in phone_call.to (E.164).
-  // We use this to look up which clinic owns that number in voice_agents.
+  // ── Resolve clinic from Twilio "To" number ────────────────────────────────
   const toNumber = (phoneCall.to as string) ?? (body.to as string) ?? null
 
   if (!toNumber) {
@@ -86,17 +85,18 @@ export async function POST(req: NextRequest) {
 
   const { data: voiceAgent, error: vaError } = await supabase
     .from('voice_agents')
-    .select('clinic_id')
+    .select('clinic_id, mode')
     .eq('twilio_phone_number', toNumber)
     .limit(1)
     .maybeSingle()
 
   if (vaError || !voiceAgent?.clinic_id) {
-    console.error('[inbox/webhook] No voice_agent matched phone number:', toNumber)
+    console.error('[inbox/webhook] No voice_agent matched phone number:', toNumber, vaError)
     return NextResponse.json({ error: 'Unknown agent phone number' }, { status: 400 })
   }
 
   const clinicId = voiceAgent.clinic_id
+  const coverageReason = COVERAGE_LABELS[voiceAgent.mode as string] ?? null
 
   const callDurationSecs =
     (metadata.call_duration_secs as number) ??
@@ -107,7 +107,6 @@ export async function POST(req: NextRequest) {
     (analysis.transcript_summary as string) ||
     buildFallbackSummary(transcript)
 
-  // ── Urgency: only check USER speech, not agent or AI summary ──
   const urgency = detectUrgency(transcript)
 
   // ── Step 1: Exact conversation_id match ───────────────────────
@@ -121,7 +120,8 @@ export async function POST(req: NextRequest) {
 
     if (exactMatch) {
       const enriched = extractCallerInfo(transcript, '—')
-      await supabase
+      const industryData = buildIndustryData(transcript)
+      const { error: updateErr } = await supabase
         .from('call_inbox')
         .update({
           summary:               aiSummary.slice(0, 300),
@@ -129,12 +129,16 @@ export async function POST(req: NextRequest) {
           call_duration_seconds: callDurationSecs,
           urgency,
           vertical,
+          coverage_reason:       coverageReason,
+          industry_data:         industryData,
           ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
           ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
         })
         .eq('id', exactMatch.id)
 
-      console.log('[inbox/webhook] Enriched exact match row:', exactMatch.id, '| vertical:', vertical)
+      if (updateErr) {
+        console.error('[inbox/webhook] Update error (exact match):', updateErr)
+      }
       return NextResponse.json({ ok: true, action: 'updated_exact' })
     }
 
@@ -153,7 +157,8 @@ export async function POST(req: NextRequest) {
 
     if (recentMatch) {
       const enriched = extractCallerInfo(transcript, '—')
-      await supabase
+      const industryData = buildIndustryData(transcript)
+      const { error: updateErr } = await supabase
         .from('call_inbox')
         .update({
           summary:                    aiSummary.slice(0, 300),
@@ -161,31 +166,36 @@ export async function POST(req: NextRequest) {
           call_duration_seconds:      callDurationSecs,
           urgency,
           vertical,
+          coverage_reason:            coverageReason,
+          industry_data:              industryData,
           elevenlabs_conversation_id: conversationId,
           ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
           ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
         })
         .eq('id', recentMatch.id)
 
-      console.log('[inbox/webhook] Enriched recent tool-created row:', recentMatch.id, '| vertical:', vertical)
+      if (updateErr) {
+        console.error('[inbox/webhook] Update error (recent match):', updateErr)
+      }
       return NextResponse.json({ ok: true, action: 'updated_recent' })
     }
   }
 
-  // ── Step 3: No match — insert new row (tool never fired) ──────
+  // ── Step 3: No match — insert new row ──────────────────────────
   const rawPhone   =
     (phoneCall.caller_id as string) ??
     extractPhone(transcript.map(t => t.message).join(' ')) ??
     '—'
   const callerPhone = normaliseAustralianPhone(rawPhone)
   const callerInfo  = extractCallerInfo(transcript, callerPhone)
+  const industryData = buildIndustryData(transcript)
 
   const actionRequired =
     urgency === 'CRITICAL' ? 'Urgent callback required — same-day assessment'
     : urgency === 'URGENT'  ? 'Call back today to follow up'
     :                         'Review and action when available'
 
-  const { error } = await supabase
+  const { data: newRow, error: insertErr } = await supabase
     .from('call_inbox')
     .insert({
       clinic_id:                  clinicId,
@@ -193,22 +203,60 @@ export async function POST(req: NextRequest) {
       caller_phone:               callerInfo.phone,
       pet_name:                   callerInfo.petName,
       pet_species:                callerInfo.petSpecies,
+      industry_data:              industryData,
       summary:                    aiSummary.slice(0, 300),
       ai_detail:                  aiSummary,
       action_required:            actionRequired,
       urgency,
       vertical,
+      coverage_reason:            coverageReason,
       status:                     'UNREAD',
       call_duration_seconds:      callDurationSecs,
       elevenlabs_conversation_id: conversationId,
     })
+    .select('id')
+    .single()
 
-  if (error) {
-    console.error('[inbox/webhook] Insert error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (insertErr) {
+    console.error('[inbox/webhook] Insert error:', insertErr)
+    return NextResponse.json({ error: insertErr.message }, { status: 500 })
   }
 
-  console.log('[inbox/webhook] Created new row (tool never fired)')
+  // ── Auto-create task for calls needing follow-up ────────────────
+  if (actionRequired && urgency !== 'ROUTINE') {
+    const taskPriority =
+      urgency === 'CRITICAL' ? 'URGENT' : urgency === 'URGENT' ? 'HIGH' : 'NORMAL'
+
+    const { error: taskErr } = await supabase.from('tasks').insert({
+      clinic_id:   clinicId,
+      title:       `Callback: ${callerInfo.name}`,
+      description: actionRequired,
+      type:        'CALLBACK',
+      priority:    taskPriority,
+      status:      'PENDING',
+    })
+
+    if (taskErr) {
+      console.error('[inbox/webhook] Task insert error:', taskErr)
+    }
+  }
+
+  // ── Log to activity_log ─────────────────────────────────────────
+  const { error: logErr } = await supabase.from('activity_log').insert({
+    clinic_id: clinicId,
+    type:      'CALL',
+    message:   `AI call from ${callerInfo.name}: ${aiSummary.slice(0, 120)}`,
+    metadata:  {
+      call_inbox_id:  newRow?.id ?? null,
+      urgency,
+      coverage_reason: coverageReason,
+    },
+  })
+
+  if (logErr) {
+    console.error('[inbox/webhook] Activity log insert error:', logErr)
+  }
+
   return NextResponse.json({ ok: true, action: 'inserted' })
 }
 
@@ -220,6 +268,15 @@ function buildFallbackSummary(transcript: Array<{ role: string; message: string 
     .map(t => t.message)
     .join(' ')
   return userLines.slice(0, 500) || 'No summary available.'
+}
+
+function buildIndustryData(transcript: Array<{ role: string; message: string }>) {
+  const fullText = transcript.map(t => t.message).join(' ')
+  return {
+    pet_name:    extractPetName(fullText) ?? null,
+    pet_species: extractPetSpecies(fullText) ?? null,
+    pet_breed:   extractPetBreed(fullText) ?? null,
+  }
 }
 
 function extractCallerInfo(
@@ -252,20 +309,16 @@ function extractPhone(text: string): string | null {
 }
 
 function extractPetName(text: string): string | null {
-  // "my dog Max" / "my cat, Bella" / "our rabbit named Thumper"
   let m = text.match(
     /\b(?:my|our|their)\s+(?:dog|cat|pet|rabbit|bird|puppy|kitten|guinea pig|hamster|horse|fish|lizard|snake|turtle)[,]?\s+(?:named?|called|is)?\s*([A-Z][a-zA-Z]+)/i,
   )
   if (m) return m[1]
-  // "his/her/its name is X" / "pet's name is X" / "the dog's name is X"
   m = text.match(
     /\b(?:his|her|its|the (?:dog|cat|bird|rabbit|pet|guinea pig|animal)'?s?)\s+name(?:\s+is)?\s+([A-Z][a-zA-Z]+)/i,
   )
   if (m) return m[1]
-  // "named X" or "called X" near a species word
   m = text.match(/\b(?:named?|called)\s+([A-Z][a-zA-Z]+)/i)
   if (m) return m[1]
-  // "their bird, Papppar" — animal followed by comma and capitalised name
   m = text.match(
     /\b(?:dog|cat|pet|rabbit|bird|puppy|kitten|guinea pig|hamster|horse)[,]\s+([A-Z][a-zA-Z]+)/i,
   )
@@ -282,7 +335,23 @@ function extractPetSpecies(text: string): string | null {
   return null
 }
 
-// ── Urgency detection — USER speech only, not agent or AI summary ─────────────
+function extractPetBreed(text: string): string | null {
+  const breeds = [
+    'labrador', 'golden retriever', 'german shepherd', 'bulldog', 'poodle',
+    'beagle', 'rottweiler', 'dachshund', 'boxer', 'cavalier', 'border collie',
+    'french bulldog', 'shih tzu', 'chihuahua', 'husky', 'maltese', 'pomeranian',
+    'staffy', 'staffordshire', 'kelpie', 'cattle dog', 'jack russell',
+    'persian', 'siamese', 'ragdoll', 'maine coon', 'british shorthair', 'bengal',
+    'burmese', 'russian blue', 'abyssinian', 'sphynx',
+  ]
+  const lower = text.toLowerCase()
+  for (const breed of breeds) {
+    if (lower.includes(breed)) return breed.charAt(0).toUpperCase() + breed.slice(1)
+  }
+  return null
+}
+
+// ── Urgency detection — USER speech only ────────────────────────────────────
 function detectUrgency(
   transcript: Array<{ role: string; message: string }>,
 ): 'CRITICAL' | 'URGENT' | 'ROUTINE' {

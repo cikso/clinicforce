@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
@@ -7,6 +8,7 @@ import CoverageControl, { type CoverageMode } from '@/app/components/overview/Co
 import ActionQueuePreview from '@/app/components/overview/ActionQueuePreview'
 import ActivityFeed from '@/app/components/overview/ActivityFeed'
 
+export const metadata: Metadata = { title: 'Command Centre — ClinicForce' }
 export const dynamic = 'force-dynamic'
 
 /* ─── Sydney timezone helpers (matches /api/stats) ─── */

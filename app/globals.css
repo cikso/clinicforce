@@ -80,6 +80,11 @@
   --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08);
 }
 
+/* Smooth scroll for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
 /* ClinicForce – Design system custom properties */
 :root {
   /* Backgrounds */

@@ -1,8 +1,10 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 import ClinicProfileClient from './ClinicProfileClient'
 
+export const metadata: Metadata = { title: 'Settings — ClinicForce' }
 export const dynamic = 'force-dynamic'
 
 export default async function ClinicProfilePage() {
