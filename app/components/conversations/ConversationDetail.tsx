@@ -120,8 +120,8 @@ export default function ConversationDetail({
   }
 
   const industryData = call.industry_data ?? {}
-  const petName = (industryData.pet_name as string) || '—'
-  const petSpecies = (industryData.pet_species as string) || '—'
+  const petName = call.pet_name || (industryData.pet_name as string) || '—'
+  const petSpecies = call.pet_species || (industryData.pet_species as string) || '—'
   const petBreed = (industryData.pet_breed as string) || 'Not specified'
   const urgencyBadge = URGENCY_BADGE[call.urgency] ?? URGENCY_BADGE.ROUTINE
   const statusBadge = STATUS_BADGE[status] ?? STATUS_BADGE.UNREAD
