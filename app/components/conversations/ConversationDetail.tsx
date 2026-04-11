@@ -68,12 +68,6 @@ const InfoCircleIcon = () => (
   </svg>
 )
 
-const ChatIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-tertiary)]">
-    <path d="M3 3h12a1.5 1.5 0 0 1 1.5 1.5v7A1.5 1.5 0 0 1 15 13H6l-3.5 3V4.5A1.5 1.5 0 0 1 3 3z" />
-  </svg>
-)
-
 /* ── Component ──────────────────────────────────────────────────────────────── */
 
 export default function ConversationDetail({
@@ -184,7 +178,7 @@ export default function ConversationDetail({
           <span className="block text-[9px] font-bold uppercase tracking-[1.5px] text-[var(--text-tertiary)] mb-2">AI Summary</span>
           <div className="rounded-xl bg-[#f0f9f8] p-[18px_20px]" style={{ borderLeft: '4px solid #009688' }}>
             <p className="text-[14px] font-medium text-[var(--text-primary)] leading-[1.65] whitespace-pre-wrap">
-              {call.summary || 'No summary available.'}
+              {call.ai_detail || call.summary || 'No summary available.'}
             </p>
           </div>
         </div>
@@ -225,30 +219,6 @@ export default function ConversationDetail({
           </div>
         </div>
 
-        {/* Section 4: Conversation Reference */}
-        <div>
-          <span className="block text-[9px] font-bold uppercase tracking-[1.5px] text-[var(--text-tertiary)] mb-2">Conversation Reference</span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <DetailCard
-              label="COVERAGE REASON"
-              value={call.coverage_reason || '—'}
-              sub="Why Sarah answered this call"
-            />
-            <div className="bg-white rounded-[10px] border border-[#eeeeed] p-4">
-              <div className="flex items-center gap-2 mb-1.5">
-                <ChatIcon />
-                <span className="text-[9px] font-bold uppercase tracking-[1px] text-[var(--text-tertiary)]">Conversation ID</span>
-              </div>
-              {call.elevenlabs_conversation_id ? (
-                <p className="text-[13px] font-medium text-[var(--text-primary)] font-mono break-all" style={{ fontFamily: 'Manrope, monospace' }}>
-                  {call.elevenlabs_conversation_id}
-                </p>
-              ) : (
-                <p className="text-[13px] italic text-[var(--text-tertiary)]">Not yet captured</p>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
