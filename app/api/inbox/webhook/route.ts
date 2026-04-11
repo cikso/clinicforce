@@ -16,7 +16,8 @@ export async function POST(req: NextRequest) {
   const rawBody = await req.text()
 
   // Try HMAC signature first, fall back to plain x-api-secret header
-  const signature = req.headers.get('x-elevenlabs-signature')
+  // ElevenLabs sends the signature as "ElevenLabs-Signature" (case-insensitive in fetch)
+  const signature = req.headers.get('ElevenLabs-Signature') ?? req.headers.get('elevenlabs-signature')
   const hmacValid = await validateWebhookHmac(signature, rawBody)
   const headerValid = validateSecret(req)
 
