@@ -125,6 +125,8 @@ export async function POST(req: NextRequest) {
 
   const urgency = detectUrgency(transcript)
 
+  const structured = { analysis, dataCollection, payload }
+
   // ── Step 1: Exact conversation_id match ───────────────────────
   if (conversationId) {
     const { data: exactMatch } = await supabase
@@ -133,8 +135,6 @@ export async function POST(req: NextRequest) {
       .eq('elevenlabs_conversation_id', conversationId)
       .eq('clinic_id', clinicId)
       .maybeSingle()
-
-    const structured = { analysis, dataCollection, payload }
 
     if (exactMatch) {
       const enriched = extractCallerInfo(transcript, '—', structured)
@@ -161,46 +161,46 @@ export async function POST(req: NextRequest) {
       })
       return NextResponse.json({ ok: true, action: 'updated_exact' })
     }
+  }
 
-    // ── Step 2: Recent tool-created row (no conversation_id, within 10 mins) ──
-    const tenMinsAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+  // ── Step 2: Recent tool-created row (no conversation_id, within 10 mins) ──
+  const tenMinsAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
 
-    const { data: recentMatch } = await supabase
-      .from('call_inbox')
-      .select('id')
-      .eq('clinic_id', clinicId)
-      .is('elevenlabs_conversation_id', null)
-      .gte('created_at', tenMinsAgo)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+  const { data: recentMatch } = await supabase
+    .from('call_inbox')
+    .select('id')
+    .eq('clinic_id', clinicId)
+    .is('elevenlabs_conversation_id', null)
+    .gte('created_at', tenMinsAgo)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
-    if (recentMatch) {
-      const enriched = extractCallerInfo(transcript, '—', structured)
-      const industryData = buildIndustryData(transcript, structured)
-      await withRetry(async () => {
-        const { error: updateErr } = await supabase
-          .from('call_inbox')
-          .update({
-            summary:                    aiSummary.slice(0, 300),
-            ai_detail:                  aiSummary,
-            call_duration_seconds:      callDurationSecs,
-            urgency,
-            vertical,
-            coverage_reason:            coverageReason,
-            industry_data:              industryData,
-            elevenlabs_conversation_id: conversationId,
-            ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
-            ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
-          })
-          .eq('id', recentMatch.id)
+  if (recentMatch) {
+    const enriched = extractCallerInfo(transcript, '—', structured)
+    const industryData = buildIndustryData(transcript, structured)
+    await withRetry(async () => {
+      const { error: updateErr } = await supabase
+        .from('call_inbox')
+        .update({
+          summary:                    aiSummary.slice(0, 300),
+          ai_detail:                  aiSummary,
+          call_duration_seconds:      callDurationSecs,
+          urgency,
+          vertical,
+          coverage_reason:            coverageReason,
+          industry_data:              industryData,
+          elevenlabs_conversation_id: conversationId,
+          ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
+          ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
+        })
+        .eq('id', recentMatch.id)
 
-        if (updateErr) throw updateErr
-      }, { label: 'webhook/call-inbox-upsert' }).catch((err) => {
-        console.error('[inbox/webhook] Update error (recent match):', err)
-      })
-      return NextResponse.json({ ok: true, action: 'updated_recent' })
-    }
+      if (updateErr) throw updateErr
+    }, { label: 'webhook/call-inbox-upsert' }).catch((err) => {
+      console.error('[inbox/webhook] Update error (recent match):', err)
+    })
+    return NextResponse.json({ ok: true, action: 'updated_recent' })
   }
 
   // ── Step 3: No match — insert new row ──────────────────────────
@@ -209,7 +209,6 @@ export async function POST(req: NextRequest) {
     extractPhone(transcript.map(t => t.message).join(' ')) ??
     '—'
   const callerPhone = normaliseAustralianPhone(rawPhone)
-  const structured   = { analysis, dataCollection, payload }
   const callerInfo   = extractCallerInfo(transcript, callerPhone, structured)
   const industryData = buildIndustryData(transcript, structured)
 
