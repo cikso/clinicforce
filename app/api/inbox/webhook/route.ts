@@ -115,9 +115,10 @@ export async function POST(req: NextRequest) {
     (body.call_duration_secs as number) ??
     null
 
-  const aiSummary =
+  const baseSummary =
     (analysis.transcript_summary as string) ||
     buildFallbackSummary(transcript)
+  const aiSummary = enrichSummary(baseSummary, transcript)
 
   const urgency = detectUrgency(transcript)
 
@@ -302,6 +303,44 @@ function resolveField(
     }
   }
   return null
+}
+
+/** Scan transcript for notable topics the base summary might have missed */
+function enrichSummary(
+  base: string,
+  transcript: Array<{ role: string; message: string }>,
+): string {
+  const fullText = transcript.map(t => t.message).join(' ').toLowerCase()
+  const baseLower = base.toLowerCase()
+  const extras: string[] = []
+
+  // Pricing / cost inquiry
+  if (/\b(how much|price|pricing|cost|fee|charge|rate|quote)\b/.test(fullText) && !/\b(pric|cost|fee|charge|quote)\b/.test(baseLower)) {
+    extras.push('Caller asked about pricing — directed to confirm with the team.')
+  }
+
+  // Insurance question
+  if (/\b(insurance|claim|pet insurance|cover)\b/.test(fullText) && !/insurance/.test(baseLower)) {
+    extras.push('Caller asked about insurance/coverage.')
+  }
+
+  // Medication / prescription
+  if (/\b(medication|prescription|refill|tablets|pills|medicine)\b/.test(fullText) && !/\b(medicat|prescript|refill)\b/.test(baseLower)) {
+    extras.push('Caller mentioned medication/prescription needs.')
+  }
+
+  // Second opinion / referral
+  if (/\b(second opinion|referr|specialist)\b/.test(fullText) && !/\b(referr|specialist|second opinion)\b/.test(baseLower)) {
+    extras.push('Caller asked about referral/specialist.')
+  }
+
+  // Multiple pets
+  if (/\b(both pets|other pet|another pet|two (dogs|cats|pets)|second (dog|cat|pet))\b/.test(fullText) && !/\bmultiple\b/.test(baseLower)) {
+    extras.push('Caller mentioned multiple pets.')
+  }
+
+  if (extras.length === 0) return base
+  return base.replace(/\.?\s*$/, '. ') + extras.join(' ')
 }
 
 function buildFallbackSummary(transcript: Array<{ role: string; message: string }>): string {
