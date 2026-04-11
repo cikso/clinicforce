@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
-import Badge from '@/app/components/ui/Badge'
 import EmptyState from '@/app/components/ui/EmptyState'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -20,6 +19,7 @@ export interface CallItem {
   coverage_reason: string | null
   call_duration_seconds: number | null
   industry_data: Record<string, unknown> | null
+  elevenlabs_conversation_id: string | null
   created_at: string
 }
 
@@ -31,34 +31,35 @@ interface ConversationListProps {
   clinicId: string
 }
 
-function relativeTime(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
-  const days = Math.floor(hours / 24)
-  if (days === 1) return 'yesterday'
-  return `${days}d ago`
-}
-
-function urgencyDot(u: string): string {
-  if (u === 'CRITICAL' || u === 'URGENT') return 'bg-[var(--error)]'
-  return 'bg-[var(--success)]'
-}
-
-function coverageLabel(r: string | null): string | null {
-  if (!r) return null
-  const map: Record<string, string> = {
-    DAYTIME: 'Overflow',
-    LUNCH: 'Lunch Cover',
-    AFTER_HOURS: 'After Hours',
-    EMERGENCY_ONLY: 'Emergency',
-    WEEKEND: 'Weekend',
-    OVERFLOW: 'Overflow',
+function formatTimestamp(iso: string): string {
+  try {
+    const d = new Date(iso)
+    const now = new Date()
+    const isToday = d.toDateString() === now.toDateString()
+    const yesterday = new Date(now)
+    yesterday.setDate(yesterday.getDate() - 1)
+    const isYesterday = d.toDateString() === yesterday.toDateString()
+    const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    if (isToday) return time
+    if (isYesterday) return 'Yesterday'
+    return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })
+  } catch {
+    return '—'
   }
-  return map[r] ?? r
+}
+
+const URGENCY_PILL: Record<string, { bg: string; label: string }> = {
+  CRITICAL: { bg: 'bg-[#ba1a1a]', label: 'EMERGENCY' },
+  URGENT:   { bg: 'bg-[#b45309]', label: 'URGENT' },
+  ROUTINE:  { bg: 'bg-[#0f6e56]', label: 'ROUTINE' },
+}
+
+function leftBorderColor(call: CallItem, isSelected: boolean): string {
+  if (isSelected) return '#0058a7'
+  if (call.status === 'UNREAD') return '#0058a7'
+  if (call.urgency === 'CRITICAL') return '#ba1a1a'
+  if (call.urgency === 'URGENT') return '#b45309'
+  return '#0f6e56'
 }
 
 export default function ConversationList({
@@ -74,12 +75,10 @@ export default function ConversationList({
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(initialCalls.length >= 20)
 
-  // Update calls when a status changes externally
   const updateCallStatus = useCallback((id: string, newStatus: string) => {
     setCalls(prev => prev.map(c => c.id === id ? { ...c, status: newStatus } : c))
   }, [])
 
-  // Expose updater via window for cross-component comms
   if (typeof window !== 'undefined') {
     (window as unknown as Record<string, unknown>).__updateCallStatus = updateCallStatus
   }
@@ -93,7 +92,6 @@ export default function ConversationList({
 
   const filtered = useMemo(() => {
     let result = calls
-
     if (filter === 'unread') result = result.filter(c => c.status === 'UNREAD')
     else if (filter === 'urgent') result = result.filter(c => c.urgency === 'URGENT' || c.urgency === 'CRITICAL')
     else if (filter === 'actioned') result = result.filter(c => c.status === 'ACTIONED')
@@ -106,7 +104,6 @@ export default function ConversationList({
         (c.summary?.toLowerCase().includes(q))
       )
     }
-
     return result
   }, [calls, filter, search])
 
@@ -118,7 +115,7 @@ export default function ConversationList({
       const oldest = calls[calls.length - 1]?.created_at
       const { data } = await supabase
         .from('call_inbox')
-        .select('id, caller_name, caller_phone, summary, ai_detail, action_required, urgency, status, coverage_reason, call_duration_seconds, industry_data, created_at')
+        .select('id, caller_name, caller_phone, summary, ai_detail, action_required, urgency, status, coverage_reason, call_duration_seconds, industry_data, elevenlabs_conversation_id, created_at')
         .eq('clinic_id', clinicId)
         .lt('created_at', oldest)
         .order('created_at', { ascending: false })
@@ -139,8 +136,18 @@ export default function ConversationList({
 
   return (
     <div className="flex flex-col h-full bg-[var(--bg-primary)] border-r border-[var(--border)]">
+      {/* Header */}
+      <div className="shrink-0 px-4 pt-4 pb-1">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[15px] font-bold text-[var(--text-primary)] font-heading">Recent Calls</h2>
+          <span className="text-[11px] font-semibold text-[var(--text-tertiary)] bg-[var(--bg-secondary)] rounded-md px-2 py-0.5 uppercase tracking-wide">
+            {counts.all} total
+          </span>
+        </div>
+      </div>
+
       {/* Search + Filters */}
-      <div className="shrink-0 p-3 space-y-2 border-b border-[var(--border-subtle)]">
+      <div className="shrink-0 px-4 pb-3 space-y-2 border-b border-[var(--border-subtle)]">
         <div className="flex items-center gap-2 bg-[var(--bg-secondary)] rounded-lg px-3 py-1.5 border border-[var(--border-subtle)]">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" className="text-[var(--text-tertiary)] shrink-0">
             <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
@@ -185,61 +192,44 @@ export default function ConversationList({
             {filtered.map((call) => {
               const isSelected = call.id === selectedId
               const isUnread = call.status === 'UNREAD'
-              const petName = hasExtraFields ? (call.industry_data?.pet_name as string) : null
-              const coverageTag = coverageLabel(call.coverage_reason)
+              const pill = URGENCY_PILL[call.urgency] ?? URGENCY_PILL.ROUTINE
+              const borderColor = leftBorderColor(call, isSelected)
 
               return (
                 <button
                   key={call.id}
                   onClick={() => onSelect(call)}
                   className={cn(
-                    'w-full text-left px-3 py-3 border-b border-[var(--border-subtle)] transition-colors relative',
+                    'w-full text-left px-4 py-3 border-b border-[var(--border-subtle)] transition-colors relative',
                     isSelected ? 'bg-[var(--brand-light)]' : 'hover:bg-[var(--bg-hover)]',
-                    isUnread && !isSelected && 'border-l-[3px] border-l-[var(--brand)]',
                   )}
+                  style={{ borderLeft: `3px solid ${borderColor}` }}
                 >
-                  <div className="flex items-start gap-2.5">
-                    {/* Urgency dot */}
-                    <span className={cn('w-2 h-2 rounded-full mt-1.5 shrink-0', urgencyDot(call.urgency))} />
-
-                    <div className="flex-1 min-w-0">
-                      {/* Name row */}
-                      <div className="flex items-center gap-2">
-                        <span className={cn(
-                          'text-[14px] truncate',
-                          isUnread ? 'font-semibold text-[var(--text-primary)]' : 'font-medium text-[var(--text-primary)]',
-                        )}>
-                          {call.caller_name || 'Unknown'}
-                        </span>
-                        {petName && (
-                          <Badge variant="info" className="text-[10px] px-1.5 py-0">{petName}</Badge>
-                        )}
-                      </div>
-
-                      {/* Summary preview */}
-                      <p className="text-[12px] text-[var(--text-secondary)] mt-0.5 line-clamp-2 leading-relaxed">
-                        {call.summary || 'No summary available'}
-                      </p>
-
-                      {/* Bottom row */}
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <span className="text-[11px] text-[var(--text-tertiary)] font-mono-data">
-                          {relativeTime(call.created_at)}
-                        </span>
-                        {coverageTag && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-secondary)] text-[var(--text-tertiary)] font-medium">
-                            {coverageTag}
-                          </span>
-                        )}
-                        {call.status === 'ACTIONED' && (
-                          <span className="text-[10px] text-[var(--success)] font-medium">Actioned</span>
-                        )}
-                        {call.status === 'REVIEWED' && (
-                          <span className="text-[10px] text-[var(--text-tertiary)] font-medium">Reviewed</span>
-                        )}
-                      </div>
-                    </div>
+                  {/* Top row: name + time */}
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className={cn(
+                      'text-[13px] truncate',
+                      isUnread ? 'font-bold text-[var(--text-primary)]' : 'font-semibold text-[var(--text-primary)]',
+                    )}>
+                      {call.caller_name || 'Unknown'}
+                    </span>
+                    <span className="text-[11px] text-[var(--text-tertiary)] shrink-0 font-mono-data">
+                      {formatTimestamp(call.created_at)}
+                    </span>
                   </div>
+
+                  {/* Urgency pill */}
+                  <span className={cn(
+                    'inline-block text-[9px] font-bold uppercase tracking-wider text-white px-2 py-0.5 rounded mb-1.5',
+                    pill.bg,
+                  )}>
+                    {pill.label}
+                  </span>
+
+                  {/* Summary preview */}
+                  <p className="text-[12px] text-[var(--text-secondary)] line-clamp-2 leading-relaxed">
+                    {call.summary || 'No summary available'}
+                  </p>
                 </button>
               )
             })}

@@ -6,7 +6,7 @@ import ConversationsShell from '@/app/components/conversations/ConversationsShel
 import { ConversationsSkeleton } from '@/app/components/ui/Skeleton'
 import { Suspense } from 'react'
 
-export const metadata: Metadata = { title: 'Conversations — ClinicForce' }
+export const metadata: Metadata = { title: 'Call Inbox — ClinicForce' }
 export const dynamic = 'force-dynamic'
 
 async function ConversationsContent() {
@@ -26,24 +26,27 @@ async function ConversationsContent() {
   const { data: calls } = clinicId
     ? await db
         .from('call_inbox')
-        .select('id, caller_name, caller_phone, summary, ai_detail, action_required, urgency, status, coverage_reason, call_duration_seconds, industry_data, created_at')
+        .select('id, caller_name, caller_phone, summary, ai_detail, action_required, urgency, status, coverage_reason, call_duration_seconds, industry_data, elevenlabs_conversation_id, created_at')
         .eq('clinic_id', clinicId)
         .order('created_at', { ascending: false })
         .limit(20)
     : { data: [] }
 
-  // Fetch clinic industry_config
+  // Fetch clinic info
   const { data: clinicData } = clinicId
     ? await db
         .from('clinics')
-        .select('industry_config')
+        .select('name, vertical, industry_config')
         .eq('id', clinicId)
         .maybeSingle()
     : { data: null }
 
-  const industryConfig = (clinicData as { industry_config?: Record<string, unknown> } | null)?.industry_config ?? null
+  const clinicRecord = clinicData as { name?: string; vertical?: string; industry_config?: Record<string, unknown> } | null
+  const industryConfig = clinicRecord?.industry_config ?? null
   const extraFields = (industryConfig as { extra_fields?: unknown[] } | null)?.extra_fields
   const hasExtraFields = Array.isArray(extraFields) && extraFields.length > 0
+  const clinicName = clinicRecord?.name ?? ''
+  const clinicVertical = clinicRecord?.vertical ?? 'vet'
 
   type CallRow = {
     id: string
@@ -57,6 +60,7 @@ async function ConversationsContent() {
     coverage_reason: string | null
     call_duration_seconds: number | null
     industry_data: Record<string, unknown> | null
+    elevenlabs_conversation_id: string | null
     created_at: string
   }
 
@@ -65,6 +69,8 @@ async function ConversationsContent() {
       initialCalls={(calls ?? []) as CallRow[]}
       hasExtraFields={hasExtraFields}
       clinicId={clinicId}
+      clinicName={clinicName}
+      clinicVertical={clinicVertical}
     />
   )
 }

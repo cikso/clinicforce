@@ -76,7 +76,7 @@ const icons = {
 
 const NAV_ITEMS: { label: string; icon: React.ReactNode; href: string; hasBadge?: boolean }[] = [
   { label: 'Command Centre', icon: icons.grid,     href: '/overview' },
-  { label: 'Conversations',  icon: icons.phone,    href: '/conversations' },
+  { label: 'Call Inbox',      icon: icons.phone,    href: '/conversations' },
   { label: 'Action Queue',   icon: icons.list,     href: '/actions', hasBadge: true },
   { label: 'Bookings',       icon: icons.calendar, href: '/bookings' },
   { label: 'Insights',       icon: icons.barChart, href: '/insights' },

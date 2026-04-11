@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import ConversationList, { type CallItem } from './ConversationList'
 import ConversationDetail from './ConversationDetail'
 import Button from '@/app/components/ui/Button'
@@ -11,24 +11,25 @@ interface ConversationsShellProps {
   initialCalls: CallItem[]
   hasExtraFields: boolean
   clinicId: string
+  clinicName: string
+  clinicVertical: string
 }
 
 export default function ConversationsShell({
   initialCalls,
   hasExtraFields,
   clinicId,
+  clinicName,
+  clinicVertical,
 }: ConversationsShellProps) {
   const searchParams = useSearchParams()
-  const router = useRouter()
   const initialId = searchParams.get('id')
 
   const [selected, setSelected] = useState<CallItem | null>(
     initialId ? initialCalls.find(c => c.id === initialId) ?? null : null
   )
-  // On mobile: track whether we're showing detail view
   const [mobileDetail, setMobileDetail] = useState(!!initialId)
 
-  // If URL has ?id= and it matches a call, select it
   useEffect(() => {
     if (initialId && !selected) {
       const found = initialCalls.find(c => c.id === initialId)
@@ -42,18 +43,15 @@ export default function ConversationsShell({
   const handleSelect = useCallback((call: CallItem) => {
     setSelected(call)
     setMobileDetail(true)
-    // Update URL without navigation
     const url = new URL(window.location.href)
     url.searchParams.set('id', call.id)
     window.history.replaceState(null, '', url.toString())
   }, [])
 
   const handleStatusChange = useCallback((id: string, newStatus: string) => {
-    // Update the selected call's status
     if (selected?.id === id) {
       setSelected(prev => prev ? { ...prev, status: newStatus } : prev)
     }
-    // Update the list via window bridge
     const updater = (window as unknown as Record<string, unknown>).__updateCallStatus as ((id: string, status: string) => void) | undefined
     updater?.(id, newStatus)
   }, [selected])
@@ -101,6 +99,8 @@ export default function ConversationsShell({
           call={selected}
           hasExtraFields={hasExtraFields}
           clinicId={clinicId}
+          clinicName={clinicName}
+          clinicVertical={clinicVertical}
           onStatusChange={handleStatusChange}
         />
       </div>
