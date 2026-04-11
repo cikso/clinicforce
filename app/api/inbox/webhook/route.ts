@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServiceSupabase, normaliseAustralianPhone, validateSecret } from '@/lib/voice/shared'
+import { getServiceSupabase, normaliseAustralianPhone, validateWebhookHmac } from '@/lib/voice/shared'
 import { withRetry } from '@/lib/utils/withRetry'
 
 export const preferredRegion = 'syd1'
@@ -13,8 +13,12 @@ const COVERAGE_LABELS: Record<string, string> = {
 }
 
 export async function POST(req: NextRequest) {
-  if (!validateSecret(req)) {
-    console.error('[inbox/webhook] 401 — invalid or missing x-api-secret')
+  const rawBody = await req.text()
+  const signature = req.headers.get('x-elevenlabs-signature')
+
+  const isValid = await validateWebhookHmac(signature, rawBody)
+  if (!isValid) {
+    console.error('[inbox/webhook] 401 — HMAC signature verification failed')
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -22,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   let body: Record<string, unknown>
   try {
-    body = await req.json()
+    body = JSON.parse(rawBody)
   } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
