@@ -51,20 +51,30 @@ export async function POST(req: NextRequest) {
   const dataCollection = (analysis.data_collection as Record<string, unknown>) ?? {}
   const transcript   = (payload.transcript as Array<{ role: string; message: string }>) ?? []
 
-  console.log('[inbox/webhook] Pet-related payload fields:', JSON.stringify({
-    conversation_id: conversationId,
+  console.log('[inbox/webhook] FULL PAYLOAD KEYS:', JSON.stringify({
+    top_level_keys: Object.keys(body),
+    payload_keys: Object.keys(payload),
     analysis_keys: Object.keys(analysis),
+    analysis_full: analysis,
+    metadata_keys: Object.keys(metadata),
+    conversation_id: conversationId,
     data_collection: dataCollection,
-    analysis_pet_name: analysis.pet_name ?? null,
-    analysis_species: analysis.species ?? null,
-    payload_pet_name: payload.pet_name ?? null,
-    payload_species: payload.species ?? null,
+  }))
+  console.log('[inbox/webhook] SUMMARY FIELDS:', JSON.stringify({
+    'analysis.transcript_summary': analysis.transcript_summary ?? null,
+    'analysis.summary': analysis.summary ?? null,
+    'analysis.call_summary': analysis.call_summary ?? null,
+    'payload.summary': payload.summary ?? null,
+    'payload.call_summary': payload.call_summary ?? null,
+    'body.summary': body.summary ?? null,
+    'analysis.evaluation_criteria_results': analysis.evaluation_criteria_results ?? null,
+    'analysis.call_successful': analysis.call_successful ?? null,
   }))
 
   // ── Resolve clinic from Twilio "To" number ────────────────────────────────
   const toNumber = (phoneCall.to as string) ?? (body.to as string) ?? null
 
-  // Try resolving clinic via phone number first, then via agent_id
+  // Resolve clinic from Twilio To number → voice_agents
   let clinicId: string | null = null
   let coverageReason: string | null = null
   let vertical: string = 'vet'
@@ -72,7 +82,7 @@ export async function POST(req: NextRequest) {
   if (toNumber) {
     const { data: voiceAgent } = await supabase
       .from('voice_agents')
-      .select('clinic_id, mode, elevenlabs_agent_id')
+      .select('clinic_id, mode')
       .eq('twilio_phone_number', toNumber)
       .limit(1)
       .maybeSingle()
@@ -83,24 +93,9 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Fallback: resolve via agent_id if phone lookup failed
-  if (!clinicId && agentId) {
-    const { data: voiceAgent } = await supabase
-      .from('voice_agents')
-      .select('clinic_id, mode')
-      .eq('elevenlabs_agent_id', agentId)
-      .limit(1)
-      .maybeSingle()
-
-    if (voiceAgent?.clinic_id) {
-      clinicId = voiceAgent.clinic_id
-      coverageReason = COVERAGE_LABELS[voiceAgent.mode as string] ?? null
-    }
-  }
-
   if (!clinicId) {
-    console.error('[inbox/webhook] Could not resolve clinic. to:', toNumber, 'agent_id:', agentId)
-    return NextResponse.json({ error: 'Could not resolve clinic' }, { status: 400 })
+    console.error('[inbox/webhook] Unknown agent phone number:', toNumber)
+    return NextResponse.json({ error: 'Unknown agent phone number' }, { status: 400 })
   }
 
   // Resolve vertical from clinic record
