@@ -74,11 +74,13 @@ export async function POST(request: NextRequest) {
 
   // Optionally create invite and send email
   if (invite_email?.trim()) {
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
     const { data: invite } = await service.from('clinic_invites').insert({
       clinic_id: clinic.id,
       email: invite_email.trim(),
       role: 'clinic_admin',
       invited_by: user.email ?? user.id,
+      expires_at: expiresAt,
     }).select('token').single()
 
     if (invite?.token) {
