@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import InvitePanel from './_invite-panel'
+import CoverageControl from './_coverage-control'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -95,6 +96,15 @@ export default async function ClinicDetailPage({ params }: PageProps) {
           <DetailRow label="Emergency address" value={clinic.emergency_partner_address} />
         </div>
       </div>
+
+      {/* Coverage Control */}
+      <CoverageControl
+        clinicId={clinic.id}
+        clinicName={clinic.name}
+        initialMode={clinic.coverage_mode ?? 'after_hours'}
+        activatedAt={clinic.coverage_mode_activated_at ?? null}
+        activatedBy={clinic.coverage_mode_activated_by ?? null}
+      />
 
       {/* Users card */}
       <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl p-6 shadow-[var(--shadow-card)] mb-4">
