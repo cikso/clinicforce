@@ -72,6 +72,11 @@ const icons = {
       <path d="M5 5l10 10M15 5L5 15" />
     </svg>
   ),
+  shield: (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 1.5L2.5 4.5v4.5c0 4 3 6.5 6.5 7.5 3.5-1 6.5-3.5 6.5-7.5V4.5L9 1.5z" />
+    </svg>
+  ),
 }
 
 const NAV_ITEMS: { label: string; icon: React.ReactNode; href: string; hasBadge?: boolean }[] = [
@@ -90,6 +95,7 @@ interface DashboardSidebarProps {
   userName: string
   pendingTaskCount: number
   sarahStatus: { isActive: boolean; mode: string } | null
+  isPlatformOwner?: boolean
 }
 
 export default function DashboardSidebar({
@@ -97,6 +103,7 @@ export default function DashboardSidebar({
   userName,
   pendingTaskCount,
   sarahStatus,
+  isPlatformOwner = false,
 }: DashboardSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
@@ -165,6 +172,26 @@ export default function DashboardSidebar({
               </Link>
             )
           })}
+          {isPlatformOwner && (
+            <>
+              <div className="my-2 border-t border-[var(--border)]" />
+              <Link
+                href="/admin"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  'flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13.5px] font-medium transition-colors duration-100 relative',
+                  isActive('/admin')
+                    ? 'bg-[var(--brand-light)] text-[var(--brand)] border-l-[3px] border-l-[var(--brand)] pl-[9px]'
+                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]',
+                )}
+              >
+                <span className={cn('shrink-0', isActive('/admin') ? 'text-[var(--brand)]' : 'text-[var(--text-tertiary)]')}>
+                  {icons.shield}
+                </span>
+                <span className="sidebar-expanded-content truncate">Platform Admin</span>
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 

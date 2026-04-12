@@ -121,6 +121,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               userName={userName}
               pendingTaskCount={pendingTaskCount}
               sarahStatus={sarahStatus}
+              isPlatformOwner={isPlatformOwner}
             />
             <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
               <DashboardTopbar userName={userName} />
