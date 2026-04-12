@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         agent: {
           first_message: `Thank you for calling ${String(clinic.name ?? '')}. Please hold for just a moment while I connect you to our team.`,
           prompt: {
-            prompt: `You have ONE job only. Immediately call the transfer_call tool to transfer this call to {{reception_number}}. Do not greet the caller again. Do not wait for them to speak. Do not say anything else. Call transfer_call NOW.`,
+            prompt: `You have ONE job. Immediately call the transfer_to_number tool — an immediate transfer is required. Do not say anything else. Do not wait for the caller to speak. Execute the transfer NOW.`,
           },
         },
       },
