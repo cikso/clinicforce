@@ -56,7 +56,7 @@ export default function InviteForm({
         return
       }
 
-      router.push('/onboarding/clinic-details')
+      router.push('/overview')
     })
   }
 

@@ -130,6 +130,13 @@ export async function POST(request: NextRequest) {
     .update({ accepted_at: new Date().toISOString() })
     .eq('id', invite.id)
 
+  // 4b. Mark clinic onboarding as completed (admin already set up the clinic)
+  await serviceRole
+    .from('clinics')
+    .update({ onboarding_completed: true })
+    .eq('id', invite.clinic_id)
+    .eq('onboarding_completed', false)
+
   // 5. Sign the user in (create session cookie) using the anon client
   const cookieStore = await cookies()
   const response = NextResponse.json({ success: true })
