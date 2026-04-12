@@ -1,0 +1,28 @@
+{
+  "configPath": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-xGngHT\\VetDesk\\vetflow\\trigger.config.mjs",
+  "customConditions": [
+  ],
+  "queues": [
+  ],
+  "runtime": "node",
+  "runtimeVersion": "24.14.1",
+  "tasks": [
+    {
+      "entryPoint": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-xGngHT\\VetDesk\\vetflow\\src\\trigger\\example.mjs",
+      "filePath": "src/trigger/example.ts",
+      "id": "hello-world",
+      "maxDuration": 300
+    },
+    {
+      "entryPoint": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-xGngHT\\VetDesk\\vetflow\\src\\trigger\\notify-error.mjs",
+      "filePath": "src/trigger/notify-error.ts",
+      "id": "notify-error",
+      "maxDuration": 30
+    }
+  ],
+  "timings": {
+    "src/trigger/example.ts": 1.1159999999999854,
+    "src/trigger/notify-error.ts": 0.6599000000000501
+  },
+  "workerEntryPoint": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-xGngHT\\Users\\realt\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-run-worker.mjs"
+}

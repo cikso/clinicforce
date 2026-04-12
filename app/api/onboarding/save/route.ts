@@ -117,14 +117,21 @@ export async function POST(request: NextRequest) {
     case 'clinic-details': {
       const d = data as {
         name?: string; phone?: string; address?: string
-        suburb?: string; email?: string; website?: string
+        suburb?: string; postcode?: string; email?: string; website?: string
+        services?: string; after_hours_partner?: string
+        after_hours_phone?: string; emergency_partner_address?: string
       }
       if (d.name)    updatePayload.name    = d.name.trim()
       if (d.phone)   updatePayload.phone   = d.phone.trim()
       if (d.address) updatePayload.address = d.address.trim()
       if (d.suburb)  updatePayload.suburb  = d.suburb.trim()
+      if (d.postcode) updatePayload.postcode = d.postcode.trim()
       if (d.email)   updatePayload.email   = d.email.trim()
       if (d.website) updatePayload.website = d.website.trim()
+      if (d.services) updatePayload.services = d.services.trim()
+      if (d.after_hours_partner) updatePayload.after_hours_partner = d.after_hours_partner.trim()
+      if (d.after_hours_phone) updatePayload.after_hours_phone = d.after_hours_phone.trim()
+      if (d.emergency_partner_address) updatePayload.emergency_partner_address = d.emergency_partner_address.trim()
       break
     }
 

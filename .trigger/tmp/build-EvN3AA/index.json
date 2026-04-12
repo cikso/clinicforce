@@ -1,0 +1,21 @@
+{
+  "configPath": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\VetDesk\\vetflow\\trigger.config.mjs",
+  "customConditions": [
+  ],
+  "queues": [
+  ],
+  "runtime": "node",
+  "runtimeVersion": "24.14.1",
+  "tasks": [
+    {
+      "entryPoint": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\VetDesk\\vetflow\\src\\trigger\\example.mjs",
+      "filePath": "src/trigger/example.ts",
+      "id": "hello-world",
+      "maxDuration": 300
+    }
+  ],
+  "timings": {
+    "src/trigger/example.ts": 1.156000000000006
+  },
+  "workerEntryPoint": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\Users\\realt\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-run-worker.mjs"
+}

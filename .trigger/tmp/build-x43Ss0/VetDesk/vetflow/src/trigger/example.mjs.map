@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../src/trigger/example.ts"],
+  "mappings": ";;;;;;;;;;;AAAA;AAEO,IAAM,iBAAiB,KAAK;AAAA,EACjC,IAAI;AAAA,EACJ,aAAa;AAAA,EACb,KAAK,8BAAO,YAAiC;AAC3C,YAAQ,IAAI,2BAA2B,QAAQ,OAAO;AAEtD,UAAM,KAAK,IAAI,EAAE,SAAS,EAAE,CAAC;AAE7B,WAAO;AAAA,MACL,SAAS,QAAQ;AAAA,IACnB;AAAA,EACF,GARK;AASP,CAAC;",
+  "names": []
+}

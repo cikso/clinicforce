@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../src/trigger/notify-error.ts"],
+  "sourcesContent": ["import { task } from \"@trigger.dev/sdk/v3\";\n\nexport const notifyErrorTask = task({\n  id: \"notify-error\",\n  maxDuration: 30,\n  run: async (payload: { label: string; message: string; timestamp: string }) => {\n    const webhookUrl = process.env.SLACK_ALERT_WEBHOOK_URL;\n    if (!webhookUrl) {\n      console.log(\"[notify-error] SLACK_ALERT_WEBHOOK_URL not set — skipping\");\n      return { sent: false };\n    }\n\n    const text = `🚨 ClinicForce error — ${payload.label}\\n${payload.message}\\nTime: ${payload.timestamp}`;\n\n    await fetch(webhookUrl, {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ text }),\n    });\n\n    return { sent: true };\n  },\n});\n"],
+  "mappings": ";;;;;;;;;;AAAA;AAEO,IAAM,kBAAkB,KAAK;AAAA,EAClC,IAAI;AAAA,EACJ,aAAa;AAAA,EACb,KAAK,8BAAO,YAAmE;AAC7E,UAAM,aAAa,QAAQ,IAAI;AAC/B,QAAI,CAAC,YAAY;AACf,cAAQ,IAAI,2DAA2D;AACvE,aAAO,EAAE,MAAM,MAAM;AAAA,IACvB;AAEA,UAAM,OAAO,0BAA0B,QAAQ,KAAK;AAAA,EAAK,QAAQ,OAAO;AAAA,QAAW,QAAQ,SAAS;AAEpG,UAAM,MAAM,YAAY;AAAA,MACtB,QAAQ;AAAA,MACR,SAAS,EAAE,gBAAgB,mBAAmB;AAAA,MAC9C,MAAM,KAAK,UAAU,EAAE,KAAK,CAAC;AAAA,IAC/B,CAAC;AAED,WAAO,EAAE,MAAM,KAAK;AAAA,EACtB,GAhBK;AAiBP,CAAC;",
+  "names": []
+}

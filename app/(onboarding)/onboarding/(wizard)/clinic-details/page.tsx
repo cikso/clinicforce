@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  StepCard, Field, Input, SubmitButton, ErrorBanner,
+  StepCard, Field, Input, Textarea, SubmitButton, ErrorBanner,
   stepHeading, stepSubheading,
 } from '../../_components'
 
@@ -17,12 +17,17 @@ export default function ClinicDetailsPage() {
     phone: '',
     address: '',
     suburb: '',
+    postcode: '',
     email: '',
     website: '',
+    services: '',
+    after_hours_partner: '',
+    after_hours_phone: '',
+    emergency_partner_address: '',
   })
 
   function set(key: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement>) =>
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setForm((f) => ({ ...f, [key]: e.target.value }))
   }
 
@@ -73,9 +78,76 @@ export default function ClinicDetailsPage() {
           <Field label="Suburb / City">
             <Input value={form.suburb} onChange={set('suburb')} placeholder="Baulkham Hills" />
           </Field>
-          <Field label="Website">
-            <Input value={form.website} onChange={set('website')} placeholder="www.yourclinic.com.au" />
+          <Field label="Postcode">
+            <Input value={form.postcode} onChange={set('postcode')} placeholder="2153" />
           </Field>
+        </div>
+
+        <Field label="Website">
+          <Input value={form.website} onChange={set('website')} placeholder="www.yourclinic.com.au" />
+        </Field>
+
+        <Field label="Services Offered" hint="Sarah will use this to answer questions about what you offer">
+          <Textarea
+            value={form.services}
+            onChange={set('services')}
+            placeholder="e.g. wellness consultations, vaccinations, microchipping, desexing, dental care"
+            rows={3}
+          />
+        </Field>
+
+        {/* After-hours emergency partner */}
+        <div style={{
+          marginTop: '0.5rem',
+          border: '1px solid #E8E4DE',
+          borderRadius: 12,
+          padding: '1.25rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+        }}>
+          <div>
+            <p style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              color: '#9B9B9B',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              marginBottom: '0.25rem',
+            }}>
+              After-Hours Emergency Partner
+            </p>
+            <p style={{ fontFamily: "'DM Sans'", fontSize: '0.78rem', color: '#9B9B9B' }}>
+              If a caller has an emergency outside your hours, Sarah will direct them here
+            </p>
+          </div>
+
+          <Field label="Emergency Clinic Name">
+            <Input
+              value={form.after_hours_partner}
+              onChange={set('after_hours_partner')}
+              placeholder="e.g. Animal Referral Hospital"
+            />
+          </Field>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <Field label="Emergency Phone">
+              <Input
+                value={form.after_hours_phone}
+                onChange={set('after_hours_phone')}
+                placeholder="e.g. 02 9639 7744"
+                type="tel"
+              />
+            </Field>
+            <Field label="Emergency Address">
+              <Input
+                value={form.emergency_partner_address}
+                onChange={set('emergency_partner_address')}
+                placeholder="e.g. 19 Old Northern Road, Baulkham Hills"
+              />
+            </Field>
+          </div>
         </div>
 
         {error && <ErrorBanner>{error}</ErrorBanner>}

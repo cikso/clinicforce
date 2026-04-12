@@ -1,0 +1,114 @@
+{
+  "build": {
+  },
+  "cliPackageVersion": "4.4.3",
+  "config": {
+    "dirs": [
+      "./src/trigger"
+    ],
+    "project": "proj_pkzccwmmecngsvswwevl"
+  },
+  "configPath": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-xGngHT\\VetDesk\\vetflow\\trigger.config.mjs",
+  "contentHash": "faeba5b475caed8611d4b7629f69b6e4",
+  "customConditions": [
+  ],
+  "deploy": {
+    "env": {
+    }
+  },
+  "environment": "dev",
+  "externals": [
+    {
+      "name": "import-in-the-middle",
+      "version": "1.11.0"
+    }
+  ],
+  "files": [
+    {
+      "entry": "src/trigger/example.ts",
+      "out": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-xGngHT\\VetDesk\\vetflow\\src\\trigger\\example.mjs"
+    },
+    {
+      "entry": "src/trigger/notify-error.ts",
+      "out": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-xGngHT\\VetDesk\\vetflow\\src\\trigger\\notify-error.mjs"
+    }
+  ],
+  "indexWorkerEntryPoint": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-xGngHT\\Users\\realt\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-index-worker.mjs",
+  "otelImportHook": {
+    "include": [
+    ]
+  },
+  "outputHashes": {
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\Users\\realt\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-index-worker.mjs": "0EgF6l2X/9A",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\Users\\realt\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-index-worker.mjs.map": "LHXnaHexd4E",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\Users\\realt\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-run-worker.mjs": "K1WTxabavlI",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\Users\\realt\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-run-worker.mjs.map": "0PCVJS3hXsQ",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\VetDesk\\vetflow\\src\\trigger\\example.mjs": "mTsMe+RSDzE",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\VetDesk\\vetflow\\src\\trigger\\example.mjs.map": "1+6ugMn7McM",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\VetDesk\\vetflow\\src\\trigger\\notify-error.mjs": "FIMMKmrvGOs",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\VetDesk\\vetflow\\src\\trigger\\notify-error.mjs.map": "Uxru1CF8RLE",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\VetDesk\\vetflow\\trigger.config.mjs": "bOLovm3EpQg",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\VetDesk\\vetflow\\trigger.config.mjs.map": "UWkMLGED2Kk",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-3LDSFULX.mjs": "2bFGT8xoK30",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-3LDSFULX.mjs.map": "LMPzUuAiOIM",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-FREQZUJ7.mjs": "IBPyuNXrVfQ",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-FREQZUJ7.mjs.map": "ph3fy2LI0rA",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-I347MTHI.mjs": "Jyue7daQanw",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-I347MTHI.mjs.map": "J6yhxPtSaec",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-L4AGPUWI.mjs": "9L9piPqdR3U",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-L4AGPUWI.mjs.map": "qmAyX8aKLC8",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-N7V63C6R.mjs": "ZVaVVtziUE4",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-N7V63C6R.mjs.map": "pi7HuPgEtms",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-NNJEYL7C.mjs": "Oj8pKqjYqwE",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-NNJEYL7C.mjs.map": "bKHgCoGHGxQ",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-XNVPMXOJ.mjs": "goZsDYlMvkY",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\chunk-XNVPMXOJ.mjs.map": "Q3bWmOyXnX0",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\crypto.node-A2IDD4IW.mjs": "+7hGiQnQdq8",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\crypto.node-A2IDD4IW.mjs.map": "0b4tlwmkM3g",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\crypto.node-IA2QX6VV.mjs": "uvaJODF1GF0",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\crypto.node-IA2QX6VV.mjs.map": "+gEKvx6Up+Q",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\esm-2VRQ3YYH.mjs": "XHSIZmF9mM0",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\esm-2VRQ3YYH.mjs.map": "K+CNYREWYHo",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\esm-BVADO2SK.mjs": "CfBg+UvEAMM",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\esm-BVADO2SK.mjs.map": "CSvtQ8IwLEk",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\getMachineId-bsd-RCY6TFVH.mjs": "zXKV8ySIUXw",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\getMachineId-bsd-RCY6TFVH.mjs.map": "pUn2VX6TQMk",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\getMachineId-darwin-HJXQRLPT.mjs": "5xkwV9OYVVI",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\getMachineId-darwin-HJXQRLPT.mjs.map": "2JnXolNrQWA",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\getMachineId-linux-7QGHUMOX.mjs": "yFp/GUEnopI",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\getMachineId-linux-7QGHUMOX.mjs.map": "zmvagt0dj94",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\getMachineId-unsupported-LH252KRX.mjs": "pWouz/KubAM",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\getMachineId-unsupported-LH252KRX.mjs.map": "Ee0fq9/IstA",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\getMachineId-win-QEU2H4SK.mjs": "H5SCKUfSynw",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\getMachineId-win-QEU2H4SK.mjs.map": "e/4qlpzOZtM",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\s2s-2RUP5EQJ.mjs": "R5m6EfWny8s",
+    "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-EvN3AA\\s2s-2RUP5EQJ.mjs.map": "mfLU8o9VO2Y"
+  },
+  "outputPath": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-xGngHT",
+  "packageVersion": "4.4.3",
+  "runWorkerEntryPoint": "C:\\VetDesk\\vetflow\\.trigger\\tmp\\build-xGngHT\\Users\\realt\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-run-worker.mjs",
+  "runtime": "node",
+  "sources": {
+    "package.json": {
+      "contentHash": "295b512a794a70310e59f6541e62678a",
+      "contents": "eJx1k8FO5DAMhu8jzTtEPZO0nRaY4bQHngMpJKZjtk2qOC0gxLujJG3Jzg63xJ8d27+dz/2OscLIAYoHVqgeDaoX6xQUN5HM4AitCbAStagW8+hwlj7EeDdBspFyOHoqHthnuDNWaJhDoIF3z8L5ZrE/T9jrjaTbyshL5zeWbivr0UQEFE/B+pVyaxjBaDAKIS/gz7Mk4BOWDqSKoU+1aNYuggNNowxOJZGLvBKn63w58FeKfgdRV5Wofzy9w64DJzTMJem/wakVrWg2D9VLIj5Lh9Io4HLyZ+vQfyxp77PHVE/va5bM3AHS2sV9VmU/KdTA8yZzPFi/jPCpPojmmKEgcgD1nThkiYzVMEjsIWlyFJVoN2hHMBIjuBNNruZWQH0Shywi2rm2w1WmztL5JGojjlkVdJZapbrbn91jrPAS+zc0mg/gOlgib3OHNy4NDtIDV0SLJK2o/l2Z+fGXrVnfV0TlaMmvb7TZtD9GoDLolOZUXUMXEv7nkw3sdJWtmuV8Wf5gvTRyZc0LdvyXqWZtXbQTU8bvG8Ft0mm/+9rvvgEsrAvu"
+    },
+    "src/trigger/example.ts": {
+      "contentHash": "585cfef568082ceda9aff42534605976",
+      "contents": "eJxdj81qwzAQhO96iqlODrhOIPQik9BDD32AQM/CUlxhWRtWcn4wfvci1SXQyx52dr6ZdeOFOGFG0nGocdMuYcGZaYR8T+z63nJj7HUbzbC97mUrhL0XS0chJnxb7+mL2JuTjgMOhVPNAnBGQRb59ZZ1WQtg1PePiXVyFBT2u13e8RQUdHyEDtVFPzxpozBjtDHq3irExC70WDY4HJHJKNnkbeOpr+RnzvitfHoWfpE1VlqzojatKG5dvsyjORNXM6LtKJio8Ibl74htmjiseXi2+cesi760Alhqkd0/ARlrng=="
+    },
+    "src/trigger/notify-error.ts": {
+      "contentHash": "5708957f203b18e86624a858b8f9756f",
+      "contents": "eJx1kU2O00AQhfc+xaPFwpYyDtLsHAUxhCDERARNPGLBoEzHLjtN7G6ru5OJZbXEIVixYcu5OAFHQP6ZSYREL6tfvar6nigrpS0aWG52cMi0KsFeWS3ynHSY0mFs0t34cMkmnkfHTpwoaSyksiKr51orHbe9087CbzxApBFY/39BrYCNPKDkxzd7za1QMsLli7ak9zICN7VM4Fe8LhRPIzQo+IaKCMZqIfMJSjKG53QqWFGSsbysHktwAaYv0c7GsN4DbbZK7W51gSkqrRIyJiR5CFeLq9n1+moxv4nXn+av3y2X1+vbm8Wk6xUZ/Gen1mCw7E1VQWGhcp99Pr/tC/7j2BKCIYvf377D7ERVCZmzYDI4arJ7LdHAkLQRMl4Ygut/nXd2iaWjxRT3f37++IVZIaRI3iqdELrxnfvzZqAXdujcnTxVBnruTsaipOhM+4TR3U/6gfyBC4uMbLL1TxRGTxRKslvVhvtxuYq7UNu3JZ6SNm1ybKakJWkv4roiFoHxqipE0oU+/mqUZHCPbRuV1hHer5Yfwj5FkdV+05/rgl7lgmGzf2hZvR9guZHXiv4CXRDoYQ=="
+    },
+    "trigger.config.ts": {
+      "contentHash": "f6b2d2965c77c1e2156c6042941e4a94",
+      "contents": "eJxVzr0KgzAUhuE9V3HI1IKo4BaXQjv2DkopkhxDan7kJEapeO9F6dLt44EXPuPGQAlWUNgbj9fge6Nhg56CA35JZLRGKhXmKqqhyg1vGcPliBT23WTTX3paGcBI4Y0yCeD7eo3DR8rZOZRexxznGbPlBQOgySfjUAD3QeFBNug7ZrQCuA36INctt4m6ZIIX0NT1bspQFPDgZRVJVr+X/Fmw7dyyL7SgRog="
+    },
+    "tsconfig.json": {
+      "contentHash": "02fc19ad21338c2ab820a70136310db4",
+      "contents": "eJxtUU1Lw0AQvedXLHMMbaJehJ4E6cFiEfRYimyyQ7t2v9id1EjJf5fdJNVET8O892b2vdlLxhjUVjup0L84ktYEWLFLxhhjQNwfkGDFYP12d3N7D4seV7KCFduBsBoWLJZCEnpeKYw9BoMtwX5Qc6Xs5yauJd/gAIaTdM+yejxifZox5GVNU8zYtZYzDMPWikbhkyH01k1JnajofDAzwV8xWNXEsFFRNUYo9KPER/KMm2DNdtzya7MMVnFC0XOzVB+hjRs98pqWsRmHTO1RoyGupgNONQeZTr5LABtO36fmOkVIAQa4S3U8reN0/PkvxuChzNPPFGUO+2wc6KI8mlCNwOtbae8SzbkQBYXRap6X+d/2mqSIQyV9OQzlTNpTAs//06nVFGKS5B+wvRoCYwW+6+Gm+6zLvgEbXbUJ"
+    }
+  },
+  "target": "dev"
+}

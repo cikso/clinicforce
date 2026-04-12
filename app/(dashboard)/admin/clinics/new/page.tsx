@@ -13,10 +13,17 @@ const VERTICALS = [
   { value: 'specialist', label: 'Specialist' },
 ]
 
+const INVITE_ROLES = [
+  { value: 'Admin', label: 'Admin' },
+  { value: 'Vet', label: 'Vet' },
+  { value: 'Nurse', label: 'Nurse' },
+  { value: 'Receptionist', label: 'Receptionist' },
+]
+
 const STEPS = [
   { num: 1, label: 'Clinic Details' },
   { num: 2, label: 'AI Agent Setup' },
-  { num: 3, label: 'Invite Admin' },
+  { num: 3, label: 'Invite Users' },
 ]
 
 const inputClass =
@@ -32,36 +39,32 @@ export default function NewClinicPage() {
   // Step 1: Clinic Details
   const [form, setForm] = useState({
     name: '',
-    slug: '',
     phone: '',
     email: '',
     address: '',
     suburb: '',
+    postcode: '',
     website: '',
     vertical: 'vet',
+    services: '',
+    after_hours_partner: '',
+    after_hours_phone: '',
+    emergency_partner_address: '',
   })
 
   // Step 2: AI Agent Setup
   const [agentEnabled, setAgentEnabled] = useState(true)
   const [agentGreeting, setAgentGreeting] = useState('')
+  const [twilioPhone, setTwilioPhone] = useState('')
 
-  // Step 3: Invite Admin
+  // Step 3: Invite Users
+  const [invites, setInvites] = useState<Array<{ email: string; role: string }>>([])
   const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteRole, setInviteRole] = useState('Receptionist')
 
   function set(key: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const value = e.target.value
-      setForm((f) => {
-        const next = { ...f, [key]: value }
-        if (key === 'name') {
-          next.slug = value
-            .toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .slice(0, 40)
-        }
-        return next
-      })
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+      setForm((f) => ({ ...f, [key]: e.target.value }))
     }
   }
 
@@ -69,7 +72,6 @@ export default function NewClinicPage() {
     setError('')
     if (step === 1) {
       if (!form.name.trim()) { setError('Clinic name is required.'); return }
-      if (!form.slug.trim()) { setError('URL slug is required.'); return }
     }
     setStep((s) => Math.min(s + 1, 3))
   }
@@ -77,6 +79,23 @@ export default function NewClinicPage() {
   function prevStep() {
     setError('')
     setStep((s) => Math.max(s - 1, 1))
+  }
+
+  function addInvite() {
+    const email = inviteEmail.trim()
+    if (!email) return
+    if (invites.some((i) => i.email.toLowerCase() === email.toLowerCase())) {
+      setError('This email has already been added.')
+      return
+    }
+    setInvites((prev) => [...prev, { email, role: inviteRole }])
+    setInviteEmail('')
+    setInviteRole('Receptionist')
+    setError('')
+  }
+
+  function removeInvite(index: number) {
+    setInvites((prev) => prev.filter((_, i) => i !== index))
   }
 
   async function handleSubmit() {
@@ -88,9 +107,10 @@ export default function NewClinicPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          invite_email: inviteEmail.trim() || null,
+          invites: invites.length > 0 ? invites : null,
           agent_enabled: agentEnabled,
           agent_greeting: agentGreeting.trim() || null,
+          twilio_phone: twilioPhone.trim() || null,
         }),
       })
       const json = await res.json()
@@ -186,20 +206,6 @@ export default function NewClinicPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>URL slug *</label>
-                <input
-                  className={inputClass}
-                  value={form.slug}
-                  onChange={set('slug')}
-                  placeholder="hills-pet-clinic"
-                  required
-                />
-                <p className="text-[12px] text-[var(--text-tertiary)] mt-1">Used in the clinic&apos;s unique URL</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
                 <label className={labelClass}>Industry *</label>
                 <select
                   value={form.vertical}
@@ -216,8 +222,11 @@ export default function NewClinicPage() {
                   ))}
                 </select>
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={labelClass}>Phone</label>
+                <label className={labelClass}>Clinic Phone</label>
                 <input
                   className={inputClass}
                   value={form.phone}
@@ -226,11 +235,8 @@ export default function NewClinicPage() {
                   type="tel"
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={labelClass}>Email</label>
+                <label className={labelClass}>Clinic Email</label>
                 <input
                   className={inputClass}
                   value={form.email}
@@ -239,6 +245,9 @@ export default function NewClinicPage() {
                   type="email"
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={labelClass}>Website</label>
                 <input
@@ -270,6 +279,77 @@ export default function NewClinicPage() {
                 />
               </div>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={labelClass}>Postcode</label>
+                <input
+                  className={inputClass}
+                  value={form.postcode}
+                  onChange={set('postcode')}
+                  placeholder="2153"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Services Offered</label>
+              <textarea
+                className={`${inputClass} resize-none`}
+                value={form.services}
+                onChange={set('services')}
+                placeholder="e.g. wellness consultations, vaccinations, microchipping, desexing, dental care"
+                rows={3}
+              />
+              <p className="text-[12px] text-[var(--text-tertiary)] mt-1">
+                Sarah will use this to answer questions about what you offer
+              </p>
+            </div>
+
+            {/* After-hours emergency partner */}
+            <div className="p-4 rounded-lg border border-[var(--border)] space-y-4">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--text-tertiary)] mb-1">
+                  After-Hours Emergency Partner
+                </p>
+                <p className="text-[12px] text-[var(--text-tertiary)]">
+                  If a caller has an emergency outside your hours, Sarah will direct them here
+                </p>
+              </div>
+
+              <div>
+                <label className={labelClass}>Emergency Clinic Name</label>
+                <input
+                  className={inputClass}
+                  value={form.after_hours_partner}
+                  onChange={set('after_hours_partner')}
+                  placeholder="e.g. Animal Referral Hospital"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>Emergency Phone</label>
+                  <input
+                    className={inputClass}
+                    value={form.after_hours_phone}
+                    onChange={set('after_hours_phone')}
+                    placeholder="e.g. 02 9639 7744"
+                    type="tel"
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Emergency Address</label>
+                  <input
+                    className={inputClass}
+                    value={form.emergency_partner_address}
+                    onChange={set('emergency_partner_address')}
+                    placeholder="e.g. 19 Old Northern Road, Baulkham Hills"
+                  />
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
 
@@ -282,67 +362,55 @@ export default function NewClinicPage() {
               </p>
             </div>
 
-            {/* Enable toggle */}
-            <div className="flex items-center justify-between p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
-              <div>
-                <p className="text-[14px] font-semibold text-[var(--text-primary)]">Enable AI Agent</p>
-                <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">
-                  Sarah will answer calls for this clinic
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setAgentEnabled((v) => !v)}
-                className={`relative w-11 h-6 rounded-full transition-colors ${
-                  agentEnabled ? 'bg-[var(--brand)]' : 'bg-[var(--border)]'
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                    agentEnabled ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
+            {/* Twilio Phone Number */}
+            <div>
+              <label className={labelClass}>Twilio Phone Number</label>
+              <input
+                className={inputClass}
+                value={twilioPhone}
+                onChange={(e) => setTwilioPhone(e.target.value)}
+                placeholder="+61 2 XXXX XXXX"
+                type="tel"
+              />
+              <p className="text-[12px] text-[var(--text-tertiary)] mt-1">
+                Optional. The Twilio number assigned to this clinic&apos;s AI agent.
+              </p>
             </div>
 
-            {agentEnabled && (
-              <>
-                {/* Greeting */}
-                <div>
-                  <label className={labelClass}>Custom greeting (optional)</label>
-                  <textarea
-                    value={agentGreeting}
-                    onChange={(e) => setAgentGreeting(e.target.value)}
-                    placeholder="Thank you for calling Hills Pet Clinic, this is Sarah speaking. How can I help you today?"
-                    rows={3}
-                    className={`${inputClass} resize-none`}
-                  />
-                  <p className="text-[12px] text-[var(--text-tertiary)] mt-1">
-                    Leave empty to use the default greeting.
-                  </p>
-                </div>
+            {/* Greeting */}
+            <div>
+              <label className={labelClass}>Custom greeting (optional)</label>
+              <textarea
+                value={agentGreeting}
+                onChange={(e) => setAgentGreeting(e.target.value)}
+                placeholder="Thank you for calling Hills Pet Clinic, this is Sarah speaking. How can I help you today?"
+                rows={3}
+                className={`${inputClass} resize-none`}
+              />
+              <p className="text-[12px] text-[var(--text-tertiary)] mt-1">
+                Leave empty to use the default greeting.
+              </p>
+            </div>
 
-                {/* Info box */}
-                <div className="flex gap-3 p-4 rounded-lg bg-[var(--brand-light)] border border-[var(--brand)]/15">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--brand)" strokeWidth="1.5" strokeLinecap="round" className="shrink-0 mt-0.5">
-                    <circle cx="9" cy="9" r="7" />
-                    <path d="M9 12V9M9 6h.01" />
-                  </svg>
-                  <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
-                    Additional AI configuration (voice, ElevenLabs API key, Twilio number) can be set after the clinic is created from the clinic&apos;s AI Agent settings page.
-                  </p>
-                </div>
-              </>
-            )}
+            {/* Info box */}
+            <div className="flex gap-3 p-4 rounded-lg bg-[var(--brand-light)] border border-[var(--brand)]/15">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--brand)" strokeWidth="1.5" strokeLinecap="round" className="shrink-0 mt-0.5">
+                <circle cx="9" cy="9" r="7" />
+                <path d="M9 12V9M9 6h.01" />
+              </svg>
+              <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
+                Additional AI configuration (voice, ElevenLabs API key) can be set after the clinic is created from the clinic&apos;s AI Agent settings page.
+              </p>
+            </div>
           </div>
         )}
 
-        {/* ── Step 3: Invite Admin ── */}
+        {/* ── Step 3: Invite Users ── */}
         {step === 3 && (
           <div className="space-y-5">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--text-tertiary)] mb-4">
-                Invite Admin
+                Invite Users
               </p>
             </div>
 
@@ -356,25 +424,90 @@ export default function NewClinicPage() {
                 </div>
                 <div>
                   <p className="text-[14px] font-semibold text-[var(--text-primary)]">
-                    Send an admin invite
+                    Invite team members
                   </p>
                   <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">
-                    The clinic admin will receive an email to set their password and log in. This step is optional.
+                    Each person will receive an email to set their password and log in. This step is optional.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div>
-              <label className={labelClass}>Admin email address</label>
-              <input
-                className={inputClass}
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                placeholder="owner@clinic.com.au"
-                type="email"
-              />
+            {/* Add invite row */}
+            <div className="grid grid-cols-[1fr_auto_auto] gap-3 items-end">
+              <div>
+                <label className={labelClass}>Email address</label>
+                <input
+                  className={inputClass}
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addInvite() } }}
+                  placeholder="jane@clinic.com.au"
+                  type="email"
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Role</label>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value)}
+                  className={`${inputClass} appearance-none cursor-pointer pr-10`}
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 0.75rem center',
+                  }}
+                >
+                  {INVITE_ROLES.map((r) => (
+                    <option key={r.value} value={r.value}>{r.label}</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                type="button"
+                onClick={addInvite}
+                className="h-[46px] px-4 rounded-lg bg-[var(--brand)] text-white text-[14px] font-semibold hover:bg-[var(--brand-hover)] active:scale-[0.98] transition-all"
+              >
+                Add
+              </button>
             </div>
+
+            {/* Invited users list */}
+            {invites.length > 0 && (
+              <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+                <div className="px-4 py-2.5 bg-[var(--bg-secondary)] border-b border-[var(--border)]">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--text-tertiary)]">
+                    {invites.length} {invites.length === 1 ? 'invite' : 'invites'} to send
+                  </p>
+                </div>
+                <div className="divide-y divide-[var(--border)]">
+                  {invites.map((inv, i) => (
+                    <div key={i} className="flex items-center justify-between px-4 py-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)] flex items-center justify-center shrink-0">
+                          <span className="text-[12px] font-bold text-[var(--text-tertiary)] uppercase">
+                            {inv.email.charAt(0)}
+                          </span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-medium text-[var(--text-primary)] truncate">{inv.email}</p>
+                          <p className="text-[12px] text-[var(--text-tertiary)]">{inv.role}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeInvite(i)}
+                        className="text-[var(--text-tertiary)] hover:text-[#DC2626] transition-colors p-1"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                          <path d="M3 3l8 8M11 3l-8 8" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Summary */}
             <div className="border border-[var(--border)] rounded-lg overflow-hidden">
@@ -385,10 +518,9 @@ export default function NewClinicPage() {
               </div>
               <div className="px-4 py-3 space-y-2">
                 <SummaryRow label="Clinic" value={form.name || '—'} />
-                <SummaryRow label="Slug" value={form.slug || '—'} />
                 <SummaryRow label="Industry" value={VERTICALS.find((v) => v.value === form.vertical)?.label ?? form.vertical} />
-                <SummaryRow label="AI Agent" value={agentEnabled ? 'Enabled' : 'Disabled'} />
-                {inviteEmail.trim() && <SummaryRow label="Invite" value={inviteEmail} />}
+                {twilioPhone.trim() && <SummaryRow label="Twilio Number" value={twilioPhone} />}
+                <SummaryRow label="Users" value={invites.length > 0 ? `${invites.length} invite${invites.length === 1 ? '' : 's'}` : 'None'} />
               </div>
             </div>
           </div>
