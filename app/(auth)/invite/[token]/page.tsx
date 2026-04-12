@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import InviteForm from './invite-form'
 
 interface PageProps {
@@ -7,7 +7,13 @@ interface PageProps {
 
 export default async function InvitePage({ params }: PageProps) {
   const { token } = await params
-  const supabase = await createClient()
+
+  // Use service client to bypass RLS — invite page is public (user not logged in)
+  const supabase = createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  )
 
   // Validate invite token — must be unused and not expired
   const { data: invite, error } = await supabase
