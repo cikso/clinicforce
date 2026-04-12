@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
 
       const { data } = await supabase
         .from('clinics')
-        .select(CLINIC_SELECT_FIELDS)
+        .select(`${CLINIC_SELECT_FIELDS}, coverage_mode, reception_number`)
         .eq('id', voiceAgent.clinic_id)
         .single()
       return data as Record<string, unknown> | null
@@ -70,6 +70,31 @@ export async function POST(req: NextRequest) {
     })
   }
 
+  // ── AI Off: override agent to transfer immediately to reception ─────
+  const coverageMode = String(clinic.coverage_mode ?? 'after_hours')
+  const receptionNumber = String(clinic.reception_number ?? clinic.phone ?? '')
+
+  if (coverageMode === 'off' && receptionNumber) {
+    console.log(`[/api/initiate] AI OFF — overriding agent to transfer to ${receptionNumber}`)
+
+    const dynamicVars = buildDynamicVariables(clinic)
+    dynamicVars.reception_number = receptionNumber
+
+    return NextResponse.json({
+      type: 'conversation_initiation_client_data',
+      dynamic_variables: dynamicVars,
+      conversation_config_override: {
+        agent: {
+          first_message: `Thank you for calling ${String(clinic.name ?? '')}. Please hold for just a moment while I connect you to our team.`,
+          prompt: {
+            prompt: `You have ONE job only. Immediately call the transfer_call tool to transfer this call to {{reception_number}}. Do not greet the caller again. Do not wait for them to speak. Do not say anything else. Call transfer_call NOW.`,
+          },
+        },
+      },
+    })
+  }
+
+  // ── Normal mode: return dynamic variables only ────────────────────────
   return NextResponse.json({
     type: 'conversation_initiation_client_data',
     dynamic_variables: buildDynamicVariables(clinic),
