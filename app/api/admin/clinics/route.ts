@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
+import { sendInviteEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   // Auth check
@@ -71,15 +72,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create clinic.' }, { status: 500 })
   }
 
-  // Optionally create invite
+  // Optionally create invite and send email
   if (invite_email?.trim()) {
-    await service.from('clinic_invites').insert({
+    const { data: invite } = await service.from('clinic_invites').insert({
       clinic_id: clinic.id,
       email: invite_email.trim(),
       role: 'clinic_admin',
       invited_by: user.email ?? user.id,
-    })
-    // Note: in production you'd send the invite email here via Resend/SendGrid
+    }).select('token').single()
+
+    if (invite?.token) {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://app.clinicforce.io'
+      const inviteUrl = `${siteUrl}/invite/${invite.token}`
+      try {
+        await sendInviteEmail({
+          to: invite_email.trim(),
+          clinicName: name.trim(),
+          inviteUrl,
+          invitedBy: user.email ?? 'Platform Admin',
+          role: 'clinic_admin',
+        })
+      } catch (emailErr) {
+        console.error('[admin/clinics] invite email failed:', emailErr)
+      }
+    }
   }
 
   return NextResponse.json({ success: true, clinic_id: clinic.id })

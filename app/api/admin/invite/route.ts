@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Send branded invite email
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://app.clinicforce.io'
   const inviteUrl = `${siteUrl}/invite/${invite.token}`
 
   try {
