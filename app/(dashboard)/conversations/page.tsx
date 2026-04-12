@@ -41,6 +41,13 @@ async function ConversationsContent() {
         .maybeSingle()
     : { data: null }
 
+  // Fire-and-forget: enrich call summaries from ElevenLabs in the background
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.VERCEL_URL
+  if (appUrl) {
+    const base = appUrl.startsWith('http') ? appUrl : `https://${appUrl}`
+    fetch(`${base}/api/enrich-calls`, { signal: AbortSignal.timeout(25_000) }).catch(() => {})
+  }
+
   const clinicRecord = clinicData as { name?: string; vertical?: string; industry_config?: Record<string, unknown> } | null
   const industryConfig = clinicRecord?.industry_config ?? null
   const extraFields = (industryConfig as { extra_fields?: unknown[] } | null)?.extra_fields
