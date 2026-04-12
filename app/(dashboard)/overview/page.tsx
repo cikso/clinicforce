@@ -4,7 +4,7 @@ import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 import KpiCard from './components/KpiCard'
-import CoveragePanel from './components/CoveragePanel'
+import OverviewHeader from './components/OverviewHeader'
 import CallVolumeChart, { type ChartDataPoint } from './components/CallVolumeChart'
 import CallInboxPanel from './components/CallInboxPanel'
 
@@ -344,28 +344,11 @@ export default async function OverviewPage() {
   return (
     <div className="-m-6 min-h-screen" style={{ backgroundColor: '#F4F6F9' }}>
       <div className="max-w-[1440px] mx-auto px-6 py-6 space-y-4">
-        {/* ── Page Header ── */}
-        <div className="flex items-end justify-between mb-1">
-          <div>
-            <h1 className="text-[20px] font-bold text-[#0A2540]" style={{ fontFamily: 'DM Sans, sans-serif', fontWeight: 700 }}>
-              Overview
-            </h1>
-            <p className="text-[12px] text-[#8A94A6] mt-0.5">Real-time clinic performance</p>
-          </div>
-          <div className="bg-white rounded-md px-3 py-1.5 text-[11px] text-[#637381]" style={{ border: '1px solid #DDE1E7' }}>
-            {todayLabel}
-          </div>
-        </div>
-
-        {/* ── Coverage Control Panel ── */}
-        <CoveragePanel
-          initialMode={coverageMode as 'after_hours'}
-          initialStats={{
-            activeSince: coverageActivatedAt,
-            activatedBy: coverageActivatedBy,
-            callsCovered: callsCoveredCount,
-          }}
+        {/* ── Page Header with Coverage Controls ── */}
+        <OverviewHeader
+          initialMode={coverageMode}
           clinicId={clinicId}
+          todayLabel={todayLabel}
         />
 
         {/* ── KPI Grid ── */}
