@@ -54,7 +54,9 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // 2. Create the auth user via admin API
+  // 2. Create the auth user via admin API, or find existing user
+  let userId: string
+
   const { data: newUser, error: createError } =
     await serviceRole.auth.admin.createUser({
       email: invite.email,
@@ -63,39 +65,63 @@ export async function POST(request: NextRequest) {
       user_metadata: { full_name: fullName },
     })
 
-  if (createError || !newUser.user) {
-    // Handle "already registered" gracefully
-    if (createError?.message?.includes('already registered')) {
+  if (createError || !newUser?.user) {
+    // If user already exists, look them up and link to new clinic
+    const isAlreadyRegistered =
+      createError?.message?.toLowerCase().includes('already') ||
+      createError?.message?.toLowerCase().includes('exists') ||
+      createError?.message?.toLowerCase().includes('unique') ||
+      (createError as unknown as { status?: number })?.status === 422
+
+    if (isAlreadyRegistered) {
+      // Find existing user by email
+      const { data: existingUsers } = await serviceRole.auth.admin.listUsers()
+      const existingUser = existingUsers?.users?.find(
+        (u) => u.email?.toLowerCase() === invite.email.toLowerCase()
+      )
+
+      if (!existingUser) {
+        return NextResponse.json(
+          { error: 'An account with this email exists but could not be found. Try signing in.' },
+          { status: 409 }
+        )
+      }
+
+      userId = existingUser.id
+    } else {
+      console.error('[invite/accept] createUser error:', createError)
       return NextResponse.json(
-        { error: 'An account with this email already exists. Try signing in.' },
-        { status: 409 }
+        { error: `Failed to create your account: ${createError?.message ?? 'Unknown error'}. Please try again.` },
+        { status: 500 }
       )
     }
-    console.error('[invite/accept] createUser error:', createError)
-    return NextResponse.json(
-      { error: 'Failed to create your account. Please try again.' },
-      { status: 500 }
-    )
+  } else {
+    userId = newUser.user.id
   }
 
-  const userId = newUser.user.id
+  // 3. Insert clinic_users row (check for existing link first)
+  const { data: existingLink } = await serviceRole
+    .from('clinic_users')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('clinic_id', invite.clinic_id)
+    .maybeSingle()
 
-  // 3. Insert clinic_users row
-  const { error: cuError } = await serviceRole.from('clinic_users').insert({
-    user_id: userId,
-    clinic_id: invite.clinic_id,
-    role: invite.role,
-    name: fullName,
-  })
+  if (!existingLink) {
+    const { error: cuError } = await serviceRole.from('clinic_users').insert({
+      user_id: userId,
+      clinic_id: invite.clinic_id,
+      role: invite.role,
+      name: fullName,
+    })
 
-  if (cuError) {
-    console.error('[invite/accept] clinic_users insert error:', cuError)
-    // Roll back — delete the auth user to keep state consistent
-    await serviceRole.auth.admin.deleteUser(userId)
-    return NextResponse.json(
-      { error: 'Failed to link your account to the clinic. Please try again.' },
-      { status: 500 }
-    )
+    if (cuError) {
+      console.error('[invite/accept] clinic_users insert error:', cuError)
+      return NextResponse.json(
+        { error: 'Failed to link your account to the clinic. Please try again.' },
+        { status: 500 }
+      )
+    }
   }
 
   // 4. Mark the invite as accepted
