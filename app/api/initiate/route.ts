@@ -25,23 +25,29 @@ export async function POST(req: NextRequest) {
     body = {}
   }
 
-  console.log('[/api/initiate] Webhook called:', JSON.stringify({
-    agent_id: body.agent_id ?? null,
-    phone_number_id: body.phone_number_id ?? null,
-  }))
+  // ElevenLabs may send the called number under different keys
+  const toNumber = (
+    (body.to as string) ||
+    (body.called_number as string) ||
+    (body.phone_number as string) ||
+    (body.caller_id as string) ||
+    null
+  )
+
+  console.log('[/api/initiate] Webhook called — full body:', JSON.stringify(body))
+  console.log('[/api/initiate] Resolved toNumber:', toNumber)
 
   const supabase = getServiceSupabase()
-  const agentId = (body.agent_id as string) ?? null
 
-  // Resolve clinic from agent_id → voice_agents → clinics
+  // Resolve clinic from Twilio To number → voice_agents → clinics
   let clinic: Record<string, unknown> | null = null
 
-  if (agentId) {
+  if (toNumber) {
     clinic = await withRetry(async () => {
       const { data: voiceAgent } = await supabase
         .from('voice_agents')
         .select('clinic_id')
-        .eq('elevenlabs_agent_id', agentId)
+        .eq('twilio_phone_number', toNumber)
         .limit(1)
         .maybeSingle()
 
@@ -57,7 +63,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!clinic) {
-    console.error('[/api/initiate] Could not resolve clinic for agent_id:', agentId)
+    console.log('[/api/initiate] Unknown number:', toNumber)
     return NextResponse.json({
       type: 'conversation_initiation_client_data',
       dynamic_variables: {},
