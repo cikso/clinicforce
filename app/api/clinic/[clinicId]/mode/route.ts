@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
-const VALID_MODES    = ['DAYTIME', 'LUNCH', 'AFTER_HOURS'] as const
+const VALID_MODES = ['off', 'overflow', 'lunch_cover', 'after_hours', 'emergency_only', 'weekend'] as const
 
 function getSupabase() {
   return createClient(
@@ -13,7 +12,7 @@ function getSupabase() {
 
 type RouteCtx = { params: Promise<{ clinicId: string }> }
 
-// GET /api/clinic/[clinicId]/mode
+// GET /api/clinic/[clinicId]/mode — read current coverage mode
 export async function GET(_req: NextRequest, ctx: RouteCtx) {
   const { clinicId } = await ctx.params
   if (!clinicId) {
@@ -22,81 +21,57 @@ export async function GET(_req: NextRequest, ctx: RouteCtx) {
 
   try {
     const supabase = getSupabase()
-    const { data, error } = await supabase
-      .from('coverage_sessions')
-      .select('status, reason, started_at')
-      .eq('clinic_id', clinicId)
-      .single()
+    const { data } = await supabase
+      .from('clinics')
+      .select('coverage_mode, coverage_mode_activated_at, coverage_mode_activated_by')
+      .eq('id', clinicId)
+      .maybeSingle()
 
-    if (error || !data || data.status !== 'ACTIVE') {
-      return NextResponse.json({ mode: null, activatedAt: null })
-    }
-
-    const mode = (VALID_MODES as readonly string[]).includes(data.reason)
-      ? data.reason
-      : null
-
-    return NextResponse.json({ mode, activatedAt: data.started_at ?? null })
+    return NextResponse.json({
+      mode: data?.coverage_mode ?? 'after_hours',
+      activatedAt: data?.coverage_mode_activated_at ?? null,
+      activatedBy: data?.coverage_mode_activated_by ?? null,
+    })
   } catch {
-    return NextResponse.json({ mode: null, activatedAt: null })
+    return NextResponse.json({ mode: 'after_hours', activatedAt: null, activatedBy: null })
   }
 }
 
 // PATCH /api/clinic/[clinicId]/mode
-// Body: { mode: 'DAYTIME' | 'LUNCH' | 'AFTER_HOURS' | null }
+// Body: { mode: 'off' | 'overflow' | 'lunch_cover' | 'after_hours' | 'emergency_only' | 'weekend' }
 export async function PATCH(req: NextRequest, ctx: RouteCtx) {
-  const profile = await getClinicProfile()
-  if (!profile?.clinicId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   const { clinicId } = await ctx.params
   if (!clinicId) {
     return NextResponse.json({ error: 'Missing clinicId' }, { status: 400 })
   }
 
-  if (profile.clinicId !== clinicId) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
-
   const body = await req.json().catch(() => ({}))
-  const mode: string | null = body?.mode ?? null
-  const now  = new Date().toISOString()
-  const supabase = getSupabase()
-
-  if (mode === null) {
-    const { error } = await supabase
-      .from('coverage_sessions')
-      .update({ status: 'INACTIVE', ended_at: now, updated_at: now })
-      .eq('clinic_id', clinicId)
-    if (error) {
-      console.error('[clinic/mode] PATCH deactivate error:', error)
-      return NextResponse.json({ error: 'Database error' }, { status: 500 })
-    }
-    return NextResponse.json({ mode: null, activatedAt: null })
-  }
+  const mode: string = body?.mode ?? 'after_hours'
+  const activatedBy: string = body?.activatedBy ?? 'Manual'
 
   if (!(VALID_MODES as readonly string[]).includes(mode)) {
-    return NextResponse.json({ error: 'Invalid mode' }, { status: 400 })
+    return NextResponse.json({ error: `Invalid mode: ${mode}` }, { status: 400 })
   }
 
-  const { error } = await supabase
-    .from('coverage_sessions')
-    .upsert(
-      {
-        clinic_id:  clinicId,
-        status:     'ACTIVE',
-        reason:     mode,
-        started_at: now,
-        ended_at:   null,
-        updated_at: now,
-      },
-      { onConflict: 'clinic_id' },
-    )
+  const now = new Date().toISOString()
+  const supabase = getSupabase()
 
-  if (error) {
-    console.error('[clinic/mode] PATCH upsert error:', error)
+  // Update clinics table — this is what /api/initiate reads for routing
+  const { error: clinicErr } = await supabase
+    .from('clinics')
+    .update({
+      coverage_mode: mode,
+      coverage_mode_activated_at: now,
+      coverage_mode_activated_by: activatedBy,
+    })
+    .eq('id', clinicId)
+
+  if (clinicErr) {
+    console.error('[clinic/mode] clinics update error:', clinicErr)
     return NextResponse.json({ error: 'Database error' }, { status: 500 })
   }
-  return NextResponse.json({ mode, activatedAt: now })
+
+  console.log(`[clinic/mode] ${clinicId} → ${mode} by ${activatedBy}`)
+
+  return NextResponse.json({ mode, activatedAt: now, activatedBy })
 }

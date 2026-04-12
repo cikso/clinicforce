@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 
 const MODE_BUTTONS = [
   { label: 'AI Off',       value: 'off' },
@@ -56,15 +55,12 @@ export default function CoverageControl({ clinicId, clinicName, initialMode, act
     setSaving(true)
 
     try {
-      const supabase = createClient()
-      await supabase
-        .from('clinics')
-        .update({
-          coverage_mode: newMode,
-          coverage_mode_activated_at: new Date().toISOString(),
-          coverage_mode_activated_by: 'Platform Admin',
-        })
-        .eq('id', clinicId)
+      const res = await fetch(`/api/clinic/${clinicId}/mode`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: newMode, activatedBy: 'Platform Admin' }),
+      })
+      if (!res.ok) throw new Error('Failed to update mode')
     } catch {
       setMode(prevMode)
       setLastActivatedAt(prevAt)
