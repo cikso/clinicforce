@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import InvitePanel from './_invite-panel'
 import CoverageControl from './_coverage-control'
+import DeleteClinicButton from './_delete-clinic'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -138,6 +139,11 @@ export default async function ClinicDetailPage({ params }: PageProps) {
 
       {/* Invite panel — client component */}
       <InvitePanel clinicId={clinic.id} clinicName={clinic.name} invites={invites ?? []} />
+
+      {/* Danger zone */}
+      <div className="mt-8">
+        <DeleteClinicButton clinicId={clinic.id} clinicName={clinic.name} />
+      </div>
     </div>
   )
 }
