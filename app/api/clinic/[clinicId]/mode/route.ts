@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
+import { getServiceSupabase } from '@/lib/voice/shared'
 
 const VALID_MODES = ['off', 'overflow', 'lunch_cover', 'after_hours', 'emergency_only', 'weekend'] as const
 
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  )
-}
-
 type RouteCtx = { params: Promise<{ clinicId: string }> }
+
+/**
+ * Verify the caller is authenticated and authorised for the given clinic.
+ * Platform owners may access any clinic; regular users only their own.
+ */
+async function authorise(clinicId: string) {
+  const profile = await getClinicProfile()
+  if (!profile) {
+    return { error: NextResponse.json({ error: 'Not authenticated' }, { status: 401 }), profile: null }
+  }
+  if (!profile.isPlatformOwner && profile.clinicId !== clinicId) {
+    return { error: NextResponse.json({ error: 'Forbidden' }, { status: 403 }), profile: null }
+  }
+  return { error: null, profile }
+}
 
 // GET /api/clinic/[clinicId]/mode — read current coverage mode
 export async function GET(_req: NextRequest, ctx: RouteCtx) {
@@ -19,8 +28,11 @@ export async function GET(_req: NextRequest, ctx: RouteCtx) {
     return NextResponse.json({ error: 'Missing clinicId' }, { status: 400 })
   }
 
+  const auth = await authorise(clinicId)
+  if (auth.error) return auth.error
+
   try {
-    const supabase = getSupabase()
+    const supabase = getServiceSupabase()
     const { data } = await supabase
       .from('clinics')
       .select('coverage_mode, coverage_mode_activated_at, coverage_mode_activated_by')
@@ -45,6 +57,9 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
     return NextResponse.json({ error: 'Missing clinicId' }, { status: 400 })
   }
 
+  const auth = await authorise(clinicId)
+  if (auth.error) return auth.error
+
   const body = await req.json().catch(() => ({}))
   const mode: string = body?.mode ?? 'after_hours'
   const activatedBy: string = body?.activatedBy ?? 'Manual'
@@ -54,7 +69,7 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
   }
 
   const now = new Date().toISOString()
-  const supabase = getSupabase()
+  const supabase = getServiceSupabase()
 
   // Update clinics table — this is what /api/initiate reads for routing
   const { error: clinicErr } = await supabase
@@ -71,7 +86,7 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
     return NextResponse.json({ error: 'Database error' }, { status: 500 })
   }
 
-  console.log(`[clinic/mode] ${clinicId} → ${mode} by ${activatedBy}`)
+  console.log(`[clinic/mode] ${clinicId} → ${mode} by ${auth.profile!.userName}`)
 
   return NextResponse.json({ mode, activatedAt: now, activatedBy })
 }

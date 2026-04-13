@@ -6,8 +6,9 @@ const MODE_BUTTONS = [
   { label: 'AI Off',       value: 'off' },
   { label: 'Overflow',     value: 'overflow' },
   { label: 'Lunch Cover',  value: 'lunch_cover' },
-  { label: 'After Hours',  value: 'after_hours' },
-  { label: 'Weekend',      value: 'weekend' },
+  { label: 'After Hours',    value: 'after_hours' },
+  { label: 'Emergency Only', value: 'emergency_only' },
+  { label: 'Weekend',        value: 'weekend' },
 ] as const
 
 type CoverageMode = typeof MODE_BUTTONS[number]['value']
