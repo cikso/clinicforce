@@ -6,7 +6,7 @@ import { ChevronDown } from 'lucide-react'
 const faqs: [string, string][] = [
   [
     'How long does setup take?',
-    'About 3 minutes of your time. You connect your practice management software, answer a few questions about your clinic, and our team handles the rest. We aim for a 1 to 2 business day go-live, and there are no setup fees.',
+    'About 3 minutes of your time. You connect your practice management software, answer a few questions about your clinic, and our team handles the rest — configuring Sarah with your services and protocols, then setting up call forwarding. We aim for a 1 to 2 business day go-live. No setup fees, no hardware to install, and no software to download.',
   ],
   [
     'Is ClinicForce compliant with Australian privacy law?',
@@ -19,10 +19,6 @@ const faqs: [string, string][] = [
   [
     'Can I turn ClinicForce off if I don\'t need it?',
     'Yes — completely. From your dashboard you can switch coverage on or off in seconds. Set it to handle all calls, overflow only, after-hours only, or turn it off entirely. If your front desk is fully staffed and you want to run the phones yourself, just flip the toggle.',
-  ],
-  [
-    'How long does it take to set up?',
-    'Most clinics are live within 48 hours. We configure Sarah with your clinic\'s details, services, and protocols, then set up call forwarding. No hardware to install, no software to download.',
   ],
   [
     'Can Sarah actually book appointments?',
