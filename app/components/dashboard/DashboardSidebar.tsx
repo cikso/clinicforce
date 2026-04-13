@@ -85,14 +85,14 @@ const icons = {
   ),
 }
 
-const NAV_ITEMS: { label: string; icon: React.ReactNode; href: string; badgeKey?: 'tasks' | 'surveys' }[] = [
+const NAV_ITEMS: { label: string; icon: React.ReactNode; href: string; badgeKey?: 'tasks' | 'surveys'; comingSoon?: boolean }[] = [
   { label: 'Command Centre', icon: icons.grid,      href: '/overview' },
   { label: 'Call Inbox',     icon: icons.phone,     href: '/conversations' },
   { label: 'Action Queue',   icon: icons.list,      href: '/actions', badgeKey: 'tasks' },
   { label: 'Insights',       icon: icons.barChart,  href: '/insights' },
-  { label: 'Bookings',       icon: icons.calendar,  href: '/bookings' },
-  { label: 'SMS Hub',        icon: icons.message,   href: '/sms' },
-  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys', badgeKey: 'surveys' },
+  { label: 'Bookings',       icon: icons.calendar,  href: '/bookings', comingSoon: true },
+  { label: 'SMS Hub',        icon: icons.message,   href: '/sms', comingSoon: true },
+  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys', comingSoon: true },
   { label: 'Settings',       icon: icons.cog,       href: '/settings' },
 ]
 
@@ -156,7 +156,7 @@ export default function DashboardSidebar({
       {/* Navigation */}
       <nav className="flex-1 px-3 py-3 overflow-y-auto">
         <div className="space-y-0.5">
-          {NAV_ITEMS.map(({ label, icon, href, badgeKey }) => {
+          {NAV_ITEMS.map(({ label, icon, href, badgeKey, comingSoon }) => {
             const active = isActive(href)
             const count = badgeKey ? badgeCounts[badgeKey] ?? 0 : 0
             return (
@@ -174,7 +174,12 @@ export default function DashboardSidebar({
                 <span className={cn('shrink-0', active ? 'text-[var(--brand)]' : 'text-[var(--text-tertiary)]')}>
                   {icon}
                 </span>
-                <span className="sidebar-expanded-content truncate">{label}</span>
+                <span className="sidebar-expanded-content truncate">
+                  {label}
+                  {comingSoon && (
+                    <span className="ml-1 text-[9px] font-normal text-[var(--text-tertiary)]">(coming soon)</span>
+                  )}
+                </span>
                 {count > 0 && (
                   <span className="sidebar-expanded-content ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--error)] text-white text-[10px] font-bold leading-none">
                     {count > 99 ? '99+' : count}
