@@ -88,11 +88,11 @@ const icons = {
 const NAV_ITEMS: { label: string; icon: React.ReactNode; href: string; badgeKey?: 'tasks' | 'surveys' }[] = [
   { label: 'Command Centre', icon: icons.grid,      href: '/overview' },
   { label: 'Call Inbox',     icon: icons.phone,     href: '/conversations' },
-  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys', badgeKey: 'surveys' },
   { label: 'Action Queue',   icon: icons.list,      href: '/actions', badgeKey: 'tasks' },
   { label: 'Insights',       icon: icons.barChart,  href: '/insights' },
   { label: 'Bookings',       icon: icons.calendar,  href: '/bookings' },
   { label: 'SMS Hub',        icon: icons.message,   href: '/sms' },
+  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys', badgeKey: 'surveys' },
   { label: 'Settings',       icon: icons.cog,       href: '/settings' },
 ]
 
