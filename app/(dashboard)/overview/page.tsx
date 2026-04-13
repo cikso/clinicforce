@@ -307,6 +307,39 @@ export default async function OverviewPage() {
   }).length
   const tasksPendingMonth = monthCalls.filter(c => c.action_required && c.status !== 'ACTIONED').length
 
+  // ── Call breakdown categorisation (reuses monthCalls; no extra query) ──
+  const rescheduleRe = /\b(cancel|reschedul|re-schedul|move|shift|postpon|change.*appointment)\b/i
+  const bookingCatRe = /\b(book|booking|appointment|scheduled?|vaccination|dental|desex|neuter|spay|check.?up)\b/i
+  const faqRe        = /\b(hours?|open|close|fee|fees|cost|price|pricing|parking|location|where|address|service|what.?to.?bring)\b/i
+  const escalateRe   = /\b(escalat|message|urgent|emergency|transfer|callback|call.?back|follow.?up)\b/i
+
+  type BreakdownBucket = 'Booking / appointment' | 'Reschedule / cancel' | 'FAQ / enquiry' | 'Escalated / message' | 'Other'
+  const breakdownCounts: Record<BreakdownBucket, number> = {
+    'Booking / appointment': 0,
+    'Reschedule / cancel':   0,
+    'FAQ / enquiry':         0,
+    'Escalated / message':   0,
+    'Other':                 0,
+  }
+  for (const c of monthCalls) {
+    const s = c.summary ?? ''
+    let bucket: BreakdownBucket
+    if (c.action_required || escalateRe.test(s))  bucket = 'Escalated / message'
+    else if (rescheduleRe.test(s))                bucket = 'Reschedule / cancel'
+    else if (bookingCatRe.test(s))                bucket = 'Booking / appointment'
+    else if (faqRe.test(s))                       bucket = 'FAQ / enquiry'
+    else                                          bucket = 'Other'
+    breakdownCounts[bucket]++
+  }
+  const breakdownMax = Math.max(1, ...Object.values(breakdownCounts))
+  const breakdownRows: { label: BreakdownBucket; count: number; color: string }[] = [
+    { label: 'Booking / appointment', count: breakdownCounts['Booking / appointment'], color: '#6B3FA0' },
+    { label: 'Reschedule / cancel',   count: breakdownCounts['Reschedule / cancel'],   color: '#1A5FA8' },
+    { label: 'FAQ / enquiry',         count: breakdownCounts['FAQ / enquiry'],         color: '#0A7A5B' },
+    { label: 'Escalated / message',   count: breakdownCounts['Escalated / message'],   color: '#A0305A' },
+    { label: 'Other',                 count: breakdownCounts['Other'],                 color: '#8A94A6' },
+  ]
+
   // ── Coverage Panel Data ──
   const coverageMode = (clinicRecord?.coverage_mode as string) ?? 'after_hours'
   const coverageActivatedAt = clinicRecord?.coverage_mode_activated_at ?? null
@@ -434,6 +467,31 @@ export default async function OverviewPage() {
             iconColor="#A0305A"
             icon={icons.callback}
           />
+        </div>
+
+        {/* ── Call breakdown ── */}
+        <div className="bg-white rounded-lg p-5" style={{ border: '1.5px solid #DDE1E7' }}>
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-sm font-semibold text-[#0A2540]">Call breakdown</h2>
+            <span className="text-[10px] uppercase tracking-[1px] font-semibold text-[#8A94A6]">This month</span>
+          </div>
+          <div className="space-y-2.5">
+            {breakdownRows.map(({ label, count, color }) => (
+              <div key={label} className="flex items-center gap-3">
+                <span className="text-xs font-medium text-[#0A2540] w-44 shrink-0 truncate">{label}</span>
+                <div className="flex-1 h-2 rounded-full bg-[#F4F6F9] overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${(count / breakdownMax) * 100}%`,
+                      backgroundColor: color,
+                    }}
+                  />
+                </div>
+                <span className="text-xs font-semibold text-[#0A2540] tabular-nums w-8 text-right shrink-0">{count}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* ── KPI Grid ── */}
