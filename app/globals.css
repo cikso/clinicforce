@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800;9..40,900&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -296,4 +296,52 @@ html {
   border: 3px solid #17C4BE;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   cursor: pointer;
+}
+
+/* ─── SITEWIDE TYPOGRAPHY (landing + dashboard) ─── */
+body {
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  color: #3A3A3A;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  font-weight: 900;
+  color: #0D0E12;
+  letter-spacing: -1.5px;
+  line-height: 1.08;
+}
+
+h2 {
+  font-weight: 900;
+  color: #0D0E12;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+
+h3,
+h4 {
+  font-weight: 800;
+  color: #0D0E12;
+  letter-spacing: -0.2px;
+}
+
+/* ─── DASHBOARD TYPOGRAPHY OVERRIDES ─── */
+/* KPI stat numbers (KpiCard) — bumped to 900 weight, ink color, tighter tracking */
+.kpi-stat-value {
+  font-weight: 900 !important;
+  color: #0D0E12 !important;
+  letter-spacing: -1px !important;
+}
+
+/* Table headers */
+thead th {
+  font-weight: 700;
+  color: #0D0E12;
+}
+
+/* Buttons */
+button {
+  font-weight: 700;
 }

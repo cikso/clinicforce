@@ -50,7 +50,7 @@ export default function KpiCard({
 
         {/* Number + context */}
         <div className="flex items-baseline gap-2 mb-2">
-          <p className="text-[2.75rem] font-bold leading-none tracking-tight text-slate-900 tabular-nums">{value}</p>
+          <p className="kpi-stat-value text-[2.75rem] font-bold leading-none tracking-tight text-slate-900 tabular-nums">{value}</p>
           <p className="text-sm text-slate-400">{context}</p>
         </div>
 
