@@ -117,6 +117,56 @@ export function ClinicForceLanding() {
       <HeroSection onBookDemo={() => setDemoOpen(true)} />
       <div className="mx-auto max-w-7xl px-6 pb-20 pt-16 sm:px-8 lg:px-12">
 
+        <section
+          id="why-it-matters"
+          className="overflow-hidden rounded-[36px] border border-[#1E1B3A] bg-[#0F0C24] px-6 py-16 text-white shadow-[0_22px_55px_rgba(0,0,0,0.18)] sm:px-8 sm:py-20 lg:px-12"
+        >
+          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em] text-[#8DE2DE]">
+            Why it matters
+          </p>
+          <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl lg:text-5xl">
+            Clinics miss calls every day.
+            <br />
+            Most of those patients won&apos;t call back.
+          </h2>
+
+          <div className="mt-12 grid gap-6 lg:grid-cols-2">
+            <article className="rounded-3xl border border-[#2A2550] bg-[#161133] p-8">
+              <div className="font-black leading-none tracking-[-0.04em] text-white text-[72px] sm:text-[88px]">
+                43%
+              </div>
+              <p className="mt-6 max-w-md text-base leading-7 text-[#c6cbe5] sm:text-lg">
+                of clinic calls go unanswered. During lunch breaks, when your staff are already with a patient, and after hours.
+              </p>
+              <div className="mt-8 border-t border-[#2A2550] pt-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8DE2DE]">
+                  Staff burnout
+                </p>
+                <p className="mt-3 text-sm leading-6 text-[#aab0d4]">
+                  Every interruption pulls your team away from the patient in front of them. The pressure is constant, and it shows.
+                </p>
+              </div>
+            </article>
+
+            <article className="rounded-3xl border border-[#2A2550] bg-[#161133] p-8">
+              <div className="font-black leading-none tracking-[-0.04em] text-white text-[72px] sm:text-[88px]">
+                8/10
+              </div>
+              <p className="mt-6 max-w-md text-base leading-7 text-[#c6cbe5] sm:text-lg">
+                clients won&apos;t leave a voicemail. They hang up and call the next clinic on the list. After hours, that number is 10 out of 10.
+              </p>
+              <div className="mt-8 border-t border-[#2A2550] pt-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8DE2DE]">
+                  Lost revenue
+                </p>
+                <p className="mt-3 text-sm leading-6 text-[#aab0d4]">
+                  No message means no callback, no booking, no patient. That&apos;s recurring revenue your competitors are quietly picking up.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+
         <section id="problem" className="px-1 py-24 sm:py-28">
           <SectionHeading
             eyebrow="The problem"
