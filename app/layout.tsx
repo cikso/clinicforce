@@ -1,25 +1,26 @@
-﻿import type { Metadata } from 'next'
+﻿import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.clinicforce.io'),
-  title: 'ClinicForce — Phone and Front-Desk Assistant for Veterinary Clinics',
-  description:
-    'ClinicForce helps veterinary clinics answer calls, handle overflow, support after-hours, capture bookings, and route urgent enquiries with more control.',
+  title: 'ClinicForce — AI Front Desk for Clinics',
+  description: 'AI-powered phone receptionist for healthcare clinics',
   openGraph: {
     url: 'https://www.clinicforce.io',
     siteName: 'ClinicForce',
-    title: 'ClinicForce — Phone and Front-Desk Assistant for Veterinary Clinics',
-    description:
-      'ClinicForce helps veterinary clinics answer calls, handle overflow, support after-hours, capture bookings, and route urgent enquiries with more control.',
+    title: 'ClinicForce — AI Front Desk for Clinics',
+    description: 'AI-powered phone receptionist for healthcare clinics',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ClinicForce — Phone and Front-Desk Assistant for Veterinary Clinics',
-    description:
-      'ClinicForce helps veterinary clinics answer calls, handle overflow, support after-hours, capture bookings, and route urgent enquiries with more control.',
+    title: 'ClinicForce — AI Front Desk for Clinics',
+    description: 'AI-powered phone receptionist for healthcare clinics',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#0F172A',
 }
 
 export default function RootLayout({
