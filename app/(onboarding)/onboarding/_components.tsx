@@ -17,7 +17,7 @@ export const stepSubheading: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif",
   fontSize: '0.8rem',
   fontWeight: 600,
-  color: '#1B6B4A',
+  color: '#17C4BE',
   letterSpacing: '0.06em',
   textTransform: 'uppercase',
   marginBottom: '0.5rem',
@@ -96,7 +96,7 @@ export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       style={{ ...inputBase, ...props.style }}
-      onFocus={(e) => { e.target.style.borderColor = '#1B6B4A'; props.onFocus?.(e) }}
+      onFocus={(e) => { e.target.style.borderColor = '#17C4BE'; props.onFocus?.(e) }}
       onBlur={(e) => { e.target.style.borderColor = '#E8E4DE'; props.onBlur?.(e) }}
     />
   )
@@ -118,7 +118,7 @@ export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
         paddingRight: '2.5rem',
         ...props.style,
       }}
-      onFocus={(e) => { e.target.style.borderColor = '#1B6B4A'; props.onFocus?.(e) }}
+      onFocus={(e) => { e.target.style.borderColor = '#17C4BE'; props.onFocus?.(e) }}
       onBlur={(e) => { e.target.style.borderColor = '#E8E4DE'; props.onBlur?.(e) }}
     />
   )
@@ -136,7 +136,7 @@ export function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement
         minHeight: 80,
         ...props.style,
       }}
-      onFocus={(e) => { e.target.style.borderColor = '#1B6B4A'; props.onFocus?.(e) }}
+      onFocus={(e) => { e.target.style.borderColor = '#17C4BE'; props.onFocus?.(e) }}
       onBlur={(e) => { e.target.style.borderColor = '#E8E4DE'; props.onBlur?.(e) }}
     />
   )
@@ -166,7 +166,7 @@ export function Toggle({
           width: 40,
           height: 22,
           borderRadius: 999,
-          backgroundColor: checked ? '#1B6B4A' : '#E8E4DE',
+          backgroundColor: checked ? '#17C4BE' : '#E8E4DE',
           border: 'none',
           cursor: 'pointer',
           position: 'relative',
@@ -216,7 +216,7 @@ export function SubmitButton({
       style={{
         width: '100%',
         padding: '0.875rem',
-        backgroundColor: isPending ? '#4a8a6a' : '#1B6B4A',
+        backgroundColor: isPending ? '#45c5bf' : '#17C4BE',
         color: '#ffffff',
         border: 'none',
         borderRadius: 10,

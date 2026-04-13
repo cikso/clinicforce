@@ -64,7 +64,7 @@ export default function Sidebar({
 
       {/* -- Brand --------------------------------------------- */}
       <div className="flex items-center gap-3 px-5 py-[18px] border-b border-[#dddbda]">
-        <div className="w-8 h-8 rounded-md bg-[#00BFA5] flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-md bg-[#17C4BE] flex items-center justify-center shrink-0">
           <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
             <path d="M8 16 Q11 10 14 16 Q17 22 20 16 Q23 10 24 16" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
           </svg>
@@ -94,14 +94,14 @@ export default function Sidebar({
                 className={cn(
                   'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors duration-100',
                   active
-                    ? 'bg-[#E0F7F3] text-[#00BFA5] font-semibold'
+                    ? 'bg-[#E5F9F8] text-[#17C4BE] font-semibold'
                     : 'text-slate-600 font-medium hover:bg-slate-50 hover:text-slate-900'
                 )}
               >
                 <Icon
                   className={cn(
                     'w-4 h-4 shrink-0',
-                    active ? 'text-[#00BFA5]' : 'text-slate-400'
+                    active ? 'text-[#17C4BE]' : 'text-slate-400'
                   )}
                 />
                 {label}
@@ -130,11 +130,11 @@ export default function Sidebar({
                     className={cn(
                       'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors duration-100',
                       active
-                        ? 'bg-[#E0F7F3] text-[#00BFA5] font-semibold'
+                        ? 'bg-[#E5F9F8] text-[#17C4BE] font-semibold'
                         : 'text-slate-600 font-medium hover:bg-slate-50 hover:text-slate-900'
                     )}
                   >
-                    <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-[#00BFA5]' : 'text-slate-400')} />
+                    <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-[#17C4BE]' : 'text-slate-400')} />
                     {label}
                   </Link>
                 )
@@ -158,11 +158,11 @@ export default function Sidebar({
                     className={cn(
                       'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors duration-100',
                       active
-                        ? 'bg-[#E0F7F3] text-[#00BFA5] font-semibold'
+                        ? 'bg-[#E5F9F8] text-[#17C4BE] font-semibold'
                         : 'text-slate-600 font-medium hover:bg-slate-50 hover:text-slate-900'
                     )}
                   >
-                    <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-[#00BFA5]' : 'text-slate-400')} />
+                    <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-[#17C4BE]' : 'text-slate-400')} />
                     {label}
                   </Link>
                 )
@@ -184,7 +184,7 @@ export default function Sidebar({
 
         {/* User card */}
         <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-md bg-slate-50 border border-[#dddbda]">
-          <div className="w-8 h-8 rounded-full bg-[#00BFA5] flex items-center justify-center shrink-0 text-white text-[11px] font-bold">
+          <div className="w-8 h-8 rounded-full bg-[#17C4BE] flex items-center justify-center shrink-0 text-white text-[11px] font-bold">
             {initials}
           </div>
           <div className="flex-1 min-w-0">

@@ -70,7 +70,7 @@ export default function CaseDetailDrawer({ entryId, open, onClose }: Props) {
                 Case #{entry.caseId ?? entry.id}
               </h2>
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                <span className="text-[#00BFA5]">{entry.patient.name.toUpperCase()}</span>
+                <span className="text-[#17C4BE]">{entry.patient.name.toUpperCase()}</span>
                 {' '}|{' '}
                 {entry.patient.age} {entry.patient.species} / {entry.patient.breed}
               </p>
@@ -89,13 +89,13 @@ export default function CaseDetailDrawer({ entryId, open, onClose }: Props) {
           {/* AI Triage Intelligence */}
           <section>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-[#00BFA5] flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#17C4BE] flex items-center justify-center shrink-0">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <h3 className="text-lg font-bold text-slate-900">AI Triage Intelligence</h3>
             </div>
 
-            <div className="bg-[#E0F7F3] border border-[#bae6fd] rounded-3xl p-6">
+            <div className="bg-[#E5F9F8] border border-[#bae6fd] rounded-3xl p-6">
               <p className="text-slate-700 text-sm leading-relaxed mb-6">{entry.aiSummary}</p>
 
               <div className="grid grid-cols-2 gap-4 mb-4">
@@ -111,7 +111,7 @@ export default function CaseDetailDrawer({ entryId, open, onClose }: Props) {
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                     Urgency Score
                   </p>
-                  <p className="text-[#00BFA5] font-bold text-sm">{entry.urgencyScore} / 10</p>
+                  <p className="text-[#17C4BE] font-bold text-sm">{entry.urgencyScore} / 10</p>
                 </div>
               </div>
 
@@ -146,11 +146,11 @@ export default function CaseDetailDrawer({ entryId, open, onClose }: Props) {
                   {entry.patient.ownerAddress ?? 'Address not on file'}
                 </p>
                 <div className="flex items-center gap-4 mt-2">
-                  <button className="text-xs font-bold text-[#00BFA5] flex items-center gap-1.5 hover:text-[#00A98E] transition-colors">
+                  <button className="text-xs font-bold text-[#17C4BE] flex items-center gap-1.5 hover:text-[#13ADA8] transition-colors">
                     <Phone className="w-3.5 h-3.5" />
                     {entry.patient.ownerPhone}
                   </button>
-                  <button className="text-xs font-bold text-[#00BFA5] flex items-center gap-1.5 hover:text-[#00A98E] transition-colors">
+                  <button className="text-xs font-bold text-[#17C4BE] flex items-center gap-1.5 hover:text-[#13ADA8] transition-colors">
                     <MessageSquare className="w-3.5 h-3.5" />
                     Message
                   </button>
@@ -188,7 +188,7 @@ export default function CaseDetailDrawer({ entryId, open, onClose }: Props) {
               <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                 Media Assets
               </h3>
-              <span className="px-3 py-1 bg-[#E0F7F3] text-[#00BFA5] text-[10px] font-bold rounded-full">
+              <span className="px-3 py-1 bg-[#E5F9F8] text-[#17C4BE] text-[10px] font-bold rounded-full">
                 3 Assets
               </span>
             </div>
@@ -223,7 +223,7 @@ export default function CaseDetailDrawer({ entryId, open, onClose }: Props) {
             ESCALATE TO EMERGENCY
           </button>
           <div className="flex gap-3">
-            <button className="flex-1 py-3 bg-[#00BFA5] text-white font-bold rounded-full hover:bg-[#00A98E] transition-colors text-sm">
+            <button className="flex-1 py-3 bg-[#17C4BE] text-white font-bold rounded-full hover:bg-[#13ADA8] transition-colors text-sm">
               Approve Booking
             </button>
             <button className="flex-1 py-3 bg-slate-200 text-slate-700 font-bold rounded-full hover:bg-slate-300 transition-colors text-sm">

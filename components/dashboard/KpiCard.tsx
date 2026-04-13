@@ -11,19 +11,19 @@ interface KpiCardProps {
 }
 
 const accentBarMap: Record<NonNullable<KpiCardProps['accentColor']>, string> = {
-  teal:  'bg-[#0d9488]',
+  teal:  'bg-[#17C4BE]',
   amber: 'bg-amber-500',
   red:   'bg-[#c23934]',
   green: 'bg-emerald-500',
   slate: 'bg-slate-400',
-  blue:  'bg-[#00BFA5]',
+  blue:  'bg-[#17C4BE]',
 }
 
 const trendPillMap: Record<NonNullable<StatTrend['direction']>, string> = {
   up:   'bg-emerald-50 text-emerald-700',
   down: 'bg-red-50 text-[#c23934]',
   same: 'bg-slate-100 text-slate-500',
-  new:  'bg-[#E0F7F3] text-[#00BFA5]',
+  new:  'bg-[#E5F9F8] text-[#17C4BE]',
 }
 
 export default function KpiCard({

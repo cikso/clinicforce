@@ -8,14 +8,14 @@ import { useVertical } from '@/context/VerticalContext'
 const triageBg: Record<string, string> = {
   URGENT: 'bg-red-50 text-red-700 border-red-200',
   HIGH: 'bg-orange-50 text-orange-700 border-orange-200',
-  ROUTINE: 'bg-teal-50 text-[#00BFA5] border-teal-200',
+  ROUTINE: 'bg-teal-50 text-[#17C4BE] border-teal-200',
   FOLLOW_UP: 'bg-slate-100 text-slate-600 border-slate-200',
 }
 
 const triageDot: Record<string, string> = {
   URGENT: 'bg-red-500',
   HIGH: 'bg-orange-500',
-  ROUTINE: 'bg-[#00BFA5]',
+  ROUTINE: 'bg-[#17C4BE]',
   FOLLOW_UP: 'bg-slate-400',
 }
 
@@ -32,7 +32,7 @@ export default function CareQueuePanel() {
     <section className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
         <h2 className="font-bold text-slate-900">Active Care Queue</h2>
-        <Link href="/care-queue" className="text-sm font-medium text-[#00BFA5] hover:text-[#00A98E] transition-colors">
+        <Link href="/care-queue" className="text-sm font-medium text-[#17C4BE] hover:text-[#13ADA8] transition-colors">
           View Full Queue
         </Link>
       </div>
@@ -63,7 +63,7 @@ export default function CareQueuePanel() {
               </td>
               <td className="px-6 py-4">
                 <div className="flex items-center gap-1.5 max-w-xs">
-                  <Sparkles className="w-3.5 h-3.5 text-[#00BFA5] shrink-0" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#17C4BE] shrink-0" />
                   <p className="text-xs text-slate-600 italic truncate">{entry.aiSummary}</p>
                 </div>
               </td>

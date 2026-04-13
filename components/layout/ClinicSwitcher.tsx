@@ -75,16 +75,16 @@ export default function ClinicSwitcher() {
                     setOpen(false)
                   }}
                   className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors ${
-                    isActive ? 'bg-[#E0F7F3]' : 'hover:bg-slate-50'
+                    isActive ? 'bg-[#E5F9F8]' : 'hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex-1 min-w-0">
-                    <p className={`text-[13px] truncate ${isActive ? 'font-semibold text-[#00BFA5]' : 'font-medium text-slate-800'}`}>
+                    <p className={`text-[13px] truncate ${isActive ? 'font-semibold text-[#17C4BE]' : 'font-medium text-slate-800'}`}>
                       {clinic.name}
                     </p>
                     <p className="text-[10px] text-slate-400 capitalize">{clinic.vertical}</p>
                   </div>
-                  {isActive && <Check className="w-4 h-4 shrink-0 text-[#00BFA5]" />}
+                  {isActive && <Check className="w-4 h-4 shrink-0 text-[#17C4BE]" />}
                 </button>
               )
             })}

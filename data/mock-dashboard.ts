@@ -356,7 +356,7 @@ export const INITIAL_HANDOVER: HandoverItem[] = [
 // ─── Coverage Usage ───────────────────────────────────────────
 
 export const COVERAGE_USAGE: CoverageUsage[] = [
-  { reason: 'LUNCH_BREAK', label: 'Lunch Break', minutes: 83, color: '#00BFA5' },
+  { reason: 'LUNCH_BREAK', label: 'Lunch Break', minutes: 83, color: '#17C4BE' },
   { reason: 'MEETING', label: 'Team Meeting', minutes: 45, color: '#8b5cf6' },
   { reason: 'MORNING_RUSH', label: 'Morning Rush', minutes: 30, color: '#f59e0b' },
   { reason: 'AFTER_HOURS', label: 'After Hours', minutes: 0, color: '#64748b' },

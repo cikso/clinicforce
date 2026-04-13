@@ -36,7 +36,7 @@ export default function CallRow({ call, onClick }: CallRowProps) {
         <div className="flex items-center gap-2.5">
           <div
             className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold text-white"
-            style={{ background: isUrgent ? '#DC2626' : '#0D9488' }}
+            style={{ background: isUrgent ? '#DC2626' : '#17C4BE' }}
           >
             {initials(call.callerName)}
           </div>

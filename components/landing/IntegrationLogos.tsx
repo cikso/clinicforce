@@ -13,7 +13,7 @@ export default function IntegrationLogos() {
   return (
     <section className="px-1 py-16">
       <div className="text-center mb-10">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-[#00BFA5]">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-[#17C4BE]">
           Integrations
         </p>
         <h2 className="text-2xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-3xl">

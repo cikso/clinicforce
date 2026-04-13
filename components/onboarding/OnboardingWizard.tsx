@@ -75,7 +75,7 @@ export default function OnboardingWizard() {
 
         <button
           onClick={() => router.push('/overview')}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-[#00BFA5] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-[#17C4BE] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors"
         >
           Go to Dashboard <ArrowRight className="w-4 h-4" />
         </button>
@@ -98,7 +98,7 @@ export default function OnboardingWizard() {
             onChange={e => setClinicName(e.target.value)}
             placeholder="Baulkham Hills Pet Clinic"
             required
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00BFA5] focus:border-transparent transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#17C4BE] focus:border-transparent transition-all"
           />
         </div>
 
@@ -111,7 +111,7 @@ export default function OnboardingWizard() {
               onChange={e => setPhone(e.target.value)}
               placeholder="02 9000 0000"
               required
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00BFA5] focus:border-transparent transition-all"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#17C4BE] focus:border-transparent transition-all"
             />
           </div>
           <div>
@@ -121,7 +121,7 @@ export default function OnboardingWizard() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="hello@clinic.com.au"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00BFA5] focus:border-transparent transition-all"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#17C4BE] focus:border-transparent transition-all"
             />
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function OnboardingWizard() {
         <button
           type="submit"
           disabled={loading || !clinicName || !phone}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#00BFA5] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#17C4BE] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2"
         >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}
           {loading ? 'Setting up...' : 'Launch ClinicForce →'}

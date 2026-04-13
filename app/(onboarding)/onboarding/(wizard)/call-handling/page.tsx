@@ -197,7 +197,7 @@ export default function CallHandlingPage() {
                 resize: 'vertical',
                 transition: 'border-color 0.15s',
               }}
-              onFocus={(e) => (e.target.style.borderColor = '#1B6B4A')}
+              onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
               onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
             />
           </Field>

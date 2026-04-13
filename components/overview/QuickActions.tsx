@@ -17,12 +17,12 @@ export default function QuickActions() {
             className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors group"
           >
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-teal-50 text-[#00BFA5] rounded-md group-hover:bg-teal-100 transition-colors">
+              <div className="p-2 bg-teal-50 text-[#17C4BE] rounded-md group-hover:bg-teal-100 transition-colors">
                 <Icon className="w-4 h-4" />
               </div>
               <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">{label}</span>
             </div>
-            <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#00BFA5] transition-colors" />
+            <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#17C4BE] transition-colors" />
           </button>
         ))}
       </div>

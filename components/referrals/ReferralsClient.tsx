@@ -47,7 +47,7 @@ export default function ReferralsClient() {
           <section>
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <PlusSquare className="w-6 h-6 text-[#00BFA5]" />
+                <PlusSquare className="w-6 h-6 text-[#17C4BE]" />
                 <h2 className="text-2xl font-bold text-slate-900">In-Flight Referrals</h2>
               </div>
               <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
@@ -64,7 +64,7 @@ export default function ReferralsClient() {
           {/* Partner ER Directory */}
           <section>
             <div className="flex items-center gap-3 mb-6">
-              <Compass className="w-6 h-6 text-[#00BFA5]" />
+              <Compass className="w-6 h-6 text-[#17C4BE]" />
               <h2 className="text-2xl font-bold text-slate-900">Partner ER Directory</h2>
             </div>
             <div className="grid grid-cols-3 gap-6">
@@ -73,7 +73,7 @@ export default function ReferralsClient() {
                   ? 'border-t-[#b91c1c]'
                   : clinic.waitMinutes && clinic.waitMinutes <= 20
                   ? 'border-t-emerald-400'
-                  : 'border-t-[#00BFA5]'
+                  : 'border-t-[#17C4BE]'
                 const statusBg = clinic.isAtCapacity
                   ? 'bg-red-100 text-[#b91c1c]'
                   : 'bg-emerald-100 text-emerald-700'
@@ -82,7 +82,7 @@ export default function ReferralsClient() {
                   ? 'text-[#b91c1c]'
                   : clinic.waitMinutes && clinic.waitMinutes <= 20
                   ? 'text-emerald-600'
-                  : 'text-[#00BFA5]'
+                  : 'text-[#17C4BE]'
                 const waitText = clinic.isAtCapacity
                   ? '>3 hours'
                   : `~${clinic.waitMinutes} mins`
@@ -139,7 +139,7 @@ export default function ReferralsClient() {
         <div className="w-96 shrink-0">
           <div className="bg-slate-50 rounded-[2.5rem] p-8 h-full flex flex-col border border-slate-100 shadow-sm">
             <div className="flex items-center gap-3 mb-8">
-              <Zap className="w-6 h-6 text-[#00BFA5]" />
+              <Zap className="w-6 h-6 text-[#17C4BE]" />
               <h2 className="text-2xl font-bold text-slate-900">Quick Send</h2>
             </div>
             <div className="space-y-6 flex-1">
@@ -153,7 +153,7 @@ export default function ReferralsClient() {
                     value={selectedPatient}
                     onChange={(e) => setSelectedPatient(e.target.value)}
                     placeholder="Start typing patient name..."
-                    className="w-full pl-5 pr-12 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-[#00BFA5]/20 outline-none placeholder:text-slate-400 shadow-sm"
+                    className="w-full pl-5 pr-12 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-[#17C4BE]/20 outline-none placeholder:text-slate-400 shadow-sm"
                   />
                   <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 </div>
@@ -166,7 +166,7 @@ export default function ReferralsClient() {
                   <select
                     value={selectedClinic}
                     onChange={(e) => setSelectedClinic(e.target.value)}
-                    className="w-full pl-5 pr-12 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-[#00BFA5]/20 outline-none appearance-none text-slate-900 shadow-sm"
+                    className="w-full pl-5 pr-12 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-[#17C4BE]/20 outline-none appearance-none text-slate-900 shadow-sm"
                   >
                     {mockPartnerClinics
                       .filter((c) => !c.isAtCapacity)
@@ -181,8 +181,8 @@ export default function ReferralsClient() {
               </div>
               <div className="bg-white rounded-[1.5rem] p-5 border border-slate-200 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
-                  <Bot className="w-5 h-5 text-[#00BFA5]" />
-                  <span className="text-[11px] font-bold text-[#00BFA5] uppercase tracking-widest">
+                  <Bot className="w-5 h-5 text-[#17C4BE]" />
+                  <span className="text-[11px] font-bold text-[#17C4BE] uppercase tracking-widest">
                     AI Triage Summary
                   </span>
                 </div>
@@ -193,7 +193,7 @@ export default function ReferralsClient() {
                 </p>
               </div>
             </div>
-            <button className="w-full py-4 bg-[#00BFA5] text-white rounded-full text-base font-bold hover:bg-[#00A98E] transition-colors flex items-center justify-center gap-2 shadow-sm mt-8">
+            <button className="w-full py-4 bg-[#17C4BE] text-white rounded-full text-base font-bold hover:bg-[#13ADA8] transition-colors flex items-center justify-center gap-2 shadow-sm mt-8">
               <Send className="w-5 h-5" />
               Dispatch Referral
             </button>
@@ -206,10 +206,10 @@ export default function ReferralsClient() {
 
 function ReferralCard({ referral }: { referral: Referral }) {
   const isStat = referral.urgencyLevel === 'STAT'
-  const borderColor = isStat ? 'border-l-[#b91c1c]' : 'border-l-[#00BFA5]'
-  const iconBg = isStat ? 'bg-red-100 text-[#b91c1c]' : 'bg-teal-100 text-[#00BFA5]'
-  const stepColor = isStat ? '#b91c1c' : '#00BFA5'
-  const badgeBg = isStat ? 'bg-[#b91c1c] text-white' : 'bg-[#00BFA5] text-white'
+  const borderColor = isStat ? 'border-l-[#b91c1c]' : 'border-l-[#17C4BE]'
+  const iconBg = isStat ? 'bg-red-100 text-[#b91c1c]' : 'bg-teal-100 text-[#17C4BE]'
+  const stepColor = isStat ? '#b91c1c' : '#17C4BE'
+  const badgeBg = isStat ? 'bg-[#b91c1c] text-white' : 'bg-[#17C4BE] text-white'
 
   const stepLabels = ['Notified', 'Case Sent', 'Ack', 'Arrived']
 

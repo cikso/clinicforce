@@ -21,13 +21,13 @@ export default function ROICalculator() {
     <section className="relative rounded-[36px] overflow-hidden bg-[#0F172A] px-6 py-20 sm:px-8 lg:px-12">
       {/* Decorative gradient */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -right-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#00BFA5]/10 blur-[120px]" />
-        <div className="absolute -left-20 -bottom-20 h-[400px] w-[400px] rounded-full bg-teal-500/5 blur-[100px]" />
+        <div className="absolute -right-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#17C4BE]/10 blur-[120px]" />
+        <div className="absolute -left-20 -bottom-20 h-[400px] w-[400px] rounded-full bg-[#17C4BE]/5 blur-[100px]" />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#80DFCC]">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#8DE2DE]">
             ROI Calculator
           </p>
           <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
@@ -84,7 +84,7 @@ export default function ROICalculator() {
                 highlight="red"
               />
               <div className="border-t border-[#eef1f4] pt-5">
-                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#00BFA5]">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#17C4BE]">
                   With ClinicForce
                 </p>
                 <p className="text-sm text-[#61717f] mb-4">
@@ -98,9 +98,9 @@ export default function ROICalculator() {
               </div>
             </div>
 
-            <div className="mt-8 rounded-2xl bg-[#E0F7F3] border border-[#00BFA5]/15 p-5 text-center">
+            <div className="mt-8 rounded-2xl bg-[#E5F9F8] border border-[#17C4BE]/15 p-5 text-center">
               <p className="text-sm text-[#536171]">That&apos;s</p>
-              <p className="text-3xl font-bold tracking-[-0.04em] text-[#00BFA5]">
+              <p className="text-3xl font-bold tracking-[-0.04em] text-[#17C4BE]">
                 {formatCurrency(annualRecovery)}
               </p>
               <p className="text-sm text-[#536171]">per year your clinic could recover</p>
@@ -146,7 +146,7 @@ function SliderField({
         onChange={(e) => onChange(Number(e.target.value))}
         className="roi-slider w-full"
         style={{
-          background: `linear-gradient(to right, #00BFA5 ${pct}%, #1e293b ${pct}%)`,
+          background: `linear-gradient(to right, #17C4BE ${pct}%, #1e293b ${pct}%)`,
         }}
       />
       <div className="flex items-center justify-between mt-1.5">
@@ -174,7 +174,7 @@ function ResultRow({
           highlight === 'red'
             ? 'text-red-500'
             : highlight === 'green'
-              ? 'text-[#00BFA5]'
+              ? 'text-[#17C4BE]'
               : 'text-[#1A1A1A]'
         }`}
       >

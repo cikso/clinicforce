@@ -24,8 +24,8 @@ export default function OnboardingCompletePage() {
           width: 72,
           height: 72,
           borderRadius: '50%',
-          backgroundColor: 'rgba(27,107,74,0.1)',
-          border: '2px solid rgba(27,107,74,0.25)',
+          backgroundColor: 'rgba(23,196,190,0.1)',
+          border: '2px solid rgba(23,196,190,0.25)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -37,7 +37,7 @@ export default function OnboardingCompletePage() {
           height="32"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#1B6B4A"
+          stroke="#17C4BE"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -99,7 +99,7 @@ export default function OnboardingCompletePage() {
                 width: 22,
                 height: 22,
                 borderRadius: '50%',
-                backgroundColor: '#1B6B4A',
+                backgroundColor: '#17C4BE',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -134,7 +134,7 @@ export default function OnboardingCompletePage() {
           width: '100%',
           maxWidth: 360,
           padding: '0.9rem 1.5rem',
-          backgroundColor: '#1B6B4A',
+          backgroundColor: '#17C4BE',
           color: '#ffffff',
           borderRadius: 10,
           fontFamily: "'DM Sans', sans-serif",

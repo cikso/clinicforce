@@ -96,7 +96,7 @@ export default function TopBar({
           <input
             type="text"
             placeholder={searchPlaceholder}
-            className="w-full pl-8 pr-4 py-1.5 bg-[#f4f6f9] border border-[#dddbda] rounded-md text-[13px] focus:bg-white focus:border-[#00BFA5] focus:ring-2 focus:ring-[#00BFA5]/10 transition-all outline-none placeholder:text-slate-400 text-slate-700"
+            className="w-full pl-8 pr-4 py-1.5 bg-[#f4f6f9] border border-[#dddbda] rounded-md text-[13px] focus:bg-white focus:border-[#17C4BE] focus:ring-2 focus:ring-[#17C4BE]/10 transition-all outline-none placeholder:text-slate-400 text-slate-700"
           />
         </div>
       </div>
@@ -137,7 +137,7 @@ export default function TopBar({
         )}
 
         {/* Avatar */}
-        <div className="w-7 h-7 rounded-full bg-[#00BFA5] flex items-center justify-center shrink-0 text-white text-[10px] font-bold ml-1">
+        <div className="w-7 h-7 rounded-full bg-[#17C4BE] flex items-center justify-center shrink-0 text-white text-[10px] font-bold ml-1">
           {avatarInitials}
         </div>
       </div>

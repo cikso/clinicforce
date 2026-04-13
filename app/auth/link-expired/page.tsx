@@ -74,7 +74,7 @@ export default function LinkExpiredPage() {
           href="/forgot-password"
           style={{
             display: 'block',
-            background: '#1B6B4A',
+            background: '#17C4BE',
             color: '#fff',
             borderRadius: '10px',
             padding: '14px 24px',

@@ -110,8 +110,8 @@ export default function UrgentRulesPage() {
                     alignItems: 'flex-start',
                     gap: '0.625rem',
                     padding: '0.75rem',
-                    backgroundColor: isChecked ? 'rgba(27,107,74,0.06)' : '#F9F8F6',
-                    border: isChecked ? '1px solid rgba(27,107,74,0.35)' : '1px solid #E8E4DE',
+                    backgroundColor: isChecked ? 'rgba(23,196,190,0.06)' : '#F9F8F6',
+                    border: isChecked ? '1px solid rgba(23,196,190,0.35)' : '1px solid #E8E4DE',
                     borderRadius: 10,
                     cursor: 'pointer',
                     textAlign: 'left',
@@ -124,8 +124,8 @@ export default function UrgentRulesPage() {
                       width: 18,
                       height: 18,
                       borderRadius: 5,
-                      backgroundColor: isChecked ? '#1B6B4A' : '#ffffff',
-                      border: isChecked ? '1px solid #1B6B4A' : '1px solid #D0CCC6',
+                      backgroundColor: isChecked ? '#17C4BE' : '#ffffff',
+                      border: isChecked ? '1px solid #17C4BE' : '1px solid #D0CCC6',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -197,7 +197,7 @@ export default function UrgentRulesPage() {
               resize: 'vertical',
               transition: 'border-color 0.15s',
             }}
-            onFocus={(e) => (e.target.style.borderColor = '#1B6B4A')}
+            onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
             onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
           />
         </Field>

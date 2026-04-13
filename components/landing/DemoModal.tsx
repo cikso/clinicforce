@@ -45,19 +45,19 @@ function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNo
 const inputCls =
   'w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm text-[#1A1A1A] ' +
   'placeholder:text-[#BDBAB5] outline-none transition-colors ' +
-  'focus:border-[#00BFA5] focus:ring-2 focus:ring-[#00BFA5]/10'
+  'focus:border-[#17C4BE] focus:ring-2 focus:ring-[#17C4BE]/10'
 
 const selectCls =
   'w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm text-[#1A1A1A] ' +
   'outline-none transition-colors appearance-none cursor-pointer ' +
-  'focus:border-[#00BFA5] focus:ring-2 focus:ring-[#00BFA5]/10'
+  'focus:border-[#17C4BE] focus:ring-2 focus:ring-[#17C4BE]/10'
 
 // ── Success state ─────────────────────────────────────────────────────────────
 
 function SuccessView({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col items-center px-8 py-12 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00BFA5]/10 text-[#00BFA5]">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#17C4BE]/10 text-[#17C4BE]">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 6 9 17l-5-5" />
@@ -71,7 +71,7 @@ function SuccessView({ onClose }: { onClose: () => void }) {
       </p>
       <button
         onClick={onClose}
-        className="mt-8 rounded-xl border border-[#E5E7EB] bg-white px-6 py-2.5 text-sm font-medium text-[#6B6B6B] transition hover:border-[#00BFA5] hover:text-[#00BFA5]"
+        className="mt-8 rounded-xl border border-[#E5E7EB] bg-white px-6 py-2.5 text-sm font-medium text-[#6B6B6B] transition hover:border-[#17C4BE] hover:text-[#17C4BE]"
       >
         Close
       </button>
@@ -156,7 +156,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#E5E7EB] px-6 py-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#00BFA5]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#17C4BE]">
               <span className="text-[10px] font-bold tracking-wider text-white">CF</span>
             </div>
             <div>
@@ -328,7 +328,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
               disabled={saving}
               className="mt-5 w-full rounded-xl py-3.5 text-sm font-semibold tracking-[-0.01em] text-white transition active:scale-[0.99]"
               style={{
-                background: saving ? '#4DD9C0' : '#00BFA5',
+                background: saving ? '#55DCD7' : '#17C4BE',
                 cursor: saving ? 'not-allowed' : 'pointer',
               }}
             >

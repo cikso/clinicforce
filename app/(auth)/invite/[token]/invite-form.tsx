@@ -79,7 +79,7 @@ export default function InviteForm({
               fontFamily: "'DM Sans', sans-serif",
               fontWeight: 700,
               fontSize: '1.15rem',
-              color: '#1B6B4A',
+              color: '#17C4BE',
               letterSpacing: '-0.01em',
             }}
           >
@@ -104,13 +104,13 @@ export default function InviteForm({
                 alignItems: 'center',
                 gap: '0.375rem',
                 padding: '0.3rem 0.875rem',
-                backgroundColor: 'rgba(27,107,74,0.08)',
-                border: '1px solid rgba(27,107,74,0.2)',
+                backgroundColor: 'rgba(23,196,190,0.08)',
+                border: '1px solid rgba(23,196,190,0.2)',
                 borderRadius: 999,
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: '0.8rem',
                 fontWeight: 600,
-                color: '#1B6B4A',
+                color: '#17C4BE',
                 letterSpacing: '0.02em',
               }}
             >
@@ -173,7 +173,7 @@ export default function InviteForm({
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Jane Smith"
                 style={inputStyle}
-                onFocus={(e) => (e.target.style.borderColor = '#1B6B4A')}
+                onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
                 onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
               />
             </Field>
@@ -204,7 +204,7 @@ export default function InviteForm({
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   style={{ ...inputStyle, paddingRight: '2.75rem' }}
-                  onFocus={(e) => (e.target.style.borderColor = '#1B6B4A')}
+                  onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
                   onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
                 />
                 <EyeToggle show={showPassword} onToggle={() => setShowPassword((v) => !v)} />
@@ -225,7 +225,7 @@ export default function InviteForm({
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
                   style={{ ...inputStyle, paddingRight: '2.75rem' }}
-                  onFocus={(e) => (e.target.style.borderColor = '#1B6B4A')}
+                  onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
                   onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
                 />
                 <EyeToggle show={showConfirm} onToggle={() => setShowConfirm((v) => !v)} />
@@ -262,7 +262,7 @@ export default function InviteForm({
               style={{
                 width: '100%',
                 padding: '0.875rem',
-                backgroundColor: isPending ? '#4a8a6a' : '#1B6B4A',
+                backgroundColor: isPending ? '#45c5bf' : '#17C4BE',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: 10,

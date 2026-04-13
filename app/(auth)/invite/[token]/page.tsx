@@ -49,7 +49,7 @@ export default async function InvitePage({ params }: PageProps) {
               fontFamily: "'DM Sans', sans-serif",
               fontWeight: 700,
               fontSize: '1.1rem',
-              color: '#1B6B4A',
+              color: '#17C4BE',
               marginBottom: '2.5rem',
               letterSpacing: '-0.01em',
             }}

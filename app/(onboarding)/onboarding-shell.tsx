@@ -42,7 +42,7 @@ export default function OnboardingShell({ children }: { children: React.ReactNod
             fontFamily: "'DM Sans', sans-serif",
             fontWeight: 700,
             fontSize: '1rem',
-            color: '#1B6B4A',
+            color: '#17C4BE',
             letterSpacing: '-0.01em',
           }}
         >
@@ -106,7 +106,7 @@ export default function OnboardingShell({ children }: { children: React.ReactNod
                         left: '60%',
                         right: '-40%',
                         height: 2,
-                        backgroundColor: isDone ? '#1B6B4A' : '#E8E4DE',
+                        backgroundColor: isDone ? '#17C4BE' : '#E8E4DE',
                         zIndex: 0,
                         transition: 'background-color 0.3s',
                       }}
@@ -120,18 +120,18 @@ export default function OnboardingShell({ children }: { children: React.ReactNod
                       height: 24,
                       borderRadius: '50%',
                       backgroundColor: isDone
-                        ? '#1B6B4A'
+                        ? '#17C4BE'
                         : isCurrent
-                        ? '#1B6B4A'
+                        ? '#17C4BE'
                         : '#E8E4DE',
-                      border: isCurrent ? '2px solid #1B6B4A' : '2px solid transparent',
+                      border: isCurrent ? '2px solid #17C4BE' : '2px solid transparent',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       zIndex: 1,
                       flexShrink: 0,
                       transition: 'all 0.3s',
-                      boxShadow: isCurrent ? '0 0 0 4px rgba(27,107,74,0.12)' : 'none',
+                      boxShadow: isCurrent ? '0 0 0 4px rgba(23,196,190,0.12)' : 'none',
                     }}
                   >
                     {isDone ? (

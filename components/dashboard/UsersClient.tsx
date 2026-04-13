@@ -80,7 +80,7 @@ export default function UsersClient() {
             </div>
             <button
               onClick={() => { setShowForm(true); setSuccess(null); setError(null) }}
-              className="flex items-center gap-2 px-4 py-2 bg-[#00BFA5] hover:bg-[#0e4f79] text-white text-xs font-bold rounded-xl transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#17C4BE] hover:bg-[#0e4f79] text-white text-xs font-bold rounded-xl transition-colors"
             >
               <UserPlus className="w-3.5 h-3.5" />
               Add Team Member
@@ -93,7 +93,7 @@ export default function UsersClient() {
               const Icon = roleIcon(member.role)
               return (
                 <div key={member.id} className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 bg-slate-50/50">
-                  <div className="w-9 h-9 rounded-full bg-[#00BFA5] flex items-center justify-center shrink-0 text-white text-xs font-bold">
+                  <div className="w-9 h-9 rounded-full bg-[#17C4BE] flex items-center justify-center shrink-0 text-white text-xs font-bold">
                     {member.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -126,12 +126,12 @@ export default function UsersClient() {
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Full Name *</label>
                   <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="Jane Smith"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00BFA5] focus:border-transparent transition-all" />
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#17C4BE] focus:border-transparent transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Role *</label>
                   <select value={role} onChange={e => setRole(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#00BFA5] focus:border-transparent transition-all">
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#17C4BE] focus:border-transparent transition-all">
                     {ROLES.map(r => <option key={r}>{r}</option>)}
                   </select>
                 </div>
@@ -139,7 +139,7 @@ export default function UsersClient() {
               <div>
                 <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Email Address *</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="jane@clinic.com.au"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00BFA5] focus:border-transparent transition-all" />
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#17C4BE] focus:border-transparent transition-all" />
               </div>
               <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl px-4 py-3">
                 <p className="text-[11px] text-emerald-700 font-medium">
@@ -150,7 +150,7 @@ export default function UsersClient() {
               {error && <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-700">{error}</div>}
 
               <button type="submit" disabled={loading}
-                className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#00BFA5] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-60">
+                className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#17C4BE] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-60">
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
                 {loading ? 'Creating account...' : 'Create Account'}
               </button>
@@ -172,8 +172,8 @@ export default function UsersClient() {
         )}
 
         {/* How it works */}
-        <div className="bg-[#E0F7F3] border border-[#c8e0f4] rounded-2xl p-5">
-          <p className="text-xs font-bold text-[#00BFA5] uppercase tracking-wide mb-2">How staff accounts work</p>
+        <div className="bg-[#E5F9F8] border border-[#c8e0f4] rounded-2xl p-5">
+          <p className="text-xs font-bold text-[#17C4BE] uppercase tracking-wide mb-2">How staff accounts work</p>
           <ul className="space-y-1.5 text-xs text-slate-600">
             <li>1. Enter their name, email and role</li>
             <li>2. A welcome email is sent automatically with a secure sign-in link</li>

@@ -116,7 +116,7 @@ export default function HoursPage() {
                           fontSize: '0.875rem',
                           width: 120,
                         }}
-                        onFocus={(e) => (e.target.style.borderColor = '#1B6B4A')}
+                        onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
                         onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
                       />
                     </Field>
@@ -132,7 +132,7 @@ export default function HoursPage() {
                           fontSize: '0.875rem',
                           width: 120,
                         }}
-                        onFocus={(e) => (e.target.style.borderColor = '#1B6B4A')}
+                        onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
                         onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
                       />
                     </Field>

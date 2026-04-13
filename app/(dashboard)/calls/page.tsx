@@ -23,7 +23,7 @@ function initials(name: string) {
 function avatarBg(item: CallInboxItem): string {
   if (item.urgency === 'CRITICAL') return '#c23934'
   if (item.urgency === 'URGENT')   return '#e8830a'
-  return '#00BFA5'
+  return '#17C4BE'
 }
 
 // ── Left pane: list row ───────────────────────────────────────────────────────
@@ -49,7 +49,7 @@ function ListRow({
         isActive
           ? hasUrgency
             ? 'bg-red-50/40 border-l-[#c23934]'
-            : 'bg-[#E0F7F3]/60 border-l-[#00BFA5]'
+            : 'bg-[#E5F9F8]/60 border-l-[#17C4BE]'
           : 'border-l-transparent hover:bg-slate-50/80'
       }`}
     >
@@ -110,7 +110,7 @@ function StatusBadge({ item }: { item: CallInboxItem }) {
   if (item.urgency === 'URGENT')
     return <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500 text-white">URGENT</span>
   if (item.status === 'UNREAD')
-    return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E0F7F3] text-[#00BFA5] border border-[#00BFA5]/20">NEW</span>
+    return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E5F9F8] text-[#17C4BE] border border-[#17C4BE]/20">NEW</span>
   if (item.status === 'READ')
     return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">Pending</span>
   return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Done</span>
@@ -175,10 +175,10 @@ function DetailPanel({
             </div>
           </div>
           <div className="flex gap-2 flex-shrink-0">
-            <button className="px-3.5 py-1.5 text-[13px] text-[#00BFA5] font-medium border border-[#dddbda] rounded-md bg-white hover:bg-[#f4f6f9] transition-colors">
+            <button className="px-3.5 py-1.5 text-[13px] text-[#17C4BE] font-medium border border-[#dddbda] rounded-md bg-white hover:bg-[#f4f6f9] transition-colors">
               Assign Task
             </button>
-            <button className="px-3.5 py-1.5 text-[13px] text-[#00BFA5] font-medium border border-[#dddbda] rounded-md bg-white hover:bg-[#f4f6f9] transition-colors">
+            <button className="px-3.5 py-1.5 text-[13px] text-[#17C4BE] font-medium border border-[#dddbda] rounded-md bg-white hover:bg-[#f4f6f9] transition-colors">
               View History
             </button>
           </div>
@@ -201,10 +201,10 @@ function DetailPanel({
         {/* AI Summary */}
         <div className="border border-[#dddbda] rounded-lg overflow-hidden">
           <div className="px-5 py-3 bg-[#f4f6f9] border-b border-[#dddbda] flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-[#0d9488]" />
+            <Sparkles className="w-3.5 h-3.5 text-[#17C4BE]" />
             <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#706e6b]">AI Summary &amp; Routing</p>
           </div>
-          <div className="px-5 py-4 border-l-[3px] border-l-[#0d9488]">
+          <div className="px-5 py-4 border-l-[3px] border-l-[#17C4BE]">
             <p className="text-[13px] text-slate-700 leading-relaxed italic">
               {item.aiDetail || item.summary || 'No summary available.'}
             </p>
@@ -287,7 +287,7 @@ function DetailPanel({
               className={`px-5 py-2.5 text-white text-[13px] font-semibold rounded-md shadow-sm transition-all flex items-center gap-1.5 ${
                 isUrgent
                   ? 'bg-[#c23934] hover:bg-[#a61f1f] shadow-red-200/50'
-                  : 'bg-[#00BFA5] hover:bg-[#00A98E] shadow-teal-200/50'
+                  : 'bg-[#17C4BE] hover:bg-[#13ADA8] shadow-teal-200/50'
               }`}
             >
               <Phone className="w-3.5 h-3.5" />
@@ -407,7 +407,7 @@ export default function CallsPage() {
             <span className="text-[13px] font-bold text-slate-700">Recent Calls</span>
             <div className="flex items-center gap-2">
               {unread > 0 && (
-                <span className="text-[10px] font-bold text-[#00BFA5] bg-[#E0F7F3] border border-[#00BFA5]/20 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold text-[#17C4BE] bg-[#E5F9F8] border border-[#17C4BE]/20 px-2 py-0.5 rounded-full">
                   {unread} new
                 </span>
               )}
