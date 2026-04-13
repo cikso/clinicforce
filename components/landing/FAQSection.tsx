@@ -5,6 +5,14 @@ import { ChevronDown } from 'lucide-react'
 
 const faqs: [string, string][] = [
   [
+    'How long does setup take?',
+    'About 3 minutes of your time. You connect your practice management software, answer a few questions about your clinic, and our team handles the rest. We aim for a 1 to 2 business day go-live, and there are no setup fees.',
+  ],
+  [
+    'Is ClinicForce compliant with Australian privacy law?',
+    'Yes. ClinicForce is aligned with the Australian Privacy Principles (APPs) under the Privacy Act 1988. All patient data is encrypted in transit and at rest, and we undergo regular third-party security audits. We also hold cyber insurance as an additional safeguard.',
+  ],
+  [
     'How does ClinicForce work with my existing phone system?',
     'You keep your existing clinic phone number. When calls go unanswered (busy, lunch break, after hours), they automatically forward to your ClinicForce number via conditional call forwarding. Your clients never know the difference — Sarah answers as your clinic.',
   ],
