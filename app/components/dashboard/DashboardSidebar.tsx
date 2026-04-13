@@ -5,7 +5,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
-import StatusDot from '@/app/components/ui/StatusDot'
 
 /* ─── Inline SVG Icons (18px) ─── */
 const icons = {
@@ -83,9 +82,8 @@ const NAV_ITEMS: { label: string; icon: React.ReactNode; href: string; hasBadge?
   { label: 'Command Centre', icon: icons.grid,     href: '/overview' },
   { label: 'Call Inbox',      icon: icons.phone,    href: '/conversations' },
   { label: 'Action Queue',   icon: icons.list,     href: '/actions', hasBadge: true },
-  { label: 'Bookings',       icon: icons.calendar, href: '/bookings' },
   { label: 'Insights',       icon: icons.barChart, href: '/insights' },
-  { label: 'Knowledge Base', icon: icons.book,     href: '/knowledge' },
+  { label: 'Bookings',       icon: icons.calendar, href: '/bookings' },
   { label: 'SMS Hub',        icon: icons.message,  href: '/sms' },
   { label: 'Settings',       icon: icons.cog,      href: '/settings' },
 ]
@@ -94,7 +92,6 @@ interface DashboardSidebarProps {
   clinicName: string
   userName: string
   pendingTaskCount: number
-  sarahStatus: { isActive: boolean; mode: string } | null
   isPlatformOwner?: boolean
 }
 
@@ -102,7 +99,6 @@ export default function DashboardSidebar({
   clinicName,
   userName,
   pendingTaskCount,
-  sarahStatus,
   isPlatformOwner = false,
 }: DashboardSidebarProps) {
   const pathname = usePathname()
@@ -195,30 +191,8 @@ export default function DashboardSidebar({
         </div>
       </nav>
 
-      {/* Footer: Sarah AI Status */}
+      {/* Footer */}
       <div className="px-3 pb-3 mt-auto space-y-2">
-        {sarahStatus && (
-          <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-[var(--info-light)] border border-[var(--border-subtle)]">
-            <div className="relative shrink-0">
-              <div className="w-8 h-8 rounded-full bg-[var(--info)] flex items-center justify-center">
-                <span className="text-white text-[12px] font-bold">S</span>
-              </div>
-              <span className="absolute -bottom-0.5 -right-0.5">
-                <StatusDot variant={sarahStatus.isActive ? 'active' : 'standby'} />
-              </span>
-            </div>
-            <div className="min-w-0 sidebar-expanded-content">
-              <p className="text-[13px] font-semibold text-[var(--text-primary)] leading-tight">Sarah (AI Agent)</p>
-              <p className={cn(
-                'text-[11px] mt-0.5 leading-tight',
-                sarahStatus.isActive ? 'text-[var(--success)]' : 'text-[var(--warning)]',
-              )}>
-                {sarahStatus.isActive ? `Active \u2014 ${sarahStatus.mode}` : 'Standby'}
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* User card + sign out */}
         <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-[var(--bg-hover)] border border-[var(--border-subtle)]">
           <div className="w-8 h-8 rounded-full bg-[var(--brand)] flex items-center justify-center shrink-0 text-white text-[11px] font-bold">

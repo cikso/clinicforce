@@ -84,24 +84,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
     pendingTaskCount = count ?? 0
   }
 
-  // Fetch Sarah AI status from voice_agents
-  let sarahStatus: { isActive: boolean; mode: string } | null = null
-  if (clinicId) {
-    const queryClient = service ?? await createClient()
-    const { data: agent } = await queryClient
-      .from('voice_agents')
-      .select('is_active, mode')
-      .eq('clinic_id', clinicId)
-      .limit(1)
-      .maybeSingle()
-    if (agent) {
-      sarahStatus = {
-        isActive: agent.is_active ?? false,
-        mode: (agent.mode as string) ?? 'after_hours',
-      }
-    }
-  }
-
   return (
     <VerticalProvider vertical={vertical}>
       <ClinicProvider
@@ -120,7 +102,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
               clinicName={clinicName}
               userName={userName}
               pendingTaskCount={pendingTaskCount}
-              sarahStatus={sarahStatus}
               isPlatformOwner={isPlatformOwner}
             />
             <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
