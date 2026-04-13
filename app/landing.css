@@ -1286,3 +1286,77 @@
     padding: 22px;
   }
 }
+
+/* ─── LANDING TYPOGRAPHY OVERRIDES (typography only — no layout changes) ─── */
+.lp-root {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  color: #3A3A3A;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.lp-root h1 {
+  font-weight: 900;
+  color: #0D0E12;
+  letter-spacing: -1.5px;
+  line-height: 1.08;
+}
+
+.lp-root h2 {
+  font-weight: 900;
+  color: #0D0E12;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+
+/* Section subheadlines — h2 inside section heads */
+.lp-root .section-head h2,
+.lp-root section h2 {
+  font-size: 42px;
+}
+
+.lp-root h3,
+.lp-root h4 {
+  font-weight: 800;
+  color: #0D0E12;
+  letter-spacing: -0.2px;
+}
+
+/* Body and paragraph copy — promote any soft greys to #3A3A3A */
+.lp-root p,
+.lp-root li,
+.lp-root span:not(.lp-brand-mark) {
+  color: #3A3A3A;
+}
+
+/* Nav logo text */
+.lp-root .lp-brand {
+  font-weight: 800;
+  color: #0D0E12;
+}
+
+/* Trust bar items, card body copy, pricing feature list items */
+.lp-root .trust-chip,
+.lp-root .pricing-feature,
+.lp-root .pricing-features li,
+.lp-root .feature-card p,
+.lp-root .card p {
+  font-weight: 400;
+  color: #3A3A3A;
+}
+
+/* Price amounts */
+.lp-root .price-amount,
+.lp-root .pricing-price,
+.lp-root [data-price] {
+  font-weight: 900;
+  color: #0D0E12;
+  letter-spacing: -1px;
+}
+
+/* Dashboard-style stat numbers if present on landing */
+.lp-root .stat-number,
+.lp-root .kpi-number {
+  font-weight: 900;
+  color: #0D0E12;
+}
