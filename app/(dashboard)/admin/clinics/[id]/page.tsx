@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import EditClinic from './_edit-clinic'
 import InvitePanel from './_invite-panel'
 import CoverageControl from './_coverage-control'
 import DeleteClinicButton from './_delete-clinic'
@@ -34,10 +35,11 @@ export default async function ClinicDetailPage({ params }: PageProps) {
     { auth: { autoRefreshToken: false, persistSession: false } },
   )
 
-  const [{ data: clinic }, { data: invites }, { data: users }] = await Promise.all([
+  const [{ data: clinic }, { data: invites }, { data: users }, { data: voiceAgent }] = await Promise.all([
     service.from('clinics').select('*').eq('id', id).single(),
     service.from('clinic_invites').select('*').eq('clinic_id', id).order('created_at', { ascending: false }),
     service.from('clinic_users').select('id, name, role, created_at').eq('clinic_id', id).order('created_at'),
+    service.from('voice_agents').select('twilio_phone_number').eq('clinic_id', id).maybeSingle(),
   ])
 
   if (!clinic) notFound()
@@ -80,23 +82,8 @@ export default async function ClinicDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Details card */}
-      <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl p-6 shadow-[var(--shadow-card)] mb-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--text-tertiary)] mb-4">
-          Clinic details
-        </p>
-        <div className="grid grid-cols-3 gap-5">
-          <DetailRow label="Phone" value={clinic.phone} />
-          <DetailRow label="Email" value={clinic.email} />
-          <DetailRow label="Website" value={clinic.website} />
-          <DetailRow label="Address" value={clinic.address} />
-          <DetailRow label="Suburb" value={clinic.suburb} />
-          <DetailRow label="Timezone" value={clinic.timezone} />
-          <DetailRow label="Emergency partner" value={clinic.after_hours_partner} />
-          <DetailRow label="Emergency phone" value={clinic.after_hours_phone} />
-          <DetailRow label="Emergency address" value={clinic.emergency_partner_address} />
-        </div>
-      </div>
+      {/* Editable details card */}
+      <EditClinic clinic={{ ...clinic, voice_phone: voiceAgent?.twilio_phone_number ?? null }} />
 
       {/* Coverage Control */}
       <CoverageControl
@@ -148,15 +135,3 @@ export default async function ClinicDetailPage({ params }: PageProps) {
   )
 }
 
-function DetailRow({ label, value }: { label: string; value?: string | null }) {
-  return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--text-tertiary)]">
-        {label}
-      </span>
-      <span className={`text-[14px] ${value ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)]'}`}>
-        {value ?? '—'}
-      </span>
-    </div>
-  )
-}
