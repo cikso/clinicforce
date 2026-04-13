@@ -112,3 +112,48 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ success: true, token: invite.token, emailSent: true })
 }
+
+export async function DELETE(request: NextRequest) {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll() },
+        setAll(s) { s.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) },
+      },
+    }
+  )
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorised.' }, { status: 401 })
+
+  const { data: cu } = await supabase
+    .from('clinic_users').select('role').eq('user_id', user.id).single()
+  if (!cu || !['clinic_admin', 'platform_owner'].includes(cu.role)) {
+    return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
+  }
+
+  const { searchParams } = new URL(request.url)
+  const inviteId = searchParams.get('id')
+  if (!inviteId) return NextResponse.json({ error: 'Invite id is required.' }, { status: 400 })
+
+  const service = createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+
+  const { error: delError } = await service
+    .from('clinic_invites')
+    .delete()
+    .eq('id', inviteId)
+
+  if (delError) {
+    console.error('[admin/invite] delete error:', delError)
+    return NextResponse.json({ error: 'Failed to delete invite.' }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true })
+}

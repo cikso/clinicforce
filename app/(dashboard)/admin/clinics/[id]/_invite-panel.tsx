@@ -40,6 +40,23 @@ export default function InvitePanel({ clinicId, clinicName, invites }: Props) {
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [copiedToken, setCopiedToken] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  async function deleteInvite(id: string) {
+    if (!confirm('Delete this invite? The link will no longer work.')) return
+    setDeletingId(id)
+    try {
+      const res = await fetch(`/api/admin/invite?id=${id}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const json = await res.json()
+        setError(json.error ?? 'Failed to delete invite.')
+        return
+      }
+      router.refresh()
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   async function sendInvite(e: React.FormEvent) {
     e.preventDefault()
@@ -246,6 +263,29 @@ export default function InvitePanel({ clinicId, clinicName, invites }: Props) {
                           )}
                         </button>
                       )}
+
+                      {/* Delete invite */}
+                      <button
+                        type="button"
+                        onClick={() => deleteInvite(inv.id)}
+                        disabled={deletingId === inv.id}
+                        title="Delete invite"
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '0.35rem',
+                          padding: '0.3rem 0.625rem', backgroundColor: 'transparent',
+                          border: '1px solid #E8E4DE', borderRadius: 6,
+                          fontFamily: "'DM Sans'", fontSize: '0.75rem',
+                          color: deletingId === inv.id ? '#9B9B9B' : '#DC2626',
+                          cursor: deletingId === inv.id ? 'not-allowed' : 'pointer',
+                          transition: 'all 0.15s',
+                          opacity: deletingId === inv.id ? 0.5 : 1,
+                        }}
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                        {deletingId === inv.id ? '...' : 'Delete'}
+                      </button>
                     </div>
                   </div>
                 )
