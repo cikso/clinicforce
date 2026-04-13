@@ -26,7 +26,7 @@ export default function QuickActionsPanel({ onNewCase, onEscalate, onAssign, onB
       label: 'New Case',
       sublabel: 'Start intake',
       onClick: onNewCase,
-      color: 'bg-[#0f5b8a] text-white hover:bg-[#0c4a70]',
+      color: 'bg-[#00BFA5] text-white hover:bg-[#00A98E]',
     },
     {
       icon: <AlertTriangle className="w-4 h-4" />,

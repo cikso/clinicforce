@@ -67,7 +67,7 @@ export default function CaseDetailDrawer({
                 Case #{caseData?.caseRef}
               </p>
               <h2 className="text-xl font-bold text-slate-900">
-                <span className="text-[#0f5b8a]">{caseData?.patientName}</span>
+                <span className="text-[#00BFA5]">{caseData?.patientName}</span>
                 {' '}— {caseData?.breed}
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">{caseData?.species} · {caseData?.createdAt}</p>
@@ -85,13 +85,13 @@ export default function CaseDetailDrawer({
             {/* AI Triage Intelligence */}
             <section>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-full bg-[#0ea5e9] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-[#00BFA5] flex items-center justify-center">
                   <Sparkles className="w-4 h-4 text-white" />
                 </div>
                 <h3 className="text-base font-bold text-slate-900">AI Triage Intelligence</h3>
               </div>
 
-              <div className="bg-[#eef8fc] border border-[#bae6fd] rounded-2xl p-5">
+              <div className="bg-[#E0F7F3] border border-[#bae6fd] rounded-2xl p-5">
                 <p className="text-sm text-slate-700 leading-relaxed mb-5 italic">
                   "{caseData?.aiJustification}"
                 </p>
@@ -122,7 +122,7 @@ export default function CaseDetailDrawer({
             <section>
               <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Current Status</h3>
               <div className="flex items-center gap-3 bg-slate-50 rounded-xl p-4">
-                <div className={`w-2.5 h-2.5 rounded-full ${caseData?.urgency === 'CRITICAL' ? 'bg-[#b91c1c] animate-pulse' : 'bg-[#0ea5e9]'}`} />
+                <div className={`w-2.5 h-2.5 rounded-full ${caseData?.urgency === 'CRITICAL' ? 'bg-[#b91c1c] animate-pulse' : 'bg-[#00BFA5]'}`} />
                 <span className="text-sm font-semibold text-slate-700">{statusMap[caseData?.status ?? 'WAITING']}</span>
                 {caseData?.clinician && (
                   <span className="ml-auto text-xs font-medium text-slate-500">
@@ -148,10 +148,10 @@ export default function CaseDetailDrawer({
                     <MapPin className="w-3 h-3" /> {caseData?.ownerAddress}
                   </p>
                   <div className="flex items-center gap-4 mt-2">
-                    <button className="text-xs font-bold text-[#0f5b8a] flex items-center gap-1 hover:text-[#0c4a70] transition-colors">
+                    <button className="text-xs font-bold text-[#00BFA5] flex items-center gap-1 hover:text-[#00A98E] transition-colors">
                       <Phone className="w-3.5 h-3.5" /> {caseData?.ownerPhone}
                     </button>
-                    <button className="text-xs font-bold text-[#0f5b8a] flex items-center gap-1 hover:text-[#0c4a70] transition-colors">
+                    <button className="text-xs font-bold text-[#00BFA5] flex items-center gap-1 hover:text-[#00A98E] transition-colors">
                       <MessageSquare className="w-3.5 h-3.5" /> Message
                     </button>
                   </div>
@@ -163,7 +163,7 @@ export default function CaseDetailDrawer({
             <section>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Media Assets</h3>
-                <span className="text-[10px] font-bold text-[#0f5b8a] bg-blue-50 px-2 py-0.5 rounded-full">3 Assets</span>
+                <span className="text-[10px] font-bold text-[#00BFA5] bg-teal-50 px-2 py-0.5 rounded-full">3 Assets</span>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {[
@@ -202,7 +202,7 @@ export default function CaseDetailDrawer({
           <div className="flex gap-3">
             <button
               onClick={() => onAction(caseData?.id ?? '', 'APPROVE')}
-              className="flex-1 py-3.5 bg-[#0f5b8a] text-white font-bold rounded-full hover:bg-[#0c4a70] transition-colors text-sm"
+              className="flex-1 py-3.5 bg-[#00BFA5] text-white font-bold rounded-full hover:bg-[#00A98E] transition-colors text-sm"
             >
               Approve &amp; Assign
             </button>

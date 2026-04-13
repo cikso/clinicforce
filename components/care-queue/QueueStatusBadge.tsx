@@ -8,7 +8,7 @@ const config: Record<QueueStatus, { label: string; className: string }> = {
   },
   WITH_VET: {
     label: 'With vet',
-    className: 'bg-blue-50 text-blue-700 border-blue-200',
+    className: 'bg-teal-50 text-teal-700 border-teal-200',
   },
   PENDING_DISCHARGE: {
     label: 'Pending discharge',

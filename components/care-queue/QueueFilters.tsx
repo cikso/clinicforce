@@ -17,7 +17,7 @@ const triageActive: Record<string, string> = {
   ALL: 'bg-foreground text-background',
   URGENT: 'bg-red-600 text-white',
   HIGH: 'bg-orange-500 text-white',
-  ROUTINE: 'bg-blue-600 text-white',
+  ROUTINE: 'bg-teal-600 text-white',
   FOLLOW_UP: 'bg-gray-500 text-white',
 }
 

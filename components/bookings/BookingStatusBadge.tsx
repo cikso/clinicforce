@@ -4,7 +4,7 @@ import type { BookingStatus } from '@/lib/types'
 const config: Record<BookingStatus, { label: string; className: string }> = {
   CONFIRMED: {
     label: 'Confirmed',
-    className: 'bg-blue-50 text-blue-700 border-blue-200',
+    className: 'bg-teal-50 text-teal-700 border-teal-200',
   },
   CHECKED_IN: {
     label: 'Checked in',

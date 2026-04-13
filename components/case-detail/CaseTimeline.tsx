@@ -19,8 +19,8 @@ const eventConfig: Record<
   CHECKED_IN: {
     label: 'Checked in',
     icon: LogIn,
-    iconClass: 'text-blue-500',
-    dotClass: 'bg-blue-500',
+    iconClass: 'text-teal-500',
+    dotClass: 'bg-teal-500',
   },
   TRIAGE_ASSESSED: {
     label: 'Triage assessed',

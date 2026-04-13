@@ -26,7 +26,7 @@ import {
 import { cn } from '@/lib/utils'
 
 const fileTypeConfig = {
-  image: { icon: FileImage, bgClass: 'bg-blue-50', iconClass: 'text-blue-400', label: 'Image' },
+  image: { icon: FileImage, bgClass: 'bg-teal-50', iconClass: 'text-teal-400', label: 'Image' },
   video: { icon: FileVideo, bgClass: 'bg-purple-50', iconClass: 'text-purple-400', label: 'Video' },
   document: { icon: FileText, bgClass: 'bg-teal-50', iconClass: 'text-teal-400', label: 'Document' },
 }

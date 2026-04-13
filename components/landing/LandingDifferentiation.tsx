@@ -4,7 +4,7 @@ import { ShieldCheck, Brain, Layers, Sparkles } from 'lucide-react'
 
 export function LandingDifferentiation() {
   return (
-    <section className="py-32 md:py-48 bg-[#F4F2ED] border-y border-black/5 relative overflow-hidden">
+    <section className="py-32 md:py-48 bg-[#FFFFFF] border-y border-black/5 relative overflow-hidden">
       <div className="bg-noise" />
       <div className="container mx-auto px-6 max-w-[1400px] relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-24 items-center">
@@ -15,7 +15,7 @@ export function LandingDifferentiation() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: '-100px' }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="aspect-square md:aspect-[4/5] rounded-[2.5rem] bg-[#F9F8F6] border border-black/5 shadow-2xl p-8 md:p-12 flex flex-col justify-center relative overflow-hidden group"
+              className="aspect-square md:aspect-[4/5] rounded-[2.5rem] bg-[#FFFFFF] border border-black/5 shadow-2xl p-8 md:p-12 flex flex-col justify-center relative overflow-hidden group"
             >
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000003_1px,transparent_1px),linear-gradient(to_bottom,#00000003_1px,transparent_1px)] bg-[size:32px_32px]" />
 
@@ -29,7 +29,7 @@ export function LandingDifferentiation() {
                   className="bg-white/80 backdrop-blur-xl p-6 rounded-2xl border border-black/5 shadow-sm flex items-center justify-between transform -rotate-2 group-hover:rotate-0 transition-transform duration-700 ease-out"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#E8E5DF] flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-[#E5E7EB] flex items-center justify-center">
                       <Sparkles className="w-4 h-4 text-[#0A0A0A]/60" />
                     </div>
                     <span className="text-sm font-medium text-[#0A0A0A]/80 tracking-wide">Client Inputs (Voice & Web)</span>
@@ -51,7 +51,7 @@ export function LandingDifferentiation() {
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-2xl pointer-events-none" />
                   <div className="flex items-center gap-5 mb-6">
                     <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                      <Brain className="w-6 h-6 text-[#F4F2ED]" />
+                      <Brain className="w-6 h-6 text-[#FFFFFF]" />
                     </div>
                     <div>
                       <span className="text-xs font-medium text-[#E25F38] tracking-widest uppercase block mb-1">Core Engine</span>
@@ -72,14 +72,14 @@ export function LandingDifferentiation() {
                   className="bg-white/80 backdrop-blur-xl p-6 rounded-2xl border border-black/5 shadow-sm flex items-center justify-between transform rotate-2 group-hover:rotate-0 transition-transform duration-700 ease-out"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#0A3622]/10 flex items-center justify-center">
-                      <Layers className="w-4 h-4 text-[#0A3622]" />
+                    <div className="w-10 h-10 rounded-full bg-[#00BFA5]/10 flex items-center justify-center">
+                      <Layers className="w-4 h-4 text-[#00BFA5]" />
                     </div>
                     <span className="text-sm font-medium text-[#0A0A0A]/80 tracking-wide">Clinic PMS & Staff Handoff</span>
                   </div>
                   <div className="flex gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#0A3622]" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#0A3622]/20" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#00BFA5]" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#00BFA5]/20" />
                   </div>
                 </motion.div>
               </div>
@@ -102,7 +102,7 @@ export function LandingDifferentiation() {
               <div className="flex gap-8 group relative">
                 <div className="w-16 h-16 rounded-2xl bg-white border border-black/5 flex items-center justify-center shrink-0 shadow-sm transition-transform duration-500 group-hover:-translate-y-1 overflow-hidden">
                   <div className="absolute inset-0 bg-noise opacity-10" />
-                  <ShieldCheck className="w-7 h-7 text-[#0A3622] relative z-10" strokeWidth={1.5} />
+                  <ShieldCheck className="w-7 h-7 text-[#00BFA5] relative z-10" strokeWidth={1.5} />
                 </div>
                 <div>
                   <h4 className="text-2xl font-medium text-[#0A0A0A] mb-3 tracking-tight">The Scenario</h4>
@@ -115,7 +115,7 @@ export function LandingDifferentiation() {
               <div className="flex gap-8 group relative">
                 <div className="w-16 h-16 rounded-2xl bg-white border border-black/5 flex items-center justify-center shrink-0 shadow-sm transition-transform duration-500 group-hover:-translate-y-1 overflow-hidden">
                   <div className="absolute inset-0 bg-noise opacity-10" />
-                  <Brain className="w-7 h-7 text-[#0A3622] relative z-10" strokeWidth={1.5} />
+                  <Brain className="w-7 h-7 text-[#00BFA5] relative z-10" strokeWidth={1.5} />
                 </div>
                 <div>
                   <h4 className="text-2xl font-medium text-[#0A0A0A] mb-3 tracking-tight">ClinicForce Answers</h4>
@@ -128,7 +128,7 @@ export function LandingDifferentiation() {
               <div className="flex gap-8 group relative">
                 <div className="w-16 h-16 rounded-2xl bg-white border border-black/5 flex items-center justify-center shrink-0 shadow-sm transition-transform duration-500 group-hover:-translate-y-1 overflow-hidden">
                   <div className="absolute inset-0 bg-noise opacity-10" />
-                  <Layers className="w-7 h-7 text-[#0A3622] relative z-10" strokeWidth={1.5} />
+                  <Layers className="w-7 h-7 text-[#00BFA5] relative z-10" strokeWidth={1.5} />
                 </div>
                 <div>
                   <h4 className="text-2xl font-medium text-[#0A0A0A] mb-3 tracking-tight">The Outcome</h4>

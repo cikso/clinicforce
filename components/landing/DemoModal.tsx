@@ -43,21 +43,21 @@ function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNo
 }
 
 const inputCls =
-  'w-full rounded-xl border border-[#E8E4DE] bg-white px-4 py-3 text-sm text-[#1A1A1A] ' +
+  'w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm text-[#1A1A1A] ' +
   'placeholder:text-[#BDBAB5] outline-none transition-colors ' +
-  'focus:border-[#1B6B4A] focus:ring-2 focus:ring-[#1B6B4A]/10'
+  'focus:border-[#00BFA5] focus:ring-2 focus:ring-[#00BFA5]/10'
 
 const selectCls =
-  'w-full rounded-xl border border-[#E8E4DE] bg-white px-4 py-3 text-sm text-[#1A1A1A] ' +
+  'w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm text-[#1A1A1A] ' +
   'outline-none transition-colors appearance-none cursor-pointer ' +
-  'focus:border-[#1B6B4A] focus:ring-2 focus:ring-[#1B6B4A]/10'
+  'focus:border-[#00BFA5] focus:ring-2 focus:ring-[#00BFA5]/10'
 
 // ── Success state ─────────────────────────────────────────────────────────────
 
 function SuccessView({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col items-center px-8 py-12 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1B6B4A]/10 text-[#1B6B4A]">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00BFA5]/10 text-[#00BFA5]">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 6 9 17l-5-5" />
@@ -71,7 +71,7 @@ function SuccessView({ onClose }: { onClose: () => void }) {
       </p>
       <button
         onClick={onClose}
-        className="mt-8 rounded-xl border border-[#E8E4DE] bg-white px-6 py-2.5 text-sm font-medium text-[#6B6B6B] transition hover:border-[#1B6B4A] hover:text-[#1B6B4A]"
+        className="mt-8 rounded-xl border border-[#E5E7EB] bg-white px-6 py-2.5 text-sm font-medium text-[#6B6B6B] transition hover:border-[#00BFA5] hover:text-[#00BFA5]"
       >
         Close
       </button>
@@ -151,12 +151,12 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
       aria-label="Book a Demo"
     >
       {/* Modal card */}
-      <div className="relative w-full max-w-lg overflow-hidden rounded-[24px] border border-[#E8E4DE] bg-[#FAF8F4] shadow-[0_32px_80px_rgba(0,0,0,0.18)]">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-[24px] border border-[#E5E7EB] bg-[#FFFFFF] shadow-[0_32px_80px_rgba(0,0,0,0.18)]">
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#E8E4DE] px-6 py-5">
+        <div className="flex items-center justify-between border-b border-[#E5E7EB] px-6 py-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1B6B4A]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#00BFA5]">
               <span className="text-[10px] font-bold tracking-wider text-white">CF</span>
             </div>
             <div>
@@ -171,7 +171,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
           <button
             onClick={handleClose}
             aria-label="Close modal"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-[#6B6B6B] transition hover:bg-[#E8E4DE] hover:text-[#1A1A1A]"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[#6B6B6B] transition hover:bg-[#E5E7EB] hover:text-[#1A1A1A]"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -328,7 +328,7 @@ export default function DemoModal({ isOpen, onClose }: DemoModalProps) {
               disabled={saving}
               className="mt-5 w-full rounded-xl py-3.5 text-sm font-semibold tracking-[-0.01em] text-white transition active:scale-[0.99]"
               style={{
-                background: saving ? '#4A9B74' : '#1B6B4A',
+                background: saving ? '#4DD9C0' : '#00BFA5',
                 cursor: saving ? 'not-allowed' : 'pointer',
               }}
             >

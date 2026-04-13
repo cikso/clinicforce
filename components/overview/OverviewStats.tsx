@@ -56,7 +56,7 @@ function StatCard({ title, value, trend, subtitle, icon: Icon, color, urgencyBar
   alert?: boolean
 }) {
   const colorMap: Record<string, string> = {
-    blue: 'text-blue-600 bg-blue-50',
+    blue: 'text-teal-600 bg-teal-50',
     orange: 'text-orange-600 bg-orange-50',
     slate: 'text-slate-600 bg-slate-50',
     red: 'text-red-600 bg-red-50',

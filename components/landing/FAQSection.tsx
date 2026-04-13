@@ -9,6 +9,10 @@ const faqs: [string, string][] = [
     'You keep your existing clinic phone number. When calls go unanswered (busy, lunch break, after hours), they automatically forward to your ClinicForce number via conditional call forwarding. Your clients never know the difference — Sarah answers as your clinic.',
   ],
   [
+    'Can I turn ClinicForce off if I don\'t need it?',
+    'Yes — completely. From your dashboard you can switch coverage on or off in seconds. Set it to handle all calls, overflow only, after-hours only, or turn it off entirely. If your front desk is fully staffed and you want to run the phones yourself, just flip the toggle.',
+  ],
+  [
     'How long does it take to set up?',
     'Most clinics are live within 48 hours. We configure Sarah with your clinic\'s details, services, and protocols, then set up call forwarding. No hardware to install, no software to download.',
   ],
@@ -53,7 +57,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
     <div className="border-b border-[#eef1f4] last:border-b-0">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-[#1B6B4A]"
+        className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-[#00BFA5]"
       >
         <span className="text-base font-semibold text-[#1A1A1A]">{question}</span>
         <ChevronDown
@@ -77,7 +81,7 @@ export default function FAQSection() {
   return (
     <section id="faq" className="px-1 py-24 sm:py-28">
       <div className="text-center mb-12">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#1B6B4A]">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#00BFA5]">
           FAQ
         </p>
         <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-4xl">

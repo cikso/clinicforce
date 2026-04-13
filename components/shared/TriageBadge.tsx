@@ -12,7 +12,7 @@ const config: Record<TriageLevel, { label: string; className: string }> = {
   },
   ROUTINE: {
     label: 'Routine',
-    className: 'bg-blue-100 text-blue-700 border-blue-200',
+    className: 'bg-teal-100 text-teal-700 border-teal-200',
   },
   FOLLOW_UP: {
     label: 'Follow-up',

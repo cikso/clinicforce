@@ -39,7 +39,7 @@ export default function AssignClinicianModal({ isOpen, caseId, clinicians, onClo
                 onClick={() => { onAssign(caseId, c); onClose() }}
                 className={`flex items-center gap-4 p-4 rounded-2xl text-left transition-colors ${
                   c.available
-                    ? 'hover:bg-[#f0f6ff] border border-slate-100 hover:border-[#0f5b8a]/30'
+                    ? 'hover:bg-[#E0F7F3] border border-slate-100 hover:border-[#00BFA5]/30'
                     : 'opacity-50 border border-slate-100 cursor-not-allowed'
                 }`}
               >

@@ -27,9 +27,9 @@ const variantStyles = {
     value: 'text-orange-600',
   },
   info: {
-    card: 'bg-white border border-blue-100',
-    icon: 'bg-blue-50 text-blue-600',
-    value: 'text-blue-600',
+    card: 'bg-white border border-teal-100',
+    icon: 'bg-teal-50 text-teal-600',
+    value: 'text-teal-600',
   },
 }
 

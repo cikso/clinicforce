@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 
 const tagStyles = {
   urgent: 'bg-red-500',
-  info: 'bg-blue-400',
+  info: 'bg-teal-400',
   resolved: 'bg-green-500',
 }
 

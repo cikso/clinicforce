@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import type { BookingStatus } from '@/lib/types'
 
 const statusStyles: Record<BookingStatus, string> = {
-  CONFIRMED: 'bg-blue-50 text-blue-700',
+  CONFIRMED: 'bg-teal-50 text-teal-700',
   CHECKED_IN: 'bg-green-50 text-green-700',
   COMPLETED: 'bg-gray-100 text-gray-500',
   CANCELLED: 'bg-red-50 text-red-600',

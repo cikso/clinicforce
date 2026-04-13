@@ -52,9 +52,9 @@
   --color-vet-surface: #FFFFFF;
 
   /* Design system colour tokens */
-  --color-brand: #0176D3;
-  --color-brand-light: #EBF5FF;
-  --color-brand-dark: #014486;
+  --color-brand: #00BFA5;
+  --color-brand-light: #E0F7F3;
+  --color-brand-dark: #009680;
   --color-success: #059669;
   --color-success-light: #ECFDF5;
   --color-warning: #D97706;
@@ -103,10 +103,10 @@ html {
   --text-tertiary: #9CA3AF;
 
   /* Brand */
-  --brand: #0176D3;
-  --brand-hover: #0161B0;
-  --brand-light: #EBF5FF;
-  --brand-dark: #014486;
+  --brand: #00BFA5;
+  --brand-hover: #00A98E;
+  --brand-light: #E0F7F3;
+  --brand-dark: #009680;
 
   /* Status */
   --success: #059669;
@@ -131,32 +131,32 @@ html {
   --card-foreground: #111827;
   --popover: #ffffff;
   --popover-foreground: #111827;
-  --primary: #0176d3;
+  --primary: #00BFA5;
   --primary-foreground: #ffffff;
   --secondary: #F7F8FA;
   --secondary-foreground: #374151;
   --muted: #F3F4F6;
   --muted-foreground: #6B7280;
-  --accent: #EBF5FF;
-  --accent-foreground: #0176d3;
+  --accent: #E0F7F3;
+  --accent-foreground: #00BFA5;
   --destructive: #DC2626;
   --destructive-foreground: #ffffff;
   --input: #E5E7EB;
-  --ring: #0176d3;
+  --ring: #00BFA5;
   --radius: 0.5rem;
 
   /* Sidebar */
   --sidebar: #F9FAFB;
   --sidebar-foreground: #111827;
-  --sidebar-primary: #0176d3;
+  --sidebar-primary: #00BFA5;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #EBF5FF;
-  --sidebar-accent-foreground: #0176d3;
+  --sidebar-accent: #E0F7F3;
+  --sidebar-accent-foreground: #00BFA5;
   --sidebar-border: #E5E7EB;
-  --sidebar-ring: #0176d3;
+  --sidebar-ring: #00BFA5;
 
   /* Legacy compat */
-  --brand-sky: #0176d3;
+  --brand-sky: #00BFA5;
   --brand-teal: #0d9488;
   --urgent: #DC2626;
   --urgent-bg: #FEF2F2;

@@ -48,10 +48,12 @@ export default function OverviewHeader({ initialMode, clinicId, todayLabel }: Ov
       {/* Status + Mode buttons */}
       <div className="flex items-center gap-4 mx-auto">
         <div className="flex items-center gap-1.5">
-          <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: '#2dd4bf' }} />
-          <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: '#3e3e3c' }} />
-          <span className="text-xs font-medium text-gray-600">
-            {isActive ? 'Active: Sarah is covering your phones' : 'Standby: Sarah is on standby'}
+          <span
+            className="inline-block w-2.5 h-2.5 rounded-full transition-colors duration-300"
+            style={{ backgroundColor: isActive ? '#22C55E' : '#EF4444' }}
+          />
+          <span className={`text-xs font-medium ${isActive ? 'text-gray-600' : 'text-red-500'}`}>
+            {isActive ? 'Active: Sarah is covering your phones' : 'Off: Sarah is not covering your phones'}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -61,7 +63,7 @@ export default function OverviewHeader({ initialMode, clinicId, todayLabel }: Ov
               onClick={() => handleModeClick(value)}
               className={
                 mode === value
-                  ? 'bg-blue-600 border border-blue-600 text-white text-xs font-bold rounded px-3 py-1'
+                  ? 'bg-teal-600 border border-teal-600 text-white text-xs font-bold rounded px-3 py-1'
                   : 'bg-white border border-gray-300 rounded text-xs font-medium text-gray-800 px-3 py-1 hover:bg-gray-50 transition-colors'
               }
             >

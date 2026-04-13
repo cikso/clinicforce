@@ -30,7 +30,7 @@ const statusBadge: Record<CallStatus, { label: string; style: string; icon: Reac
   NEW: { label: 'New Call', style: 'bg-slate-100 text-slate-600', icon: <span className="w-2 h-2 rounded-full bg-rose-500 inline-block" /> },
   REVIEWED: { label: 'Reviewed', style: 'bg-slate-100 text-slate-600', icon: <Check className="w-3 h-3" /> },
   CASE_CREATED: { label: 'Case Created', style: 'bg-emerald-100 text-emerald-700', icon: <Check className="w-3 h-3" /> },
-  QUEUED: { label: 'In Queue', style: 'bg-blue-100 text-blue-700', icon: <Check className="w-3 h-3" /> },
+  QUEUED: { label: 'In Queue', style: 'bg-teal-100 text-teal-700', icon: <Check className="w-3 h-3" /> },
   CALLBACK_MARKED: { label: 'Callback Marked', style: 'bg-teal-100 text-teal-700', icon: <Check className="w-3 h-3" /> },
   ESCALATED: { label: 'Escalated', style: 'bg-rose-100 text-[#b91c1c]', icon: <AlertTriangle className="w-3 h-3" /> },
 }
@@ -51,7 +51,7 @@ function CallActions({ call, onAction }: { call: DashboardCall; onAction: (id: s
       <div className="flex gap-2">
         <button
           onClick={() => onAction(call.id, 'CREATE_CASE')}
-          className="px-4 py-2 bg-[#0f5b8a] text-white text-xs font-bold rounded-full hover:bg-[#0c4a70] transition-colors"
+          className="px-4 py-2 bg-[#00BFA5] text-white text-xs font-bold rounded-full hover:bg-[#00A98E] transition-colors"
         >
           Create Case
         </button>
@@ -70,7 +70,7 @@ function CallActions({ call, onAction }: { call: DashboardCall; onAction: (id: s
       <div className="flex gap-2">
         <button
           onClick={() => onAction(call.id, 'SEND_TO_QUEUE')}
-          className="px-4 py-2 bg-[#0f5b8a] text-white text-xs font-bold rounded-full hover:bg-[#0c4a70] transition-colors"
+          className="px-4 py-2 bg-[#00BFA5] text-white text-xs font-bold rounded-full hover:bg-[#00A98E] transition-colors"
         >
           Send to Queue
         </button>
@@ -141,7 +141,7 @@ export default function AfterHoursCallsPanel({ calls, onAction }: AfterHoursCall
               </div>
 
               {/* Patient */}
-              <p className="text-xs font-bold text-[#0f5b8a] mb-3">
+              <p className="text-xs font-bold text-[#00BFA5] mb-3">
                 🐾 Patient: {call.patientName} ({call.species})
               </p>
 
@@ -152,11 +152,11 @@ export default function AfterHoursCallsPanel({ calls, onAction }: AfterHoursCall
 
               {/* AI next step */}
               <div className="flex items-start gap-2 mb-4">
-                <div className="w-4 h-4 rounded-full bg-[#0ea5e9] flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-4 h-4 rounded-full bg-[#00BFA5] flex items-center justify-center shrink-0 mt-0.5">
                   <span className="text-white text-[8px] font-bold">AI</span>
                 </div>
                 <p className="text-xs text-slate-600 font-medium">{call.aiNextStep}</p>
-                <span className="ml-auto text-[10px] font-bold text-[#0f5b8a] bg-blue-50 px-2 py-0.5 rounded-md shrink-0">
+                <span className="ml-auto text-[10px] font-bold text-[#00BFA5] bg-teal-50 px-2 py-0.5 rounded-md shrink-0">
                   {call.aiConfidence}% confidence
                 </span>
               </div>
@@ -168,7 +168,7 @@ export default function AfterHoursCallsPanel({ calls, onAction }: AfterHoursCall
                   <span>{badge.label}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isActioned ? 'border border-slate-200 text-slate-300' : 'bg-[#0f5b8a] text-white hover:bg-[#0c4a70]'}`}>
+                  <button className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isActioned ? 'border border-slate-200 text-slate-300' : 'bg-[#00BFA5] text-white hover:bg-[#00A98E]'}`}>
                     <Play className="w-3.5 h-3.5 ml-0.5" />
                   </button>
                   <CallActions call={call} onAction={onAction} />

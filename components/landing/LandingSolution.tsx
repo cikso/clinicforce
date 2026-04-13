@@ -34,7 +34,7 @@ export function LandingSolution() {
   ]
 
   return (
-    <section className="py-32 md:py-48 bg-[#E8E5DF] relative overflow-hidden" id="solution">
+    <section className="py-32 md:py-48 bg-[#F0F0F0] relative overflow-hidden" id="solution">
       <div className="bg-noise" />
       <div className="container mx-auto px-6 max-w-[1400px] relative z-10">
         <div className="max-w-4xl mb-32">
@@ -64,10 +64,10 @@ export function LandingSolution() {
                 className={`relative ${step.width} ${step.offset} group`}
               >
                 <div className="relative z-10 pr-8">
-                  <div className="w-14 h-14 rounded-full bg-[#F4F2ED] border border-black/5 flex items-center justify-center mb-10 shadow-sm relative overflow-hidden">
+                  <div className="w-14 h-14 rounded-full bg-[#FFFFFF] border border-black/5 flex items-center justify-center mb-10 shadow-sm relative overflow-hidden">
                     <div className="absolute inset-0 bg-noise opacity-10" />
                     <span className="font-bold text-[#0A0A0A] relative z-10">{step.num}</span>
-                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-[#E25F38] border-2 border-[#E8E5DF] z-20" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-[#E25F38] border-2 border-[#F0F0F0] z-20" />
                   </div>
                   <h3 className="text-2xl md:text-3xl font-medium mb-4 text-[#0A0A0A] tracking-tight">{step.title}</h3>
                   <p className="text-[#0A0A0A]/60 text-lg leading-relaxed font-light">{step.desc}</p>

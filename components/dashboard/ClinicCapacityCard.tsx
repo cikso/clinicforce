@@ -13,7 +13,7 @@ function getLoadStatus(capacity: ClinicCapacity, pendingCount: number) {
   if (roomsFree <= 1 || pendingCount > 4)
     return { label: 'High Load', color: 'text-amber-700', bg: 'bg-amber-50', dot: 'bg-amber-500' }
   if (pendingCount > 2)
-    return { label: 'Busy', color: 'text-[#0f5b8a]', bg: 'bg-blue-50', dot: 'bg-[#0ea5e9]' }
+    return { label: 'Busy', color: 'text-[#00BFA5]', bg: 'bg-teal-50', dot: 'bg-[#00BFA5]' }
   return { label: 'Stable', color: 'text-teal-700', bg: 'bg-teal-50', dot: 'bg-teal-500' }
 }
 
@@ -44,7 +44,7 @@ export default function ClinicCapacityCard({ capacity, pendingCount }: ClinicCap
               {Array.from({ length: totalRooms }).map((_, i) => (
                 <div
                   key={i}
-                  className={`w-4 h-4 rounded-sm transition-colors ${i < occupiedRooms ? 'bg-[#0f5b8a]' : 'bg-slate-100'}`}
+                  className={`w-4 h-4 rounded-sm transition-colors ${i < occupiedRooms ? 'bg-[#00BFA5]' : 'bg-slate-100'}`}
                 />
               ))}
             </div>
@@ -68,7 +68,7 @@ export default function ClinicCapacityCard({ capacity, pendingCount }: ClinicCap
             <span className="text-sm font-medium">Clinicians</span>
           </div>
           <span className="text-xs font-bold text-slate-700">
-            <span className="text-[#0f5b8a]">{cliniciansAvailable}</span> / {cliniciansOnDuty} available
+            <span className="text-[#00BFA5]">{cliniciansAvailable}</span> / {cliniciansOnDuty} available
           </span>
         </div>
 

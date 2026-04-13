@@ -19,11 +19,11 @@ export default function PhaseTwoPlaceholder({
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[60vh] text-center px-8">
       <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center border border-slate-200 shadow-sm mb-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-slate-50" />
-        <span className="relative z-10 text-[#0ea5e9]">{icon}</span>
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-50 to-slate-50" />
+        <span className="relative z-10 text-[#00BFA5]">{icon}</span>
       </div>
 
-      <div className="flex items-center gap-2 bg-[#f0f6ff] text-[#0f5b8a] px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-5">
+      <div className="flex items-center gap-2 bg-[#E0F7F3] text-[#00BFA5] px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-5">
         <Sparkles className="w-3.5 h-3.5" />
         Available in {phase}
       </div>
@@ -33,7 +33,7 @@ export default function PhaseTwoPlaceholder({
 
       <Link
         href="/overview"
-        className="flex items-center gap-2 px-6 py-2.5 bg-[#0f5b8a] text-white rounded-full text-sm font-bold hover:bg-[#0c4a70] transition-colors shadow-sm"
+        className="flex items-center gap-2 px-6 py-2.5 bg-[#00BFA5] text-white rounded-full text-sm font-bold hover:bg-[#00A98E] transition-colors shadow-sm"
       >
         <ArrowLeft className="w-4 h-4" />
         Return to Dashboard

@@ -21,7 +21,7 @@ export default function BookingsClient() {
       <div className="grid grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Queue Status</p>
-          <h3 className="text-4xl font-bold text-[#0f5b8a] mb-3">{confirmed.length + checkedIn.length} Booked</h3>
+          <h3 className="text-4xl font-bold text-[#00BFA5] mb-3">{confirmed.length + checkedIn.length} Booked</h3>
           <p className="text-sm font-semibold text-teal-700 flex items-center gap-1.5">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
             {newRequests.length} new requests pending
@@ -34,12 +34,12 @@ export default function BookingsClient() {
             <span className="text-sm font-semibold text-slate-600">Full</span>
           </div>
           <div className="w-full bg-slate-200 rounded-full h-2.5">
-            <div className="bg-[#0f5b8a] h-2.5 rounded-full w-[84%]"></div>
+            <div className="bg-[#00BFA5] h-2.5 rounded-full w-[84%]"></div>
           </div>
         </div>
         <div className="bg-[#eaf8f4] rounded-3xl p-6 border border-[#ccede4]">
           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Next Slot</p>
-          <h3 className="text-4xl font-bold text-[#0f5b8a] mb-3">2:30 PM</h3>
+          <h3 className="text-4xl font-bold text-[#00BFA5] mb-3">2:30 PM</h3>
           <p className="text-sm font-semibold text-teal-700 flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4" />
             Immediate Availability
@@ -50,11 +50,11 @@ export default function BookingsClient() {
       {/* Controls */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex bg-slate-100 p-1.5 rounded-full">
-          <button onClick={() => setView('list')} className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-semibold transition-colors ${view === 'list' ? 'bg-white shadow-sm text-[#0f5b8a]' : 'text-slate-500'}`}>
+          <button onClick={() => setView('list')} className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-semibold transition-colors ${view === 'list' ? 'bg-white shadow-sm text-[#00BFA5]' : 'text-slate-500'}`}>
             <List className="w-4 h-4" />
             List View
           </button>
-          <button onClick={() => setView('calendar')} className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-semibold transition-colors ${view === 'calendar' ? 'bg-white shadow-sm text-[#0f5b8a]' : 'text-slate-500'}`}>
+          <button onClick={() => setView('calendar')} className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-semibold transition-colors ${view === 'calendar' ? 'bg-white shadow-sm text-[#00BFA5]' : 'text-slate-500'}`}>
             <Calendar className="w-4 h-4" />
             Calendar
           </button>
@@ -76,7 +76,7 @@ export default function BookingsClient() {
         <div>
           <div className="flex items-center gap-3 mb-6">
             <h2 className="text-xl font-bold text-slate-900">New Requests</h2>
-            <span className="px-2.5 py-0.5 bg-[#0f5b8a] text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 bg-[#00BFA5] text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
               {newRequests.length} New
             </span>
           </div>
@@ -131,7 +131,7 @@ export default function BookingsClient() {
                         </div>
                       )}
                     </div>
-                    <button className="flex items-center gap-2 px-5 py-2.5 bg-[#0f5b8a] text-white rounded-full text-sm font-bold hover:bg-[#0c4a70] transition-colors">
+                    <button className="flex items-center gap-2 px-5 py-2.5 bg-[#00BFA5] text-white rounded-full text-sm font-bold hover:bg-[#00A98E] transition-colors">
                       <CheckCircle2 className="w-4 h-4" />
                       Approve & Notify
                     </button>
@@ -196,7 +196,7 @@ export default function BookingsClient() {
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Exam Rooms</p>
                   <div className="flex gap-1 mb-2">
                     {[true, true, false, false].map((on, i) => (
-                      <div key={i} className={`h-2 flex-1 rounded-full ${on ? 'bg-[#0f5b8a]' : 'bg-slate-200'}`}></div>
+                      <div key={i} className={`h-2 flex-1 rounded-full ${on ? 'bg-[#00BFA5]' : 'bg-slate-200'}`}></div>
                     ))}
                   </div>
                   <p className="text-xs font-bold text-slate-900">2 of 4 Free</p>

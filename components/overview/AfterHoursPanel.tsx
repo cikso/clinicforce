@@ -33,7 +33,7 @@ export default function AfterHoursPanel() {
           )
         })}
       </div>
-      <Link href="/calls" className="mt-3 block text-center text-sm font-medium text-[#0f5b8a] hover:text-[#0c4a70] transition-colors">
+      <Link href="/calls" className="mt-3 block text-center text-sm font-medium text-[#00BFA5] hover:text-[#00A98E] transition-colors">
         View all calls →
       </Link>
     </section>

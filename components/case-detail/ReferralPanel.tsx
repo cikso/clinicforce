@@ -12,7 +12,7 @@ const statusConfig = {
   CASE_SENT: {
     label: 'Case Sent',
     icon: Send,
-    className: 'text-blue-600 bg-blue-50 border-blue-200',
+    className: 'text-teal-600 bg-teal-50 border-teal-200',
   },
   ACKNOWLEDGED: {
     label: 'Acknowledged',
