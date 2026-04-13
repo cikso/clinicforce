@@ -40,6 +40,18 @@ function sydneyDayBounds(daysAgo: number): { start: string; end: string } {
   return { start: start.toISOString(), end: end.toISOString() }
 }
 
+function sydneyMonthStart(): string {
+  const parts = new Intl.DateTimeFormat('en-AU', {
+    timeZone: 'Australia/Sydney',
+    year: 'numeric', month: '2-digit',
+  }).formatToParts(new Date())
+  const y  = parts.find(p => p.type === 'year')!.value
+  const mo = parts.find(p => p.type === 'month')!.value
+  const dateStr = `${y}-${mo}-01`
+  const offset = sydneyUTCOffset(dateStr)
+  return new Date(`${dateStr}T00:00:00${offset}`).toISOString()
+}
+
 /* ─── KPI Icons ─── */
 
 const icons = {
@@ -105,6 +117,15 @@ function sydneyHour(iso: string): number {
   } catch { return 0 }
 }
 
+function sydneyWeekday(iso: string): number {
+  // 0 = Sun, 6 = Sat
+  try {
+    const d = new Date(iso)
+    const name = d.toLocaleDateString('en-US', { timeZone: 'Australia/Sydney', weekday: 'short' })
+    return { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[name as 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat'] ?? 0
+  } catch { return 0 }
+}
+
 function sydneyDayLabel(iso: string): string {
   try {
     return new Date(iso).toLocaleDateString('en-AU', { timeZone: 'Australia/Sydney', weekday: 'short' })
@@ -166,6 +187,7 @@ export default async function OverviewPage() {
 
   const today = sydneyDayBounds(0)
   const yesterday = sydneyDayBounds(1)
+  const monthStart = sydneyMonthStart()
 
   // ── Parallel queries ──
   const [
@@ -175,6 +197,7 @@ export default async function OverviewPage() {
     clinicRes,
     last7dCallsRes,
     last30dCallsRes,
+    monthCallsRes,
   ] = await Promise.all([
     // Today's calls (full rows for KPI computation + chart)
     clinicId ? db
@@ -222,6 +245,13 @@ export default async function OverviewPage() {
       .eq('clinic_id', clinicId)
       .gte('created_at', sydneyDayBounds(29).start)
       .lt('created_at', today.end) : Promise.resolve({ data: [] }),
+
+    // Month-to-date calls (for new monthly KPI row)
+    clinicId ? db
+      .from('call_inbox')
+      .select('id, summary, action_required, status, created_at')
+      .eq('clinic_id', clinicId)
+      .gte('created_at', monthStart) : Promise.resolve({ data: [] }),
   ])
 
   const todayCalls = (todayCallsRes.data ?? []) as CallRow[]
@@ -265,6 +295,17 @@ export default async function OverviewPage() {
   const bookingsToday = todayCalls.filter(c => bookingKeywords.test(c.summary ?? '')).length
   const bookingsYesterday = yesterdayCalls.filter(c => bookingKeywords.test((c as unknown as { summary?: string }).summary ?? '')).length
   const bookingDelta = pctDelta(bookingsToday, bookingsYesterday)
+
+  // ── Monthly KPI computations ──
+  const monthCalls = (monthCallsRes.data ?? []) as Array<{ id: string; summary: string | null; action_required: string | null; status: string; created_at: string }>
+  const callsAnsweredMonth = monthCalls.length
+  const bookingsMonth = monthCalls.filter(c => bookingKeywords.test(c.summary ?? '')).length
+  const afterHoursMonth = monthCalls.filter(c => {
+    const h = sydneyHour(c.created_at)
+    const dow = sydneyWeekday(c.created_at)
+    return dow === 0 || dow === 6 || h < 8 || h >= 18
+  }).length
+  const tasksPendingMonth = monthCalls.filter(c => c.action_required && c.status !== 'ACTIONED').length
 
   // ── Coverage Panel Data ──
   const coverageMode = (clinicRecord?.coverage_mode as string) ?? 'after_hours'
@@ -350,6 +391,50 @@ export default async function OverviewPage() {
           clinicId={clinicId}
           todayLabel={todayLabel}
         />
+
+        {/* ── Monthly KPI Row ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <KpiCard
+            label="Calls answered"
+            value={String(callsAnsweredMonth)}
+            compareStat="This month"
+            delta="MTD"
+            deltaType="neutral"
+            iconBg="#EAF7F1"
+            iconColor="#0A7A5B"
+            icon={icons.phone}
+          />
+          <KpiCard
+            label="Bookings made"
+            value={String(bookingsMonth)}
+            compareStat="This month"
+            delta="MTD"
+            deltaType="neutral"
+            iconBg="#F2EEFB"
+            iconColor="#6B3FA0"
+            icon={icons.calendar}
+          />
+          <KpiCard
+            label="After-hours calls"
+            value={String(afterHoursMonth)}
+            compareStat="This month"
+            delta="MTD"
+            deltaType="neutral"
+            iconBg="#E6F0FB"
+            iconColor="#1A5FA8"
+            icon={icons.clock}
+          />
+          <KpiCard
+            label="Tasks pending"
+            value={String(tasksPendingMonth)}
+            compareStat="Awaiting follow-up"
+            delta="MTD"
+            deltaType="neutral"
+            iconBg="#FEF0F5"
+            iconColor="#A0305A"
+            icon={icons.callback}
+          />
+        </div>
 
         {/* ── KPI Grid ── */}
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
