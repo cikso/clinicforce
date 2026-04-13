@@ -106,13 +106,14 @@
 
 .lp-nav-links a,
 .lp-link-btn {
-  color: var(--muted);
+  color: #0D0E12;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .lp-link-btn.dark {
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 700;
 }
 
 .lp-solid-btn,
