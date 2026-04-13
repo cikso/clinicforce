@@ -1,17 +1,9 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-// ── Transporter (singleton-safe for serverless) ───────────────────────────
-function createTransporter() {
-  return nodemailer.createTransport({
-    host:   process.env.SMTP_HOST ?? 'mail.privateemail.com',
-    port:   Number(process.env.SMTP_PORT ?? 465),
-    secure: true,          // port 465 = implicit TLS
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  })
-}
+// ── Resend client ─────────────────────────────────────────────────────────
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+const FROM_ADDRESS = 'ClinicForce <admin@clinicforce.io>'
 
 // ── Welcome email (for Team page direct account creation) ────────────────
 export async function sendWelcomeEmail({
@@ -110,11 +102,10 @@ export async function sendWelcomeEmail({
 </html>
 `
 
-  const transporter = createTransporter()
-  await transporter.sendMail({
-    from:    process.env.SMTP_FROM ?? '"ClinicForce" <admin@clinicforce.io>',
-    to,
-    subject: `Welcome to ClinicForce — set up your account`,
+  await resend.emails.send({
+    from: FROM_ADDRESS,
+    to: [to],
+    subject: 'Welcome to ClinicForce — set up your account',
     html,
   })
 }
@@ -237,10 +228,9 @@ export async function sendInviteEmail({
 </html>
 `
 
-  const transporter = createTransporter()
-  await transporter.sendMail({
-    from:    process.env.SMTP_FROM ?? '"ClinicForce" <admin@clinicforce.io>',
-    to,
+  await resend.emails.send({
+    from: FROM_ADDRESS,
+    to: [to],
     subject: `You've been invited to join ${clinicName} on ClinicForce`,
     html,
   })
