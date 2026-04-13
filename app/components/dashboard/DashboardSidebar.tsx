@@ -76,22 +76,31 @@ const icons = {
       <path d="M9 1.5L2.5 4.5v4.5c0 4 3 6.5 6.5 7.5 3.5-1 6.5-3.5 6.5-7.5V4.5L9 1.5z" />
     </svg>
   ),
+  clipboard: (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="3" width="10" height="13" rx="1.5" />
+      <path d="M7 1.5h4a1 1 0 0 1 1 1V4H6V2.5a1 1 0 0 1 1-1z" />
+      <path d="M7 8h4M7 11h2" />
+    </svg>
+  ),
 }
 
-const NAV_ITEMS: { label: string; icon: React.ReactNode; href: string; hasBadge?: boolean }[] = [
-  { label: 'Command Centre', icon: icons.grid,     href: '/overview' },
-  { label: 'Call Inbox',      icon: icons.phone,    href: '/conversations' },
-  { label: 'Action Queue',   icon: icons.list,     href: '/actions', hasBadge: true },
-  { label: 'Insights',       icon: icons.barChart, href: '/insights' },
-  { label: 'Bookings',       icon: icons.calendar, href: '/bookings' },
-  { label: 'SMS Hub',        icon: icons.message,  href: '/sms' },
-  { label: 'Settings',       icon: icons.cog,      href: '/settings' },
+const NAV_ITEMS: { label: string; icon: React.ReactNode; href: string; badgeKey?: 'tasks' | 'surveys' }[] = [
+  { label: 'Command Centre', icon: icons.grid,      href: '/overview' },
+  { label: 'Call Inbox',     icon: icons.phone,     href: '/conversations' },
+  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys', badgeKey: 'surveys' },
+  { label: 'Action Queue',   icon: icons.list,      href: '/actions', badgeKey: 'tasks' },
+  { label: 'Insights',       icon: icons.barChart,  href: '/insights' },
+  { label: 'Bookings',       icon: icons.calendar,  href: '/bookings' },
+  { label: 'SMS Hub',        icon: icons.message,   href: '/sms' },
+  { label: 'Settings',       icon: icons.cog,       href: '/settings' },
 ]
 
 interface DashboardSidebarProps {
   clinicName: string
   userName: string
   pendingTaskCount: number
+  openSurveyActionCount?: number
   isPlatformOwner?: boolean
 }
 
@@ -99,8 +108,13 @@ export default function DashboardSidebar({
   clinicName,
   userName,
   pendingTaskCount,
+  openSurveyActionCount = 0,
   isPlatformOwner = false,
 }: DashboardSidebarProps) {
+  const badgeCounts: Record<string, number> = {
+    tasks: pendingTaskCount,
+    surveys: openSurveyActionCount,
+  }
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -142,8 +156,9 @@ export default function DashboardSidebar({
       {/* Navigation */}
       <nav className="flex-1 px-3 py-3 overflow-y-auto">
         <div className="space-y-0.5">
-          {NAV_ITEMS.map(({ label, icon, href, hasBadge }) => {
+          {NAV_ITEMS.map(({ label, icon, href, badgeKey }) => {
             const active = isActive(href)
+            const count = badgeKey ? badgeCounts[badgeKey] ?? 0 : 0
             return (
               <Link
                 key={href}
@@ -160,9 +175,9 @@ export default function DashboardSidebar({
                   {icon}
                 </span>
                 <span className="sidebar-expanded-content truncate">{label}</span>
-                {hasBadge && pendingTaskCount > 0 && (
+                {count > 0 && (
                   <span className="sidebar-expanded-content ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--error)] text-white text-[10px] font-bold leading-none">
-                    {pendingTaskCount > 99 ? '99+' : pendingTaskCount}
+                    {count > 99 ? '99+' : count}
                   </span>
                 )}
               </Link>

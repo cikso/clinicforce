@@ -72,16 +72,27 @@ export default async function DashboardLayout({ children }: { children: React.Re
     industryConfig = (clinicRow?.industry_config as IndustryConfig) ?? null
   }
 
-  // Fetch pending task count for action queue badge
+  // Fetch pending task count for action queue badge + open survey actions
   let pendingTaskCount = 0
+  let openSurveyActionCount = 0
   if (clinicId) {
     const supabase = await createClient()
-    const { count } = await supabase
-      .from('tasks')
-      .select('id', { count: 'exact', head: true })
-      .eq('clinic_id', clinicId)
-      .eq('status', 'PENDING')
-    pendingTaskCount = count ?? 0
+    const [taskResult, surveyActionResult] = await Promise.all([
+      supabase
+        .from('tasks')
+        .select('id', { count: 'exact', head: true })
+        .eq('clinic_id', clinicId)
+        .eq('status', 'PENDING'),
+      service
+        ? service
+            .from('survey_actions')
+            .select('id', { count: 'exact', head: true })
+            .eq('clinic_id', clinicId)
+            .eq('status', 'open')
+        : Promise.resolve({ count: 0 }),
+    ])
+    pendingTaskCount = taskResult.count ?? 0
+    openSurveyActionCount = surveyActionResult.count ?? 0
   }
 
   return (
@@ -102,6 +113,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               clinicName={clinicName}
               userName={userName}
               pendingTaskCount={pendingTaskCount}
+              openSurveyActionCount={openSurveyActionCount}
               isPlatformOwner={isPlatformOwner}
             />
             <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
