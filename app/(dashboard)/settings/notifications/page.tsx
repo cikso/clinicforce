@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic'
 export default async function NotificationsPage() {
   const profile = await getClinicProfile()
   if (!profile) redirect('/login')
+  if (profile.userRole !== 'platform_owner') redirect('/settings/team')
 
   const service = createServiceClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

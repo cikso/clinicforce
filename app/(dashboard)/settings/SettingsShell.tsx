@@ -56,8 +56,15 @@ interface SettingsShellProps {
 export default function SettingsShell({ children, userRole }: SettingsShellProps) {
   const pathname = usePathname()
 
+  const isPlatformOwner = userRole === 'platform_owner'
   const isAdmin = ['clinic_admin', 'platform_owner'].includes(userRole)
-  const visibleTabs = isAdmin ? TABS : TABS.filter((t) => !t.adminOnly)
+
+  // Platform owners see all tabs. Clinic admins see only Team. Staff see nothing admin.
+  const visibleTabs = isPlatformOwner
+    ? TABS
+    : isAdmin
+      ? TABS.filter((t) => t.href === '/settings/team')
+      : TABS.filter((t) => !t.adminOnly)
 
   return (
     <div className="space-y-5">

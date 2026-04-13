@@ -69,7 +69,7 @@ const PLANS = [
 export default async function BillingPage() {
   const profile = await getClinicProfile()
   if (!profile) redirect('/login')
-  if (!['clinic_admin', 'platform_owner'].includes(profile.userRole)) redirect('/settings')
+  if (profile.userRole !== 'platform_owner') redirect('/settings/team')
 
   const service = createServiceClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
