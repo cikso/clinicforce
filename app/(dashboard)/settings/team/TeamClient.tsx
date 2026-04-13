@@ -34,21 +34,18 @@ interface TeamClientProps {
 const ROLE_STYLES: Record<string, { variant: 'info' | 'routine' | 'neutral' | 'urgent' | 'high'; label: string }> = {
   platform_owner: { variant: 'info', label: 'Platform Owner' },
   clinic_admin: { variant: 'info', label: 'Clinic Admin' },
-  staff: { variant: 'neutral', label: 'Staff' },
-  receptionist: { variant: 'routine', label: 'Receptionist' },
-  vet: { variant: 'urgent', label: 'Vet' },
-  nurse: { variant: 'high', label: 'Nurse' },
+  staff: { variant: 'neutral', label: 'Team Member' },
+  receptionist: { variant: 'neutral', label: 'Team Member' },
+  vet: { variant: 'neutral', label: 'Team Member' },
+  nurse: { variant: 'neutral', label: 'Team Member' },
 }
 
 const INVITE_ROLES = [
   { value: 'clinic_admin', label: 'Clinic Admin' },
-  { value: 'staff', label: 'Staff' },
-  { value: 'receptionist', label: 'Receptionist' },
-  { value: 'vet', label: 'Vet' },
-  { value: 'nurse', label: 'Nurse' },
+  { value: 'staff', label: 'Team Member' },
 ]
 
-const EDITABLE_ROLES = ['clinic_admin', 'staff', 'receptionist', 'vet', 'nurse']
+const EDITABLE_ROLES = ['clinic_admin', 'staff']
 
 const inputCls = 'w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-colors outline-none'
 const selectCls = cn(inputCls, 'appearance-none bg-[url("data:image/svg+xml,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M3%204.5L6%207.5L9%204.5%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E")] bg-[length:12px] bg-[right_12px_center] bg-no-repeat pr-8')
