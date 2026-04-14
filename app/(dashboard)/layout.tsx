@@ -59,6 +59,23 @@ export default async function DashboardLayout({ children }: { children: React.Re
       const msRemaining = new Date(subscription.trial_ends_at).getTime() - Date.now()
       trialDaysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)))
     }
+
+    // ── Subscription status gate ─────────────────────────────────────
+    // 'active', 'trialing' (with future trial_ends_at), and 'paused' pass through.
+    if (
+      !subscription ||
+      subscription.status === 'cancelled' ||
+      subscription.status === 'past_due'
+    ) {
+      redirect('/login?reason=subscription_inactive')
+    }
+    if (
+      subscription.status === 'trialing' &&
+      subscription.trial_ends_at &&
+      new Date(subscription.trial_ends_at) < new Date()
+    ) {
+      redirect('/login?reason=trial_expired')
+    }
   }
 
   // Fetch industry_config from clinics table
