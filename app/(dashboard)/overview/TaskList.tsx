@@ -64,7 +64,7 @@ export default function TaskList({ tasks }: { tasks: Task[] }) {
 
       {tasks.length === 0 ? (
         <p className="text-xs text-[#8A94A6] py-6 text-center">
-          No pending tasks — Sarah handled everything.
+          No pending tasks — Stella handled everything.
         </p>
       ) : (
         <>

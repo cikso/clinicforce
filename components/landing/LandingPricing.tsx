@@ -16,7 +16,7 @@ const GROWTH_FEATURES = [
   'Daytime overflow coverage',
   'Unlimited calls',
   'Priority support',
-  'Appointment booking via Sarah',
+  'Appointment booking via Stella',
   'PMS handover note export',
 ]
 

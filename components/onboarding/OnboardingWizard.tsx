@@ -57,7 +57,7 @@ export default function OnboardingWizard() {
           Your clinic coverage profile is set up and ready to go.
         </p>
         <p className="text-sm text-slate-500 mb-10 leading-relaxed">
-          Head to your dashboard to activate coverage — your AI receptionist Sarah is standing by.
+          Head to your dashboard to activate coverage — your AI receptionist Stella is standing by.
         </p>
 
         <div className="grid grid-cols-3 gap-4 mb-10">

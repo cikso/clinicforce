@@ -377,7 +377,7 @@ export function ClinicForceLanding() {
                     {/* AI Agent status */}
                     <div className="rounded-xl border border-[#E5E7EB] bg-white p-5">
                       <div className="flex items-center justify-between mb-4">
-                        <p className="text-[14px] font-semibold text-[#111827]">Sarah AI</p>
+                        <p className="text-[14px] font-semibold text-[#111827]">Stella AI</p>
                         <span className="rounded-full bg-[#ECFDF5] px-2 py-0.5 text-[11px] font-semibold text-[#059669]">Active</span>
                       </div>
                       <div className="space-y-2.5">

@@ -240,7 +240,7 @@ export default function ClinicProfileClient({ clinic }: { clinic: Clinic }) {
                 placeholder="e.g. Paws & Claws Vet"
               />
             </Field>
-            <Field label="Industry / Vertical" note="Controls how Sarah handles calls and what fields appear in call records">
+            <Field label="Industry / Vertical" note="Controls how Stella handles calls and what fields appear in call records">
               <select
                 value={form.vertical}
                 onChange={(e) => setField('vertical', e.target.value)}

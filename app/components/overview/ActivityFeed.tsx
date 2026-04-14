@@ -72,7 +72,7 @@ export default function ActivityFeed({ calls, hasExtraFields }: ActivityFeedProp
             </svg>
           }
           title="No calls today"
-          description="When Sarah handles calls, they'll appear here."
+          description="When Stella handles calls, they'll appear here."
         />
       ) : (
         <div className="overflow-x-auto -mx-5">

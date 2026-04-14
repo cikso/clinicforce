@@ -261,7 +261,7 @@ export default function EditClinic({ clinic }: { clinic: ClinicData }) {
             rows={3}
           />
           <p className="text-[12px] text-[var(--text-tertiary)] mt-1">
-            Sarah will use this to answer questions about what the clinic offers.
+            Stella will use this to answer questions about what the clinic offers.
           </p>
         </div>
 
@@ -272,7 +272,7 @@ export default function EditClinic({ clinic }: { clinic: ClinicData }) {
               After-Hours Emergency Partner
             </p>
             <p className="text-[12px] text-[var(--text-tertiary)]">
-              If a caller has an emergency, Sarah will direct them here.
+              If a caller has an emergency, Stella will direct them here.
             </p>
           </div>
           <div>

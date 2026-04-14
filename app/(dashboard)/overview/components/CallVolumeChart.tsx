@@ -90,7 +90,7 @@ export default function CallVolumeChart({ hourlyData, weeklyData, monthlyData }:
             />
             <Bar
               dataKey="handled"
-              name="Handled by Sarah"
+              name="Handled by Stella"
               fill="#0A7A5B"
               fillOpacity={0.85}
               radius={[4, 4, 0, 0]}
@@ -110,7 +110,7 @@ export default function CallVolumeChart({ hourlyData, weeklyData, monthlyData }:
       <div className="flex items-center gap-5 mt-3">
         <span className="flex items-center gap-1.5 text-[11px] text-[#637381]">
           <span className="inline-block w-[10px] h-[3px] rounded-full bg-[#0A7A5B]" />
-          Handled by Sarah
+          Handled by Stella
         </span>
         <span className="flex items-center gap-1.5 text-[11px] text-[#637381]">
           <span className="inline-block w-[10px] h-[3px] rounded-full bg-[#B7641C]" />

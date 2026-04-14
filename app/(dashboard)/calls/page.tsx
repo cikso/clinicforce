@@ -393,7 +393,7 @@ export default function CallsPage() {
 
       <TopBar
         title="Call Inbox"
-        subtitle="Every call Sarah handled — review, action, and follow up"
+        subtitle="Every call Stella handled — review, action, and follow up"
       />
 
       {/* Split-pane body */}

@@ -28,7 +28,7 @@ function twiml(xml: string) {
  *     -> resolve clinic + ElevenLabs agent from voice_agents by called number
  *     -> check coverage_sessions in Supabase
  *     -> if ACTIVE:   call ElevenLabs Register Call API with dynamic variables
- *                     -> returns TwiML -> Sarah answers with full clinic context
+ *                     -> returns TwiML -> Stella answers with full clinic context
  *     -> if INACTIVE: dial real clinic number -> desk phone rings
  *
  * Setup in Twilio Console:

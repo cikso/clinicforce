@@ -53,7 +53,7 @@ export default function OverviewHeader({ initialMode, clinicId, todayLabel }: Ov
             style={{ backgroundColor: isActive ? '#22C55E' : '#EF4444' }}
           />
           <span className={`text-xs font-medium ${isActive ? 'text-gray-600' : 'text-red-500'}`}>
-            {isActive ? 'Active: Sarah is covering your phones' : 'Off: Sarah is not covering your phones'}
+            {isActive ? 'Active: Stella is covering your phones' : 'Off: Stella is not covering your phones'}
           </span>
         </div>
         <div className="flex items-center gap-2">

@@ -6,7 +6,7 @@ import { ChevronDown } from 'lucide-react'
 const faqs: [string, string][] = [
   [
     'How long does setup take?',
-    'About 3 minutes of your time. You connect your practice management software, answer a few questions about your clinic, and our team handles the rest — configuring Sarah with your services and protocols, then setting up call forwarding. We aim for a 1 to 2 business day go-live. No setup fees, no hardware to install, and no software to download.',
+    'About 3 minutes of your time. You connect your practice management software, answer a few questions about your clinic, and our team handles the rest — configuring Stella with your services and protocols, then setting up call forwarding. We aim for a 1 to 2 business day go-live. No setup fees, no hardware to install, and no software to download.',
   ],
   [
     'Is ClinicForce compliant with Australian privacy law?',
@@ -14,19 +14,19 @@ const faqs: [string, string][] = [
   ],
   [
     'How does ClinicForce work with my existing phone system?',
-    'You keep your existing clinic phone number. When calls go unanswered (busy, lunch break, after hours), they automatically forward to your ClinicForce number via conditional call forwarding. Your clients never know the difference — Sarah answers as your clinic.',
+    'You keep your existing clinic phone number. When calls go unanswered (busy, lunch break, after hours), they automatically forward to your ClinicForce number via conditional call forwarding. Your clients never know the difference — Stella answers as your clinic.',
   ],
   [
     'Can I turn ClinicForce off if I don\'t need it?',
     'Yes — completely. From your dashboard you can switch coverage on or off in seconds. Set it to handle all calls, overflow only, after-hours only, or turn it off entirely. If your front desk is fully staffed and you want to run the phones yourself, just flip the toggle.',
   ],
   [
-    'Can Sarah actually book appointments?',
-    'Yes — Sarah can check your available slots and book appointments directly during the call. The booking appears instantly in your dashboard for confirmation. We\'re also building direct integrations with popular practice management systems.',
+    'Can Stella actually book appointments?',
+    'Yes — Stella can check your available slots and book appointments directly during the call. The booking appears instantly in your dashboard for confirmation. We\'re also building direct integrations with popular practice management systems.',
   ],
   [
     'What happens with emergency calls?',
-    'Sarah is trained to detect emergency keywords and symptoms. Urgent calls are immediately escalated — the on-call vet or dentist receives an SMS alert with full context within seconds. Routine calls are handled normally.',
+    'Stella is trained to detect emergency keywords and symptoms. Urgent calls are immediately escalated — the on-call vet or dentist receives an SMS alert with full context within seconds. Routine calls are handled normally.',
   ],
   [
     'Does it work for dental clinics, GP practices, and other clinics too?',
@@ -34,7 +34,7 @@ const faqs: [string, string][] = [
   ],
   [
     'What if a caller wants to speak to a real person?',
-    'Sarah can transfer calls to your team at any time, either when the caller requests it or when the situation requires it. You control when transfers are enabled in your coverage settings.',
+    'Stella can transfer calls to your team at any time, either when the caller requests it or when the situation requires it. You control when transfers are enabled in your coverage settings.',
   ],
   [
     'How is this different from a traditional answering service?',

@@ -25,7 +25,7 @@ const MESSAGES: SmsMessage[] = [
   { id: '4', recipient: 'Robert Patel', phone: '0445 678 901', message: 'Hi Robert, we tried calling about Charlie\'s post-op check. Please call us back at (02) 9876 5432 at your earliest convenience.', status: 'DELIVERED', type: 'Callback', sentAt: '1 hour ago' },
   { id: '5', recipient: 'Susan Miller', phone: '0456 789 012', message: 'Thank you for visiting! Luna\'s prescription is ready for pickup. Open Mon-Fri 8am-6pm, Sat 9am-1pm.', status: 'DELIVERED', type: 'Notification', sentAt: '2 hours ago' },
   { id: '6', recipient: 'James Walsh', phone: '0467 890 123', message: 'Hi James, this is a reminder that Buddy is due for his annual vaccination. Book online or call us to schedule.', status: 'PENDING', type: 'Recall', sentAt: '3 hours ago' },
-  { id: '7', recipient: 'Amy Chen', phone: '0478 901 234', message: 'Hi Amy, we missed your call today. Sarah AI took a message — please call back to discuss Coco\'s test results.', status: 'FAILED', type: 'Callback', sentAt: '4 hours ago' },
+  { id: '7', recipient: 'Amy Chen', phone: '0478 901 234', message: 'Hi Amy, we missed your call today. Stella AI took a message — please call back to discuss Coco\'s test results.', status: 'FAILED', type: 'Callback', sentAt: '4 hours ago' },
   { id: '8', recipient: 'Tom Nguyen', phone: '0489 012 345', message: 'Reminder: Patch\'s desexing surgery is booked for next Monday 14 Apr at 8:00 AM. No food after 10 PM Sunday.', status: 'SCHEDULED', type: 'Reminder', sentAt: 'Mon 7am' },
 ]
 
@@ -183,9 +183,9 @@ export default function SmsPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-[12px] font-medium text-[var(--text-primary)]">Sarah AI Integration</p>
+                <p className="text-[12px] font-medium text-[var(--text-primary)]">Stella AI Integration</p>
                 <p className="text-[11px] text-[var(--text-tertiary)] leading-relaxed mt-0.5">
-                  Sarah will automatically send appointment reminders, callback requests, and follow-up messages based on call outcomes.
+                  Stella will automatically send appointment reminders, callback requests, and follow-up messages based on call outcomes.
                 </p>
                 <p className="text-[10px] text-[var(--text-tertiary)] mt-2">Coming in next update</p>
               </div>

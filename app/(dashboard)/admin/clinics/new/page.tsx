@@ -302,7 +302,7 @@ export default function NewClinicPage() {
                 rows={3}
               />
               <p className="text-[12px] text-[var(--text-tertiary)] mt-1">
-                Sarah will use this to answer questions about what you offer
+                Stella will use this to answer questions about what you offer
               </p>
             </div>
 
@@ -313,7 +313,7 @@ export default function NewClinicPage() {
                   After-Hours Emergency Partner
                 </p>
                 <p className="text-[12px] text-[var(--text-tertiary)]">
-                  If a caller has an emergency outside your hours, Sarah will direct them here
+                  If a caller has an emergency outside your hours, Stella will direct them here
                 </p>
               </div>
 
@@ -383,7 +383,7 @@ export default function NewClinicPage() {
               <textarea
                 value={agentGreeting}
                 onChange={(e) => setAgentGreeting(e.target.value)}
-                placeholder="Thank you for calling Hills Pet Clinic, this is Sarah speaking. How can I help you today?"
+                placeholder="Thank you for calling Hills Pet Clinic, this is Stella speaking. How can I help you today?"
                 rows={3}
                 className={`${inputClass} resize-none`}
               />
