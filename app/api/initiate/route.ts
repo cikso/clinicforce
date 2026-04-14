@@ -83,6 +83,7 @@ export async function POST(req: NextRequest) {
         emergency_partner_address: '',
         subject_label:             '',
         subject_name:              '',
+        reception_number:          '',
       },
     })
   }
@@ -114,6 +115,9 @@ export async function POST(req: NextRequest) {
   // ── Normal mode: return dynamic variables only ────────────────────────
   return NextResponse.json({
     type: 'conversation_initiation_client_data',
-    dynamic_variables: buildDynamicVariables(clinic),
+    dynamic_variables: {
+      ...buildDynamicVariables(clinic),
+      reception_number: receptionNumber,
+    },
   })
 }
