@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { CITIES } from '@/lib/seo/cities'
+import { listPosts } from '@/lib/blog/posts'
 
 const BASE_URL = 'https://www.clinicforce.io'
 
@@ -11,6 +12,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified,
     changeFrequency: 'monthly',
     priority: 0.7,
+  }))
+
+  const blogEntries: MetadataRoute.Sitemap = listPosts().map((p) => ({
+    url: `${BASE_URL}/blog/${p.slug}`,
+    lastModified: new Date(`${p.date}T00:00:00Z`),
+    changeFrequency: 'monthly',
+    priority: 0.6,
   }))
 
   return [
@@ -33,6 +41,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     ...cityEntries,
+    {
+      url: `${BASE_URL}/blog`,
+      lastModified,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    ...blogEntries,
     {
       url: `${BASE_URL}/privacy`,
       lastModified,
