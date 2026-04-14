@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 import { getServiceSupabase } from '@/lib/voice/shared'
 
-const VALID_MODES = ['off', 'overflow', 'lunch_cover', 'after_hours', 'emergency_only', 'weekend'] as const
+const VALID_MODES = ['off', 'business_hours', 'after_hours', 'overflow', 'lunch_cover', 'emergency_only', 'weekend'] as const
 
 type RouteCtx = { params: Promise<{ clinicId: string }> }
 
@@ -50,7 +50,7 @@ export async function GET(_req: NextRequest, ctx: RouteCtx) {
 }
 
 // PATCH /api/clinic/[clinicId]/mode
-// Body: { mode: 'off' | 'overflow' | 'lunch_cover' | 'after_hours' | 'emergency_only' | 'weekend' }
+// Body: { mode: 'off' | 'business_hours' | 'after_hours' | 'overflow' | 'lunch_cover' | 'emergency_only' | 'weekend' }
 export async function PATCH(req: NextRequest, ctx: RouteCtx) {
   const { clinicId } = await ctx.params
   if (!clinicId) {
