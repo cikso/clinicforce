@@ -7,6 +7,7 @@ import KpiCard from './components/KpiCard'
 import OverviewHeader from './components/OverviewHeader'
 import CallVolumeChart, { type ChartDataPoint } from './components/CallVolumeChart'
 import CallInboxPanel from './components/CallInboxPanel'
+import TaskList, { type Task } from './TaskList'
 
 export const metadata: Metadata = { title: 'Overview — ClinicForce' }
 export const dynamic = 'force-dynamic'
@@ -198,6 +199,7 @@ export default async function OverviewPage() {
     last7dCallsRes,
     last30dCallsRes,
     monthCallsRes,
+    tasksRes,
   ] = await Promise.all([
     // Today's calls (full rows for KPI computation + chart)
     clinicId ? db
@@ -252,6 +254,16 @@ export default async function OverviewPage() {
       .select('id, summary, action_required, status, created_at')
       .eq('clinic_id', clinicId)
       .gte('created_at', monthStart) : Promise.resolve({ data: [] }),
+
+    // Unresolved tasks (newest first, cap 10)
+    clinicId ? db
+      .from('call_inbox')
+      .select('id, caller_name, summary, urgency, action_required, created_at')
+      .eq('clinic_id', clinicId)
+      .not('action_required', 'is', null)
+      .neq('status', 'ACTIONED')
+      .order('created_at', { ascending: false })
+      .limit(10) : Promise.resolve({ data: [] }),
   ])
 
   const todayCalls = (todayCallsRes.data ?? []) as CallRow[]
@@ -339,6 +351,9 @@ export default async function OverviewPage() {
     { label: 'Escalated / message',   count: breakdownCounts['Escalated / message'],   color: '#A0305A' },
     { label: 'Other',                 count: breakdownCounts['Other'],                 color: '#8A94A6' },
   ]
+
+  // ── Unresolved tasks (client component input) ──
+  const tasks = (tasksRes.data ?? []) as Task[]
 
   // ── Coverage Panel Data ──
   const coverageMode = (clinicRecord?.coverage_mode as string) ?? 'after_hours'
@@ -493,6 +508,9 @@ export default async function OverviewPage() {
             ))}
           </div>
         </div>
+
+        {/* ── Tasks for your team ── */}
+        <TaskList tasks={tasks} />
 
         {/* ── KPI Grid ── */}
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
