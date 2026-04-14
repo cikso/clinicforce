@@ -63,10 +63,27 @@ export async function POST(req: NextRequest) {
   }
 
   if (!clinic) {
-    console.log('[/api/initiate] Unknown number:', toNumber)
+    console.error('[/api/initiate] Clinic lookup failed for Twilio number:', toNumber)
     return NextResponse.json({
       type: 'conversation_initiation_client_data',
-      dynamic_variables: {},
+      dynamic_variables: {
+        clinic_name:               'the clinic',
+        clinic_id:                 '',
+        vertical_type:             '',
+        professional_title:        '',
+        clinic_address:            '',
+        clinic_phone:              '',
+        clinic_hours:              'please call back during business hours',
+        services:                   '',
+        clinic_services:           '',
+        after_hours_partner:       '',
+        after_hours_phone:         '',
+        emergency_partner_name:    '',
+        emergency_partner_phone:   '',
+        emergency_partner_address: '',
+        subject_label:             '',
+        subject_name:              '',
+      },
     })
   }
 

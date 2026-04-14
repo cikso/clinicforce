@@ -85,7 +85,7 @@ export default function PricingSection({ onBookDemo }: { onBookDemo: () => void 
       <div className="grid gap-6 lg:grid-cols-3">
         <PlanCard
           name="Starter"
-          price="$300"
+          price="$290"
           period="month"
           daily="~$10/day"
           description="For clinics getting started with AI phone handling"
@@ -102,9 +102,9 @@ export default function PricingSection({ onBookDemo }: { onBookDemo: () => void 
         />
         <PlanCard
           name="Growth"
-          price="$450"
+          price="$380"
           period="month"
-          daily="~$15/day"
+          daily="~$13/day"
           description="For busy clinics that want the full operational loop"
           features={[
             'Everything in Starter, plus:',
