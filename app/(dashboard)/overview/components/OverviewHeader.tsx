@@ -3,8 +3,8 @@
 import { useState, useCallback } from 'react'
 
 const MODE_BUTTONS = [
-  { label: 'Business Hours', value: 'business_hours' },
   { label: 'AI Off',         value: 'off' },
+  { label: 'Business Hours', value: 'business_hours' },
   { label: 'After Hours',    value: 'after_hours' },
 ] as const
 
