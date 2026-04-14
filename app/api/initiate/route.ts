@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import crypto from 'node:crypto'
 import {
   getServiceSupabase,
   buildDynamicVariables,
@@ -7,6 +8,72 @@ import {
 import { withRetry } from '@/lib/utils/withRetry'
 
 export const preferredRegion = 'syd1'
+
+const SIGNATURE_HEADER = 'ElevenLabs-Signature'
+const MAX_TIMESTAMP_SKEW_SECONDS = 300
+
+/**
+ * Verify an ElevenLabs webhook signature.
+ *
+ * Header format: `t=<unix-seconds>,v0=<hmac-sha256-hex>`
+ * Signed payload: `<timestamp>.<raw-body>` using ELEVENLABS_WEBHOOK_SECRET.
+ *
+ * Returns null on success, or a 403 NextResponse on failure.
+ */
+function verifyElevenLabsSignature(
+  headerValue: string | null,
+  rawBody: string,
+): NextResponse | null {
+  if (!headerValue) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+  }
+
+  const secret = process.env.ELEVENLABS_WEBHOOK_SECRET
+  if (!secret) {
+    console.error('[/api/initiate] ELEVENLABS_WEBHOOK_SECRET is not set')
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+  }
+
+  // Parse `t=...,v0=...`
+  let timestamp: string | null = null
+  let signature: string | null = null
+  for (const part of headerValue.split(',')) {
+    const [k, v] = part.trim().split('=')
+    if (k === 't') timestamp = v
+    else if (k === 'v0') signature = v
+  }
+
+  if (!timestamp || !signature) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+  }
+
+  const tsNum = Number(timestamp)
+  if (!Number.isFinite(tsNum)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+  }
+
+  // Reject stale / future-dated timestamps (replay protection)
+  if (Math.abs(Date.now() / 1000 - tsNum) > MAX_TIMESTAMP_SKEW_SECONDS) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+  }
+
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(`${timestamp}.${rawBody}`)
+    .digest('hex')
+
+  const expectedBuf = Buffer.from(expected, 'hex')
+  const providedBuf = Buffer.from(signature, 'hex')
+
+  if (
+    expectedBuf.length !== providedBuf.length ||
+    !crypto.timingSafeEqual(expectedBuf, providedBuf)
+  ) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+  }
+
+  return null
+}
 
 /**
  * POST /api/initiate
@@ -18,9 +85,23 @@ export const preferredRegion = 'syd1'
  * via voice_agents.elevenlabs_agent_id and return the clinic's variables.
  */
 export async function POST(req: NextRequest) {
+  // Read raw body FIRST so we can verify the HMAC signature over the exact bytes
+  const rawBody = await req.text()
+
+  // ── Signature verification ─────────────────────────────────────────────
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('Skipping ElevenLabs signature verification in development')
+  } else {
+    const failure = verifyElevenLabsSignature(
+      req.headers.get(SIGNATURE_HEADER),
+      rawBody,
+    )
+    if (failure) return failure
+  }
+
   let body: Record<string, unknown>
   try {
-    body = await req.json().catch(() => ({}))
+    body = rawBody ? (JSON.parse(rawBody) as Record<string, unknown>) : {}
   } catch {
     body = {}
   }
