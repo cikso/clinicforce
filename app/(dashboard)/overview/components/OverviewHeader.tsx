@@ -3,15 +3,18 @@
 import { useState, useCallback } from 'react'
 
 const MODE_BUTTONS = [
-  { label: 'AI Off',       value: 'off' },
-  { label: 'Overflow',     value: 'overflow' },
-  { label: 'Lunch Cover',  value: 'lunch_cover' },
+  { label: 'Business Hours', value: 'business_hours' },
+  { label: 'AI Off',         value: 'off' },
   { label: 'After Hours',    value: 'after_hours' },
-  { label: 'Emergency Only', value: 'emergency_only' },
-  { label: 'Weekend',        value: 'weekend' },
 ] as const
 
 type CoverageMode = typeof MODE_BUTTONS[number]['value']
+
+const STATUS_TEXT: Record<CoverageMode, { text: string; dot: string; color: string }> = {
+  business_hours: { text: 'Active: Stella is covering your phones',       dot: '#22C55E', color: 'text-gray-600' },
+  off:            { text: 'AI is turned off — calls go to your phones',   dot: '#EF4444', color: 'text-red-500'  },
+  after_hours:    { text: 'Active: Stella is covering after-hours calls', dot: '#22C55E', color: 'text-gray-600' },
+}
 
 interface OverviewHeaderProps {
   initialMode: string
@@ -21,9 +24,9 @@ interface OverviewHeaderProps {
 
 export default function OverviewHeader({ initialMode, clinicId, todayLabel }: OverviewHeaderProps) {
   const [mode, setMode] = useState<CoverageMode>(
-    (MODE_BUTTONS.find(b => b.value === initialMode)?.value) ?? 'after_hours'
+    (MODE_BUTTONS.find(b => b.value === initialMode)?.value) ?? 'business_hours'
   )
-  const isActive = mode !== 'off'
+  const status = STATUS_TEXT[mode]
 
   const handleModeClick = useCallback(async (newMode: CoverageMode) => {
     const prevMode = mode
@@ -50,13 +53,13 @@ export default function OverviewHeader({ initialMode, clinicId, todayLabel }: Ov
         <div className="flex items-center gap-1.5">
           <span
             className="inline-block w-2.5 h-2.5 rounded-full transition-colors duration-300"
-            style={{ backgroundColor: isActive ? '#22C55E' : '#EF4444' }}
+            style={{ backgroundColor: status.dot }}
           />
-          <span className={`text-xs font-medium ${isActive ? 'text-gray-600' : 'text-red-500'}`}>
-            {isActive ? 'Active: Stella is covering your phones' : 'Off: Stella is not covering your phones'}
+          <span className={`text-xs font-medium ${status.color}`}>
+            {status.text}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 sm:gap-4">
           {MODE_BUTTONS.map(({ label, value }) => (
             <button
               key={value}
