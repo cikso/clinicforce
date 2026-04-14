@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
+import { createHmac, timingSafeEqual } from 'node:crypto'
 
 // ── Supabase (service role) ──────────────────────────────────────────────────
 
@@ -23,25 +24,61 @@ export async function validateWebhookHmac(
   rawBody: string,
 ): Promise<boolean> {
   const secret = process.env.ELEVENLABS_WEBHOOK_SECRET
-  if (!secret || !signature) return false
-
-  try {
-    const encoder = new TextEncoder()
-    const key = await crypto.subtle.importKey(
-      'raw',
-      encoder.encode(secret),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign'],
-    )
-    const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(rawBody))
-    const expected = Array.from(new Uint8Array(sig))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
-    return expected === signature
-  } catch {
+  if (!secret) {
+    console.error('[validateWebhookHmac] ELEVENLABS_WEBHOOK_SECRET is not set')
     return false
   }
+  if (!signature) {
+    console.error('[validateWebhookHmac] Missing ElevenLabs-Signature header')
+    return false
+  }
+
+  // Header format: `t=<unix-seconds>,v0=<hex-sha256>`
+  let timestamp: string | null = null
+  let providedScheme: string | null = null // full "v0=<hex>" string
+  for (const part of signature.split(',')) {
+    const trimmed = part.trim()
+    if (trimmed.startsWith('t=')) timestamp = trimmed.slice(2)
+    else if (trimmed.startsWith('v0=')) providedScheme = trimmed
+  }
+
+  if (!timestamp || !providedScheme) {
+    console.error('[validateWebhookHmac] Malformed ElevenLabs-Signature header — missing t= or v0=')
+    return false
+  }
+
+  const tsNum = Number(timestamp)
+  if (!Number.isFinite(tsNum)) {
+    console.error('[validateWebhookHmac] Non-numeric timestamp in signature header')
+    return false
+  }
+
+  // 30-minute replay window (matches the official ElevenLabs SDK tolerance)
+  if (Math.abs(Date.now() / 1000 - tsNum) > 1800) {
+    console.error('[validateWebhookHmac] Timestamp outside the 30-minute tolerance zone')
+    return false
+  }
+
+  // Signed payload: `<timestamp>.<rawBody>`
+  const expectedHex = createHmac('sha256', secret)
+    .update(`${timestamp}.${rawBody}`)
+    .digest('hex')
+  const expectedScheme = `v0=${expectedHex}`
+
+  const expectedBuf = Buffer.from(expectedScheme)
+  const providedBuf = Buffer.from(providedScheme)
+
+  if (expectedBuf.length !== providedBuf.length) {
+    console.error('[validateWebhookHmac] Signature hash does not match (length mismatch)')
+    return false
+  }
+
+  if (!timingSafeEqual(expectedBuf, providedBuf)) {
+    console.error('[validateWebhookHmac] Signature hash does not match')
+    return false
+  }
+
+  return true
 }
 
 // ── Phone normalisation (Australian) ─────────────────────────────────────────
