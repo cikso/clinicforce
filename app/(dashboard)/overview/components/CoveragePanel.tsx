@@ -64,7 +64,7 @@ export default function CoveragePanel({ initialMode, initialStats, clinicId }: C
         <div>
           <h3 className="text-[14px] font-bold text-[#0A2540]">Coverage Control</h3>
           <p className="text-[11px] text-[#8A94A6] mt-0.5">
-            {isActive ? 'Sarah is covering your phones' : 'Sarah is on standby'}
+            {isActive ? 'Stella is covering your phones' : 'Stella is on standby'}
           </p>
         </div>
         <span

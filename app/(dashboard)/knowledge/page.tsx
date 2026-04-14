@@ -26,19 +26,19 @@ interface FaqEntry {
 const FAQ_ENTRIES: FaqEntry[] = [
   {
     question: 'How do I book an appointment?',
-    answer: 'You can book an appointment by calling the clinic during business hours, or Sarah AI can help you book 24/7 over the phone. Simply tell Sarah the reason for your visit and your preferred time, and she\'ll find the next available slot.',
+    answer: 'You can book an appointment by calling the clinic during business hours, or Stella AI can help you book 24/7 over the phone. Simply tell Stella the reason for your visit and your preferred time, and she\'ll find the next available slot.',
     category: 'Appointments',
     updated: '2 days ago',
   },
   {
     question: 'What are the clinic opening hours?',
-    answer: 'We are open Monday to Friday from 8:00 AM to 6:00 PM, and Saturday from 9:00 AM to 1:00 PM. We are closed on Sundays and public holidays. For after-hours emergencies, Sarah AI can triage and connect you to our on-call vet.',
+    answer: 'We are open Monday to Friday from 8:00 AM to 6:00 PM, and Saturday from 9:00 AM to 1:00 PM. We are closed on Sundays and public holidays. For after-hours emergencies, Stella AI can triage and connect you to our on-call vet.',
     category: 'General Care',
     updated: '1 week ago',
   },
   {
     question: 'When is my pet due for vaccination?',
-    answer: 'Vaccination schedules vary by species and age. Puppies and kittens need a series of shots at 6-8, 10-12, and 14-16 weeks. Annual boosters are recommended for adult pets. Call us or ask Sarah AI to check your pet\'s vaccination history.',
+    answer: 'Vaccination schedules vary by species and age. Puppies and kittens need a series of shots at 6-8, 10-12, and 14-16 weeks. Annual boosters are recommended for adult pets. Call us or ask Stella AI to check your pet\'s vaccination history.',
     category: 'Vaccinations',
     updated: '3 days ago',
   },
@@ -50,13 +50,13 @@ const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     question: 'What should I do in a pet emergency?',
-    answer: 'If you believe your pet is experiencing a medical emergency, call us immediately. If it\'s after hours, Sarah AI will triage the situation and can connect you to our on-call vet or direct you to the nearest emergency animal hospital.',
+    answer: 'If you believe your pet is experiencing a medical emergency, call us immediately. If it\'s after hours, Stella AI will triage the situation and can connect you to our on-call vet or direct you to the nearest emergency animal hospital.',
     category: 'Emergency',
     updated: '1 day ago',
   },
   {
     question: 'How do I refill my pet\'s prescription?',
-    answer: 'Call the clinic and ask for a prescription refill, or simply tell Sarah AI your pet\'s name and medication. We\'ll prepare the refill for pickup. For ongoing prescriptions, we can set up auto-reminders so you never miss a refill.',
+    answer: 'Call the clinic and ask for a prescription refill, or simply tell Stella AI your pet\'s name and medication. We\'ll prepare the refill for pickup. For ongoing prescriptions, we can set up auto-reminders so you never miss a refill.',
     category: 'Medications',
     updated: '4 days ago',
   },
@@ -68,7 +68,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     question: 'Can I cancel or reschedule an appointment?',
-    answer: 'Yes! You can cancel or reschedule by calling us at least 24 hours before your appointment. Sarah AI can also help you reschedule over the phone. Cancellations with less than 24 hours notice may incur a $25 late cancellation fee.',
+    answer: 'Yes! You can cancel or reschedule by calling us at least 24 hours before your appointment. Stella AI can also help you reschedule over the phone. Cancellations with less than 24 hours notice may incur a $25 late cancellation fee.',
     category: 'Appointments',
     updated: '3 days ago',
   },
@@ -91,8 +91,8 @@ const FAQ_ENTRIES: FaqEntry[] = [
     updated: '5 days ago',
   },
   {
-    question: 'Can Sarah AI answer medical questions?',
-    answer: 'Sarah AI can provide general health information and check your pet\'s records, but cannot diagnose conditions or prescribe treatment. For medical concerns, Sarah will help you book an appointment or connect you with a vet for urgent issues.',
+    question: 'Can Stella AI answer medical questions?',
+    answer: 'Stella AI can provide general health information and check your pet\'s records, but cannot diagnose conditions or prescribe treatment. For medical concerns, Stella will help you book an appointment or connect you with a vet for urgent issues.',
     category: 'General Care',
     updated: '1 day ago',
   },
@@ -186,7 +186,7 @@ export default function KnowledgePage() {
             </div>
           </Card>
 
-          {/* Test Sarah Card */}
+          {/* Test Stella Card */}
           <Card className="!bg-gradient-to-br from-[var(--brand-light)] to-white border-[var(--brand)]/20">
             <div className="text-center space-y-2.5">
               <div className="w-10 h-10 rounded-full bg-[var(--brand)] flex items-center justify-center mx-auto">
@@ -196,9 +196,9 @@ export default function KnowledgePage() {
                 </svg>
               </div>
               <div>
-                <p className="text-[13px] font-semibold text-[var(--text-primary)] font-heading">Test Sarah AI</p>
+                <p className="text-[13px] font-semibold text-[var(--text-primary)] font-heading">Test Stella AI</p>
                 <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed mt-1">
-                  Ask Sarah a question to see how she uses the knowledge base to respond to callers.
+                  Ask Stella a question to see how she uses the knowledge base to respond to callers.
                 </p>
               </div>
               <Button variant="primary" size="sm" className="w-full opacity-50 cursor-not-allowed" disabled>

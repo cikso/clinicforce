@@ -59,7 +59,7 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
   const [isActive, setIsActive] = useState(voiceAgent?.is_active ?? false)
   const [greeting, setGreeting] = useState(
     (callHandlingPrefs as Record<string, string | boolean>)?.greeting as string ??
-    `Thank you for calling ${clinicName}, this is Sarah. How can I help you today?`,
+    `Thank you for calling ${clinicName}, this is Stella. How can I help you today?`,
   )
 
   const [prefs, setPrefs] = useState<Record<string, boolean>>({
@@ -100,7 +100,7 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
           data: { is_active: newState },
         }),
       })
-      showToast(res.ok ? `Sarah AI ${newState ? 'activated' : 'deactivated'}` : 'Failed to update', res.ok ? 'success' : 'error')
+      showToast(res.ok ? `Stella AI ${newState ? 'activated' : 'deactivated'}` : 'Failed to update', res.ok ? 'success' : 'error')
       if (!res.ok) setIsActive(!newState)
     } catch {
       setIsActive(!newState)
@@ -177,7 +177,7 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
   const PREF_ITEMS = [
     { key: 'emergency_triage', label: 'Emergency Triage', desc: 'Detect and escalate emergency calls immediately' },
     { key: 'appointment_capture', label: 'Appointment Capture', desc: 'Attempt to capture booking requests during calls' },
-    { key: 'transfers', label: 'Call Transfers', desc: 'Allow Sarah to transfer calls to staff when requested' },
+    { key: 'transfers', label: 'Call Transfers', desc: 'Allow Stella to transfer calls to staff when requested' },
     { key: 'followup_queue', label: 'Follow-up Queue', desc: 'Create follow-up tasks for calls requiring action' },
     { key: 'post_call_sms', label: 'Post-Call SMS', desc: 'Send caller a summary SMS after each call', disabled: true, comingSoon: true },
     { key: 'auto_booking', label: 'Auto-Booking', desc: 'Book appointments directly during calls', disabled: true, comingSoon: true },
@@ -196,7 +196,7 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
                 <StatusDot variant={isActive ? 'active' : 'offline'} />
                 <div>
                   <p className="text-[14px] font-semibold text-[var(--text-primary)]">
-                    Sarah AI is {isActive ? 'Active' : 'Inactive'}
+                    Stella AI is {isActive ? 'Active' : 'Inactive'}
                   </p>
                   <p className="text-[12px] text-[var(--text-tertiary)]">
                     Mode: {voiceAgent.mode || 'default'}
@@ -225,7 +225,7 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
       </Card>
 
       {/* Greeting & Behaviour Card */}
-      <Card header={{ title: 'Greeting & Behaviour', subtitle: 'Customise how Sarah greets callers' }}>
+      <Card header={{ title: 'Greeting & Behaviour', subtitle: 'Customise how Stella greets callers' }}>
         <form onSubmit={handleSavePrefs} className="space-y-4">
           <div>
             <label className="block text-[12px] uppercase tracking-[0.5px] text-[var(--text-secondary)] font-semibold mb-1.5">
@@ -236,10 +236,10 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
               onChange={(e) => setGreeting(e.target.value)}
               rows={3}
               className={cn(inputCls, 'resize-none')}
-              placeholder={`Thank you for calling ${clinicName}, this is Sarah. How can I help you today?`}
+              placeholder={`Thank you for calling ${clinicName}, this is Stella. How can I help you today?`}
             />
             <p className="text-[11px] text-[var(--text-tertiary)] mt-1">
-              Sarah will use your clinic name and industry context automatically.
+              Stella will use your clinic name and industry context automatically.
             </p>
           </div>
 
@@ -286,7 +286,7 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
       <Card header={{ title: 'Triage Keywords', subtitle: 'Words that trigger urgent call escalation' }}>
         <form onSubmit={handleSaveKeywords} className="space-y-4">
           <p className="text-[12px] text-[var(--text-tertiary)]">
-            Sarah uses these keywords to detect urgent calls and escalate immediately.
+            Stella uses these keywords to detect urgent calls and escalate immediately.
           </p>
 
           {/* Keyword chips */}

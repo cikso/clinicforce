@@ -108,7 +108,7 @@ export default function AfterHoursCallsPanel({ calls, onAction }: AfterHoursCall
         </div>
         <div className="flex items-center gap-1.5 text-[10px] font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">
           <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-          Sarah AI Online
+          Stella AI Online
         </div>
       </div>
 

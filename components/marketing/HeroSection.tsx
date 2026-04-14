@@ -16,12 +16,12 @@ type Industry = 'vet' | 'dental' | 'gp' | 'chiro'
 // ─── Copy ──────────────────────────────────────────────────────────────────────
 
 const INDUSTRY_COPY: Record<Industry, string> = {
-  vet: 'Sarah handles inbound calls, takes bookings, and triages urgency around the clock — so your team can focus on the work that actually needs them. Turn her on or off whenever you need. No lock-in. No complexity.',
+  vet: 'Stella handles inbound calls, takes bookings, and triages urgency around the clock — so your team can focus on the work that actually needs them. Turn her on or off whenever you need. No lock-in. No complexity.',
   dental:
-    'Built for dental practices. Sarah manages recalls, new patient enquiries, and appointment confirmations without a single hold tone.',
-  gp: 'Built for GP clinics. Sarah screens urgency, books callbacks, and routes messages to the right practitioner — every time.',
+    'Built for dental practices. Stella manages recalls, new patient enquiries, and appointment confirmations without a single hold tone.',
+  gp: 'Built for GP clinics. Stella screens urgency, books callbacks, and routes messages to the right practitioner — every time.',
   chiro:
-    'Built for chiropractic practices. Sarah handles new patient bookings, follow-up calls, and after-hours enquiries around the clock.',
+    'Built for chiropractic practices. Stella handles new patient bookings, follow-up calls, and after-hours enquiries around the clock.',
 }
 
 // ─── SVG Icons (inline only, no external libraries) ────────────────────────────
@@ -296,7 +296,7 @@ const LiveCallCard = React.memo(function LiveCallCard() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-slate-800 leading-none">
-                Sarah is handling a call
+                Stella is handling a call
               </p>
               <p className="text-[11px] text-slate-400 mt-0.5">
                 Inbound — in progress

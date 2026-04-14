@@ -87,7 +87,7 @@ export default function ClinicDetailsPage() {
           <Input value={form.website} onChange={set('website')} placeholder="www.yourclinic.com.au" />
         </Field>
 
-        <Field label="Services Offered" hint="Sarah will use this to answer questions about what you offer">
+        <Field label="Services Offered" hint="Stella will use this to answer questions about what you offer">
           <Textarea
             value={form.services}
             onChange={set('services')}
@@ -119,7 +119,7 @@ export default function ClinicDetailsPage() {
               After-Hours Emergency Partner
             </p>
             <p style={{ fontFamily: "'DM Sans'", fontSize: '0.78rem', color: '#9B9B9B' }}>
-              If a caller has an emergency outside your hours, Sarah will direct them here
+              If a caller has an emergency outside your hours, Stella will direct them here
             </p>
           </div>
 

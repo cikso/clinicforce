@@ -41,7 +41,7 @@ const CLINIC_ID = 'demo-clinic'
 
 const STARTER_MESSAGE: Message = {
   role: 'assistant',
-  content: "Hi, I'm Sarah — the virtual assistant for Downtown Emergency Veterinary Clinic. How can I help your pet today?",
+  content: "Hi, I'm Stella — the virtual assistant for Downtown Emergency Veterinary Clinic. How can I help your pet today?",
 }
 
 export default function ChatWidget() {
@@ -133,7 +133,7 @@ export default function ChatWidget() {
                 <span className="text-white text-sm font-bold">S</span>
               </div>
               <div>
-                <p className="text-white font-bold text-sm">Sarah</p>
+                <p className="text-white font-bold text-sm">Stella</p>
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <p className="text-white/70 text-[11px]">AI Veterinary Assistant</p>
@@ -184,7 +184,7 @@ export default function ChatWidget() {
               <div className="flex justify-start">
                 <div className="bg-slate-100 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2">
                   <Loader2 className="w-3.5 h-3.5 text-slate-400 animate-spin" />
-                  <span className="text-xs text-slate-400">Sarah is thinking...</span>
+                  <span className="text-xs text-slate-400">Stella is thinking...</span>
                 </div>
               </div>
             )}

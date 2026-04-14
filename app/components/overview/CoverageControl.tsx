@@ -88,7 +88,7 @@ export default function CoverageControl({
     <Card
       header={{
         title: 'Coverage Control',
-        subtitle: isActive ? 'Sarah is covering your phones' : 'Sarah is on standby',
+        subtitle: isActive ? 'Stella is covering your phones' : 'Stella is on standby',
         action: (
           <div className="flex items-center gap-2">
             <StatusDot variant={isActive ? 'active' : 'standby'} />

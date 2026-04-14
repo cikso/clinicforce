@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     // Build a concise voice-optimised prompt
     const systemPrompt = `
-You are Sarah, a veterinary AI triage assistant. You are helping route a phone call.
+You are Stella, a veterinary AI triage assistant. You are helping route a phone call.
 The caller has described a concern. Based on their message, provide a SHORT spoken response (2-3 sentences max).
 The response will be read aloud by a voice agent — write it as spoken words, no lists or formatting.
 

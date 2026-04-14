@@ -21,7 +21,7 @@ export interface TriageResult {
   recommendedActions: string[]
 }
 
-const SYSTEM_PROMPT = `You are Sarah, an AI veterinary triage specialist at an emergency animal hospital.
+const SYSTEM_PROMPT = `You are Stella, an AI veterinary triage specialist at an emergency animal hospital.
 Your role is to assess incoming patient cases and provide accurate, clinically-sound urgency classifications.
 
 You must respond with a single valid JSON object — no markdown, no explanation, just the JSON.

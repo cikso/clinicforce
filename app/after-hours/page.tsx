@@ -18,7 +18,7 @@ import DemoModal from '@/components/landing/DemoModal'
 const featureCards: [string, string, React.ComponentType<{ className?: string }>][] = [
   [
     'Books appointments after hours',
-    'Clients call at 7 PM, 9 PM, Sunday morning. Sarah answers and books directly into your system. You start Monday with a full schedule.',
+    'Clients call at 7 PM, 9 PM, Sunday morning. Stella answers and books directly into your system. You start Monday with a full schedule.',
     Calendar,
   ],
   [
@@ -38,12 +38,12 @@ const featureCards: [string, string, React.ComponentType<{ className?: string }>
   ],
   [
     'Manages reschedules and cancellations',
-    'A client calls Saturday to cancel Monday. Sarah updates your calendar instantly and opens that slot for someone else.',
+    'A client calls Saturday to cancel Monday. Stella updates your calendar instantly and opens that slot for someone else.',
     CalendarX,
   ],
   [
     'Escalates urgent calls',
-    'For emergencies, Sarah transfers the call or sends an urgent notification. Nothing falls through.',
+    'For emergencies, Stella transfers the call or sends an urgent notification. Nothing falls through.',
     Siren,
   ],
 ]
@@ -54,7 +54,7 @@ const exampleCalls = [
     label: 'Evening booking',
     caller:
       "Hi, I'd like to book an appointment. My dog Oscar hasn't been eating well.",
-    sarah:
+    stella:
       'Of course! Let me find an available time for Oscar this week…',
     tags: ['New appointment booked at 7:43 PM', 'Zero staff involvement after hours'],
   },
@@ -62,7 +62,7 @@ const exampleCalls = [
     time: 'Sat 10:15 AM',
     label: 'Weekend reschedule',
     caller: 'I need to move my Monday appointment. Something came up.',
-    sarah: 'No problem. Let me check the next available times for you…',
+    stella: 'No problem. Let me check the next available times for you…',
     tags: ['Monday slot cancelled, new slot booked', 'Calendar updated in real time'],
   },
   {
@@ -70,7 +70,7 @@ const exampleCalls = [
     label: 'Holiday enquiry',
     caller:
       'What are your fees for a consult? And do you have anything available this week?',
-    sarah:
+    stella:
       'A standard consultation is [clinic fee]. I can see a few openings on Wednesday — would you like to book?',
     tags: ['Clinic-specific fees answered accurately', 'Client booked on Sunday evening'],
   },
@@ -79,19 +79,19 @@ const exampleCalls = [
 const faqs: [string, string][] = [
   [
     'What hours does ClinicForce cover?',
-    'Sarah answers calls 24/7 — evenings, weekends, and public holidays. You choose when calls forward to Sarah using conditional call forwarding on your existing clinic number. No number change required.',
+    'Stella answers calls 24/7 — evenings, weekends, and public holidays. You choose when calls forward to Stella using conditional call forwarding on your existing clinic number. No number change required.',
   ],
   [
-    'Can Sarah book appointments after hours?',
-    'Yes. Sarah reads your live calendar and books into available slots in real time — correct appointment type, right duration, even at 10 PM on a Sunday.',
+    'Can Stella book appointments after hours?',
+    'Yes. Stella reads your live calendar and books into available slots in real time — correct appointment type, right duration, even at 10 PM on a Sunday.',
   ],
   [
     'What happens if a caller needs urgent help?',
-    'Sarah recognises when a call needs a human. It can transfer the call to an on-call number, send an urgent notification, or direct the caller to an emergency partner — based on how your clinic is configured.',
+    'Stella recognises when a call needs a human. It can transfer the call to an on-call number, send an urgent notification, or direct the caller to an emergency partner — based on how your clinic is configured.',
   ],
   [
     'How is this different from a traditional answering service?',
-    'Traditional answering services take messages. Sarah takes action — books appointments, answers clinic-specific questions, and updates your calendar in real time. No callback list. No Monday morning backlog.',
+    'Traditional answering services take messages. Stella takes action — books appointments, answers clinic-specific questions, and updates your calendar in real time. No callback list. No Monday morning backlog.',
   ],
 ]
 
@@ -152,7 +152,7 @@ export default function AfterHoursPage() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[#536171]">
-            Sarah answers patient and client calls evenings, weekends, and public holidays — books appointments, handles enquiries, and escalates urgencies while your team is off the clock.
+            Stella answers patient and client calls evenings, weekends, and public holidays — books appointments, handles enquiries, and escalates urgencies while your team is off the clock.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -190,11 +190,11 @@ export default function AfterHoursPage() {
           </div>
         </section>
 
-        {/* ─── WHAT SARAH HANDLES ─────────────────────────────── */}
+        {/* ─── WHAT STELLA HANDLES ─────────────────────────────── */}
         <section className="px-1 py-20 sm:py-24">
           <div className="max-w-3xl">
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#17C4BE]">
-              What Sarah handles
+              What Stella handles
             </p>
             <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-4xl">
               Full coverage the moment your clinic closes.
@@ -226,7 +226,7 @@ export default function AfterHoursPage() {
               Example calls
             </p>
             <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-4xl">
-              Real after-hours calls. Handled by Sarah.
+              Real after-hours calls. Handled by Stella.
             </h2>
           </div>
 
@@ -259,10 +259,10 @@ export default function AfterHoursPage() {
                   <div className="flex justify-end">
                     <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-[#E5F9F8] px-4 py-3">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#17C4BE]">
-                        Sarah
+                        Stella
                       </p>
                       <p className="mt-1 text-sm leading-6 text-[#134e4a]">
-                        &ldquo;{call.sarah}&rdquo;
+                        &ldquo;{call.stella}&rdquo;
                       </p>
                     </div>
                   </div>

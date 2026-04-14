@@ -12,6 +12,6 @@ Address: 267 Fulham Road, Alphington VIC 3078
 
 Please call ahead if possible so they can prepare for your arrival.
 
-## Our AI assistant (Sarah)
+## Our AI assistant (Stella)
 
-Our AI assistant Sarah is available after hours to help you assess whether your pet's situation is an emergency or can wait until we re-open. Sarah will always direct you to the emergency centre if there is any risk to your pet's life.
+Our AI assistant Stella is available after hours to help you assess whether your pet's situation is an emergency or can wait until we re-open. Stella will always direct you to the emergency centre if there is any risk to your pet's life.
