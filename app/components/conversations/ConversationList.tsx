@@ -29,7 +29,6 @@ interface ConversationListProps {
   initialCalls: CallItem[]
   selectedId: string | null
   onSelect: (call: CallItem) => void
-  hasExtraFields: boolean
   clinicId: string
 }
 
@@ -68,7 +67,6 @@ export default function ConversationList({
   initialCalls,
   selectedId,
   onSelect,
-  hasExtraFields,
   clinicId,
 }: ConversationListProps) {
   const [calls, setCalls] = useState<CallItem[]>(initialCalls)

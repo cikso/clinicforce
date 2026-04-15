@@ -74,7 +74,6 @@ export default function ConversationsShell({
           initialCalls={initialCalls}
           selectedId={selected?.id ?? null}
           onSelect={handleSelect}
-          hasExtraFields={hasExtraFields}
           clinicId={clinicId}
         />
       </div>

@@ -37,7 +37,6 @@ interface ActionQueueListProps {
   initialCompleted: TaskRow[]
   staff: StaffMember[]
   staffMap: Record<string, string>
-  clinicId: string
 }
 
 /* ─── Helpers ─── */
@@ -99,7 +98,6 @@ export default function ActionQueueList({
   initialCompleted,
   staff,
   staffMap,
-  clinicId,
 }: ActionQueueListProps) {
   const [tasks, setTasks] = useState<TaskRow[]>(initialTasks)
   const [completed, setCompleted] = useState<TaskRow[]>(initialCompleted)

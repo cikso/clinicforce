@@ -97,7 +97,6 @@ export default async function ActionsPage() {
       initialCompleted={completedTasks}
       staff={staffList}
       staffMap={staffMap}
-      clinicId={clinicId}
     />
   )
 }

@@ -2,12 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import Link from 'next/link'
-import { useClinic } from '@/context/ClinicContext'
 import { createClient } from '@/lib/supabase/client'
 import Card from '@/app/components/ui/Card'
 import Badge from '@/app/components/ui/Badge'
 import EmptyState from '@/app/components/ui/EmptyState'
-import { cn } from '@/lib/utils'
 
 interface TaskItem {
   id: string
@@ -22,7 +20,6 @@ interface TaskItem {
 interface ActionQueuePreviewProps {
   initialTasks: TaskItem[]
   pendingCount: number
-  hasExtraFields: boolean
 }
 
 function relativeTime(iso: string): string {
@@ -45,9 +42,7 @@ function priorityVariant(p: string): 'urgent' | 'high' | 'routine' {
 export default function ActionQueuePreview({
   initialTasks,
   pendingCount,
-  hasExtraFields,
 }: ActionQueuePreviewProps) {
-  const { activeClinicId } = useClinic()
   const [tasks, setTasks] = useState<TaskItem[]>(initialTasks)
 
   const handleComplete = useCallback(async (taskId: string) => {

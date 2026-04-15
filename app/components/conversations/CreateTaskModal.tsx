@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Button from '@/app/components/ui/Button'
-import { cn } from '@/lib/utils'
 
 interface StaffMember {
   id: string

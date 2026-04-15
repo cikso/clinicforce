@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { clinicName, state } = await req.json()
+    const { clinicName } = await req.json()
     if (!clinicName) {
       return NextResponse.json({ error: 'Clinic name is required' }, { status: 400 })
     }
