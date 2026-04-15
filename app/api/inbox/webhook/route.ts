@@ -5,6 +5,7 @@ import { ElevenLabsWebhookSchema } from '@/lib/validation/schemas'
 import { enforceRateLimit, clientIp } from '@/lib/rate-limit'
 import { isOverLimit } from '@/lib/billing/usage'
 import { logAudit } from '@/lib/audit'
+import { redactPhone, safeStringify } from '@/lib/log'
 
 export const preferredRegion = 'syd1'
 
@@ -82,24 +83,15 @@ export async function POST(req: NextRequest) {
   const dataCollection = (analysis.data_collection as Record<string, unknown>) ?? {}
   const transcript   = (payload.transcript as Array<{ role: string; message: string }>) ?? []
 
-  console.log('[inbox/webhook] FULL PAYLOAD KEYS:', JSON.stringify({
-    top_level_keys: Object.keys(body),
-    payload_keys: Object.keys(payload),
-    analysis_keys: Object.keys(analysis),
-    analysis_full: analysis,
+  // Diagnostic log — keys + counts only, no transcript/summary/PII content.
+  // Use safeStringify on any nested object before logging it.
+  console.log('[inbox/webhook] received', safeStringify({
+    type: body.type,
+    has_conversation_id: !!conversationId,
+    transcript_lines: transcript.length,
     metadata_keys: Object.keys(metadata),
-    conversation_id: conversationId,
-    data_collection: dataCollection,
-  }))
-  console.log('[inbox/webhook] SUMMARY FIELDS:', JSON.stringify({
-    'analysis.transcript_summary': analysis.transcript_summary ?? null,
-    'analysis.summary': analysis.summary ?? null,
-    'analysis.call_summary': analysis.call_summary ?? null,
-    'payload.summary': payload.summary ?? null,
-    'payload.call_summary': payload.call_summary ?? null,
-    'body.summary': body.summary ?? null,
-    'analysis.evaluation_criteria_results': analysis.evaluation_criteria_results ?? null,
-    'analysis.call_successful': analysis.call_successful ?? null,
+    analysis_keys: Object.keys(analysis),
+    data_collection_keys: Object.keys(dataCollection),
   }))
 
   // ── Resolve clinic from Twilio "To" number ────────────────────────────────
@@ -125,7 +117,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!clinicId) {
-    console.error('[inbox/webhook] Unknown agent phone number:', toNumber)
+    console.error('[inbox/webhook] unknown agent phone', { to: redactPhone(toNumber) })
     return NextResponse.json({ error: 'Unknown agent phone number' }, { status: 400 })
   }
 
@@ -138,7 +130,7 @@ export async function POST(req: NextRequest) {
       action: 'billing.usage.blocked',
       clinicId,
       resource: 'call_inbox',
-      metadata: { to: toNumber, conversation_id: conversationId },
+      metadata: { to: redactPhone(toNumber), conversation_id: conversationId },
     })
     return NextResponse.json({ ok: true, action: 'blocked_over_plan_limit' })
   }

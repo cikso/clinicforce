@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createClient as createAuthClient } from '@/lib/supabase/server'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
+import { ClinicUpdateSchema } from '@/lib/validation/schemas'
+import { logAudit } from '@/lib/audit'
 
 function getService() {
   return createClient(
@@ -24,17 +26,29 @@ const ALLOWED_FIELDS = [
  * Also syncs voice_agents.twilio_phone_number if twilio_phone is provided.
  */
 export async function PATCH(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id: clinicId } = await params
+
+  // UUID guard before any DB hits
+  if (!/^[0-9a-f-]{36}$/i.test(clinicId)) {
+    return NextResponse.json({ error: 'Invalid clinic id.' }, { status: 400 })
+  }
 
   const profile = await getClinicProfile()
   if (!profile) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
-  if (!profile.isPlatformOwner && profile.clinicId !== clinicId) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  // Platform owner can target any clinic; clinic admins only their own.
+  // Receptionists / staff have no admin write power.
+  if (!profile.isPlatformOwner) {
+    if (profile.clinicId !== clinicId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+    if (profile.userRole !== 'clinic_admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
   }
 
   let body: Record<string, unknown>
@@ -44,15 +58,29 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  // Build update object from allowed fields only
+  // Validate the update payload against the same schema as the create path,
+  // then narrow to the columns this endpoint allows mutating.
+  const validated = ClinicUpdateSchema.safeParse(body)
+  if (!validated.success) {
+    return NextResponse.json(
+      {
+        error: 'Invalid fields',
+        issues: validated.error.issues.map(i => ({
+          path: i.path.join('.'),
+          message: i.message,
+        })),
+      },
+      { status: 400 },
+    )
+  }
   const update: Record<string, unknown> = {}
   for (const field of ALLOWED_FIELDS) {
-    if (field in body) {
-      update[field] = body[field] ?? null
+    if (field in validated.data) {
+      update[field] = (validated.data as Record<string, unknown>)[field] ?? null
     }
   }
 
-  if (Object.keys(update).length === 0 && !body.twilio_phone) {
+  if (Object.keys(update).length === 0 && typeof body.twilio_phone !== 'string') {
     return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 })
   }
 
@@ -69,6 +97,14 @@ export async function PATCH(
       console.error('[admin/clinics] update error:', error.message)
       return NextResponse.json({ error: 'Failed to update clinic' }, { status: 500 })
     }
+
+    logAudit({
+      action: 'admin.clinic.updated',
+      clinicId,
+      actorId: profile.userId,
+      resource: `clinic:${clinicId}`,
+      metadata: { fields: Object.keys(update) },
+    }, req)
   }
 
   // Sync Twilio phone number in voice_agents if provided
@@ -122,10 +158,14 @@ export async function PATCH(
  * Platform-owner only. Deletes a clinic and all associated data.
  */
 export async function DELETE(
-  _req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id: clinicId } = await params
+
+  if (!/^[0-9a-f-]{36}$/i.test(clinicId)) {
+    return NextResponse.json({ error: 'Invalid clinic id.' }, { status: 400 })
+  }
 
   // Auth: must be platform_owner
   const profile = await getClinicProfile()
@@ -187,6 +227,14 @@ export async function DELETE(
       { status: 500 },
     )
   }
+
+  logAudit({
+    action: 'admin.clinic.deleted',
+    clinicId,
+    actorId: profile.userId,
+    resource: `clinic:${clinicId}`,
+    metadata: { name: clinic.name },
+  }, req)
 
   return NextResponse.json({ success: true, deleted: clinic.name })
 }

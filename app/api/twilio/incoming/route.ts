@@ -6,6 +6,7 @@ import {
 } from '@/lib/voice/shared'
 import { validateTwilioSignature, reconstructRequestUrl } from '@/lib/voice/twilio-auth'
 import { enforceRateLimit, clientIp } from '@/lib/rate-limit'
+import { redactPhone } from '@/lib/log'
 
 export const preferredRegion = 'syd1'
 
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!toNumber) {
-      console.error('[twilio/incoming] No To number in Twilio request')
+      console.error('[twilio/incoming] no To in request')
       if (clinicNumber) {
         return twiml(`
 <Response>
@@ -92,7 +93,7 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
 
     if (!voiceAgent?.clinic_id) {
-      console.error('[twilio/incoming] No voice_agent matched phone number:', toNumber)
+      console.error('[twilio/incoming] no voice_agent for', { to: redactPhone(toNumber) })
       if (clinicNumber) {
         return twiml(`
 <Response>
@@ -142,11 +143,11 @@ export async function POST(req: NextRequest) {
 
       const dynamicVars = buildDynamicVariables(clinic)
 
-      console.log('[twilio/incoming] Registering call with ElevenLabs:', {
+      console.log('[twilio/incoming] registering call', {
         agent_id: agentId,
-        from: fromNumber,
-        to: toNumber,
-        vars: Object.keys(dynamicVars),
+        from: redactPhone(fromNumber),
+        to: redactPhone(toNumber),
+        vars_count: Object.keys(dynamicVars).length,
       })
 
       const registerResponse = await fetch(ELEVENLABS_REGISTER_CALL_URL, {
