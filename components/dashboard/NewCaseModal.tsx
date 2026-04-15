@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { X, Plus, Loader2, Sparkles } from 'lucide-react'
-import { DashboardCase, CaseUrgency, IntakeSource } from '@/data/mock-dashboard'
+import { DashboardCase, IntakeSource } from '@/data/mock-dashboard'
 import type { TriageResult } from '@/app/api/triage/route'
 
 interface NewCaseModalProps {
@@ -23,14 +23,12 @@ export default function NewCaseModal({ isOpen, onClose, onSubmit }: NewCaseModal
     source: 'FRONT_DESK' as IntakeSource,
   })
   const [triaging, setTriaging] = useState(false)
-  const [triageResult, setTriageResult] = useState<TriageResult | null>(null)
   const [triageError, setTriageError] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setTriaging(true)
     setTriageError(false)
-    setTriageResult(null)
 
     let aiData: Partial<DashboardCase> = {
       urgency: 'URGENT',
@@ -55,7 +53,6 @@ export default function NewCaseModal({ isOpen, onClose, onSubmit }: NewCaseModal
 
       if (res.ok) {
         const result: TriageResult = await res.json()
-        setTriageResult(result)
         aiData = {
           urgency: result.urgency,
           urgencyScore: result.urgencyScore,
@@ -74,7 +71,6 @@ export default function NewCaseModal({ isOpen, onClose, onSubmit }: NewCaseModal
 
     onSubmit({ ...form, ...aiData })
     setForm({ patientName: '', species: 'Canine', breed: '', age: '', issue: '', ownerName: '', ownerPhone: '', source: 'FRONT_DESK' })
-    setTriageResult(null)
     onClose()
   }
 

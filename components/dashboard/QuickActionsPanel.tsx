@@ -1,6 +1,6 @@
 'use client'
 
-import { Plus, AlertTriangle, UserCheck, Clock, ArrowRightLeft, Image, ChevronRight } from 'lucide-react'
+import { Plus, AlertTriangle, UserCheck, Clock, ArrowRightLeft, Image as ImageIcon, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 
 interface QuickActionsPanelProps {
@@ -57,7 +57,7 @@ export default function QuickActionsPanel({ onNewCase, onEscalate, onAssign, onB
       color: 'bg-slate-100 text-slate-400 cursor-not-allowed',
     },
     {
-      icon: <Image className="w-4 h-4" />,
+      icon: <ImageIcon className="w-4 h-4" />,
       label: 'Review Media',
       sublabel: 'Phase 2',
       href: '/media-review',
