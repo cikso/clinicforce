@@ -23,6 +23,7 @@ const eslintConfig = defineConfig([
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "no-unused-expressions": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
       "jsx-a11y/alt-text": "off",
     },
   },
