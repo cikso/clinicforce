@@ -34,6 +34,8 @@ interface SurveyResponse {
   theme: string | null
   sent_at: string | null
   responded_at: string | null
+  google_review_sent_at: string | null
+  google_review_clicked_at: string | null
   source: string
 }
 
@@ -154,6 +156,11 @@ const icons = {
       <path d="M8 5v3M8 10.5v.5" />
     </svg>
   ),
+  star: (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 1.5l2 4.3 4.7.5-3.5 3.2 1 4.6L8 11.8l-4.2 2.3 1-4.6-3.5-3.2 4.7-.5z" />
+    </svg>
+  ),
 }
 
 /* ─── Component ─── */
@@ -197,6 +204,11 @@ export default function SurveysClient({
     : 0
   const responseRate = sent > 0 ? Math.round((responded / sent) * 100) : 0
   const openActions = actions.filter(a => a.status === 'open').length
+
+  // Google review funnel
+  const googleSent = responses.filter(r => r.google_review_sent_at).length
+  const googleClicked = responses.filter(r => r.google_review_clicked_at).length
+  const googleConversion = googleSent > 0 ? Math.round((googleClicked / googleSent) * 100) : 0
 
   /* ─── NPS trend chart data ─── */
 
@@ -337,7 +349,7 @@ export default function SurveysClient({
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <KpiCard
           label="NPS Score"
           value={`${npsScore >= 0 ? '+' : ''}${npsScore}`}
@@ -377,6 +389,16 @@ export default function SurveysClient({
           iconBg="#FEF0F5"
           iconColor="#A0305A"
           icon={icons.alert}
+        />
+        <KpiCard
+          label="Google Reviews"
+          value={`${googleConversion}%`}
+          compareStat={`${googleClicked} of ${googleSent} clicked`}
+          delta={googleSent > 0 ? `${googleSent} link${googleSent === 1 ? '' : 's'} sent` : 'No promoters yet'}
+          deltaType={googleConversion >= 30 ? 'up' : googleConversion > 0 ? 'neutral' : 'down'}
+          iconBg="#FFF4E0"
+          iconColor="#B8770A"
+          icon={icons.star}
         />
       </div>
 

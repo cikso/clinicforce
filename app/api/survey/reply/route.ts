@@ -68,6 +68,7 @@ export async function POST(req: NextRequest) {
 
       let replyMsg: string
       let createAction = false
+      let promoterLinkSent = false
 
       if (score <= 6) {
         // Detractor
@@ -79,16 +80,26 @@ export async function POST(req: NextRequest) {
       } else {
         // Promoter (9-10)
         if (clinic?.google_review_url) {
-          replyMsg = `That's wonderful to hear! We'd love if you could share your experience: ${clinic.google_review_url}`
+          // Use a tracked redirect so we can measure click-through to Google.
+          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://app.clinicforce.io'
+          const trackedUrl = `${baseUrl}/api/survey/g/${response.id}`
+          replyMsg = `That's wonderful to hear! We'd love if you could share your experience: ${trackedUrl}`
+          promoterLinkSent = true
         } else {
           replyMsg = "That's wonderful to hear! Thank you for your kind words."
         }
       }
 
-      // Update follow_up_sent_at
+      // Update follow_up_sent_at (and google_review_sent_at if applicable)
+      const updates: Record<string, string> = {
+        follow_up_sent_at: new Date().toISOString(),
+      }
+      if (promoterLinkSent) {
+        updates.google_review_sent_at = new Date().toISOString()
+      }
       await supabase
         .from('survey_responses')
-        .update({ follow_up_sent_at: new Date().toISOString() })
+        .update(updates)
         .eq('id', response.id)
 
       // Create action for detractors
