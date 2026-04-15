@@ -107,6 +107,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith(ONBOARDING_PREFIX)
 
   const isAuthRoute = AUTH_ROUTES.includes(pathname)
+  const isMfaChallengeRoute = pathname === '/login/mfa'
 
   // No session → redirect to login
   if (!user && isProtectedRoute) {
@@ -114,6 +115,26 @@ export async function proxy(request: NextRequest) {
     loginUrl.pathname = '/login'
     loginUrl.searchParams.set('next', pathname)
     return NextResponse.redirect(loginUrl)
+  }
+
+  // Session exists — enforce MFA for users with verified TOTP factors.
+  // If AAL is aal1 but nextLevel is aal2, the user enrolled but hasn't
+  // completed the second factor for this session. Gate every protected
+  // route behind /login/mfa until they do.
+  if (user && isProtectedRoute && !isMfaChallengeRoute) {
+    try {
+      const { data: aal } =
+        await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+      if (aal?.currentLevel === 'aal1' && aal?.nextLevel === 'aal2') {
+        const mfaUrl = request.nextUrl.clone()
+        mfaUrl.pathname = '/login/mfa'
+        mfaUrl.searchParams.set('next', pathname)
+        return NextResponse.redirect(mfaUrl)
+      }
+    } catch (err) {
+      // Never hard-fail auth because of an MFA API hiccup — just log.
+      console.warn('[proxy] mfa AAL check failed', err)
+    }
   }
 
   // Has session and hitting /login → redirect to dashboard
