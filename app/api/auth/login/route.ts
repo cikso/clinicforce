@@ -4,6 +4,7 @@ import { cookies } from 'next/headers'
 import { LoginSchema } from '@/lib/validation/schemas'
 import { parseJsonBody } from '@/lib/validation/respond'
 import { enforceRateLimit, clientIp } from '@/lib/rate-limit'
+import { logAudit } from '@/lib/audit'
 
 export async function POST(request: NextRequest) {
   // ── Rate limit: 5 attempts / 15 min / IP (generic) ────────────────────────
@@ -54,17 +55,27 @@ export async function POST(request: NextRequest) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error || !data.user) {
-    // Structured log for intrusion-detection pipelines; no PII leak to client.
     console.warn('[auth/login] failed', {
       ip: clientIp(request),
       email_hash: hashEmail(email),
       reason: error?.message ?? 'no_user',
     })
+    logAudit({
+      action: 'auth.login.failed',
+      actorEmail: email,
+      metadata: { reason: error?.message ?? 'no_user' },
+    }, request)
     return NextResponse.json(
       { error: 'Incorrect email or password. Please try again.' },
       { status: 401 },
     )
   }
+
+  logAudit({
+    action: 'auth.login.success',
+    actorId: data.user.id,
+    actorEmail: email,
+  }, request)
 
   return response
 }

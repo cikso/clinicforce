@@ -3,6 +3,7 @@ import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
 import { sendInviteEmail } from '@/lib/email'
+import { logAudit } from '@/lib/audit'
 
 export async function POST(request: NextRequest) {
   // Auth check
@@ -93,6 +94,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create clinic.' }, { status: 500 })
   }
 
+  logAudit({
+    action: 'admin.clinic.created',
+    clinicId: clinic.id,
+    actorId: user.id,
+    actorEmail: user.email ?? null,
+    resource: `clinic:${clinic.id}`,
+    metadata: { name: name.trim(), vertical: vertical ?? 'vet' },
+  }, request)
+
   // Create voice_agents row if Twilio number was provided
   if (twilioE164) {
     const { error: vaError } = await service.from('voice_agents').insert({
@@ -140,6 +150,14 @@ export async function POST(request: NextRequest) {
       } catch (emailErr) {
         console.error('[admin/clinics] invite email failed for', inv.email, emailErr)
       }
+      logAudit({
+        action: 'invite.sent',
+        clinicId: clinic.id,
+        actorId: user.id,
+        actorEmail: user.email ?? null,
+        resource: `invite-email:${inv.email.trim()}`,
+        metadata: { role: dbRole },
+      }, request)
     }
   }
 

@@ -3,7 +3,11 @@ import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 import Card from '@/app/components/ui/Card'
 import Badge from '@/app/components/ui/Badge'
-import Button from '@/app/components/ui/Button'
+import {
+  SubscribeButton,
+  ContactSalesButton,
+  ManageSubscriptionButton,
+} from './BillingActions'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,6 +19,7 @@ interface Subscription {
   trial_ends_at: string | null
   current_period_start: string | null
   current_period_end: string | null
+  stripe_customer_id: string | null
 }
 
 const PLAN_NAMES: Record<string, string> = {
@@ -81,7 +86,7 @@ export default async function BillingPage() {
   try {
     const { data } = await service
       .from('subscriptions')
-      .select('id, plan, status, monthly_price_aud, trial_ends_at, current_period_start, current_period_end')
+      .select('id, plan, status, monthly_price_aud, trial_ends_at, current_period_start, current_period_end, stripe_customer_id')
       .eq('clinic_id', profile.clinicId)
       .maybeSingle()
     subscription = data as Subscription | null
@@ -183,15 +188,13 @@ export default async function BillingPage() {
                   <div className="text-center text-[12px] font-semibold text-[var(--brand)] py-2">
                     Current Plan
                   </div>
+                ) : plan.key === 'enterprise' ? (
+                  <ContactSalesButton />
                 ) : (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="w-full opacity-50 cursor-not-allowed"
-                    disabled
-                  >
-                    Contact to Upgrade
-                  </Button>
+                  <SubscribeButton
+                    plan={plan.key as 'starter' | 'growth'}
+                    label={currentPlan === 'trial' ? `Subscribe — ${plan.price}${plan.period}` : `Switch to ${plan.name}`}
+                  />
                 )}
               </div>
             )
@@ -216,9 +219,15 @@ export default async function BillingPage() {
               />
             </div>
           )}
-          <p className="text-[11px] text-[var(--text-tertiary)]">
-            Billing portal coming soon. Contact support@clinicforce.io for billing enquiries.
-          </p>
+          {subscription?.stripe_customer_id ? (
+            <div className="pt-2">
+              <ManageSubscriptionButton />
+            </div>
+          ) : (
+            <p className="text-[11px] text-[var(--text-tertiary)]">
+              After you subscribe, manage payment method and invoices from Stripe here.
+            </p>
+          )}
         </div>
       </Card>
     </div>

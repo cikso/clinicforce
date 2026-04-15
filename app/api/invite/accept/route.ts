@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 import { InviteAcceptSchema } from '@/lib/validation/schemas'
 import { parseJsonBody } from '@/lib/validation/respond'
 import { enforceRateLimit } from '@/lib/rate-limit'
+import { logAudit } from '@/lib/audit'
 
 export async function POST(request: NextRequest) {
   // Rate limit per-IP to prevent token enumeration.
@@ -123,6 +124,15 @@ export async function POST(request: NextRequest) {
     .from('clinic_invites')
     .update({ accepted_at: new Date().toISOString() })
     .eq('id', invite.id)
+
+  logAudit({
+    action: 'invite.accepted',
+    clinicId: invite.clinic_id,
+    actorId: userId,
+    actorEmail: invite.email,
+    resource: `invite:${invite.id}`,
+    metadata: { role: invite.role },
+  }, request)
 
   // 4b. Mark clinic onboarding as completed (admin already set up the clinic)
   await serviceRole
