@@ -9,7 +9,6 @@ import ToastContainer from '@/components/dashboard/ToastContainer'
 import { Phone, AlertTriangle, MessageSquare, Clock } from 'lucide-react'
 import {
   INITIAL_INBOX,
-  INITIAL_COVERAGE_SESSION,
   COVERAGE_USAGE,
   type CallInboxItem,
   type CoverageMode,

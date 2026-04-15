@@ -1,7 +1,7 @@
 'use client'
 
 import { DashboardCall, CallRisk, CallStatus } from '@/data/mock-dashboard'
-import { Asterisk, AlertTriangle, MessageSquare, Play, RotateCcw, Check, Phone } from 'lucide-react'
+import { Asterisk, AlertTriangle, MessageSquare, Play, Check, Phone } from 'lucide-react'
 
 interface AfterHoursCallsPanelProps {
   calls: DashboardCall[]

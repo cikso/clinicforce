@@ -29,7 +29,6 @@ const statusMap: Record<string, string> = {
 export default function CaseDetailDrawer({
   cases,
   selectedId,
-  clinicians,
   onClose,
   onAction,
   onAssign,

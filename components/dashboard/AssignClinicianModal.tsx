@@ -1,7 +1,7 @@
 'use client'
 
 import { Clinician } from '@/data/mock-dashboard'
-import { X, Check } from 'lucide-react'
+import { X } from 'lucide-react'
 
 interface AssignClinicianModalProps {
   isOpen: boolean
