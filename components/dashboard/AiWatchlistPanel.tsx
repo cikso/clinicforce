@@ -66,7 +66,7 @@ export default function AiWatchlistPanel({ cases, onSelectCase, onAction }: AiWa
         </div>
 
         <p className="text-xs text-slate-600 leading-relaxed bg-white rounded-xl p-3 border border-rose-100 mb-4 italic">
-          "{primary.aiJustification}"
+          &quot;{primary.aiJustification}&quot;
         </p>
 
         <div className="flex items-center gap-2">

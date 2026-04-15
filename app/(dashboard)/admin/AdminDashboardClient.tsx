@@ -246,7 +246,7 @@ export default function AdminDashboardClient({ clinics, totalUsers }: Props) {
             </p>
           </div>
         ) : (
-          filtered.map((clinic, i) => {
+          filtered.map((clinic, _i) => {
             const status = getClinicStatus(clinic)
             return (
               <div

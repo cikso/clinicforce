@@ -53,7 +53,7 @@ export default function NewClinicPage() {
   })
 
   // Step 2: AI Agent Setup
-  const [agentEnabled, setAgentEnabled] = useState(true)
+  const [agentEnabled, _setAgentEnabled] = useState(true)
   const [agentGreeting, setAgentGreeting] = useState('')
   const [twilioPhone, setTwilioPhone] = useState('')
 

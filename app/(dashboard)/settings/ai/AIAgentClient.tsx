@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react'
 import Card from '@/app/components/ui/Card'
 import Button from '@/app/components/ui/Button'
 import Toggle from '@/app/components/ui/Toggle'
-import Badge from '@/app/components/ui/Badge'
 import StatusDot from '@/app/components/ui/StatusDot'
 import { cn } from '@/lib/utils'
 

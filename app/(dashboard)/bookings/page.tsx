@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Card from '@/app/components/ui/Card'
-import Badge from '@/app/components/ui/Badge'
 import StatCard from '@/app/components/ui/StatCard'
 import Button from '@/app/components/ui/Button'
 

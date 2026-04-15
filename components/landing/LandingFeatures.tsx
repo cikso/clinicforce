@@ -120,7 +120,7 @@ export function LandingFeatures() {
             {/* Mini chat UI */}
             <div style={{ position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', gap: 8, width: 200 }}>
               <div style={{ padding: '10px 14px', borderRadius: 10, fontSize: 12, lineHeight: 1.5, background: '#141928', color: '#8B95B0', border: '1px solid rgba(255,255,255,0.07)', alignSelf: 'flex-start', maxWidth: 170 }}>
-                "Hi, I'm calling about my cat Mango — she hasn't eaten in two days."
+                &quot;Hi, I&apos;m calling about my cat Mango — she hasn&apos;t eaten in two days.&quot;
               </div>
               <div style={{ padding: '10px 14px', borderRadius: 10, fontSize: 11, lineHeight: 1.5, background: 'rgba(0,200,150,0.1)', color: '#00C896', border: '1px solid rgba(0,200,150,0.2)', alignSelf: 'flex-end', maxWidth: 160, fontFamily: "'JetBrains Mono', monospace" }}>
                 INTAKE CAPTURED — ESCALATING

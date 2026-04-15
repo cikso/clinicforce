@@ -76,7 +76,7 @@ export function LandingHero() {
           maxWidth: 480, marginBottom: 40,
           animation: 'lp-fade-up 0.7s ease forwards 0.5s',
         }}>
-          ClinicForce handles every call your team can't take — intake, triage, urgency detection, and clean handoff. Installed in a day. Live the same week.
+          ClinicForce handles every call your team can&apos;t take — intake, triage, urgency detection, and clean handoff. Installed in a day. Live the same week.
         </p>
 
         <div style={{
