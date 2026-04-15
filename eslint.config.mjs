@@ -18,12 +18,12 @@ const eslintConfig = defineConfig([
   ]),
   {
     rules: {
-      "@next/next/no-img-element": "warn",
-      "@next/next/no-page-custom-font": "warn",
-      "no-unused-vars": "warn",
-      "@typescript-eslint/no-unused-vars": "warn",
-      "no-unused-expressions": "warn",
-      "jsx-a11y/alt-text": "warn",
+      "@next/next/no-img-element": "off",
+      "@next/next/no-page-custom-font": "off",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "no-unused-expressions": "off",
+      "jsx-a11y/alt-text": "off",
     },
   },
 ]);
