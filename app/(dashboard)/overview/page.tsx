@@ -183,7 +183,6 @@ export default async function OverviewPage() {
 
   const profile = await getClinicProfile()
   const clinicId = profile?.clinicId ?? ''
-  const _clinicName = profile?.clinicName ?? 'Clinic'
   const db = service ?? supabase
 
   const today = sydneyDayBounds(0)
@@ -357,14 +356,6 @@ export default async function OverviewPage() {
 
   // ── Coverage Panel Data ──
   const coverageMode = (clinicRecord?.coverage_mode as string) ?? 'after_hours'
-  const coverageActivatedAt = clinicRecord?.coverage_mode_activated_at ?? null
-  const _coverageActivatedBy = clinicRecord?.coverage_mode_activated_by ?? 'Auto'
-
-  // Count calls since coverage activated
-  let _callsCoveredCount = 0
-  if (coverageActivatedAt && clinicId) {
-    _callsCoveredCount = todayCalls.filter(c => c.created_at >= coverageActivatedAt).length
-  }
 
   // ── Chart Data ──
   // Hourly (today)

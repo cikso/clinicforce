@@ -258,7 +258,7 @@ export default function SurveysClient({
     } finally {
       setManualSending(false)
     }
-  }, [clinicId, manualName, manualPhone, manualDate, manualProvider])
+  }, [manualName, manualPhone, manualDate, manualProvider])
 
   /* ─── Delay options ─── */
 
