@@ -111,47 +111,53 @@ export function ClinicForceLanding() {
 
         <section
           id="why-it-matters"
-          className="overflow-hidden rounded-[36px] border border-[#1E2A3F] bg-[#0B1320] px-6 py-16 text-white shadow-[0_22px_55px_rgba(0,0,0,0.22)] sm:px-8 sm:py-20 lg:px-12"
+          className="overflow-hidden rounded-[36px] border border-[#E5EAF0] bg-gradient-to-b from-white to-[#F7F9FB] px-6 py-16 shadow-[0_12px_40px_rgba(15,23,42,0.04)] sm:px-8 sm:py-20 lg:px-12"
         >
-          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em] text-[#7EEDC0]">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#00B578]">
             Why it matters
           </p>
-          <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl lg:text-5xl">
+          <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#0D0E12] sm:text-4xl lg:text-5xl">
             Clinics miss calls every day.
             <br />
             Most of those patients won&apos;t call back.
           </h2>
 
-          <div className="mt-12 grid gap-6 lg:grid-cols-2">
-            <article className="rounded-3xl border border-[#1E2A3F] bg-[#121B2C] p-8">
-              <div className="font-semibold leading-none tracking-[-0.05em] text-white text-[64px] sm:text-[80px]">
-                43%
+          <div className="mt-12 grid gap-5 lg:grid-cols-2">
+            <article className="rounded-3xl border border-[#E5EAF0] bg-white p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+              <div className="flex items-baseline gap-3">
+                <span className="font-semibold leading-none tracking-[-0.05em] text-[#00B578] text-[64px] sm:text-[72px]">
+                  43%
+                </span>
+                <span className="text-sm font-medium text-[#8A96A3]">of clinic calls</span>
               </div>
-              <p className="mt-6 max-w-md text-base leading-7 text-[#c6d3df] sm:text-lg">
-                of clinic calls go unanswered. During lunch breaks, when your staff are already with a patient, and after hours.
+              <p className="mt-6 max-w-md text-base leading-7 text-[#566275]">
+                go unanswered. During lunch breaks, when your staff are already with a patient, and after hours.
               </p>
-              <div className="mt-8 border-t border-[#1E2A3F] pt-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7EEDC0]">
+              <div className="mt-8 border-t border-[#EEF1F4] pt-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#00B578]">
                   Staff burnout
                 </p>
-                <p className="mt-3 text-sm leading-6 text-[#94a3b8]">
+                <p className="mt-3 text-sm leading-6 text-[#566275]">
                   Every interruption pulls your team away from the patient in front of them. The pressure is constant, and it shows.
                 </p>
               </div>
             </article>
 
-            <article className="rounded-3xl border border-[#1E2A3F] bg-[#121B2C] p-8">
-              <div className="font-semibold leading-none tracking-[-0.05em] text-white text-[64px] sm:text-[80px]">
-                8/10
+            <article className="rounded-3xl border border-[#E5EAF0] bg-white p-8 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+              <div className="flex items-baseline gap-3">
+                <span className="font-semibold leading-none tracking-[-0.05em] text-[#00B578] text-[64px] sm:text-[72px]">
+                  8/10
+                </span>
+                <span className="text-sm font-medium text-[#8A96A3]">clients</span>
               </div>
-              <p className="mt-6 max-w-md text-base leading-7 text-[#c6d3df] sm:text-lg">
-                clients won&apos;t leave a voicemail. They hang up and call the next clinic on the list. After hours, that number is 10 out of 10.
+              <p className="mt-6 max-w-md text-base leading-7 text-[#566275]">
+                won&apos;t leave a voicemail. They hang up and call the next clinic on the list. After hours, that number is 10 out of 10.
               </p>
-              <div className="mt-8 border-t border-[#1E2A3F] pt-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7EEDC0]">
+              <div className="mt-8 border-t border-[#EEF1F4] pt-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#00B578]">
                   Lost revenue
                 </p>
-                <p className="mt-3 text-sm leading-6 text-[#94a3b8]">
+                <p className="mt-3 text-sm leading-6 text-[#566275]">
                   No message means no callback, no booking, no patient. That&apos;s recurring revenue your competitors are quietly picking up.
                 </p>
               </div>
@@ -221,25 +227,25 @@ export function ClinicForceLanding() {
 
         <FAQSection />
 
-        <section className="grid gap-10 rounded-[36px] border border-[#1E2A3F] bg-[#0B1320] px-6 py-16 text-white shadow-[0_22px_55px_rgba(0,0,0,0.22)] sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-12">
+        <section className="grid gap-10 rounded-[36px] border border-[#E5EAF0] bg-gradient-to-b from-white to-[#F7F9FB] px-6 py-16 shadow-[0_12px_40px_rgba(15,23,42,0.04)] sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-12">
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#7EEDC0]">Why clinics choose ClinicForce</p>
-            <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#00B578]">Why clinics choose ClinicForce</p>
+            <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#0D0E12] sm:text-4xl">
               Premium software is not just about answering calls. It is about making the clinic run more cleanly.
             </h2>
-            <p className="mt-5 max-w-xl text-base leading-7 text-[#c6d3df] sm:text-lg">
+            <p className="mt-5 max-w-xl text-base leading-7 text-[#566275] sm:text-lg">
               Clinics choose ClinicForce because it reduces call leakage, creates more consistent handling, and gives reception teams room to work without losing control of inbound demand.
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {trustReasons.map(([title, body]) => (
-              <article key={title} className="rounded-3xl border border-[#1E2A3F] bg-[#121B2C] p-6">
-                <div className="mb-4 inline-flex rounded-2xl bg-[#1A2336] p-3 text-[#7EEDC0]">
+              <article key={title} className="rounded-3xl border border-[#E5EAF0] bg-white p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)]">
+                <div className="mb-4 inline-flex rounded-2xl bg-[#E6FBF2] p-3 text-[#00B578]">
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-semibold tracking-[-0.03em]">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-[#c8d4df]">{body}</p>
+                <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#0D0E12]">{title}</h3>
+                <p className="mt-3 text-sm leading-6 text-[#566275]">{body}</p>
               </article>
             ))}
           </div>
