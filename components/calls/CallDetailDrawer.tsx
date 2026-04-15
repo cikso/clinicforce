@@ -11,7 +11,6 @@ import type { Call } from '@/lib/types'
 import CallStatusBadge from './CallStatusBadge'
 import { formatRelative, formatDuration, formatTime } from '@/lib/formatters'
 import {
-  Phone,
   AlertTriangle,
   CheckCircle2,
   ArrowUpCircle,
@@ -73,7 +72,8 @@ export default function CallDetailDrawer({ call, open, onClose }: CallDetailDraw
   const toggle = (key: ActionKey) =>
     setDone((prev) => {
       const next = new Set(prev)
-      next.has(key) ? next.delete(key) : next.add(key)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
       return next
     })
 

@@ -9,7 +9,6 @@ import {
   PlayCircle,
   AlertTriangle,
   Info,
-  Asterisk,
 } from 'lucide-react'
 import { mockQueue } from '@/data/mock-queue'
 import { mockCases } from '@/data/mock-cases'

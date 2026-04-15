@@ -12,7 +12,7 @@ type TabFilter = 'pending' | 'active' | 'discharged'
 
 export default function CareQueueClient() {
   const [tab, setTab] = useState<TabFilter>('pending')
-  const [triageFilter, setTriageFilter] = useState<TriageLevel | 'ALL'>('ALL')
+  const [triageFilter] = useState<TriageLevel | 'ALL'>('ALL')
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 

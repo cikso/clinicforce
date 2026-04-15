@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertTriangle, ChevronRight, Phone } from 'lucide-react'
+import { AlertTriangle, ChevronRight } from 'lucide-react'
 import type { Call } from '@/lib/types'
 import CallStatusBadge from './CallStatusBadge'
 import { formatRelative, formatDuration } from '@/lib/formatters'
