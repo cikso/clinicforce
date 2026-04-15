@@ -20,7 +20,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const profile = await getClinicProfile()
 
   const userName   = profile?.userName   ?? 'Staff'
-  const _userRole  = profile?.userRole   ?? 'receptionist'
   const clinicName = profile?.clinicName ?? ''
   const vertical   = profile?.vertical   ?? 'vet'
   const clinicId   = profile?.clinicId   ?? ''
@@ -51,14 +50,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     allClinics = [{ id: clinicId, name: clinicName, vertical }]
   }
 
-  // Fetch subscription to show trial banner
-  let _trialDaysRemaining: number | undefined
+  // Subscription status gate
   if (clinicId) {
     const subscription = await getSubscription(clinicId)
-    if (subscription?.status === 'trialing' && subscription.trial_ends_at) {
-      const msRemaining = new Date(subscription.trial_ends_at).getTime() - Date.now()
-      _trialDaysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)))
-    }
 
     // ── Subscription status gate ─────────────────────────────────────
     // 'active', 'trialing' (with future trial_ends_at), and 'paused' pass through.
