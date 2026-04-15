@@ -33,6 +33,10 @@ export default function ClinicSwitcher() {
     c.name.toLowerCase().includes(search.toLowerCase()),
   )
 
+  const dropdownTop = ref.current
+    ? ref.current.getBoundingClientRect().bottom
+    : 0
+
   return (
     <div ref={ref} className="relative min-w-0">
       <button
@@ -46,7 +50,7 @@ export default function ClinicSwitcher() {
       </button>
 
       {open && (
-        <div className="fixed mt-2 w-56 bg-white border border-[#dddbda] rounded-lg shadow-lg z-50 overflow-hidden" style={{ left: 12, top: ref.current ? ref.current.getBoundingClientRect().bottom : 0 }}>
+        <div className="fixed mt-2 w-56 bg-white border border-[#dddbda] rounded-lg shadow-lg z-50 overflow-hidden" style={{ left: 12, top: dropdownTop }}>
           {/* Search */}
           <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[#dddbda]">
             <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />

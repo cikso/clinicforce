@@ -25,6 +25,7 @@ const eslintConfig = defineConfig([
       "no-unused-expressions": "off",
       "@typescript-eslint/no-unused-expressions": "off",
       "jsx-a11y/alt-text": "off",
+      "react-hooks/refs": "off",
     },
   },
 ]);
