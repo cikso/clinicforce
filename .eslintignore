@@ -1,0 +1,8 @@
+.trigger/
+node_modules/
+.next/
+out/
+dist/
+public/
+supabase/
+scripts/
