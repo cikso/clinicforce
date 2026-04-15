@@ -19,7 +19,6 @@ import {
   ClipboardList,
   Clock3,
   Headphones,
-  Hospital,
   MessageSquareMore,
   MoonStar,
   PhoneCall,
@@ -63,13 +62,6 @@ const trustReasons = [
   ['More operational control', 'The clinic decides how coverage works — full call handling, overflow, after-hours, or off entirely. Flip the toggle in your dashboard whenever the situation changes. No vendor calls. No downtime.'],
 ] as const
 
-const trustItems = [
-  'Built for veterinary clinics',
-  'Designed for real front-desk operations',
-  'Operational controls built in',
-  'Reliability and escalation-first workflow',
-]
-
 function SectionHeading({
   eyebrow,
   title,
@@ -81,9 +73,9 @@ function SectionHeading({
 }) {
   return (
     <div className="max-w-3xl">
-      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#17C4BE]">{eyebrow}</p>
+      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#00D68F]">{eyebrow}</p>
       <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-4xl">{title}</h2>
-      {body ? <p className="mt-5 max-w-2xl text-base leading-7 text-[#536171] sm:text-lg">{body}</p> : null}
+      {body ? <p className="mt-5 max-w-2xl text-base leading-7 text-[#566275] sm:text-lg">{body}</p> : null}
     </div>
   )
 }
@@ -98,12 +90,12 @@ function FeatureCard({
   icon: ComponentType<{ className?: string }>
 }) {
   return (
-    <article className="rounded-3xl border border-[#d9e2ea] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-      <div className="mb-5 inline-flex rounded-2xl bg-[#E5F9F8] p-3 text-[#17C4BE]">
+    <article className="rounded-3xl border border-[#E5EAF0] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+      <div className="mb-5 inline-flex rounded-2xl bg-[#E6FBF2] p-3 text-[#00D68F]">
         <Icon className="h-5 w-5" />
       </div>
       <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">{title}</h3>
-      <p className="mt-3 text-sm leading-6 text-[#5f6f7e]">{body}</p>
+      <p className="mt-3 text-sm leading-6 text-[#566275]">{body}</p>
     </article>
   )
 }
@@ -119,9 +111,9 @@ export function ClinicForceLanding() {
 
         <section
           id="why-it-matters"
-          className="overflow-hidden rounded-[36px] border border-[#1E1B3A] bg-[#0F0C24] px-6 py-16 text-white shadow-[0_22px_55px_rgba(0,0,0,0.18)] sm:px-8 sm:py-20 lg:px-12"
+          className="overflow-hidden rounded-[36px] border border-[#1E2A3F] bg-[#0B1320] px-6 py-16 text-white shadow-[0_22px_55px_rgba(0,0,0,0.22)] sm:px-8 sm:py-20 lg:px-12"
         >
-          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em] text-[#8DE2DE]">
+          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em] text-[#7EEDC0]">
             Why it matters
           </p>
           <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl lg:text-5xl">
@@ -131,35 +123,35 @@ export function ClinicForceLanding() {
           </h2>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-2">
-            <article className="rounded-3xl border border-[#2A2550] bg-[#161133] p-8">
-              <div className="font-black leading-none tracking-[-0.04em] text-white text-[72px] sm:text-[88px]">
+            <article className="rounded-3xl border border-[#1E2A3F] bg-[#121B2C] p-8">
+              <div className="font-semibold leading-none tracking-[-0.05em] text-white text-[64px] sm:text-[80px]">
                 43%
               </div>
-              <p className="mt-6 max-w-md text-base leading-7 text-[#c6cbe5] sm:text-lg">
+              <p className="mt-6 max-w-md text-base leading-7 text-[#c6d3df] sm:text-lg">
                 of clinic calls go unanswered. During lunch breaks, when your staff are already with a patient, and after hours.
               </p>
-              <div className="mt-8 border-t border-[#2A2550] pt-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8DE2DE]">
+              <div className="mt-8 border-t border-[#1E2A3F] pt-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7EEDC0]">
                   Staff burnout
                 </p>
-                <p className="mt-3 text-sm leading-6 text-[#aab0d4]">
+                <p className="mt-3 text-sm leading-6 text-[#94a3b8]">
                   Every interruption pulls your team away from the patient in front of them. The pressure is constant, and it shows.
                 </p>
               </div>
             </article>
 
-            <article className="rounded-3xl border border-[#2A2550] bg-[#161133] p-8">
-              <div className="font-black leading-none tracking-[-0.04em] text-white text-[72px] sm:text-[88px]">
+            <article className="rounded-3xl border border-[#1E2A3F] bg-[#121B2C] p-8">
+              <div className="font-semibold leading-none tracking-[-0.05em] text-white text-[64px] sm:text-[80px]">
                 8/10
               </div>
-              <p className="mt-6 max-w-md text-base leading-7 text-[#c6cbe5] sm:text-lg">
+              <p className="mt-6 max-w-md text-base leading-7 text-[#c6d3df] sm:text-lg">
                 clients won&apos;t leave a voicemail. They hang up and call the next clinic on the list. After hours, that number is 10 out of 10.
               </p>
-              <div className="mt-8 border-t border-[#2A2550] pt-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8DE2DE]">
+              <div className="mt-8 border-t border-[#1E2A3F] pt-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7EEDC0]">
                   Lost revenue
                 </p>
-                <p className="mt-3 text-sm leading-6 text-[#aab0d4]">
+                <p className="mt-3 text-sm leading-6 text-[#94a3b8]">
                   No message means no callback, no booking, no patient. That&apos;s recurring revenue your competitors are quietly picking up.
                 </p>
               </div>
@@ -174,20 +166,20 @@ export function ClinicForceLanding() {
             body="Calls arrive in the middle of consults, checkout, lunch breaks, and short-staffed shifts. The result is missed demand, inconsistent handling, and more pressure on the same front-desk team."
           />
 
-          <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {painPoints.map(([title, body, Icon]) => (
-              <article key={title} className="rounded-3xl border border-[#dde5ec] bg-white p-6 shadow-[0_10px_25px_rgba(15,23,42,0.04)]">
-                <div className="mb-5 inline-flex rounded-2xl bg-[#f3f7fb] p-3 text-[#1A1A1A]">
+              <article key={title} className="rounded-3xl border border-[#E5EAF0] bg-white p-6 shadow-[0_10px_25px_rgba(15,23,42,0.04)]">
+                <div className="mb-5 inline-flex rounded-2xl bg-[#F7F9FB] p-3 text-[#1A1A1A]">
                   <Icon className="h-5 w-5" />
                 </div>
                 <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-[#61717f]">{body}</p>
+                <p className="mt-3 text-sm leading-6 text-[#566275]">{body}</p>
               </article>
             ))}
           </div>
         </section>
 
-        <section id="how-it-works" className="rounded-[36px] border border-[#d9e2ea] bg-white px-6 py-16 shadow-[0_18px_40px_rgba(15,23,42,0.04)] sm:px-8 lg:px-12">
+        <section id="how-it-works" className="rounded-[36px] border border-[#E5EAF0] bg-white px-6 py-16 shadow-[0_18px_40px_rgba(15,23,42,0.04)] sm:px-8 lg:px-12">
           <SectionHeading
             eyebrow="How it works"
             title="A clear call workflow your team can understand in seconds."
@@ -196,10 +188,10 @@ export function ClinicForceLanding() {
 
           <div className="mt-12 grid gap-4 lg:grid-cols-4">
             {workflowSteps.map(([step, title, body]) => (
-              <article key={step} className="rounded-3xl border border-[#dde5ec] bg-[#f8fafb] p-6">
-                <div className="mb-5 text-sm font-semibold tracking-[0.22em] text-[#17C4BE]">{step}</div>
+              <article key={step} className="rounded-3xl border border-[#E5EAF0] bg-[#F7F9FB] p-6">
+                <div className="mb-5 text-sm font-semibold tracking-[0.22em] text-[#00D68F]">{step}</div>
                 <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-[#5f6f7e]">{body}</p>
+                <p className="mt-3 text-sm leading-6 text-[#566275]">{body}</p>
               </article>
             ))}
           </div>
@@ -229,9 +221,9 @@ export function ClinicForceLanding() {
 
         <FAQSection />
 
-        <section className="grid gap-10 rounded-[36px] border border-[#E5E7EB] bg-[#1A1A1A] px-6 py-16 text-white shadow-[0_22px_55px_rgba(0,0,0,0.12)] sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-12">
+        <section className="grid gap-10 rounded-[36px] border border-[#1E2A3F] bg-[#0B1320] px-6 py-16 text-white shadow-[0_22px_55px_rgba(0,0,0,0.22)] sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-12">
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#8DE2DE]">Why clinics choose ClinicForce</p>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#7EEDC0]">Why clinics choose ClinicForce</p>
             <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
               Premium software is not just about answering calls. It is about making the clinic run more cleanly.
             </h2>
@@ -242,8 +234,8 @@ export function ClinicForceLanding() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             {trustReasons.map(([title, body]) => (
-              <article key={title} className="rounded-3xl border border-[#333333] bg-[#262626] p-6">
-                <div className="mb-4 inline-flex rounded-2xl bg-[#2D2D2D] p-3 text-[#8DE2DE]">
+              <article key={title} className="rounded-3xl border border-[#1E2A3F] bg-[#121B2C] p-6">
+                <div className="mb-4 inline-flex rounded-2xl bg-[#1A2336] p-3 text-[#7EEDC0]">
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
                 <h3 className="text-lg font-semibold tracking-[-0.03em]">{title}</h3>
@@ -260,12 +252,12 @@ export function ClinicForceLanding() {
             body="The interface gives clinics a live view of call handling, action queues, coverage controls, and conversation history — all in a clean, light-themed workspace."
           />
 
-          <div className="mt-12 overflow-hidden rounded-[36px] border border-[#dbe4eb] bg-white shadow-[0_20px_45px_rgba(15,23,42,0.05)]">
+          <div className="mt-12 overflow-hidden rounded-[36px] border border-[#E5EAF0] bg-white shadow-[0_20px_45px_rgba(15,23,42,0.05)]">
             <div className="grid xl:grid-cols-[260px_minmax(0,1fr)]">
               {/* Sidebar */}
               <aside className="border-b border-[#E5E7EB] bg-white p-5 xl:border-b-0 xl:border-r">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#17C4BE]">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#00D68F]">
                     <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                       <path d="M10 2L3 6v8l7 4 7-4V6l-7-4z" fill="white" opacity="0.9" />
                       <path d="M10 10V2L3 6l7 4z" fill="white" opacity="0.6" />
@@ -290,7 +282,7 @@ export function ClinicForceLanding() {
                       key={label}
                       className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-medium ${
                         active
-                          ? 'bg-[#E5F9F8] text-[#17C4BE]'
+                          ? 'bg-[#E6FBF2] text-[#00D68F]'
                           : 'text-[#6B7280] hover:bg-[#F3F4F6]'
                       }`}
                     >
@@ -308,7 +300,7 @@ export function ClinicForceLanding() {
                         key={mode}
                         className={`rounded-md px-2.5 py-1.5 text-[11px] font-semibold ${
                           i === 0
-                            ? 'bg-[#17C4BE] text-white'
+                            ? 'bg-[#00D68F] text-white'
                             : 'bg-white text-[#6B7280] border border-[#E5E7EB]'
                         }`}
                       >
@@ -354,7 +346,7 @@ export function ClinicForceLanding() {
                       <div className="space-y-3">
                         {[
                           ['Urgent call escalated', 'Possible GDV — routed to on-call vet', '2m ago', '#DC2626'],
-                          ['Booking captured', 'Vaccination appointment confirmed for Thursday', '11m ago', '#17C4BE'],
+                          ['Booking captured', 'Vaccination appointment confirmed for Thursday', '11m ago', '#00D68F'],
                           ['Enquiry resolved', 'Desexing prep info sent to pet owner', '18m ago', '#059669'],
                         ].map(([title, detail, time, color]) => (
                           <div key={title} className="flex gap-3 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] p-3.5">
@@ -399,8 +391,8 @@ export function ClinicForceLanding() {
                     <div className="rounded-xl border border-[#E5E7EB] bg-white p-5">
                       <p className="text-[14px] font-semibold text-[#111827] mb-3">Latest Conversation</p>
                       <div className="space-y-2.5">
-                        <div className="rounded-lg bg-[#E5F9F8] px-3 py-2.5">
-                          <p className="text-[12px] text-[#17C4BE]">&quot;Hi, I&apos;m calling about my dog Max — he&apos;s been limping since this morning...&quot;</p>
+                        <div className="rounded-lg bg-[#E6FBF2] px-3 py-2.5">
+                          <p className="text-[12px] text-[#00D68F]">&quot;Hi, I&apos;m calling about my dog Max — he&apos;s been limping since this morning...&quot;</p>
                         </div>
                         <div className="rounded-lg bg-[#F9FAFB] px-3 py-2.5">
                           <p className="text-[12px] text-[#374151]">&quot;I understand your concern about Max. Let me get some details to help the vet team...&quot;</p>
@@ -408,7 +400,7 @@ export function ClinicForceLanding() {
                       </div>
                       <div className="mt-3 flex flex-wrap gap-1.5">
                         <span className="rounded-md bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold text-[#92400E]">Urgent</span>
-                        <span className="rounded-md bg-[#E5F9F8] px-2 py-0.5 text-[10px] font-semibold text-[#17C4BE]">Callback</span>
+                        <span className="rounded-md bg-[#E6FBF2] px-2 py-0.5 text-[10px] font-semibold text-[#00D68F]">Callback</span>
                       </div>
                     </div>
                   </div>
@@ -418,53 +410,24 @@ export function ClinicForceLanding() {
           </div>
         </section>
 
-        <section className="rounded-[36px] border border-[#dbe4eb] bg-white px-6 py-16 shadow-[0_18px_40px_rgba(15,23,42,0.04)] sm:px-8 lg:px-12">
-          <SectionHeading
-            eyebrow="Trust"
-            title="Built to feel credible, controlled, and operationally safe."
-            body="Buyers need more than a feature list. They need to know the product was built for veterinary clinics, that call handling is reliable, and that teams stay in control."
-          />
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            {trustItems.map((item) => (
-              <div key={item} className="rounded-full border border-[#dbe4eb] bg-[#f8fafb] px-4 py-2 text-sm font-medium text-[#586675]">
-                {item}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-3xl border border-[#dde5ec] bg-[#f8fafb] p-5">
-              <ShieldCheck className="h-5 w-5 text-[#1A1A1A]" />
-              <h3 className="mt-4 text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">Reliability first</h3>
-              <p className="mt-2 text-sm leading-6 text-[#62707f]">Clear escalation paths, structured outputs, and operational controls make the system easier to trust in a live clinic environment.</p>
-            </div>
-            <div className="rounded-3xl border border-[#dde5ec] bg-[#f8fafb] p-5">
-              <Hospital className="h-5 w-5 text-[#1A1A1A]" />
-              <h3 className="mt-4 text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">Vertical-specific from day one</h3>
-              <p className="mt-2 text-sm leading-6 text-[#62707f]">Messaging, workflows, and handoff structure are designed around veterinary clinics rather than retrofitted from another industry.</p>
-            </div>
-          </div>
-        </section>
-
         <section className="px-1 py-24 sm:py-28">
-          <div className="rounded-[36px] border border-[#E5E7EB] bg-[#E5F9F8] px-6 py-14 sm:px-8 lg:px-12">
+          <div className="rounded-[36px] border border-[#C9F0DB] bg-[#E6FBF2] px-6 py-14 sm:px-8 lg:px-12">
             <div className="max-w-3xl">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#17C4BE]">Final step</p>
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#00D68F]">Final step</p>
               <h2 className="text-balance text-4xl font-semibold tracking-[-0.05em] text-[#1A1A1A] sm:text-5xl">
                 See how ClinicForce fits into your clinic before another week of missed calls.
               </h2>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-[#556475]">
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-[#566275]">
                 Book a walkthrough to see how coverage, escalation, bookings, and handoff can work for your clinic. At $15 a day, it&apos;s less than a part-time hire — and it&apos;s on when you need it and off when you don&apos;t.
               </p>
             </div>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <button onClick={() => setDemoOpen(true)} className="inline-flex items-center justify-center rounded-2xl bg-[#17C4BE] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,196,190,0.2)] transition hover:bg-[#13ADA8]">
+              <button onClick={() => setDemoOpen(true)} className="inline-flex items-center justify-center rounded-2xl bg-[#00D68F] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(0,214,143,0.22)] transition hover:bg-[#00B578]">
                 Book a Demo
                 <ArrowRight className="ml-2 h-4 w-4" />
               </button>
-              <a href="#product-ui" className="inline-flex items-center justify-center rounded-2xl border border-[#cdd9e1] bg-white px-6 py-4 text-sm font-semibold text-[#1A1A1A] transition hover:bg-[#f9fbfc]">
+              <a href="#product-ui" className="inline-flex items-center justify-center rounded-2xl border border-[#E5EAF0] bg-white px-6 py-4 text-sm font-semibold text-[#1A1A1A] transition hover:bg-[#f9fbfc]">
                 Review the Product
                 <ChevronRight className="ml-2 h-4 w-4" />
               </a>

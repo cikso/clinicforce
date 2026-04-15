@@ -32,8 +32,8 @@ export default function VeterinaryClinicsHubContent({
           }}
         />
         <div className="relative mx-auto max-w-5xl px-6 py-24 text-center sm:px-8 sm:py-28 lg:py-32">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#E5F9F8] px-3.5 py-1.5">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#17C4BE]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#E6FBF2] px-3.5 py-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#00D68F]">
               Australia-wide
             </span>
           </div>
@@ -47,7 +47,7 @@ export default function VeterinaryClinicsHubContent({
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <button
               onClick={openDemo}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#17C4BE] px-7 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,196,190,0.2)] transition hover:bg-[#13ADA8]"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#00D68F] px-7 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,196,190,0.2)] transition hover:bg-[#00B578]"
             >
               Book a demo
               <ArrowRight className="h-4 w-4" />
@@ -59,7 +59,7 @@ export default function VeterinaryClinicsHubContent({
       <div className="mx-auto max-w-7xl px-6 pb-20 sm:px-8 lg:px-12">
         <section className="px-1 py-20 sm:py-24">
           <div className="mb-12 max-w-3xl">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#17C4BE]">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#00D68F]">
               By city
             </p>
             <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-4xl">
@@ -72,10 +72,10 @@ export default function VeterinaryClinicsHubContent({
               <li key={city.slug}>
                 <Link
                   href={`/veterinary-clinics/${city.slug}`}
-                  className="group flex items-center justify-between rounded-3xl border border-[#d9e2ea] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-[#17C4BE]"
+                  className="group flex items-center justify-between rounded-3xl border border-[#d9e2ea] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-[#00D68F]"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="inline-flex rounded-2xl bg-[#E5F9F8] p-3 text-[#17C4BE]">
+                    <div className="inline-flex rounded-2xl bg-[#E6FBF2] p-3 text-[#00D68F]">
                       <MapPin className="h-5 w-5" />
                     </div>
                     <div>
@@ -85,7 +85,7 @@ export default function VeterinaryClinicsHubContent({
                       <p className="text-xs font-medium text-[#536171]">{city.state}</p>
                     </div>
                   </div>
-                  <ArrowRight className="h-5 w-5 text-[#9CA3AF] transition group-hover:text-[#17C4BE]" />
+                  <ArrowRight className="h-5 w-5 text-[#9CA3AF] transition group-hover:text-[#00D68F]" />
                 </Link>
               </li>
             ))}

@@ -31,8 +31,8 @@ export default function BlogIndexContent({ posts }: { posts: BlogPost[] }) {
           }}
         />
         <div className="relative mx-auto max-w-5xl px-6 py-20 text-center sm:px-8 sm:py-24">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#E5F9F8] px-3.5 py-1.5">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#17C4BE]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#E6FBF2] px-3.5 py-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#00D68F]">
               ClinicForce blog
             </span>
           </div>
@@ -57,14 +57,14 @@ export default function BlogIndexContent({ posts }: { posts: BlogPost[] }) {
                   <p className="text-xs font-medium uppercase tracking-[0.14em] text-[#9CA3AF]">
                     <time dateTime={post.date}>{formatDate(post.date)}</time>
                   </p>
-                  <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[#1A1A1A] transition group-hover:text-[#17C4BE] sm:text-2xl">
+                  <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-[#1A1A1A] transition group-hover:text-[#00D68F] sm:text-2xl">
                     {post.title}
                   </h2>
                   <p className="mt-3 text-sm leading-6 text-[#536171] sm:text-base sm:leading-7">
                     {post.description}
                   </p>
                 </div>
-                <ArrowRight className="h-5 w-5 shrink-0 text-[#9CA3AF] transition group-hover:text-[#17C4BE] sm:mt-2" />
+                <ArrowRight className="h-5 w-5 shrink-0 text-[#9CA3AF] transition group-hover:text-[#00D68F] sm:mt-2" />
               </Link>
             </li>
           ))}

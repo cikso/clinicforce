@@ -9,7 +9,7 @@ export default function MarketingNavbar({ onBookDemo }: { onBookDemo: () => void
         <div className="flex items-center justify-between h-16">
           {/* Wordmark */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-6 h-6 rounded-md bg-[#17C4BE] flex items-center justify-center flex-shrink-0">
+            <div className="w-6 h-6 rounded-md bg-[#00D68F] flex items-center justify-center flex-shrink-0">
               <span className="text-white font-bold text-[11px] font-mono" aria-hidden="true">
                 CF
               </span>
@@ -50,7 +50,7 @@ export default function MarketingNavbar({ onBookDemo }: { onBookDemo: () => void
             </a>
             <button
               onClick={onBookDemo}
-              className="text-sm font-semibold text-white bg-[#17C4BE] hover:bg-[#13ADA8] transition-colors duration-150 px-4 py-2 rounded-lg cursor-pointer"
+              className="text-sm font-semibold text-white bg-[#00D68F] hover:bg-[#00B578] transition-colors duration-150 px-4 py-2 rounded-lg cursor-pointer"
             >
               Book a Demo
             </button>

@@ -14,7 +14,7 @@ export function LandingButton({ className, variant = 'default', size = 'default'
     'inline-flex items-center justify-center whitespace-nowrap rounded-full text-sm font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden',
     {
       'bg-[#0A0A0A] text-[#FFFFFF] hover:bg-[#0A0A0A]/80 shadow-sm': variant === 'default',
-      'bg-[#17C4BE] text-[#FFFFFF] hover:bg-[#13ADA8] shadow-sm': variant === 'secondary',
+      'bg-[#00D68F] text-[#FFFFFF] hover:bg-[#00B578] shadow-sm': variant === 'secondary',
       'bg-[#E25F38] text-white hover:bg-[#E25F38]/90 shadow-sm': variant === 'accent',
       'border border-black/10 bg-transparent hover:bg-black/5 text-[#0A0A0A]': variant === 'outline',
       'hover:bg-black/5 text-[#0A0A0A]': variant === 'ghost',
