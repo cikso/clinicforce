@@ -31,9 +31,35 @@ interface SurveyResponse {
   provider_name: string | null
   nps_score: number | null
   follow_up_text: string | null
+  theme: string | null
   sent_at: string | null
   responded_at: string | null
   source: string
+}
+
+// Keep in sync with SURVEY_THEMES in src/trigger/survey.ts
+const THEME_LABELS: Record<string, string> = {
+  wait_time: 'Wait time',
+  pricing: 'Pricing',
+  staff_friendliness: 'Staff friendliness',
+  clinical_quality: 'Clinical quality',
+  communication: 'Communication',
+  facility_cleanliness: 'Cleanliness',
+  appointment_availability: 'Appointment availability',
+  billing: 'Billing',
+  follow_up_care: 'Follow-up care',
+  parking: 'Parking',
+  other: 'Other',
+}
+
+function themeBadge(theme: string | null) {
+  if (!theme) return null
+  const label = THEME_LABELS[theme] ?? theme
+  return (
+    <span className="inline-flex items-center px-1.5 py-0.5 mr-1.5 rounded text-[10px] font-medium bg-[#EEF0F4] text-[#6B7B8F]">
+      {label}
+    </span>
+  )
 }
 
 interface SurveyAction {
@@ -192,6 +218,29 @@ export default function SurveysClient({
       nps: v.total > 0 ? Math.round(((v.promoters - v.detractors) / v.total) * 100) : 0,
     }))
   }, [npsData])
+
+  /* ─── Top themes (30 days) ─── */
+
+  const themeStats = useMemo(() => {
+    const counts: Record<string, { total: number; detractors: number }> = {}
+    for (const r of responses) {
+      if (!r.theme) continue
+      if (!counts[r.theme]) counts[r.theme] = { total: 0, detractors: 0 }
+      counts[r.theme].total++
+      if (r.nps_score !== null && r.nps_score <= 6) counts[r.theme].detractors++
+    }
+    const total = Object.values(counts).reduce((acc, v) => acc + v.total, 0)
+    return Object.entries(counts)
+      .map(([theme, v]) => ({
+        theme,
+        label: THEME_LABELS[theme] ?? theme,
+        count: v.total,
+        detractors: v.detractors,
+        pct: total > 0 ? Math.round((v.total / total) * 100) : 0,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8)
+  }, [responses])
 
   /* ─── Action slide-over ─── */
 
@@ -437,6 +486,7 @@ export default function SurveysClient({
                         </td>
                         <td className="px-4 py-2.5">{scorePill(r.nps_score)}</td>
                         <td className="px-4 py-2.5 text-[12px] text-[#6B7B8F] max-w-[180px] truncate">
+                          {themeBadge(r.theme)}
                           {r.follow_up_text ?? '—'}
                         </td>
                       </tr>
@@ -493,6 +543,45 @@ export default function SurveysClient({
             )}
           </div>
         </div>
+      </div>
+
+      {/* Top Themes Card */}
+      <div className="bg-white rounded-lg p-5" style={{ border: '1.5px solid #DDE1E7' }}>
+        <div className="flex items-baseline justify-between mb-4">
+          <h2 className="text-[14px] font-semibold text-[#0A2540]">Top Themes (30 days)</h2>
+          <p className="text-[11px] text-[#B0BAC9]">AI-clustered from free-text replies</p>
+        </div>
+        {themeStats.length === 0 ? (
+          <div className="py-8 text-center text-[13px] text-[#B0BAC9]">
+            No themed feedback yet — themes appear once respondents send a free-text reply.
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {themeStats.map(t => (
+              <div key={t.theme} className="flex items-center gap-3">
+                <div className="w-[160px] text-[12px] font-medium text-[#0A2540] truncate">
+                  {t.label}
+                </div>
+                <div className="flex-1 h-[8px] bg-[#F4F6F9] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#1A5FA8]"
+                    style={{ width: `${t.pct}%` }}
+                  />
+                </div>
+                <div className="w-[80px] text-right text-[11px] text-[#6B7B8F] tabular-nums">
+                  {t.count} · {t.pct}%
+                </div>
+                <div className="w-[80px] text-right text-[11px] tabular-nums">
+                  {t.detractors > 0 ? (
+                    <span className="text-red-600 font-medium">{t.detractors} detractor{t.detractors === 1 ? '' : 's'}</span>
+                  ) : (
+                    <span className="text-[#B0BAC9]">—</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Settings Card */}

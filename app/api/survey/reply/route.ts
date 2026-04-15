@@ -125,6 +125,19 @@ export async function POST(req: NextRequest) {
           .eq('survey_response_id', response.id)
       }
 
+      // Fire-and-forget: classify the free-text into a theme so the dashboard
+      // can cluster feedback. Failures must never block the TwiML reply.
+      try {
+        const sdkPath = ['@trigger.dev', 'sdk', 'v3'].join('/')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { tasks } = await (import(sdkPath) as Promise<any>)
+        await tasks.trigger('survey-extract-theme', {
+          survey_response_id: response.id,
+        })
+      } catch (themeErr) {
+        console.error('[/api/survey/reply] Failed to schedule theme extraction:', themeErr)
+      }
+
       return twiml()
     }
 
