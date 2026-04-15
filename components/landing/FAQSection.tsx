@@ -61,7 +61,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
     <div className="border-b border-[#eef1f4] last:border-b-0">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-[#17C4BE]"
+        className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-[#00D68F]"
       >
         <span className="text-base font-semibold text-[#1A1A1A]">{question}</span>
         <ChevronDown
@@ -75,7 +75,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
           open ? 'max-h-[500px] pb-5' : 'max-h-0'
         }`}
       >
-        <p className="text-sm leading-7 text-[#536171] pr-8">{answer}</p>
+        <p className="text-sm leading-7 text-[#566275] pr-8">{answer}</p>
       </div>
     </div>
   )
@@ -85,18 +85,18 @@ export default function FAQSection() {
   return (
     <section id="faq" className="px-1 py-24 sm:py-28">
       <div className="text-center mb-12">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#17C4BE]">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#00D68F]">
           FAQ
         </p>
         <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-4xl">
           Frequently asked questions
         </h2>
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#536171] sm:text-lg">
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#566275] sm:text-lg">
           Everything you need to know about ClinicForce.
         </p>
       </div>
 
-      <div className="mx-auto max-w-3xl rounded-3xl border border-[#dde5ec] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:p-8">
+      <div className="mx-auto max-w-3xl rounded-3xl border border-[#E5EAF0] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:p-8">
         {faqs.map(([q, a]) => (
           <FAQItem key={q} question={q} answer={a} />
         ))}

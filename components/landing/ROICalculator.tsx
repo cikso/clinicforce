@@ -18,16 +18,16 @@ export default function ROICalculator() {
   const annualRecovery = recoveredRevenue * 12
 
   return (
-    <section className="relative rounded-[36px] overflow-hidden bg-[#0F172A] px-6 py-20 sm:px-8 lg:px-12">
+    <section className="relative rounded-[36px] overflow-hidden bg-[#0B1320] px-6 py-20 sm:px-8 lg:px-12">
       {/* Decorative gradient */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -right-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#17C4BE]/10 blur-[120px]" />
-        <div className="absolute -left-20 -bottom-20 h-[400px] w-[400px] rounded-full bg-[#17C4BE]/5 blur-[100px]" />
+        <div className="absolute -right-40 -top-40 h-[600px] w-[600px] rounded-full bg-[#00D68F]/10 blur-[120px]" />
+        <div className="absolute -left-20 -bottom-20 h-[400px] w-[400px] rounded-full bg-[#00D68F]/5 blur-[100px]" />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#8DE2DE]">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#7EEDC0]">
             ROI Calculator
           </p>
           <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
@@ -71,7 +71,7 @@ export default function ROICalculator() {
           </div>
 
           {/* Results card */}
-          <div className="rounded-3xl border border-[#1e293b] bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.3)] lg:-mt-4">
+          <div className="rounded-3xl border border-[#1E2A3F] bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.3)] lg:-mt-4">
             <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-[#6f7d8b]">
               Your estimated impact
             </p>
@@ -84,10 +84,10 @@ export default function ROICalculator() {
                 highlight="red"
               />
               <div className="border-t border-[#eef1f4] pt-5">
-                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#17C4BE]">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#00D68F]">
                   With ClinicForce
                 </p>
-                <p className="text-sm text-[#61717f] mb-4">
+                <p className="text-sm text-[#566275] mb-4">
                   Recover up to 85% of missed calls
                 </p>
                 <ResultRow
@@ -98,12 +98,12 @@ export default function ROICalculator() {
               </div>
             </div>
 
-            <div className="mt-8 rounded-2xl bg-[#E5F9F8] border border-[#17C4BE]/15 p-5 text-center">
-              <p className="text-sm text-[#536171]">That&apos;s</p>
-              <p className="text-3xl font-bold tracking-[-0.04em] text-[#17C4BE]">
+            <div className="mt-8 rounded-2xl bg-[#E6FBF2] border border-[#00D68F]/15 p-5 text-center">
+              <p className="text-sm text-[#566275]">That&apos;s</p>
+              <p className="text-3xl font-bold tracking-[-0.04em] text-[#00D68F]">
                 {formatCurrency(annualRecovery)}
               </p>
-              <p className="text-sm text-[#536171]">per year your clinic could recover</p>
+              <p className="text-sm text-[#566275]">per year your clinic could recover</p>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ function SliderField({
         onChange={(e) => onChange(Number(e.target.value))}
         className="roi-slider w-full"
         style={{
-          background: `linear-gradient(to right, #17C4BE ${pct}%, #1e293b ${pct}%)`,
+          background: `linear-gradient(to right, #00D68F ${pct}%, #1E2A3F ${pct}%)`,
         }}
       />
       <div className="flex items-center justify-between mt-1.5">
@@ -168,13 +168,13 @@ function ResultRow({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-sm text-[#61717f]">{label}</span>
+      <span className="text-sm text-[#566275]">{label}</span>
       <span
         className={`text-base font-bold tabular-nums ${
           highlight === 'red'
             ? 'text-red-500'
             : highlight === 'green'
-              ? 'text-[#17C4BE]'
+              ? 'text-[#00D68F]'
               : 'text-[#1A1A1A]'
         }`}
       >

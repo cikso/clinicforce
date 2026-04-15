@@ -202,7 +202,7 @@ const LiveWaveform = React.memo(function LiveWaveform() {
       {heights.map((h, i) => (
         <motion.div
           key={i}
-          className="w-[3px] rounded-full bg-[#17C4BE]"
+          className="w-[3px] rounded-full bg-[#00D68F]"
           style={{ height: h }}
           animate={{
             scaleY: [1, 2.1, 0.55, 1.7, 1],
@@ -232,7 +232,7 @@ const LiveCallCard = React.memo(function LiveCallCard() {
       time: '2m ago',
       status: 'Handled',
       statusClass: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-      avatarClass: 'bg-[#E5F9F8] text-[#17C4BE]',
+      avatarClass: 'bg-[#E6FBF2] text-[#00D68F]',
     },
     {
       initials: 'JR',
@@ -259,7 +259,7 @@ const LiveCallCard = React.memo(function LiveCallCard() {
       className="relative z-10 w-full max-w-[400px] rounded-2xl bg-white/80 backdrop-blur-xl border border-white/30"
       style={{
         boxShadow:
-          '0 40px 80px -20px rgba(23,196,190,0.12), inset 0 1px 0 rgba(255,255,255,0.7), 0 1px 3px rgba(0,0,0,0.06)',
+          '0 40px 80px -20px rgba(0,214,143,0.14), inset 0 1px 0 rgba(255,255,255,0.7), 0 1px 3px rgba(0,0,0,0.06)',
       }}
       animate={{ y: [0, -8, 0] }}
       transition={{
@@ -287,9 +287,9 @@ const LiveCallCard = React.memo(function LiveCallCard() {
         </div>
 
         {/* Active call block */}
-        <div className="rounded-xl bg-[#E5F9F8] border border-[#E5E7EB] p-4 mb-4">
+        <div className="rounded-xl bg-[#E6FBF2] border border-[#E5E7EB] p-4 mb-4">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-full bg-[#17C4BE] flex items-center justify-center flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-[#00D68F] flex items-center justify-center flex-shrink-0">
               <span className="font-mono text-[11px] font-bold text-white tracking-tight">
                 SC
               </span>
@@ -303,7 +303,7 @@ const LiveCallCard = React.memo(function LiveCallCard() {
               </p>
             </div>
             <div className="flex-shrink-0">
-              <span className="font-mono text-sm font-bold text-[#17C4BE] tabular-nums">
+              <span className="font-mono text-sm font-bold text-[#00D68F] tabular-nums">
                 0:47
               </span>
             </div>
@@ -315,7 +315,7 @@ const LiveCallCard = React.memo(function LiveCallCard() {
             <span className="font-mono text-[10px] font-medium bg-white border border-slate-200 text-slate-500 rounded-full px-2.5 py-1">
               Urgency: Routine
             </span>
-            <span className="font-mono text-[10px] font-medium bg-[#E5F9F8] border border-[#E5E7EB] text-[#17C4BE] rounded-full px-2.5 py-1">
+            <span className="font-mono text-[10px] font-medium bg-[#E6FBF2] border border-[#E5E7EB] text-[#00D68F] rounded-full px-2.5 py-1">
               Category: Appointment Enquiry
             </span>
           </div>
@@ -406,7 +406,7 @@ export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void })
             >
               {/* Eyebrow */}
               <motion.div variants={itemVariants}>
-                <div className="inline-flex items-center gap-2 bg-[#E5F9F8] border border-[#E5E7EB] rounded-full px-3.5 py-1.5">
+                <div className="inline-flex items-center gap-2 bg-[#E6FBF2] border border-[#E5E7EB] rounded-full px-3.5 py-1.5">
                   <motion.span
                     className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"
                     animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
@@ -416,7 +416,7 @@ export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void })
                       ease: 'easeInOut',
                     }}
                   />
-                  <span className="text-[11px] font-semibold text-[#17C4BE] uppercase tracking-[0.12em]">
+                  <span className="text-[11px] font-semibold text-[#00D68F] uppercase tracking-[0.12em]">
                     AI Front Desk — Built for Clinics
                   </span>
                 </div>
@@ -434,7 +434,7 @@ export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void })
                       className="bg-clip-text text-transparent"
                       style={{
                         backgroundImage:
-                          'linear-gradient(135deg, #17C4BE 0%, #0F9995 100%)',
+                          'linear-gradient(135deg, #00D68F 0%, #00B578 100%)',
                       }}
                     >
                       answered.
@@ -450,7 +450,7 @@ export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void })
                     >
                       <motion.path
                         d="M2 5.5C50 2.5 100 1.5 198 4.5"
-                        stroke="#17C4BE"
+                        stroke="#00D68F"
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         initial={{ pathLength: 0, opacity: 0 }}
@@ -478,14 +478,14 @@ export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void })
                       <button
                         key={id}
                         onClick={() => setActiveIndustry(id)}
-                        className="relative flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#17C4BE] focus-visible:ring-offset-1 transition-colors duration-150"
+                        className="relative flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00D68F] focus-visible:ring-offset-1 transition-colors duration-150"
                         style={{ color: isActive ? '#fff' : '#6B6B6B' }}
                         aria-pressed={isActive}
                       >
                         {isActive && (
                           <motion.span
                             layoutId="activePill"
-                            className="absolute inset-0 rounded-full bg-[#17C4BE]"
+                            className="absolute inset-0 rounded-full bg-[#00D68F]"
                             transition={{
                               type: 'spring',
                               stiffness: 350,
@@ -538,7 +538,7 @@ export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void })
                 className="flex items-center gap-5 flex-wrap"
               >
                 <MagneticButton onClick={handleBookDemo}>
-                  <span className="inline-flex items-center gap-2 bg-[#17C4BE] hover:bg-[#13ADA8] active:scale-[0.98] text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer select-none">
+                  <span className="inline-flex items-center gap-2 bg-[#00D68F] hover:bg-[#00B578] active:scale-[0.98] text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer select-none">
                     Book a Demo
                   </span>
                 </MagneticButton>
@@ -574,7 +574,7 @@ export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void })
                   '$15 a day, fully staffed',
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-1.5">
-                    <CheckIcon className="w-3.5 h-3.5 text-[#17C4BE] flex-shrink-0" />
+                    <CheckIcon className="w-3.5 h-3.5 text-[#00D68F] flex-shrink-0" />
                     <span className="text-xs text-slate-400 font-medium">
                       {item}
                     </span>
@@ -604,7 +604,7 @@ export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void })
                   className="w-[480px] h-[480px] rounded-full"
                   style={{
                     background:
-                      'radial-gradient(circle, rgba(23,196,190,0.18) 0%, rgba(23,196,190,0.07) 45%, transparent 72%)',
+                      'radial-gradient(circle, rgba(0,214,143,0.20) 0%, rgba(0,214,143,0.08) 45%, transparent 72%)',
                     filter: 'blur(64px)',
                   }}
                 />

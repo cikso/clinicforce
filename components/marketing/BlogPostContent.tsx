@@ -31,14 +31,14 @@ export default function BlogPostContent({
       <article className="mx-auto max-w-3xl px-6 py-16 sm:px-8 sm:py-20">
         <Link
           href="/blog"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-[#536171] transition hover:text-[#17C4BE]"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[#536171] transition hover:text-[#00D68F]"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to blog
         </Link>
 
         <header className="mt-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#17C4BE]">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#00D68F]">
             ClinicForce blog
           </p>
           <h1 className="mt-4 text-balance text-4xl font-bold leading-[1.1] tracking-[-0.04em] text-[#1A1A1A] sm:text-5xl">
@@ -51,7 +51,7 @@ export default function BlogPostContent({
 
         <div className="mt-10">{body}</div>
 
-        <div className="mt-16 rounded-3xl border border-[#E5E7EB] bg-[#E5F9F8] p-8">
+        <div className="mt-16 rounded-3xl border border-[#E5E7EB] bg-[#E6FBF2] p-8">
           <h2 className="text-2xl font-semibold tracking-[-0.03em] text-[#1A1A1A]">
             See ClinicForce on a real call
           </h2>
@@ -60,7 +60,7 @@ export default function BlogPostContent({
           </p>
           <button
             onClick={openDemo}
-            className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#17C4BE] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,196,190,0.2)] transition hover:bg-[#13ADA8]"
+            className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#00D68F] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,196,190,0.2)] transition hover:bg-[#00B578]"
           >
             Book a demo
             <ArrowRight className="h-4 w-4" />
