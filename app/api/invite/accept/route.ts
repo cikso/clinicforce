@@ -2,28 +2,22 @@ import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
+import { InviteAcceptSchema } from '@/lib/validation/schemas'
+import { parseJsonBody } from '@/lib/validation/respond'
+import { enforceRateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
-  let body: { token?: string; fullName?: string; password?: string }
+  // Rate limit per-IP to prevent token enumeration.
+  const blocked = await enforceRateLimit(request, {
+    name: 'invite:accept',
+    max: 10,
+    windowSec: 600,
+  })
+  if (blocked) return blocked
 
-  try {
-    body = await request.json()
-  } catch {
-    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
-  }
-
-  const { token, fullName, password } = body
-
-  if (!token || !fullName || !password) {
-    return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 })
-  }
-
-  if (password.length < 8) {
-    return NextResponse.json(
-      { error: 'Password must be at least 8 characters.' },
-      { status: 400 }
-    )
-  }
+  const parsed = await parseJsonBody(request, InviteAcceptSchema)
+  if (!parsed.ok) return parsed.response
+  const { token, fullName, password } = parsed.data
 
   // ── Service-role client (bypasses RLS) ────────────────────────────────────
   const serviceRole = createClient(

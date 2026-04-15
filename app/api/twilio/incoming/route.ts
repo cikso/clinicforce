@@ -4,6 +4,8 @@ import {
   buildDynamicVariables,
   CLINIC_SELECT_FIELDS,
 } from '@/lib/voice/shared'
+import { validateTwilioSignature, reconstructRequestUrl } from '@/lib/voice/twilio-auth'
+import { enforceRateLimit, clientIp } from '@/lib/rate-limit'
 
 export const preferredRegion = 'syd1'
 
@@ -39,6 +41,14 @@ function twiml(xml: string) {
 export async function POST(req: NextRequest) {
   const clinicNumber = process.env.CLINIC_REAL_NUMBER
 
+  // Cheap pre-filter — stops a flood before signature math.
+  const blocked = await enforceRateLimit(req, {
+    name: 'webhook:twilio-incoming',
+    max: 300,
+    windowSec: 60,
+  })
+  if (blocked) return blocked
+
   try {
     const supabase = getServiceSupabase()
 
@@ -46,6 +56,19 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData().catch(() => null)
     const toNumber   = formData?.get('To')   as string | null
     const fromNumber = formData?.get('From') as string | null
+
+    // ── Twilio signature validation ──────────────────────────────────────────
+    const formParams: Record<string, string> = {}
+    if (formData) {
+      for (const [k, v] of formData.entries()) {
+        if (typeof v === 'string') formParams[k] = v
+      }
+    }
+    const sigCheck = validateTwilioSignature(req, reconstructRequestUrl(req), formParams)
+    if (!sigCheck.valid) {
+      console.error('[twilio/incoming] 401', { ip: clientIp(req), reason: sigCheck.reason })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     if (!toNumber) {
       console.error('[twilio/incoming] No To number in Twilio request')

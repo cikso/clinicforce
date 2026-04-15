@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase, normaliseAustralianPhone, validateSecret, validateWebhookHmac } from '@/lib/voice/shared'
 import { withRetry } from '@/lib/utils/withRetry'
+import { ElevenLabsWebhookSchema } from '@/lib/validation/schemas'
+import { enforceRateLimit, clientIp } from '@/lib/rate-limit'
 
 export const preferredRegion = 'syd1'
+
+// Header-only auth is a legacy fallback. It should be off in production.
+// Flip ALLOW_WEBHOOK_HEADER_AUTH=true only as a temporary recovery lever.
+const ALLOW_HEADER_AUTH = process.env.ALLOW_WEBHOOK_HEADER_AUTH === 'true'
 
 // ── Coverage reason labels ───────────────────────────────────────────────────
 const COVERAGE_LABELS: Record<string, string> = {
@@ -13,27 +19,50 @@ const COVERAGE_LABELS: Record<string, string> = {
 }
 
 export async function POST(req: NextRequest) {
+  // Rate limit webhook ingestion per source IP. ElevenLabs' own IPs will be
+  // well under this; spoof traffic gets dropped early before HMAC work.
+  const blocked = await enforceRateLimit(req, {
+    name: 'webhook:inbox',
+    max: 120,
+    windowSec: 60,
+  })
+  if (blocked) return blocked
+
   const rawBody = await req.text()
 
-  // Try HMAC signature first, fall back to plain x-api-secret header
-  // ElevenLabs sends the signature as "ElevenLabs-Signature" (case-insensitive in fetch)
+  // HMAC is the primary auth path. The header fallback only runs when the
+  // operator has explicitly opted in via ALLOW_WEBHOOK_HEADER_AUTH=true.
   const signature = req.headers.get('ElevenLabs-Signature') ?? req.headers.get('elevenlabs-signature')
   const hmacValid = await validateWebhookHmac(signature, rawBody)
-  const headerValid = validateSecret(req)
 
-  if (!hmacValid && !headerValid) {
-    console.error('[inbox/webhook] 401 — auth failed. HMAC sig present:', !!signature, '| x-api-secret present:', !!req.headers.get('x-api-secret'))
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!hmacValid) {
+    if (ALLOW_HEADER_AUTH && validateSecret(req)) {
+      console.warn('[inbox/webhook] accepted via legacy header auth — disable ALLOW_WEBHOOK_HEADER_AUTH once ElevenLabs HMAC is confirmed')
+    } else {
+      console.error('[inbox/webhook] 401', {
+        ip: clientIp(req),
+        has_sig: !!signature,
+        has_header: !!req.headers.get('x-api-secret'),
+      })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
   }
 
-  const supabase = getServiceSupabase()
-
-  let body: Record<string, unknown>
+  let parsedJson: unknown
   try {
-    body = JSON.parse(rawBody)
+    parsedJson = JSON.parse(rawBody)
   } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
+
+  const validated = ElevenLabsWebhookSchema.safeParse(parsedJson)
+  if (!validated.success) {
+    console.warn('[inbox/webhook] payload failed schema validation', validated.error.issues.slice(0, 5))
+    return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
+  }
+  const body = validated.data as Record<string, unknown>
+
+  const supabase = getServiceSupabase()
 
   // Ignore audio and ping webhooks
   if (body.type === 'ping' || body.type === 'post_call_audio') {

@@ -5,9 +5,19 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
 // ── Supabase (service role) ──────────────────────────────────────────────────
 
 export function getServiceSupabase(): SupabaseClient {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  return createClient(url, key)
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    // Fail loud. Previously we fell back to the anon key, which silently stripped
+    // permissions for webhook writers and produced misleading 500s downstream.
+    throw new Error(
+      'getServiceSupabase: SUPABASE_SERVICE_ROLE_KEY is required. ' +
+        'Set it in the server environment (never NEXT_PUBLIC_*).',
+    )
+  }
+  return createClient(url, key, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  })
 }
 
 // ── Secret validation (tool-level: plain header) ────────────────────────────
