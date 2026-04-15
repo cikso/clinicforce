@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { createClient as createAuthClient } from '@/lib/supabase/server'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
 function getService() {

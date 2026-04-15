@@ -40,7 +40,7 @@ export default function NotificationsClient({ settings }: NotificationsClientPro
   const [alertEmail, setAlertEmail] = useState((settings?.alert_email as string) ?? '')
   const [smsEnabled, setSmsEnabled] = useState((settings?.sms_alerts_enabled as boolean) ?? false)
   const [alertPhone, setAlertPhone] = useState((settings?.alert_phone as string) ?? '')
-  const [slackWebhook, _setSlackWebhook] = useState((settings?.slack_webhook_url as string) ?? '')
+  const [slackWebhook] = useState((settings?.slack_webhook_url as string) ?? '')
 
   // Alert types
   const [notifyCritical, setNotifyCritical] = useState((settings?.notify_on_critical as boolean) ?? true)

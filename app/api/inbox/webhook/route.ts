@@ -40,7 +40,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, action: 'ignored' })
   }
 
-  const agentId      = (body.agent_id as string) ?? null
   const payload      = (body.data as Record<string, unknown>) ?? body
   const conversationId = (payload.conversation_id as string)
     ?? (body.conversation_id as string)

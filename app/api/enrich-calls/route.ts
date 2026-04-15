@@ -82,14 +82,9 @@ export async function GET() {
     // Fetch full conversation detail for rich summary
     const convId = matchedConv.conversation_id as string
     let richSummary: string | null = null
-    let callTitle: string | null = null
-
     // Check if list already has transcript_summary
     if (matchedConv.transcript_summary) {
       richSummary = matchedConv.transcript_summary as string
-    }
-    if (matchedConv.call_summary_title) {
-      callTitle = matchedConv.call_summary_title as string
     }
 
     // If not on list, fetch the detail
@@ -101,7 +96,6 @@ export async function GET() {
         )
         const detail = await detailRes.json()
         richSummary = (detail.analysis?.transcript_summary as string) ?? null
-        callTitle = (detail.analysis?.call_summary_title as string) ?? null
       } catch (err) {
         console.error(`[enrich-calls] Failed to fetch detail for ${convId}:`, err)
         continue

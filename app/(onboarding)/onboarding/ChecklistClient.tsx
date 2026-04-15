@@ -44,8 +44,6 @@ const STEPS = [
   },
 ] as const
 
-type StepKey = typeof STEPS[number]['key']
-
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface StepRow {

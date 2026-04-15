@@ -133,7 +133,6 @@ const icons = {
 /* ─── Component ─── */
 
 export default function SurveysClient({
-  clinicId,
   surveyConfig,
   responses,
   actions: initialActions,
