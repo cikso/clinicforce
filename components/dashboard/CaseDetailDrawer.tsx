@@ -93,7 +93,7 @@ export default function CaseDetailDrawer({
 
               <div className="bg-[#E5F9F8] border border-[#bae6fd] rounded-2xl p-5">
                 <p className="text-sm text-slate-700 leading-relaxed mb-5 italic">
-                  "{caseData?.aiJustification}"
+                  &quot;{caseData?.aiJustification}&quot;
                 </p>
 
                 <div className="grid grid-cols-2 gap-3 mb-4">

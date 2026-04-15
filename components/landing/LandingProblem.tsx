@@ -17,7 +17,7 @@ export function LandingProblem() {
         {/* Left */}
         <div>
           <h2 style={{ fontSize: 'clamp(36px, 4vw, 58px)', fontWeight: 800, letterSpacing: '-2.5px', lineHeight: 1.05, color: '#F0F4FF', marginBottom: 24 }}>
-            Your front desk<br /><span style={{ color: '#4A5470' }}>can't be everywhere</span><br />at once.
+            Your front desk<br /><span style={{ color: '#4A5470' }}>can&apos;t be everywhere</span><br />at once.
           </h2>
           <p style={{ fontSize: 17, lineHeight: 1.7, color: '#8B95B0', maxWidth: 440, fontWeight: 400 }}>
             Vet clinics miss calls every single day — not just after hours. During lunch, in a consult room, mid-checkout. Each one is a booking gone elsewhere, a question unanswered, or an urgent case that waited too long.
