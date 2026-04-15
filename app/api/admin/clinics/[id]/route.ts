@@ -88,16 +88,25 @@ export async function PATCH(
         .eq('clinic_id', clinicId)
         .maybeSingle()
 
+      // Per-clinic agent id: prefer the caller-supplied value, then env default.
+      const providedAgentId =
+        typeof body.elevenlabs_agent_id === 'string' && body.elevenlabs_agent_id.trim()
+          ? body.elevenlabs_agent_id.trim()
+          : null
+      const fallbackAgentId = process.env.ELEVENLABS_AGENT_ID ?? ''
+
       if (existing) {
+        const updatePayload: Record<string, unknown> = { twilio_phone_number: formatted }
+        if (providedAgentId) updatePayload.elevenlabs_agent_id = providedAgentId
         await service
           .from('voice_agents')
-          .update({ twilio_phone_number: formatted })
+          .update(updatePayload)
           .eq('clinic_id', clinicId)
       } else {
         await service.from('voice_agents').insert({
           clinic_id: clinicId,
           twilio_phone_number: formatted,
-          elevenlabs_agent_id: process.env.ELEVENLABS_AGENT_ID ?? '',
+          elevenlabs_agent_id: providedAgentId ?? fallbackAgentId,
           is_active: true,
           mode: 'DAYTIME',
         })

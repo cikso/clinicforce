@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
   }
 
-  const { name, phone, email, address, suburb, postcode, website, vertical, twilio_phone, services, after_hours_partner, after_hours_phone, emergency_partner_address } = body as Record<string, string | null>
+  const { name, phone, email, address, suburb, postcode, website, vertical, twilio_phone, services, after_hours_partner, after_hours_phone, emergency_partner_address, elevenlabs_agent_id } = body as Record<string, string | null>
   const invites = (body.invites as Array<{ email: string; role: string }>) ?? []
 
   if (!name?.trim()) {
@@ -103,12 +103,19 @@ export async function POST(request: NextRequest) {
     metadata: { name: name.trim(), vertical: vertical ?? 'vet' },
   }, request)
 
-  // Create voice_agents row if Twilio number was provided
+  // Create voice_agents row if Twilio number was provided.
+  // Per-clinic agent id: prefer the value supplied in the request, then fall
+  // back to the ELEVENLABS_AGENT_ID env for single-agent tenants. Leaving
+  // this unset is fine — the inbound router and webhook both handle it.
   if (twilioE164) {
+    const agentId =
+      elevenlabs_agent_id?.trim() ??
+      process.env.ELEVENLABS_AGENT_ID ??
+      null
     const { error: vaError } = await service.from('voice_agents').insert({
       clinic_id: clinic.id,
       twilio_phone_number: twilioE164,
-      elevenlabs_agent_id: process.env.ELEVENLABS_AGENT_ID ?? null,
+      elevenlabs_agent_id: agentId,
       is_active: true,
       mode: 'DAYTIME',
     })

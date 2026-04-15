@@ -19,7 +19,7 @@ describe('validateTwilioSignature', () => {
   const originalEnv = { ...process.env }
   beforeEach(() => {
     process.env.TWILIO_AUTH_TOKEN = 'test-token'
-    process.env.NODE_ENV = 'production'
+    ;(process.env as Record<string, string>).NODE_ENV = 'production'
   })
   afterEach(() => {
     process.env = { ...originalEnv }

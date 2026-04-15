@@ -3,6 +3,8 @@ import { getServiceSupabase, normaliseAustralianPhone, validateSecret, validateW
 import { withRetry } from '@/lib/utils/withRetry'
 import { ElevenLabsWebhookSchema } from '@/lib/validation/schemas'
 import { enforceRateLimit, clientIp } from '@/lib/rate-limit'
+import { isOverLimit } from '@/lib/billing/usage'
+import { logAudit } from '@/lib/audit'
 
 export const preferredRegion = 'syd1'
 
@@ -125,6 +127,20 @@ export async function POST(req: NextRequest) {
   if (!clinicId) {
     console.error('[inbox/webhook] Unknown agent phone number:', toNumber)
     return NextResponse.json({ error: 'Unknown agent phone number' }, { status: 400 })
+  }
+
+  // ── Plan-limit check ─────────────────────────────────────────────────────
+  // If the clinic is past its monthly allowance we still 200 (Stripe/ElevenLabs
+  // don't need to retry a plan-blocked call) but we audit the drop and skip
+  // the insert entirely. Upgrade prompt is surfaced in the billing UI.
+  if (await isOverLimit(supabase, clinicId)) {
+    logAudit({
+      action: 'billing.usage.blocked',
+      clinicId,
+      resource: 'call_inbox',
+      metadata: { to: toNumber, conversation_id: conversationId },
+    })
+    return NextResponse.json({ ok: true, action: 'blocked_over_plan_limit' })
   }
 
   // Resolve vertical from clinic record

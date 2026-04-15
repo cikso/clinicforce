@@ -8,6 +8,7 @@ import {
   ContactSalesButton,
   ManageSubscriptionButton,
 } from './BillingActions'
+import { getMonthlyUsage } from '@/lib/billing/usage'
 
 export const dynamic = 'force-dynamic'
 
@@ -99,9 +100,10 @@ export default async function BillingPage() {
   const trialDays = daysUntil(subscription?.trial_ends_at ?? null)
   const isTrialing = subscription?.status === 'trialing' || currentPlan === 'trial'
 
-  // Estimated usage (sample for visual purposes)
-  const callLimit = currentPlan === 'growth' ? 500 : currentPlan === 'enterprise' ? 9999 : 200
-  const callsUsed = 47 // sample
+  // Real usage snapshot — counts call_inbox rows in the current UTC month.
+  const usage = await getMonthlyUsage(service, profile.clinicId)
+  const callsUsed = usage.callsThisMonth
+  const callLimit = Number.isFinite(usage.limit) ? usage.limit : 9999
 
   return (
     <div className="space-y-5 max-w-[680px]">
