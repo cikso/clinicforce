@@ -1,4 +1,5 @@
 import { createClient } from './server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import type { Call, Subscription } from '@/lib/types'
 
 // ── fetchCallInbox ─────────────────────────────────────────────────────────────
@@ -38,12 +39,23 @@ export async function fetchCallInbox(clinicId: string): Promise<Call[]> {
 }
 
 // ── getSubscription ────────────────────────────────────────────────────────────
-// Returns the subscription row for the given clinic using the authenticated
-// session client so Supabase RLS is applied automatically.
+// Returns the subscription row for the given clinic. Uses the service-role
+// client when available because the `subscriptions` table has RLS enabled with
+// no policies, so the session client returns null for every authenticated
+// user (which the dashboard layout then treats as an inactive subscription
+// and redirects to /login). Falls back to the session client if the service
+// key is not configured. A proper RLS policy is the longer-term fix.
 export async function getSubscription(clinicId: string): Promise<Subscription | null> {
-  const supabase = await createClient()
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const client = serviceRoleKey
+    ? createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey,
+        { auth: { autoRefreshToken: false, persistSession: false } },
+      )
+    : await createClient()
 
-  const { data, error } = await supabase
+  const { data, error } = await client
     .from('subscriptions')
     .select('id, clinic_id, plan, status, trial_ends_at')
     .eq('clinic_id', clinicId)
