@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import { Building2, SearchX } from 'lucide-react'
+import EmptyState from '@/app/components/ui/EmptyState'
 
 export interface AdminClinic {
   id: string
@@ -240,11 +242,19 @@ export default function AdminDashboardClient({ clinics, totalUsers }: Props) {
         </div>
 
         {!filtered.length ? (
-          <div className="py-12 text-center">
-            <p className="text-[14px] text-[var(--text-tertiary)]">
-              {clinics.length === 0 ? 'No clinics yet. Create your first clinic to get started.' : 'No clinics match your filters.'}
-            </p>
-          </div>
+          clinics.length === 0 ? (
+            <EmptyState
+              icon={<Building2 className="w-6 h-6" strokeWidth={1.5} />}
+              title="No clinics yet"
+              description="Create your first clinic to get started. Invites, coverage, and voice agents are all managed per clinic."
+            />
+          ) : (
+            <EmptyState
+              icon={<SearchX className="w-6 h-6" strokeWidth={1.5} />}
+              title="No clinics match your filters"
+              description="Try a different search term or clear the filters to see all clinics."
+            />
+          )
         ) : (
           filtered.map((clinic) => {
             const status = getClinicStatus(clinic)

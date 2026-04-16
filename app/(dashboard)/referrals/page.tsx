@@ -5,6 +5,7 @@ import { Phone, Calendar, CheckCheck, AlertCircle, Clock, User } from 'lucide-re
 import PageShell from '@/components/layout/PageShell'
 import { useClinic } from '@/context/ClinicContext'
 import ToastContainer from '@/components/dashboard/ToastContainer'
+import EmptyState from '@/app/components/ui/EmptyState'
 import { INITIAL_INBOX, type CallInboxItem, type Urgency } from '@/data/mock-dashboard'
 import type { ToastItem } from '@/components/dashboard/ToastContainer'
 
@@ -222,12 +223,13 @@ export default function ActionQueuePage() {
 
       {/* ── Pending actions ───────────────────────────────────── */}
       {pending.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200 px-6 py-16 text-center">
-          <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-3">
-            <CheckCheck className="w-6 h-6 text-emerald-500" />
-          </div>
-          <p className="text-[15px] font-semibold text-slate-700 mb-1">All clear</p>
-          <p className="text-[13px] text-slate-400">No pending actions — the queue is empty.</p>
+        <div className="bg-white rounded-2xl border border-slate-200">
+          <EmptyState
+            icon={<CheckCheck className="w-6 h-6 text-emerald-500" strokeWidth={1.5} />}
+            title="All clear"
+            description="No pending referrals — the queue is empty."
+            className="py-12"
+          />
         </div>
       ) : (
         <div className="space-y-3 mb-4">

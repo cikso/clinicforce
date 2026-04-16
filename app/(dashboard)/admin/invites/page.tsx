@@ -1,4 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
+import { Mail } from 'lucide-react'
+import EmptyState from '@/app/components/ui/EmptyState'
 
 export const dynamic = 'force-dynamic'
 
@@ -51,9 +53,11 @@ export default async function InvitesPage() {
         </div>
 
         {!invites?.length ? (
-          <div className="py-12 text-center">
-            <p className="text-[14px] text-[var(--text-tertiary)]">No invites yet.</p>
-          </div>
+          <EmptyState
+            icon={<Mail className="w-6 h-6" strokeWidth={1.5} />}
+            title="No invites yet"
+            description="Invitations sent to new clinics will appear here with their status."
+          />
         ) : (
           invites.map((inv) => {
             const status = getStatus(inv)
