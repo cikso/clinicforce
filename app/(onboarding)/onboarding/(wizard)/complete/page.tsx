@@ -37,7 +37,7 @@ export default function OnboardingCompletePage() {
           height="32"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#17C4BE"
+          stroke="#00D68F"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -99,7 +99,7 @@ export default function OnboardingCompletePage() {
                 width: 22,
                 height: 22,
                 borderRadius: '50%',
-                backgroundColor: '#17C4BE',
+                backgroundColor: '#00D68F',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -134,7 +134,7 @@ export default function OnboardingCompletePage() {
           width: '100%',
           maxWidth: 360,
           padding: '0.9rem 1.5rem',
-          backgroundColor: '#17C4BE',
+          backgroundColor: '#00D68F',
           color: '#ffffff',
           borderRadius: 10,
           fontFamily: "'DM Sans', sans-serif",

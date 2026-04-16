@@ -101,7 +101,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
     <div className="border-b border-[#eef1f4] last:border-b-0">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-[#17C4BE]"
+        className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-[#00D68F]"
       >
         <span className="text-base font-semibold text-[#1A1A1A]">{question}</span>
         <ChevronDown
@@ -141,8 +141,8 @@ export default function AfterHoursPage() {
           }}
         />
         <div className="relative mx-auto max-w-5xl px-6 py-24 text-center sm:px-8 sm:py-28 lg:py-32">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#E5F9F8] px-3.5 py-1.5">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#17C4BE]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-[#E6FBF2] px-3.5 py-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#00D68F]">
               After-hours answering
             </span>
           </div>
@@ -158,7 +158,7 @@ export default function AfterHoursPage() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <button
               onClick={openDemo}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#17C4BE] px-7 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,196,190,0.2)] transition hover:bg-[#13ADA8]"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#00D68F] px-7 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,196,190,0.2)] transition hover:bg-[#00B578]"
             >
               Book a demo
               <ArrowRight className="h-4 w-4" />
@@ -168,7 +168,7 @@ export default function AfterHoursPage() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             {['No setup fees', 'Live in 1–2 business days', 'No lock-in contracts'].map((item) => (
               <div key={item} className="flex items-center gap-1.5">
-                <Check className="h-3.5 w-3.5 text-[#17C4BE]" />
+                <Check className="h-3.5 w-3.5 text-[#00D68F]" />
                 <span className="text-xs font-medium text-slate-500">{item}</span>
               </div>
             ))}
@@ -193,7 +193,7 @@ export default function AfterHoursPage() {
         {/* ─── WHAT STELLA HANDLES ─────────────────────────────── */}
         <section className="px-1 py-20 sm:py-24">
           <div className="max-w-3xl">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#17C4BE]">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#00D68F]">
               What Stella handles
             </p>
             <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-4xl">
@@ -207,7 +207,7 @@ export default function AfterHoursPage() {
                 key={title}
                 className="rounded-3xl border border-[#d9e2ea] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]"
               >
-                <div className="mb-5 inline-flex rounded-2xl bg-[#E5F9F8] p-3 text-[#17C4BE]">
+                <div className="mb-5 inline-flex rounded-2xl bg-[#E6FBF2] p-3 text-[#00D68F]">
                   <Icon className="h-5 w-5" />
                 </div>
                 <h3 className="text-lg font-semibold tracking-[-0.03em] text-[#1A1A1A]">
@@ -222,7 +222,7 @@ export default function AfterHoursPage() {
         {/* ─── EXAMPLE CALLS ──────────────────────────────────── */}
         <section className="px-1 py-20 sm:py-24">
           <div className="max-w-3xl">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#17C4BE]">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#00D68F]">
               Example calls
             </p>
             <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-4xl">
@@ -237,7 +237,7 @@ export default function AfterHoursPage() {
                 className="flex flex-col rounded-3xl border border-[#dde5ec] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)]"
               >
                 <div className="mb-5 flex items-center justify-between">
-                  <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#17C4BE]">
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#00D68F]">
                     {call.time}
                   </span>
                   <span className="rounded-full border border-[#E5E7EB] bg-[#F9FAFB] px-2.5 py-0.5 text-[11px] font-medium text-[#536171]">
@@ -257,8 +257,8 @@ export default function AfterHoursPage() {
                     </div>
                   </div>
                   <div className="flex justify-end">
-                    <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-[#E5F9F8] px-4 py-3">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#17C4BE]">
+                    <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-[#E6FBF2] px-4 py-3">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#00D68F]">
                         Stella
                       </p>
                       <p className="mt-1 text-sm leading-6 text-[#134e4a]">
@@ -288,7 +288,7 @@ export default function AfterHoursPage() {
         {/* ─── FAQ ────────────────────────────────────────────── */}
         <section className="px-1 py-20 sm:py-24">
           <div className="mb-12 text-center">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#17C4BE]">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-[#00D68F]">
               FAQ
             </p>
             <h2 className="text-balance text-3xl font-semibold tracking-[-0.04em] text-[#1A1A1A] sm:text-4xl">
@@ -305,7 +305,7 @@ export default function AfterHoursPage() {
 
         {/* ─── CTA BANNER ─────────────────────────────────────── */}
         <section className="px-1 py-20 sm:py-24">
-          <div className="rounded-[36px] border border-[#E5E7EB] bg-[#E5F9F8] px-6 py-14 sm:px-8 lg:px-12">
+          <div className="rounded-[36px] border border-[#E5E7EB] bg-[#E6FBF2] px-6 py-14 sm:px-8 lg:px-12">
             <div className="max-w-3xl">
               <h2 className="text-balance text-4xl font-semibold tracking-[-0.05em] text-[#1A1A1A] sm:text-5xl">
                 Take back your time.
@@ -318,7 +318,7 @@ export default function AfterHoursPage() {
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <button
                 onClick={openDemo}
-                className="inline-flex items-center justify-center rounded-2xl bg-[#17C4BE] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,196,190,0.2)] transition hover:bg-[#13ADA8]"
+                className="inline-flex items-center justify-center rounded-2xl bg-[#00D68F] px-6 py-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,196,190,0.2)] transition hover:bg-[#00B578]"
               >
                 Book a demo
                 <ArrowRight className="ml-2 h-4 w-4" />

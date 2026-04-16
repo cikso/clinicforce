@@ -97,7 +97,7 @@ export default function CallDetailDrawer({ call, open, onClose }: CallDetailDraw
                 <div className="flex items-start gap-3">
                   <div
                     className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-[11px] font-bold text-white"
-                    style={{ background: isUrgent ? '#DC2626' : '#17C4BE' }}
+                    style={{ background: isUrgent ? '#DC2626' : '#00D68F' }}
                   >
                     {initials(call.callerName)}
                   </div>
@@ -173,7 +173,7 @@ export default function CallDetailDrawer({ call, open, onClose }: CallDetailDraw
                   AI triage summary
                 </p>
               </div>
-              <div className="bg-emerald-50/60 border-l-2 border-[#17C4BE] rounded-r-lg px-3 py-2.5">
+              <div className="bg-emerald-50/60 border-l-2 border-[#00D68F] rounded-r-lg px-3 py-2.5">
                 <p className="text-xs text-foreground leading-relaxed">{call.summary}</p>
               </div>
               {call.aiDetail && call.aiDetail !== call.summary && (

@@ -74,7 +74,7 @@ function getInitials(name: string | null): string {
 }
 
 function initialsColor(name: string | null): string {
-  const colors = ['#17C4BE', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#EF4444', '#06B6D4']
+  const colors = ['#00D68F', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#EF4444', '#06B6D4']
   const hash = (name ?? '').split('').reduce((a, c) => a + c.charCodeAt(0), 0)
   return colors[hash % colors.length]
 }

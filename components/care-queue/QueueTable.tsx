@@ -16,7 +16,7 @@ const urgencyDot: Record<string, string> = {
 }
 
 const actionStyle: Record<string, string> = {
-  URGENT: 'bg-[#17C4BE] text-white hover:bg-[#13ADA8]',
+  URGENT: 'bg-[#00D68F] text-white hover:bg-[#00B578]',
   HIGH: 'bg-slate-100 text-slate-700 hover:bg-slate-200',
   ROUTINE: 'bg-slate-100 text-slate-700 hover:bg-slate-200',
   FOLLOW_UP: 'bg-slate-100 text-slate-700 hover:bg-slate-200',
@@ -108,7 +108,7 @@ export default function QueueTable({ entries, onOpenCase }: Props) {
             {/* AI summary */}
             <td className="px-4 py-5 max-w-xs">
               <div className="flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-[#17C4BE] shrink-0 mt-0.5" />
+                <Sparkles className="w-4 h-4 text-[#00D68F] shrink-0 mt-0.5" />
                 <span className="text-sm text-slate-700 italic line-clamp-2">
                   &ldquo;{entry.aiSummary}&rdquo;
                 </span>

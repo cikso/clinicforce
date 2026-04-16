@@ -11,19 +11,19 @@ interface KpiCardProps {
 }
 
 const accentBarMap: Record<NonNullable<KpiCardProps['accentColor']>, string> = {
-  teal:  'bg-[#17C4BE]',
+  teal:  'bg-[#00D68F]',
   amber: 'bg-amber-500',
-  red:   'bg-[#c23934]',
+  red:   'bg-[#DC2626]',
   green: 'bg-emerald-500',
   slate: 'bg-slate-400',
-  blue:  'bg-[#17C4BE]',
+  blue:  'bg-[#00D68F]',
 }
 
 const trendPillMap: Record<NonNullable<StatTrend['direction']>, string> = {
   up:   'bg-emerald-50 text-emerald-700',
-  down: 'bg-red-50 text-[#c23934]',
+  down: 'bg-red-50 text-[#DC2626]',
   same: 'bg-slate-100 text-slate-500',
-  new:  'bg-[#E5F9F8] text-[#17C4BE]',
+  new:  'bg-[#E6FBF2] text-[#00D68F]',
 }
 
 export default function KpiCard({
@@ -34,7 +34,7 @@ export default function KpiCard({
   const bar = accentBarMap[accentColor]
 
   return (
-    <div className="bg-white rounded-lg border border-[#dddbda] overflow-hidden shadow-sm hover:shadow transition-shadow">
+    <div className="bg-white rounded-lg border border-[#E5EAF0] overflow-hidden shadow-sm hover:shadow transition-shadow">
 
       {/* Colored accent bar */}
       <div className={`h-[3px] w-full ${bar}`} />
@@ -42,8 +42,8 @@ export default function KpiCard({
       <div className="px-5 py-4">
         {/* Title row */}
         <div className="flex items-center gap-1.5 mb-3">
-          {pulse && <span className="w-1.5 h-1.5 bg-[#c23934] rounded-full animate-pulse shrink-0" />}
-          <p className="text-[11px] font-semibold text-[#706e6b] uppercase tracking-[0.08em] whitespace-nowrap leading-none">
+          {pulse && <span className="w-1.5 h-1.5 bg-[#DC2626] rounded-full animate-pulse shrink-0" />}
+          <p className="text-[11px] font-semibold text-[#566275] uppercase tracking-[0.08em] whitespace-nowrap leading-none">
             {title}
           </p>
         </div>

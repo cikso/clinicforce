@@ -12,7 +12,7 @@ export default function AlertsPanel() {
           <AlertTriangle className="w-5 h-5 text-red-500" />
           Urgent Alerts
         </h2>
-        <Link href="/care-queue" className="text-sm font-medium text-[#17C4BE] hover:text-[#13ADA8] transition-colors">
+        <Link href="/care-queue" className="text-sm font-medium text-[#00D68F] hover:text-[#00B578] transition-colors">
           View All
         </Link>
       </div>
