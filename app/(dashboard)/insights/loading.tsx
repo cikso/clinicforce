@@ -15,7 +15,7 @@ export default function InsightsLoading() {
         {Array.from({ length: 2 }).map((_, i) => (
           <div
             key={i}
-            className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-primary)] p-5 space-y-4"
+            className="rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-5 space-y-4"
           >
             <Skeleton className="h-4 w-36" />
             <Skeleton className="h-3 w-48" />

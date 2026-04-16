@@ -4,8 +4,8 @@ export default function SmsLoading() {
   return (
     <div className="flex h-[calc(100vh-56px)] -m-6">
       {/* Conversation list */}
-      <div className="w-[360px] border-r border-[var(--border-default)] bg-[var(--bg-primary)]">
-        <div className="p-4 border-b border-[var(--border-default)]">
+      <div className="w-[360px] border-r border-[var(--border)] bg-[var(--bg-primary)]">
+        <div className="p-4 border-b border-[var(--border)]">
           <Skeleton className="h-9 w-full rounded-lg" />
         </div>
         {Array.from({ length: 8 }).map((_, i) => (
@@ -16,7 +16,7 @@ export default function SmsLoading() {
       {/* Message area */}
       <div className="flex-1 flex flex-col bg-[var(--bg-primary)]">
         {/* Header */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-[var(--border-default)]">
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-[var(--border)]">
           <Skeleton className="h-9 w-9 rounded-full shrink-0" />
           <div className="space-y-2">
             <Skeleton className="h-4 w-32" />
@@ -43,7 +43,7 @@ export default function SmsLoading() {
         </div>
 
         {/* Input area */}
-        <div className="px-6 py-4 border-t border-[var(--border-default)]">
+        <div className="px-6 py-4 border-t border-[var(--border)]">
           <Skeleton className="h-11 w-full rounded-lg" />
         </div>
       </div>
