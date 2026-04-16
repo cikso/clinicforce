@@ -69,7 +69,11 @@ const PLANS = [
 export default async function BillingPage() {
   const profile = await getClinicProfile()
   if (!profile) redirect('/login')
-  if (profile.userRole !== 'platform_owner') redirect('/settings/team')
+  // Billing belongs to the clinic. platform_owner is the SaaS operator (us) and
+  // should never see a clinic's subscription page — send them to the admin home.
+  if (profile.userRole === 'platform_owner') redirect('/admin')
+  // Only clinic_owner / clinic_admin administer billing. Other roles get team.
+  if (!['clinic_owner', 'clinic_admin'].includes(profile.userRole)) redirect('/settings/team')
 
   const service = createServiceClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

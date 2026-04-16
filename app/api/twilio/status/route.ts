@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/voice/shared'
+import { verifyTwilioRequest } from '@/lib/twilio/verify'
 
 export const preferredRegion = 'syd1'
 
@@ -32,11 +33,19 @@ export const preferredRegion = 'syd1'
  * action URL or a phone-number-level status callback.
  */
 export async function POST(req: NextRequest) {
+  // Unsigned status callbacks would let an attacker clear LiveCallPulse
+  // prematurely or write bogus call_duration_seconds. Reject anything unsigned.
+  const verified = await verifyTwilioRequest(req)
+  if (!verified.valid) {
+    console.error('[twilio/status] signature verification failed:', verified.reason)
+    return new NextResponse('Forbidden', { status: 403 })
+  }
+
   try {
-    const formData = await req.formData().catch(() => null)
-    const callSid  = formData?.get('CallSid')     as string | null
-    const status   = formData?.get('CallStatus')  as string | null
-    const durationRaw = formData?.get('CallDuration') as string | null
+    const params     = verified.params
+    const callSid    = params.get('CallSid')
+    const status     = params.get('CallStatus')
+    const durationRaw = params.get('CallDuration')
     const duration    = durationRaw ? Number(durationRaw) : null
 
     // Only act on terminal statuses; for Dial action callbacks the event
