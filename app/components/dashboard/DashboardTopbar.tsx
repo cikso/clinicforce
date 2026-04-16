@@ -1,9 +1,9 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { Suspense, useState } from 'react'
-import { cn } from '@/lib/utils'
+import { Suspense } from 'react'
 import LiveCallPulse from './LiveCallPulse'
+import { CommandPaletteTrigger, OPEN_COMMAND_PALETTE_EVENT } from './CommandPalette'
 
 const ROUTE_TITLES: Record<string, string> = {
   '/overview':      'Command Centre',
@@ -27,7 +27,6 @@ interface DashboardTopbarProps {
 
 export default function DashboardTopbar({ userName }: DashboardTopbarProps) {
   const pathname = usePathname()
-  const [searchOpen, setSearchOpen] = useState(false)
 
   const title = Object.entries(ROUTE_TITLES).find(([route]) =>
     pathname === route || pathname.startsWith(route + '/')
@@ -57,27 +56,14 @@ export default function DashboardTopbar({ userName }: DashboardTopbarProps) {
 
       <div className="flex-1" />
 
-      {/* Search bar (hidden on mobile, toggled via icon) */}
-      <div className={cn(
-        'hidden sm:flex items-center gap-2 bg-[var(--bg-secondary)] rounded-lg px-3 py-1.5 border border-[var(--border-subtle)] w-[260px]',
-      )}>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[var(--text-tertiary)] shrink-0">
-          <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M11 11l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-        <input
-          type="text"
-          placeholder="Search calls, patients..."
-          aria-label="Search calls, patients"
-          className="bg-transparent text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] w-full outline-none"
-        />
-      </div>
+      {/* Command palette trigger (sm+). Mobile uses the icon button below. */}
+      <CommandPaletteTrigger />
 
-      {/* Mobile search toggle */}
+      {/* Mobile: button opens the full-screen command palette */}
       <button
-        onClick={() => setSearchOpen(!searchOpen)}
+        onClick={() => window.dispatchEvent(new Event(OPEN_COMMAND_PALETTE_EVENT))}
         className="sm:hidden p-2 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]"
-        aria-label="Search"
+        aria-label="Open command palette"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
           <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.5" />
@@ -99,24 +85,6 @@ export default function DashboardTopbar({ userName }: DashboardTopbarProps) {
         {initials}
       </div>
 
-      {/* Mobile search overlay */}
-      {searchOpen && (
-        <div className="absolute top-14 left-0 right-0 sm:hidden bg-[var(--bg-primary)] border-b border-[var(--border)] px-4 py-3 z-30">
-          <div className="flex items-center gap-2 bg-[var(--bg-secondary)] rounded-lg px-3 py-2 border border-[var(--border-subtle)]">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[var(--text-tertiary)] shrink-0">
-              <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M11 11l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search calls, patients..."
-              aria-label="Search calls, patients"
-              className="bg-transparent text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] w-full outline-none"
-              autoFocus
-            />
-          </div>
-        </div>
-      )}
     </header>
   )
 }
