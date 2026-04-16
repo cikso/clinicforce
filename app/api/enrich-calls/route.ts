@@ -56,8 +56,14 @@ export async function GET() {
   let enriched = 0
 
   for (const row of rows) {
-    // Skip rows that already have a rich summary (>200 chars suggests it's already enriched)
-    if (row.ai_detail && (row.ai_detail as string).length > 200) continue
+    // Skip rows that already have a rich transcript-level summary. The
+    // initial tool-generated summary (from /api/callback or /api/inbox/webhook)
+    // can be up to ~500 chars; ElevenLabs' `transcript_summary` is typically
+    // 800-3000 chars. 800 is the cutoff that distinguishes "already enriched"
+    // from "still the short initial summary". Previously this was 200, which
+    // meant every new call was being skipped because its initial ai_detail
+    // exceeded 200 — so the rich transcript_summary never reached the DB.
+    if (row.ai_detail && (row.ai_detail as string).length > 800) continue
 
     let matchedConv: Record<string, unknown> | null = null
 

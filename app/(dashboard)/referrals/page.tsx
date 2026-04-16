@@ -79,9 +79,10 @@ function ActionCard({
           </div>
         </div>
 
-        {/* Summary */}
-        <p className="text-[12px] text-slate-500 leading-relaxed mb-2">
-          {item.summary || 'No summary available.'}
+        {/* Summary — prefer aiDetail (rich transcript summary) over summary
+            (the short 300-char preview used in widget panels). */}
+        <p className="text-[12px] text-slate-500 leading-relaxed mb-2 whitespace-pre-wrap">
+          {item.aiDetail || item.summary || 'No summary available.'}
         </p>
 
         {/* Action tag */}
