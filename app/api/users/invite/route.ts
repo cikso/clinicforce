@@ -67,7 +67,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate a one-time password-reset link so they can set their own password
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+    if (!siteUrl) {
+      console.error('[users/invite] NEXT_PUBLIC_SITE_URL is not set — cannot generate invite link')
+      await admin.auth.admin.deleteUser(newUser.user.id)
+      return NextResponse.json(
+        { error: 'Server not configured: NEXT_PUBLIC_SITE_URL is missing' },
+        { status: 500 },
+      )
+    }
     const { data: linkData, error: linkGenErr } = await admin.auth.admin.generateLink({
       type: 'recovery',
       email,

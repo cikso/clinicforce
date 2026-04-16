@@ -56,21 +56,28 @@ const faqs: [string, string][] = [
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false)
+  const panelId = `faq-panel-${question.replace(/\W+/g, '-').toLowerCase()}`
 
   return (
     <div className="border-b border-[#eef1f4] last:border-b-0">
       <button
         onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls={panelId}
         className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-[#00D68F]"
       >
         <span className="text-base font-semibold text-[#1A1A1A]">{question}</span>
         <ChevronDown
+          aria-hidden="true"
           className={`h-5 w-5 shrink-0 text-[#9CA3AF] transition-transform duration-200 ${
             open ? 'rotate-180' : ''
           }`}
         />
       </button>
       <div
+        id={panelId}
+        role="region"
+        hidden={!open}
         className={`overflow-hidden transition-all duration-200 ${
           open ? 'max-h-[500px] pb-5' : 'max-h-0'
         }`}
