@@ -1,4 +1,4 @@
-import type { ErrorEvent, EventHint } from '@sentry/nextjs'
+import type { ErrorEvent } from '@sentry/nextjs'
 
 /**
  * Strip PII from Sentry events before they leave the app.
@@ -39,7 +39,7 @@ const SENSITIVE_HEADERS = new Set([
   'x-api-secret',
 ])
 
-export function scrubEvent(event: ErrorEvent, _hint: EventHint): ErrorEvent | null {
+export function scrubEvent(event: ErrorEvent): ErrorEvent | null {
   try {
     // Request — drop cookies + body, mask sensitive headers, redact URL query
     if (event.request) {

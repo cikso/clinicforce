@@ -20,7 +20,8 @@ if (dsn) {
     environment: process.env.NEXT_PUBLIC_VERCEL_ENV,
     release: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
     sendDefaultPii: false,
-    tracesSampleRate: 0.1,
+    // Tracing is OFF until beforeSendTransaction / beforeSendSpan are wired.
+    tracesSampleRate: 0,
     beforeSend: scrubEvent,
   })
 }

@@ -53,9 +53,14 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
     ? `${base}${req.nextUrl.pathname}${req.nextUrl.search}`
     : req.url
 
-  // Canonicalise the body: sort keys, concatenate key+value pairs with no separator.
-  const sortedKeys = Array.from(params.keys()).sort()
-  const joined = sortedKeys.map(k => `${k}${params.get(k) ?? ''}`).join('')
+  // Canonicalise the body per Twilio's spec: sort form params alphabetically
+  // by name, then concatenate name+value pairs with no separator. A form may
+  // legitimately contain repeated keys (e.g. MediaUrl0 / MediaUrl1, or any
+  // key posted twice) — `params.get(key)` only returns the first value, so we
+  // iterate entries and sort stably by key to preserve every value.
+  const entries = Array.from(params.entries())
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+  const joined = entries.map(([k, v]) => `${k}${v}`).join('')
   const signingString = `${url}${joined}`
 
   const expected = createHmac('sha1', authToken).update(signingString).digest('base64')

@@ -22,7 +22,9 @@ export async function register() {
       // We ship health-related transcripts. Keep PII out of Sentry by default —
       // scrub in beforeSend rather than relying on sendDefaultPii.
       sendDefaultPii: false,
-      tracesSampleRate: 0.1,
+      // Tracing is OFF until beforeSendTransaction / beforeSendSpan are wired.
+      // Performance events include URL + span metadata that bypass beforeSend.
+      tracesSampleRate: 0,
       beforeSend: scrubEvent,
     })
   }
