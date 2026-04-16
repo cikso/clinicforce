@@ -40,10 +40,6 @@ export default function UpdatePasswordPage() {
 
   return (
     <>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
-        rel="stylesheet"
-      />
       <div style={{
         minHeight: '100vh',
         backgroundColor: '#FAF8F4',
@@ -83,7 +79,7 @@ export default function UpdatePasswordPage() {
               </div>
             </div>
 
-            <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: '1.875rem', fontWeight: 400, color: '#1A1A1A', textAlign: 'center', lineHeight: 1.2, marginBottom: '0.5rem' }}>
+            <h1 style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", fontSize: '1.875rem', fontWeight: 700, color: '#1A1A1A', textAlign: 'center', lineHeight: 1.2, marginBottom: '0.5rem' }}>
               Set a new password
             </h1>
             <p style={{ fontFamily: "'DM Sans'", fontSize: '0.9rem', color: '#6B6B6B', textAlign: 'center', marginBottom: '2rem', lineHeight: 1.5 }}>

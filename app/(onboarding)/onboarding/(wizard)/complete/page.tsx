@@ -49,9 +49,9 @@ export default function OnboardingCompletePage() {
       {/* Heading */}
       <h1
         style={{
-          fontFamily: "'Instrument Serif', Georgia, serif",
+          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
           fontSize: '2.25rem',
-          fontWeight: 400,
+          fontWeight: 700,
           color: '#1A1A1A',
           lineHeight: 1.2,
           marginBottom: '0.75rem',
