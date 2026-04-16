@@ -19,27 +19,72 @@ export const preferredRegion = 'syd1'
  *      handled calls (the ElevenLabs path), because ElevenLabs returns
  *      its own TwiML and we don't own the completion flow otherwise.
  *
- * Either way, we key off the CallSid and delete the matching active_calls
- * row so the dashboard LiveCallPulse disappears in real time.
+ * On terminal status we:
+ *   1. Copy Twilio's CallDuration onto the most recent call_inbox row for
+ *      this call, if one exists (inserted by /api/flag-urgent or
+ *      /api/callback during the conversation). ElevenLabs' post-call
+ *      webhook sometimes doesn't fire or doesn't include duration, so
+ *      taking it straight from Twilio is the reliable source of truth.
+ *   2. Delete the active_calls row so the dashboard LiveCallPulse clears
+ *      in real time.
  *
- * Also returns an empty TwiML so Twilio doesn't complain when called as a
- * Dial action URL.
+ * Returns empty TwiML so Twilio is happy whether it called us as a Dial
+ * action URL or a phone-number-level status callback.
  */
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData().catch(() => null)
-    const callSid  = formData?.get('CallSid')    as string | null
-    const status   = formData?.get('CallStatus') as string | null
+    const callSid  = formData?.get('CallSid')     as string | null
+    const status   = formData?.get('CallStatus')  as string | null
+    const durationRaw = formData?.get('CallDuration') as string | null
+    const duration    = durationRaw ? Number(durationRaw) : null
 
-    // Only delete on terminal statuses; for Dial action callbacks the event
+    // Only act on terminal statuses; for Dial action callbacks the event
     // fires once on completion so this is a no-op filter, but for phone-level
-    // status callbacks we'd otherwise delete the row on every ringing/answered
+    // status callbacks we'd otherwise trigger on every ringing/answered
     // transition.
     const isTerminal = !status
       || ['completed', 'busy', 'failed', 'no-answer', 'canceled'].includes(status)
 
     if (callSid && isTerminal) {
       const supabase = getServiceSupabase()
+
+      // Look up the active_calls row to bridge this CallSid → clinic_id
+      // and the call's start time. Needed to find the right call_inbox row
+      // to stamp with the duration.
+      const { data: activeCall } = await supabase
+        .from('active_calls')
+        .select('clinic_id, started_at')
+        .eq('call_sid', callSid)
+        .maybeSingle()
+
+      // Stamp CallDuration onto the most recent call_inbox row for this
+      // clinic created after the call started that doesn't already have
+      // a duration. Scoped narrowly so we don't clobber older rows.
+      if (activeCall && duration && Number.isFinite(duration) && duration > 0) {
+        const { data: target } = await supabase
+          .from('call_inbox')
+          .select('id')
+          .eq('clinic_id', activeCall.clinic_id)
+          .gte('created_at', activeCall.started_at)
+          .is('call_duration_seconds', null)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+
+        if (target) {
+          const { error: updateErr } = await supabase
+            .from('call_inbox')
+            .update({ call_duration_seconds: duration })
+            .eq('id', target.id)
+
+          if (updateErr) {
+            console.error('[twilio/status] call_duration update failed:', updateErr.message)
+          }
+        }
+      }
+
+      // Clear the active_calls row so LiveCallPulse disappears.
       const { error } = await supabase
         .from('active_calls')
         .delete()
