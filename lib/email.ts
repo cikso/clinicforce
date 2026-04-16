@@ -1,7 +1,14 @@
 import { Resend } from 'resend'
 
-// ── Resend client ─────────────────────────────────────────────────────────
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy init — the Resend SDK throws in its constructor when RESEND_API_KEY is
+// missing. Evaluating this at module top-level broke `next build`'s page-data
+// collection in CI (only Supabase vars are provided there). Keep construction
+// inside the request-handling functions so build-time imports don't need it.
+function getResend(): Resend {
+  const key = process.env.RESEND_API_KEY
+  if (!key) throw new Error('RESEND_API_KEY is not configured')
+  return new Resend(key)
+}
 
 const FROM_ADDRESS = 'ClinicForce <admin@clinicforce.io>'
 
@@ -102,7 +109,7 @@ export async function sendWelcomeEmail({
 </html>
 `
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM_ADDRESS,
     to: [to],
     subject: 'Welcome to ClinicForce — set up your account',
@@ -232,7 +239,7 @@ export async function sendInviteEmail({
 </html>
 `
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM_ADDRESS,
     to: [to],
     subject: `You've been invited to join ${clinicName} on ClinicForce`,
