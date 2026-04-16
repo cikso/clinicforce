@@ -1,4 +1,6 @@
 import { cn } from '@/lib/utils'
+import { PhoneIncoming } from 'lucide-react'
+import EmptyState from '@/app/components/ui/EmptyState'
 
 interface InboxCall {
   id: string
@@ -57,7 +59,12 @@ export default function CallInboxPanel({ calls }: CallInboxPanelProps) {
       </div>
 
       {calls.length === 0 ? (
-        <p className="text-[12px] text-[#8A94A6] text-center py-8">No calls today yet.</p>
+        <EmptyState
+          icon={<PhoneIncoming className="w-6 h-6" strokeWidth={1.5} />}
+          title="No calls today yet"
+          description="Stella's watching the phone. Incoming calls will show up here as they come in."
+          className="py-8"
+        />
       ) : (
         <div>
           {calls.map((call, i) => {

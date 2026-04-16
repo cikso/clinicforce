@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { CheckCircle2 } from 'lucide-react'
+import EmptyState from '@/app/components/ui/EmptyState'
 
 export type Task = {
   id: string
@@ -63,9 +65,12 @@ export default function TaskList({ tasks }: { tasks: Task[] }) {
       </div>
 
       {tasks.length === 0 ? (
-        <p className="text-xs text-[#8A94A6] py-6 text-center">
-          No pending tasks — Stella handled everything.
-        </p>
+        <EmptyState
+          icon={<CheckCircle2 className="w-6 h-6 text-[#0A7A5B]" strokeWidth={1.5} />}
+          title="All caught up"
+          description="Stella handled everything on her own. Nothing needs your attention right now."
+          className="py-6"
+        />
       ) : (
         <>
           <ul className="divide-y divide-[#EEF1F4]">

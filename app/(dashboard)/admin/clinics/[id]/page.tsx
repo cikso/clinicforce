@@ -1,10 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { Users } from 'lucide-react'
 import EditClinic from './_edit-clinic'
 import InvitePanel from './_invite-panel'
 import CoverageControl from './_coverage-control'
 import DeleteClinicButton from './_delete-clinic'
+import EmptyState from '@/app/components/ui/EmptyState'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -100,7 +102,12 @@ export default async function ClinicDetailPage({ params }: PageProps) {
           Users ({users?.length ?? 0})
         </p>
         {!users?.length ? (
-          <p className="text-[14px] text-[var(--text-tertiary)]">No users yet.</p>
+          <EmptyState
+            icon={<Users className="w-6 h-6" strokeWidth={1.5} />}
+            title="No users yet"
+            description="Users added to this clinic via invite will appear here."
+            className="py-8"
+          />
         ) : (
           <div className="divide-y divide-[var(--border)]">
             {users.map((u) => (

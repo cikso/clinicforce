@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Phone, Calendar, CheckCheck, Info, Clock, AlertTriangle, Sparkles } from 'lucide-react'
+import { Phone, Calendar, CheckCheck, Info, Clock, AlertTriangle, Sparkles, PhoneIncoming } from 'lucide-react'
 import { useClinic } from '@/context/ClinicContext'
 import ToastContainer from '@/components/dashboard/ToastContainer'
+import EmptyState from '@/app/components/ui/EmptyState'
 import { INITIAL_INBOX, type CallInboxItem } from '@/data/mock-dashboard'
 import type { ToastItem } from '@/components/dashboard/ToastContainer'
 import { useVertical } from '@/context/VerticalContext'
@@ -413,7 +414,12 @@ export default function CallsPage() {
           {/* Scrollable list */}
           <div className="flex-1 overflow-y-auto divide-y divide-[var(--border)]/60">
             {inbox.length === 0 ? (
-              <p className="text-center text-[12px] text-[#566275] py-10">No calls yet</p>
+              <EmptyState
+                icon={<PhoneIncoming className="w-6 h-6" strokeWidth={1.5} />}
+                title="No calls yet"
+                description="Incoming calls answered by Stella will appear here. Make a test call to see it in action."
+                className="py-8"
+              />
             ) : (
               inbox.map(item => (
                 <ListRow

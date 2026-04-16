@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Card from '@/app/components/ui/Card'
 import Button from '@/app/components/ui/Button'
 import Badge from '@/app/components/ui/Badge'
+import EmptyState from '@/app/components/ui/EmptyState'
+import { Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 /* ── Types ──────────────────────────────────────────────────────────────────── */
@@ -238,7 +240,12 @@ export default function TeamClient({ members, pendingInvites, currentUserId, cli
           })}
 
           {members.length === 0 && (
-            <p className="text-[13px] text-[var(--text-tertiary)] text-center py-4">No team members found</p>
+            <EmptyState
+              icon={<Users className="w-6 h-6" strokeWidth={1.5} />}
+              title="No team members yet"
+              description="Invite your first teammate below so they can answer callbacks and follow up on actions."
+              className="py-6"
+            />
           )}
         </div>
       </Card>
