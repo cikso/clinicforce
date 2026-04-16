@@ -29,19 +29,19 @@ export default function MediaClient() {
           <div className="flex bg-slate-100 p-1.5 rounded-full w-fit">
             <button
               onClick={() => setTab('review')}
-              className={`px-6 py-2 rounded-full text-sm font-bold transition-colors ${tab === 'review' ? 'bg-white shadow-sm text-[#00D68F]' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-colors ${tab === 'review' ? 'bg-white shadow-sm text-[var(--brand)]' : 'text-slate-600 hover:text-slate-900'}`}
             >
               Review Needed ({reviewCount})
             </button>
             <button
               onClick={() => setTab('flagged')}
-              className={`px-6 py-2 rounded-full text-sm font-bold transition-colors ${tab === 'flagged' ? 'bg-white shadow-sm text-[#00D68F]' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-colors ${tab === 'flagged' ? 'bg-white shadow-sm text-[var(--brand)]' : 'text-slate-600 hover:text-slate-900'}`}
             >
               Flagged ({flaggedCount})
             </button>
             <button
               onClick={() => setTab('all')}
-              className={`px-6 py-2 rounded-full text-sm font-bold transition-colors ${tab === 'all' ? 'bg-white shadow-sm text-[#00D68F]' : 'text-slate-600 hover:text-slate-900'}`}
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-colors ${tab === 'all' ? 'bg-white shadow-sm text-[var(--brand)]' : 'text-slate-600 hover:text-slate-900'}`}
             >
               All Media
             </button>
@@ -70,7 +70,7 @@ export default function MediaClient() {
         <div className="w-[420px] bg-white border-l border-slate-200 flex flex-col overflow-y-auto shrink-0 shadow-2xl z-20">
           <div className="p-6 border-b border-slate-100 flex items-start justify-between bg-white sticky top-0 z-10">
             <div>
-              <h2 className="text-xl font-bold text-[#00D68F] mb-1">
+              <h2 className="text-xl font-bold text-[var(--brand)] mb-1">
                 Reviewing: {selected.patient.name}
               </h2>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
@@ -112,7 +112,7 @@ export default function MediaClient() {
                 {selected.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 bg-[#E6FBF2] text-[#00D68F] text-xs font-bold rounded-full"
+                    className="px-3 py-1 bg-[var(--brand-light)] text-[var(--brand)] text-xs font-bold rounded-full"
                   >
                     {tag}
                   </span>
@@ -136,8 +136,8 @@ export default function MediaClient() {
             {selected.aiInsights && selected.aiInsights.length > 0 && (
               <div className="bg-slate-50/50 rounded-3xl p-5 border border-slate-100">
                 <div className="flex items-center gap-2 mb-4">
-                  <Sparkles className="w-4 h-4 text-[#00D68F]" />
-                  <h3 className="text-[10px] font-bold text-[#00D68F] uppercase tracking-widest">
+                  <Sparkles className="w-4 h-4 text-[var(--brand)]" />
+                  <h3 className="text-[10px] font-bold text-[var(--brand)] uppercase tracking-widest">
                     AI Insights
                   </h3>
                 </div>
@@ -172,7 +172,7 @@ export default function MediaClient() {
                 Required Actions
               </h3>
               <div className="space-y-3">
-                <button className="w-full py-4 bg-[#00D68F] text-white rounded-full text-sm font-bold hover:bg-[#00B578] transition-colors shadow-sm">
+                <button className="w-full py-4 bg-[var(--brand)] text-white rounded-full text-sm font-bold hover:bg-[var(--brand-hover)] transition-colors shadow-sm">
                   Approve &amp; Move to Follow-up
                 </button>
                 <button className="w-full py-4 bg-red-100 text-[#b91c1c] rounded-full text-sm font-bold hover:bg-red-200 transition-colors">
@@ -223,7 +223,7 @@ function MediaCard({
     <div
       onClick={() => onSelect(item)}
       className={`relative rounded-[2rem] overflow-hidden cursor-pointer group shadow-sm border-2 transition-all duration-200 ${
-        selected ? 'border-[#00D68F]' : 'border-transparent hover:border-slate-300'
+        selected ? 'border-[var(--brand)]' : 'border-transparent hover:border-slate-300'
       }`}
       style={{ height: '280px' }}
     >
@@ -240,7 +240,7 @@ function MediaCard({
           </span>
         </div>
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#00D68F]/80 via-[#00D68F]/10 to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-[var(--brand)]/80 via-[var(--brand)]/10 to-transparent"></div>
 
       <div className="absolute top-4 left-4 flex items-center gap-2">
         <span
@@ -249,7 +249,7 @@ function MediaCard({
               ? 'bg-[#b91c1c] text-white'
               : isRoutine
               ? 'bg-slate-800/70 text-white'
-              : 'bg-[#00D68F] text-white'
+              : 'bg-[var(--brand)] text-white'
           }`}
         >
           {isUrgent ? 'Flagged' : isRoutine ? 'Reviewed' : 'Review Needed'}
@@ -270,7 +270,7 @@ function MediaCard({
           {item.tags.slice(0, 2).map((tag) => (
             <span
               key={tag}
-              className="px-2.5 py-1 bg-[#00B578]/80 text-teal-50 text-xs font-bold rounded-full"
+              className="px-2.5 py-1 bg-[var(--brand-hover)]/80 text-teal-50 text-xs font-bold rounded-full"
             >
               {tag}
             </span>

@@ -173,7 +173,7 @@ export default function CallDetailDrawer({ call, open, onClose }: CallDetailDraw
                   AI triage summary
                 </p>
               </div>
-              <div className="bg-emerald-50/60 border-l-2 border-[#00D68F] rounded-r-lg px-3 py-2.5">
+              <div className="bg-emerald-50/60 border-l-2 border-[var(--brand)] rounded-r-lg px-3 py-2.5">
                 <p className="text-xs text-foreground leading-relaxed">{call.summary}</p>
               </div>
               {call.aiDetail && call.aiDetail !== call.summary && (

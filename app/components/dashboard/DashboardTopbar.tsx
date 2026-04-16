@@ -9,10 +9,15 @@ const ROUTE_TITLES: Record<string, string> = {
   '/conversations': 'Conversations',
   '/actions':       'Action Queue',
   '/bookings':      'Bookings',
+  '/calls':         'Call Inbox',
+  '/care-queue':    'Care Queue',
+  '/referrals':     'Referrals',
   '/insights':      'Insights',
   '/knowledge':     'Knowledge Base',
   '/sms':           'SMS Hub',
   '/settings':      'Settings',
+  '/users':         'Users',
+  '/admin':         'Admin',
 }
 
 interface DashboardTopbarProps {

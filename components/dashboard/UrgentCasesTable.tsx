@@ -39,7 +39,7 @@ const statusLabel: Record<string, { text: string; color: string }> = {
 
 function actionLabel(c: DashboardCase): { label: string; style: string } {
   if (c.urgency === 'CRITICAL') return { label: 'Admit to ER', style: 'bg-[#b91c1c] text-white hover:bg-red-800' }
-  if (c.status === 'CALLBACK_REQUIRED') return { label: 'Triage Now', style: 'bg-[#00D68F] text-white hover:bg-[#00B578]' }
+  if (c.status === 'CALLBACK_REQUIRED') return { label: 'Triage Now', style: 'bg-[var(--brand)] text-white hover:bg-[var(--brand-hover)]' }
   if (c.status === 'PENDING') return { label: 'Review', style: 'bg-slate-100 text-slate-700 hover:bg-slate-200' }
   if (!c.clinician) return { label: 'Assign', style: 'bg-slate-100 text-slate-700 hover:bg-slate-200' }
   return { label: 'Update', style: 'bg-slate-100 text-slate-700 hover:bg-slate-200' }
@@ -62,7 +62,7 @@ export default function UrgentCasesTable({ cases, selectedId, onSelectCase, onAc
           <h3 className="text-base font-bold text-slate-900">Live Urgent Cases</h3>
           <span className="text-sm text-slate-500 font-medium">{cases.length} active</span>
         </div>
-        <button className="text-sm font-bold text-[#00D68F] hover:text-[#00B578] flex items-center gap-1 transition-colors">
+        <button className="text-sm font-bold text-[var(--brand)] hover:text-[var(--brand-hover)] flex items-center gap-1 transition-colors">
           View Full Queue <ArrowRight className="w-4 h-4" />
         </button>
       </div>
@@ -93,7 +93,7 @@ export default function UrgentCasesTable({ cases, selectedId, onSelectCase, onAc
                   key={c.id}
                   onClick={() => onSelectCase(c.id)}
                   className={`cursor-pointer transition-colors group ${
-                    isSelected ? 'bg-[#E6FBF2]' : 'hover:bg-slate-50'
+                    isSelected ? 'bg-[var(--brand-light)]' : 'hover:bg-slate-50'
                   }`}
                 >
                   {/* Patient */}
@@ -139,7 +139,7 @@ export default function UrgentCasesTable({ cases, selectedId, onSelectCase, onAc
                   {/* AI Summary */}
                   <td className="px-4 py-4 max-w-[200px]">
                     <div className="flex items-start gap-2">
-                      <Sparkles className="w-3.5 h-3.5 text-[#00D68F] shrink-0 mt-0.5" />
+                      <Sparkles className="w-3.5 h-3.5 text-[var(--brand)] shrink-0 mt-0.5" />
                       <p className="text-xs text-slate-600 leading-relaxed line-clamp-2 italic">{c.aiSummary}</p>
                     </div>
                   </td>

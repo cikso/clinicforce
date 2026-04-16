@@ -127,7 +127,7 @@ export default function ChatWidget() {
           style={{ height: '520px' }}>
 
           {/* Header */}
-          <div className="bg-[#00D68F] px-5 py-4 flex items-center justify-between shrink-0">
+          <div className="bg-[var(--brand)] px-5 py-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
                 <span className="text-white text-sm font-bold">S</span>
@@ -171,7 +171,7 @@ export default function ChatWidget() {
                 <div
                   className={`max-w-[82%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                     msg.role === 'user'
-                      ? 'bg-[#00D68F] text-white rounded-br-sm'
+                      ? 'bg-[var(--brand)] text-white rounded-br-sm'
                       : 'bg-slate-100 text-slate-800 rounded-bl-sm'
                   }`}
                 >
@@ -194,7 +194,7 @@ export default function ChatWidget() {
 
           {/* Input */}
           <div className="px-4 py-3 border-t border-slate-100 shrink-0">
-            <div className="flex items-center gap-2 bg-slate-50 rounded-2xl px-4 py-2.5 border border-slate-200 focus-within:border-[#00D68F] focus-within:ring-2 focus-within:ring-[#00D68F]/10 transition-all">
+            <div className="flex items-center gap-2 bg-slate-50 rounded-2xl px-4 py-2.5 border border-slate-200 focus-within:border-[var(--brand)] focus-within:ring-2 focus-within:ring-[var(--brand)]/10 transition-all">
               <input
                 ref={inputRef}
                 value={input}
@@ -207,7 +207,7 @@ export default function ChatWidget() {
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || loading}
-                className="w-7 h-7 bg-[#00D68F] rounded-full flex items-center justify-center disabled:opacity-30 hover:bg-[#00B578] transition-colors shrink-0"
+                className="w-7 h-7 bg-[var(--brand)] rounded-full flex items-center justify-center disabled:opacity-30 hover:bg-[var(--brand-hover)] transition-colors shrink-0"
               >
                 <Send className="w-3.5 h-3.5 text-white" />
               </button>
@@ -222,7 +222,7 @@ export default function ChatWidget() {
       {/* Toggle button */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-14 h-14 bg-[#00D68F] hover:bg-[#00B578] rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+        className="w-14 h-14 bg-[var(--brand)] hover:bg-[var(--brand-hover)] rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105 active:scale-95"
       >
         {open ? (
           <X className="w-6 h-6 text-white" />

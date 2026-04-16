@@ -30,13 +30,13 @@ export default function CallsClient() {
         <div className="flex bg-slate-100 rounded-full p-1 shadow-inner border border-slate-200">
           <button
             onClick={() => setTab('live')}
-            className={`px-6 py-2 text-sm font-bold rounded-full transition-colors ${tab === 'live' ? 'text-[#00D68F] bg-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`px-6 py-2 text-sm font-bold rounded-full transition-colors ${tab === 'live' ? 'text-[var(--brand)] bg-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
           >
             Live Queue ({liveCalls.length})
           </button>
           <button
             onClick={() => setTab('archived')}
-            className={`px-6 py-2 text-sm font-medium rounded-full transition-colors ${tab === 'archived' ? 'text-[#00D68F] bg-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`px-6 py-2 text-sm font-medium rounded-full transition-colors ${tab === 'archived' ? 'text-[var(--brand)] bg-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
           >
             Archived
           </button>
@@ -59,7 +59,7 @@ export default function CallsClient() {
         {/* Right: Widgets */}
         <div className="flex flex-col gap-6">
           {/* Live Session Widget */}
-          <div className="bg-[#00D68F] rounded-[2rem] p-6 text-white shadow-md relative overflow-hidden">
+          <div className="bg-[var(--brand)] rounded-[2rem] p-6 text-white shadow-md relative overflow-hidden">
             <div className="flex items-center justify-between mb-6 relative z-10">
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
                 <Activity className="w-5 h-5 text-white/90" />
@@ -89,7 +89,7 @@ export default function CallsClient() {
           {/* Priority Trends */}
           <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200">
             <div className="flex items-center gap-2 mb-6">
-              <Sparkles className="w-5 h-5 text-[#00D68F]" />
+              <Sparkles className="w-5 h-5 text-[var(--brand)]" />
               <h3 className="text-lg font-bold text-slate-900">Priority Trends</h3>
             </div>
             <div className="flex flex-col gap-4">
@@ -126,7 +126,7 @@ export default function CallsClient() {
             <h3 className="text-sm font-bold text-slate-900 mb-4">Voice AI Status</h3>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-2 h-2 rounded-full bg-teal-500"></div>
-              <span className="text-sm font-bold text-[#00D68F]">Transcription Online</span>
+              <span className="text-sm font-bold text-[var(--brand)]">Transcription Online</span>
             </div>
             <p className="text-xs text-slate-500 leading-relaxed">
               Last checked 12s ago. All cloud processing pipelines executing within 250ms latency.
@@ -167,7 +167,7 @@ function CallCard({ call }: { call: Call }) {
       </div>
 
       {call.petName && call.petName !== '—' && (
-        <div className="flex items-center gap-2 text-[#00D68F] font-bold text-sm">
+        <div className="flex items-center gap-2 text-[var(--brand)] font-bold text-sm">
           <span>🐾</span>
           Patient: {call.petName} ({call.petSpecies})
         </div>
@@ -181,10 +181,10 @@ function CallCard({ call }: { call: Call }) {
         <div className="flex items-center gap-3 flex-1">
           <StatusPill call={call} />
           <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
-            <div className={`h-full rounded-full ${isCritical ? 'bg-[#00D68F] w-1/3' : isUrgent ? 'bg-slate-300 w-0' : 'bg-slate-300 w-1/2'}`}></div>
+            <div className={`h-full rounded-full ${isCritical ? 'bg-[var(--brand)] w-1/3' : isUrgent ? 'bg-slate-300 w-0' : 'bg-slate-300 w-1/2'}`}></div>
           </div>
           <button className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-            isCritical ? 'bg-[#00D68F] text-white hover:bg-[#00B578] shadow-sm' : 'border-2 border-slate-200 text-slate-400 hover:border-slate-300'
+            isCritical ? 'bg-[var(--brand)] text-white hover:bg-[var(--brand-hover)] shadow-sm' : 'border-2 border-slate-200 text-slate-400 hover:border-slate-300'
           }`}>
             <Play className="w-4 h-4 ml-0.5" fill="currentColor" />
           </button>
@@ -225,7 +225,7 @@ function StatusPill({ call }: { call: Call }) {
 function ActionButton({ call }: { call: Call }) {
   if (call.urgency === 'CRITICAL') {
     return (
-      <button className="px-6 py-2.5 bg-[#00D68F] text-white text-sm font-bold rounded-full hover:bg-[#00B578] transition-colors shadow-sm">
+      <button className="px-6 py-2.5 bg-[var(--brand)] text-white text-sm font-bold rounded-full hover:bg-[var(--brand-hover)] transition-colors shadow-sm">
         Create Case
       </button>
     )

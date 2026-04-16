@@ -8,7 +8,7 @@ import type { FollowUpTask, TaskColumn } from '@/lib/types'
 const columns: { id: TaskColumn; label: string; dotColor: string }[] = [
   { id: 'POST_CALL', label: 'POST-CALL FOLLOW-UP', dotColor: 'bg-teal-600' },
   { id: 'TRIAGE_REVIEW', label: 'TRIAGE REVIEW', dotColor: 'bg-red-600' },
-  { id: 'OWNER_CHECKIN', label: 'OWNER CHECK-IN', dotColor: 'bg-[#00D68F]' },
+  { id: 'OWNER_CHECKIN', label: 'OWNER CHECK-IN', dotColor: 'bg-[var(--brand)]' },
 ]
 
 export default function TasksClient() {
@@ -29,7 +29,7 @@ export default function TasksClient() {
           <button
             onClick={() => setView('board')}
             className={`px-6 py-2 text-sm font-bold rounded-full transition-colors ${
-              view === 'board' ? 'bg-slate-50 text-[#00D68F] shadow-sm' : 'text-slate-500'
+              view === 'board' ? 'bg-slate-50 text-[var(--brand)] shadow-sm' : 'text-slate-500'
             }`}
           >
             Board View
@@ -37,7 +37,7 @@ export default function TasksClient() {
           <button
             onClick={() => setView('list')}
             className={`px-6 py-2 text-sm font-medium rounded-full transition-colors ${
-              view === 'list' ? 'bg-slate-50 text-[#00D68F] shadow-sm' : 'text-slate-500'
+              view === 'list' ? 'bg-slate-50 text-[var(--brand)] shadow-sm' : 'text-slate-500'
             }`}
           >
             List View
@@ -97,13 +97,13 @@ function TaskCard({ task, colId }: { task: FollowUpTask; colId: TaskColumn }) {
   const borderAccent = isCritical
     ? 'border-l-red-600'
     : isHigh
-    ? 'border-l-[#00D68F]'
+    ? 'border-l-[var(--brand)]'
     : 'border-l-teal-600'
 
   const labelBg = isCritical
     ? 'bg-red-100 text-red-700'
     : isHigh
-    ? 'bg-teal-50 text-[#00D68F]'
+    ? 'bg-teal-50 text-[var(--brand)]'
     : 'bg-teal-50 text-teal-700'
 
   const dividerColor =
@@ -163,7 +163,7 @@ function TaskCard({ task, colId }: { task: FollowUpTask; colId: TaskColumn }) {
 
       {colId === 'OWNER_CHECKIN' && (
         <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-          <Phone className="w-3.5 h-3.5 text-[#00D68F]" />
+          <Phone className="w-3.5 h-3.5 text-[var(--brand)]" />
           Contact Ready
         </div>
       )}

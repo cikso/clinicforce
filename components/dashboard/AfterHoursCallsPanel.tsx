@@ -51,7 +51,7 @@ function CallActions({ call, onAction }: { call: DashboardCall; onAction: (id: s
       <div className="flex gap-2">
         <button
           onClick={() => onAction(call.id, 'CREATE_CASE')}
-          className="px-4 py-2 bg-[#00D68F] text-white text-xs font-bold rounded-full hover:bg-[#00B578] transition-colors"
+          className="px-4 py-2 bg-[var(--brand)] text-white text-xs font-bold rounded-full hover:bg-[var(--brand-hover)] transition-colors"
         >
           Create Case
         </button>
@@ -70,7 +70,7 @@ function CallActions({ call, onAction }: { call: DashboardCall; onAction: (id: s
       <div className="flex gap-2">
         <button
           onClick={() => onAction(call.id, 'SEND_TO_QUEUE')}
-          className="px-4 py-2 bg-[#00D68F] text-white text-xs font-bold rounded-full hover:bg-[#00B578] transition-colors"
+          className="px-4 py-2 bg-[var(--brand)] text-white text-xs font-bold rounded-full hover:bg-[var(--brand-hover)] transition-colors"
         >
           Send to Queue
         </button>
@@ -141,7 +141,7 @@ export default function AfterHoursCallsPanel({ calls, onAction }: AfterHoursCall
               </div>
 
               {/* Patient */}
-              <p className="text-xs font-bold text-[#00D68F] mb-3">
+              <p className="text-xs font-bold text-[var(--brand)] mb-3">
                 🐾 Patient: {call.patientName} ({call.species})
               </p>
 
@@ -152,11 +152,11 @@ export default function AfterHoursCallsPanel({ calls, onAction }: AfterHoursCall
 
               {/* AI next step */}
               <div className="flex items-start gap-2 mb-4">
-                <div className="w-4 h-4 rounded-full bg-[#00D68F] flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-4 h-4 rounded-full bg-[var(--brand)] flex items-center justify-center shrink-0 mt-0.5">
                   <span className="text-white text-[8px] font-bold">AI</span>
                 </div>
                 <p className="text-xs text-slate-600 font-medium">{call.aiNextStep}</p>
-                <span className="ml-auto text-[10px] font-bold text-[#00D68F] bg-teal-50 px-2 py-0.5 rounded-md shrink-0">
+                <span className="ml-auto text-[10px] font-bold text-[var(--brand)] bg-teal-50 px-2 py-0.5 rounded-md shrink-0">
                   {call.aiConfidence}% confidence
                 </span>
               </div>
@@ -168,7 +168,7 @@ export default function AfterHoursCallsPanel({ calls, onAction }: AfterHoursCall
                   <span>{badge.label}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isActioned ? 'border border-slate-200 text-slate-300' : 'bg-[#00D68F] text-white hover:bg-[#00B578]'}`}>
+                  <button className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isActioned ? 'border border-slate-200 text-slate-300' : 'bg-[var(--brand)] text-white hover:bg-[var(--brand-hover)]'}`}>
                     <Play className="w-3.5 h-3.5 ml-0.5" />
                   </button>
                   <CallActions call={call} onAction={onAction} />

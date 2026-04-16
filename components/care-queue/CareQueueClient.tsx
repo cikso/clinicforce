@@ -41,7 +41,7 @@ export default function CareQueueClient() {
       {/* Header row */}
       <div className="flex items-end justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-[#00D68F] mb-1">Active Care Queue</h1>
+          <h1 className="text-3xl font-bold text-[var(--brand)] mb-1">Active Care Queue</h1>
           <p className="text-slate-600">{mockStats.patientsInQueue} Urgent Cases Pending Review</p>
         </div>
         <div className="flex bg-slate-100 p-1.5 rounded-full">
@@ -50,7 +50,7 @@ export default function CareQueueClient() {
               key={t}
               onClick={() => setTab(t)}
               className={`px-5 py-2 rounded-full text-sm font-semibold transition-colors ${
-                tab === t ? 'bg-white shadow-sm text-[#00D68F]' : 'text-slate-600 hover:text-slate-900'
+                tab === t ? 'bg-white shadow-sm text-[var(--brand)]' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               {t === 'pending'
@@ -68,7 +68,7 @@ export default function CareQueueClient() {
         <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between h-36">
           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">AVG. WAIT TIME</p>
           <div>
-            <h3 className="text-4xl font-bold text-[#00D68F] mb-1">{mockStats.avgWaitMinutes}m</h3>
+            <h3 className="text-4xl font-bold text-[var(--brand)] mb-1">{mockStats.avgWaitMinutes}m</h3>
             <p className="text-sm font-semibold text-emerald-600 flex items-center gap-1">
               <TrendingDown className="w-4 h-4" />
               -4m from yesterday
@@ -102,7 +102,7 @@ export default function CareQueueClient() {
           <div>
             <h3 className="text-4xl font-bold text-slate-900 mb-3">{mockStats.totalQueueVolume}</h3>
             <div className="w-full flex h-2.5 rounded-full overflow-hidden bg-slate-100">
-              <div className="bg-[#00D68F] rounded-full" style={{ width: '70%' }} />
+              <div className="bg-[var(--brand)] rounded-full" style={{ width: '70%' }} />
             </div>
           </div>
         </div>
@@ -140,7 +140,7 @@ export default function CareQueueClient() {
             <button className="w-8 h-8 flex items-center justify-center rounded-full border border-slate-200 text-slate-400 hover:bg-slate-50">
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[#00D68F] text-white font-semibold text-sm">
+            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--brand)] text-white font-semibold text-sm">
               1
             </button>
             <button className="w-8 h-8 flex items-center justify-center rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold text-sm">
