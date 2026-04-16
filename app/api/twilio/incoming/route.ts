@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
         .single(),
       supabase
         .from('clinics')
-        .select(CLINIC_SELECT_FIELDS)
+        .select(`${CLINIC_SELECT_FIELDS}, reception_number`)
         .eq('id', clinicId)
         .single(),
     ])
@@ -147,6 +147,11 @@ export async function POST(req: NextRequest) {
       }
 
       const dynamicVars = buildDynamicVariables(clinic)
+      // The ElevenLabs agent's prompt references `reception_number` for
+      // transfer flows. buildDynamicVariables doesn't include it because the
+      // lookup falls back to clinic.phone — matching the pattern in
+      // /api/initiate which does the same override explicitly.
+      dynamicVars.reception_number = String(clinic.reception_number ?? clinic.phone ?? '')
 
       console.log('[twilio/incoming] Registering call with ElevenLabs:', {
         agent_id: agentId,
