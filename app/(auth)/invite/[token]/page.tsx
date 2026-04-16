@@ -95,9 +95,9 @@ export default async function InvitePage({ params }: PageProps) {
             </div>
             <h1
               style={{
-                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
                 fontSize: '1.75rem',
-                fontWeight: 400,
+                fontWeight: 700,
                 color: '#1A1A1A',
                 lineHeight: 1.25,
                 marginBottom: '0.75rem',

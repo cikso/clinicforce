@@ -136,9 +136,9 @@ export default function InviteForm({
           {/* Heading */}
           <h1
             style={{
-              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
               fontSize: '1.875rem',
-              fontWeight: 400,
+              fontWeight: 700,
               color: '#1A1A1A',
               lineHeight: 1.2,
               textAlign: 'center',

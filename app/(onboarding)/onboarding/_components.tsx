@@ -5,9 +5,9 @@ import React from 'react'
 // ── Shared style constants ─────────────────────────────────────────────────
 
 export const stepHeading: React.CSSProperties = {
-  fontFamily: "'Instrument Serif', Georgia, serif",
+  fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
   fontSize: '1.875rem',
-  fontWeight: 400,
+  fontWeight: 700,
   color: '#1A1A1A',
   lineHeight: 1.2,
   marginBottom: '0.4rem',

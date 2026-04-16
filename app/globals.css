@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800;9..40,900&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800;9..40,900&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -55,7 +55,6 @@
   --color-teal-950: #005E3F;
 
   /* Landing page tokens */
-  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --color-vet-ink: #0A0A0A;
   --color-vet-paper: #F4F2ED;
   --color-vet-sand: #E8E5DF;
@@ -206,6 +205,21 @@ html {
   html {
     @apply font-sans;
   }
+
+  /* Enterprise focus-visible: consistent brand ring on keyboard focus,
+     no visual change on mouse click. */
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  a:focus-visible,
+  [href]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:not([tabindex="-1"]):focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 @layer utilities {
@@ -226,6 +240,17 @@ html {
   }
   .micro-label {
     @apply text-[10px] uppercase tracking-[0.2em] font-semibold;
+  }
+  /* Enterprise hover affordance for list rows + cards */
+  .row-hover {
+    @apply transition-colors duration-150 hover:bg-[var(--bg-hover)];
+  }
+  .card-hover {
+    @apply transition-all duration-200 hover:border-[var(--border-strong)] hover:shadow-md;
+  }
+  /* Focus ring variant: inset, use inside rounded inputs / cards */
+  .focus-ring-inset {
+    @apply focus-within:ring-2 focus-within:ring-[var(--brand)]/25 focus-within:border-[var(--brand)];
   }
   .bg-noise {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
