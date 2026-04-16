@@ -20,7 +20,7 @@ export default function CoverageUsageCard({ usage: usageData }: CoverageUsageCar
           <BarChart2 className="w-4 h-4 text-slate-400" />
           <span className="text-sm font-bold text-slate-900">Coverage Today</span>
         </div>
-        <span className="text-xs font-bold text-[#00D68F]">{hours}h {mins}m total</span>
+        <span className="text-xs font-bold text-[var(--brand)]">{hours}h {mins}m total</span>
       </div>
 
       <div className="space-y-3">

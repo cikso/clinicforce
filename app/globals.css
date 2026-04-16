@@ -116,14 +116,16 @@ html {
   --bg-sidebar: #F9FAFB;
   --bg-hover: #F3F4F6;
 
-  /* Borders */
-  --border: #E5E7EB;
-  --border-subtle: #F0F0F0;
+  /* Borders (aligned with landing #E5EAF0) */
+  --border: #E5EAF0;
+  --border-subtle: #EEF1F4;
+  --border-strong: #C9D2DC;
 
-  /* Text */
-  --text-primary: #111827;
-  --text-secondary: #6B7280;
-  --text-tertiary: #9CA3AF;
+  /* Text (aligned with landing ink + body) */
+  --text-primary: #0D0E12;
+  --text-body: #566275;
+  --text-secondary: #566275;
+  --text-tertiary: #8A96A3;
 
   /* Brand */
   --brand: #00D68F;
@@ -147,35 +149,35 @@ html {
   --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
   --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08);
 
-  /* Salesforce-inspired base tokens (shadcn compat) */
-  --background: #F7F8FA;
-  --foreground: #111827;
+  /* shadcn-compat base tokens (aligned with landing) */
+  --background: #F7F9FB;
+  --foreground: #0D0E12;
   --card: #ffffff;
-  --card-foreground: #111827;
+  --card-foreground: #0D0E12;
   --popover: #ffffff;
-  --popover-foreground: #111827;
+  --popover-foreground: #0D0E12;
   --primary: #00D68F;
   --primary-foreground: #ffffff;
-  --secondary: #F7F8FA;
+  --secondary: #F7F9FB;
   --secondary-foreground: #374151;
   --muted: #F3F4F6;
-  --muted-foreground: #6B7280;
+  --muted-foreground: #566275;
   --accent: #E6FBF2;
   --accent-foreground: #00D68F;
   --destructive: #DC2626;
   --destructive-foreground: #ffffff;
-  --input: #E5E7EB;
+  --input: #E5EAF0;
   --ring: #00D68F;
   --radius: 0.5rem;
 
   /* Sidebar */
   --sidebar: #F9FAFB;
-  --sidebar-foreground: #111827;
+  --sidebar-foreground: #0D0E12;
   --sidebar-primary: #00D68F;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #E6FBF2;
   --sidebar-accent-foreground: #00D68F;
-  --sidebar-border: #E5E7EB;
+  --sidebar-border: #E5EAF0;
   --sidebar-ring: #00D68F;
 
   /* Legacy compat */

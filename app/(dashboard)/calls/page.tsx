@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Phone, Calendar, CheckCheck, Info, Clock, AlertTriangle, Sparkles } from 'lucide-react'
-import TopBar from '@/components/layout/TopBar'
 import { useClinic } from '@/context/ClinicContext'
 import ToastContainer from '@/components/dashboard/ToastContainer'
 import { INITIAL_INBOX, type CallInboxItem } from '@/data/mock-dashboard'
@@ -49,7 +48,7 @@ function ListRow({
         isActive
           ? hasUrgency
             ? 'bg-red-50/40 border-l-[#DC2626]'
-            : 'bg-[#E6FBF2]/60 border-l-[#00D68F]'
+            : 'bg-[var(--brand-light)]/60 border-l-[var(--brand)]'
           : 'border-l-transparent hover:bg-slate-50/80'
       }`}
     >
@@ -110,7 +109,7 @@ function StatusBadge({ item }: { item: CallInboxItem }) {
   if (item.urgency === 'URGENT')
     return <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500 text-white">URGENT</span>
   if (item.status === 'UNREAD')
-    return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E6FBF2] text-[#00D68F] border border-[#00D68F]/20">NEW</span>
+    return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[var(--brand-light)] text-[var(--brand)] border border-[var(--brand)]/20">NEW</span>
   if (item.status === 'READ')
     return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">Pending</span>
   return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Done</span>
@@ -120,7 +119,7 @@ function StatusBadge({ item }: { item: CallInboxItem }) {
 
 function InfoCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="bg-white border border-[#E5EAF0] rounded-lg p-4">
+    <div className="bg-white border border-[var(--border)] rounded-lg p-4">
       <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#566275] mb-1">{label}</p>
       <p className="text-[14px] font-semibold text-slate-900 leading-snug">{value}</p>
       {sub && <p className="text-[11px] text-[#566275] mt-0.5">{sub}</p>}
@@ -142,10 +141,10 @@ function DetailPanel({
   const isUrgent   = item.urgency === 'CRITICAL' || item.urgency === 'URGENT'
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg border border-[#E5EAF0] shadow-sm overflow-hidden">
+    <div className="flex flex-col h-full bg-white rounded-lg border border-[var(--border)] shadow-sm overflow-hidden">
 
       {/* Record Header */}
-      <div className="px-6 py-5 border-b border-[#E5EAF0] flex-shrink-0">
+      <div className="px-6 py-5 border-b border-[var(--border)] flex-shrink-0">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
@@ -167,7 +166,7 @@ function DetailPanel({
                   </span>
                 )
               )}
-              <span className="w-1 h-1 bg-[#E5EAF0] rounded-full" />
+              <span className="w-1 h-1 bg-[var(--border)] rounded-full" />
               <span className="flex items-center gap-1.5">
                 <Clock className="w-3 h-3" />
                 {item.createdAt}
@@ -175,10 +174,10 @@ function DetailPanel({
             </div>
           </div>
           <div className="flex gap-2 flex-shrink-0">
-            <button className="px-3.5 py-1.5 text-[13px] text-[#00D68F] font-medium border border-[#E5EAF0] rounded-md bg-white hover:bg-[#f4f6f9] transition-colors">
+            <button className="px-3.5 py-1.5 text-[13px] text-[var(--brand)] font-medium border border-[var(--border)] rounded-md bg-white hover:bg-[#f4f6f9] transition-colors">
               Assign Task
             </button>
-            <button className="px-3.5 py-1.5 text-[13px] text-[#00D68F] font-medium border border-[#E5EAF0] rounded-md bg-white hover:bg-[#f4f6f9] transition-colors">
+            <button className="px-3.5 py-1.5 text-[13px] text-[var(--brand)] font-medium border border-[var(--border)] rounded-md bg-white hover:bg-[#f4f6f9] transition-colors">
               View History
             </button>
           </div>
@@ -199,12 +198,12 @@ function DetailPanel({
       <div className="flex-1 overflow-y-auto p-6 space-y-5">
 
         {/* AI Summary */}
-        <div className="border border-[#E5EAF0] rounded-lg overflow-hidden">
-          <div className="px-5 py-3 bg-[#f4f6f9] border-b border-[#E5EAF0] flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-[#00D68F]" />
+        <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="px-5 py-3 bg-[#f4f6f9] border-b border-[var(--border)] flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-[var(--brand)]" />
             <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#566275]">AI Summary &amp; Routing</p>
           </div>
-          <div className="px-5 py-4 border-l-[3px] border-l-[#00D68F]">
+          <div className="px-5 py-4 border-l-[3px] border-l-[var(--brand)]">
             <p className="text-[13px] text-slate-700 leading-relaxed italic">
               {item.aiDetail || item.summary || 'No summary available.'}
             </p>
@@ -237,7 +236,7 @@ function DetailPanel({
                 value={item.petSpecies !== '—' ? item.petSpecies : '—'}
               />
             ) : (
-              <div className="bg-white border border-[#E5EAF0] rounded-lg p-4 col-span-2">
+              <div className="bg-white border border-[var(--border)] rounded-lg p-4 col-span-2">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#566275] mb-1">Key Handover Fields</p>
                 <p className="text-[12px] text-slate-600 leading-relaxed">{vertical.handoverFields.join(' · ')}</p>
               </div>
@@ -258,7 +257,7 @@ function DetailPanel({
       </div>
 
       {/* Footer actions */}
-      <div className="px-6 py-4 border-t border-[#E5EAF0] flex items-center gap-3 flex-shrink-0">
+      <div className="px-6 py-4 border-t border-[var(--border)] flex items-center gap-3 flex-shrink-0">
         {/* Live tracking indicator */}
         <div className="mr-auto flex items-center gap-2">
           <span className="relative flex h-2 w-2">
@@ -277,7 +276,7 @@ function DetailPanel({
           <>
             <button
               onClick={() => onAction(item.id, 'BOOK')}
-              className="px-4 py-2.5 bg-white border border-[#E5EAF0] text-slate-700 text-[13px] font-medium rounded-md hover:bg-[#f4f6f9] transition-colors flex items-center gap-1.5"
+              className="px-4 py-2.5 bg-white border border-[var(--border)] text-slate-700 text-[13px] font-medium rounded-md hover:bg-[#f4f6f9] transition-colors flex items-center gap-1.5"
             >
               <Calendar className="w-3.5 h-3.5" />
               Book appointment
@@ -287,7 +286,7 @@ function DetailPanel({
               className={`px-5 py-2.5 text-white text-[13px] font-semibold rounded-md shadow-sm transition-all flex items-center gap-1.5 ${
                 isUrgent
                   ? 'bg-[#DC2626] hover:bg-[#a61f1f] shadow-red-200/50'
-                  : 'bg-[#00D68F] hover:bg-[#00B578] shadow-teal-200/50'
+                  : 'bg-[var(--brand)] hover:bg-[var(--brand-hover)] shadow-teal-200/50'
               }`}
             >
               <Phone className="w-3.5 h-3.5" />
@@ -304,8 +303,8 @@ function DetailPanel({
 
 function EmptyDetail() {
   return (
-    <div className="flex flex-col h-full items-center justify-center bg-white rounded-lg border border-[#E5EAF0] text-center p-10">
-      <div className="w-12 h-12 rounded-full bg-[#f4f6f9] border border-[#E5EAF0] flex items-center justify-center mb-3">
+    <div className="flex flex-col h-full items-center justify-center bg-white rounded-lg border border-[var(--border)] text-center p-10">
+      <div className="w-12 h-12 rounded-full bg-[#f4f6f9] border border-[var(--border)] flex items-center justify-center mb-3">
         <Phone className="w-5 h-5 text-slate-300" />
       </div>
       <p className="text-[13px] font-semibold text-slate-400">Select a call to view details</p>
@@ -390,35 +389,29 @@ export default function CallsPage() {
 
   return (
     <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-
-      <TopBar
-        title="Call Inbox"
-        subtitle="Every call Stella handled — review, action, and follow up"
-      />
-
       {/* Split-pane body */}
       <div className="flex flex-1 overflow-hidden bg-[#f4f6f9]">
 
         {/* LEFT — call list */}
-        <div className="w-[288px] flex-shrink-0 flex flex-col border-r border-[#E5EAF0] bg-white overflow-hidden">
+        <div className="w-[288px] flex-shrink-0 flex flex-col border-r border-[var(--border)] bg-white overflow-hidden">
 
           {/* List header */}
-          <div className="px-4 py-3.5 border-b border-[#E5EAF0] flex items-center justify-between flex-shrink-0 bg-[#f4f6f9]">
+          <div className="px-4 py-3.5 border-b border-[var(--border)] flex items-center justify-between flex-shrink-0 bg-[#f4f6f9]">
             <span className="text-[13px] font-bold text-slate-700">Recent Calls</span>
             <div className="flex items-center gap-2">
               {unread > 0 && (
-                <span className="text-[10px] font-bold text-[#00D68F] bg-[#E6FBF2] border border-[#00D68F]/20 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold text-[var(--brand)] bg-[var(--brand-light)] border border-[var(--brand)]/20 px-2 py-0.5 rounded-full">
                   {unread} new
                 </span>
               )}
-              <span className="text-[10px] font-bold text-[#566275] bg-white border border-[#E5EAF0] px-2 py-0.5 rounded shadow-sm uppercase tracking-tight">
+              <span className="text-[10px] font-bold text-[#566275] bg-white border border-[var(--border)] px-2 py-0.5 rounded shadow-sm uppercase tracking-tight">
                 {inbox.length} Total
               </span>
             </div>
           </div>
 
           {/* Scrollable list */}
-          <div className="flex-1 overflow-y-auto divide-y divide-[#E5EAF0]/60">
+          <div className="flex-1 overflow-y-auto divide-y divide-[var(--border)]/60">
             {inbox.length === 0 ? (
               <p className="text-center text-[12px] text-[#566275] py-10">No calls yet</p>
             ) : (

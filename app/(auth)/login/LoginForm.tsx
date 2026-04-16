@@ -132,7 +132,7 @@ export default function LoginForm({ next }: { next: string }) {
         <div className="w-full max-w-[400px]">
           {/* Mobile-only logo */}
           <div className="lg:hidden flex items-center gap-2.5 mb-10">
-            <div className="w-9 h-9 rounded-lg bg-[#00D68F] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-[var(--brand)] flex items-center justify-center">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M10 2L3 6v8l7 4 7-4V6l-7-4z" fill="white" opacity="0.9" />
                 <path d="M10 10V2L3 6l7 4z" fill="white" opacity="0.6" />
@@ -163,7 +163,7 @@ export default function LoginForm({ next }: { next: string }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@clinic.com.au"
-                className="w-full px-4 py-3 rounded-lg border border-[#E5E7EB] bg-white text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#00D68F] focus:ring-2 focus:ring-[#00D68F]/20 transition-all outline-none"
+                className="w-full px-4 py-3 rounded-lg border border-[#E5E7EB] bg-white text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)]/20 transition-all outline-none"
               />
             </div>
 
@@ -175,7 +175,7 @@ export default function LoginForm({ next }: { next: string }) {
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-[12px] font-medium text-[#00D68F] hover:text-[#00B578] transition-colors"
+                  className="text-[12px] font-medium text-[var(--brand)] hover:text-[var(--brand-hover)] transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -189,7 +189,7 @@ export default function LoginForm({ next }: { next: string }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full px-4 py-3 pr-11 rounded-lg border border-[#E5E7EB] bg-white text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#00D68F] focus:ring-2 focus:ring-[#00D68F]/20 transition-all outline-none"
+                  className="w-full px-4 py-3 pr-11 rounded-lg border border-[#E5E7EB] bg-white text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)]/20 transition-all outline-none"
                 />
                 <button
                   type="button"
@@ -228,7 +228,7 @@ export default function LoginForm({ next }: { next: string }) {
             <button
               type="submit"
               disabled={isPending}
-              className="w-full h-12 flex items-center justify-center gap-2 rounded-lg bg-[#00D68F] text-white text-[15px] font-semibold hover:bg-[#00B578] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+              className="w-full h-12 flex items-center justify-center gap-2 rounded-lg bg-[var(--brand)] text-white text-[15px] font-semibold hover:bg-[var(--brand-hover)] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-1"
             >
               {isPending && (
                 <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
