@@ -29,9 +29,11 @@ CREATE INDEX IF NOT EXISTS active_calls_clinic_started_idx
 -- ── Row Level Security ──────────────────────────────────────────────────────
 ALTER TABLE active_calls ENABLE ROW LEVEL SECURITY;
 
--- Authenticated users can read their clinic's active calls
+-- Authenticated users can read their clinic's active calls.
+-- auth.uid() is wrapped in a subquery so Postgres treats it as an initplan
+-- constant (evaluated once) instead of re-evaluating per row at scale.
 CREATE POLICY "active_calls_select" ON active_calls FOR SELECT
-  USING (clinic_id IN (SELECT clinic_id FROM clinic_users WHERE user_id = auth.uid()));
+  USING (clinic_id IN (SELECT clinic_id FROM clinic_users WHERE user_id = (SELECT auth.uid())));
 
 -- Writes are service-role only (Twilio webhooks bypass RLS via service key).
 -- No insert/update/delete policies for authenticated users.
