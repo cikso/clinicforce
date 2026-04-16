@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
+import ClinicSwitcher from './ClinicSwitcher'
 
 /* ─── Inline SVG Icons (18px) ─── */
 const icons = {
@@ -101,7 +102,7 @@ interface DashboardSidebarProps {
   userName: string
   pendingTaskCount: number
   openSurveyActionCount?: number
-  isPlatformOwner?: boolean
+  isMultiClinic?: boolean
 }
 
 export default function DashboardSidebar({
@@ -109,7 +110,7 @@ export default function DashboardSidebar({
   userName,
   pendingTaskCount,
   openSurveyActionCount = 0,
-  isPlatformOwner = false,
+  isMultiClinic = false,
 }: DashboardSidebarProps) {
   const badgeCounts: Record<string, number> = {
     tasks: pendingTaskCount,
@@ -147,9 +148,11 @@ export default function DashboardSidebar({
           <h1 className="font-bold text-[15px] text-[var(--text-primary)] leading-snug tracking-tight font-heading">
             ClinicForce
           </h1>
-          {clinicName && (
+          {isMultiClinic ? (
+            <ClinicSwitcher />
+          ) : clinicName ? (
             <p className="text-[11px] text-[var(--text-tertiary)] truncate mt-px">{clinicName}</p>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -188,7 +191,7 @@ export default function DashboardSidebar({
               </Link>
             )
           })}
-          {isPlatformOwner && (
+          {isMultiClinic && (
             <>
               <div className="my-2 border-t border-[var(--border)]" />
               <Link
@@ -204,7 +207,7 @@ export default function DashboardSidebar({
                 <span className={cn('shrink-0', isActive('/admin') ? 'text-[var(--brand)]' : 'text-[var(--text-tertiary)]')}>
                   {icons.shield}
                 </span>
-                <span className="sidebar-expanded-content truncate">Platform Admin</span>
+                <span className="sidebar-expanded-content truncate">Clinic Admin</span>
               </Link>
             </>
           )}

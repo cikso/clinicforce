@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
   // 1. Validate the invite token
   const { data: invite, error: inviteError } = await serviceRole
     .from('clinic_invites')
-    .select('id, email, role, clinic_id, expires_at, accepted_at')
+    .select('id, email, role, clinic_id, extra_clinic_ids, expires_at, accepted_at')
     .eq('token', token)
     .is('accepted_at', null)
     .single()
@@ -99,22 +99,33 @@ export async function POST(request: NextRequest) {
     userId = newUser.user.id
   }
 
-  // 3. Insert clinic_users row (check for existing link first)
-  const { data: existingLink } = await serviceRole
-    .from('clinic_users')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('clinic_id', invite.clinic_id)
-    .maybeSingle()
+  // 3. Insert clinic_users rows. Single-clinic invites grant access to one
+  //    clinic; multi-clinic owner invites (clinic_owner with extra_clinic_ids)
+  //    grant access to several clinics in one accept.
+  const allClinicIds = [
+    invite.clinic_id,
+    ...((invite.extra_clinic_ids ?? []) as string[]),
+  ]
 
-  if (!existingLink) {
-    const { error: cuError } = await serviceRole.from('clinic_users').insert({
+  // Filter to clinics the user isn't already linked to
+  const { data: existingLinks } = await serviceRole
+    .from('clinic_users')
+    .select('clinic_id')
+    .eq('user_id', userId)
+    .in('clinic_id', allClinicIds)
+
+  const existingSet = new Set((existingLinks ?? []).map((l) => l.clinic_id))
+  const toInsert = allClinicIds
+    .filter((cid) => !existingSet.has(cid))
+    .map((cid) => ({
       user_id: userId,
-      clinic_id: invite.clinic_id,
+      clinic_id: cid,
       role: invite.role,
       name: fullName,
-    })
+    }))
 
+  if (toInsert.length > 0) {
+    const { error: cuError } = await serviceRole.from('clinic_users').insert(toInsert)
     if (cuError) {
       console.error('[invite/accept] clinic_users insert error:', cuError)
       return NextResponse.json(
@@ -134,7 +145,7 @@ export async function POST(request: NextRequest) {
   await serviceRole
     .from('clinics')
     .update({ onboarding_completed: true })
-    .eq('id', invite.clinic_id)
+    .in('id', allClinicIds)
     .eq('onboarding_completed', false)
 
   // 5. Sign the user in (create session cookie) using the anon client

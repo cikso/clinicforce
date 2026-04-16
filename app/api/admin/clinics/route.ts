@@ -21,9 +21,13 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorised.' }, { status: 401 })
 
-  const { data: cu } = await supabase
-    .from('clinic_users').select('role').eq('user_id', user.id).single()
-  if (!cu || !['clinic_admin', 'platform_owner'].includes(cu.role)) {
+  // Only platform_owner can create new clinics on the platform.
+  // clinic_owner manages existing clinics they own; clinic_admin manages a single clinic.
+  // A user may have multiple clinic_users rows (especially platform_owner), so check ANY row.
+  const { data: roles } = await supabase
+    .from('clinic_users').select('role').eq('user_id', user.id)
+  const isPlatformOwner = (roles ?? []).some((r) => r.role === 'platform_owner')
+  if (!isPlatformOwner) {
     return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
   }
 

@@ -8,7 +8,9 @@ export const dynamic = 'force-dynamic'
 export default async function AIAgentPage() {
   const profile = await getClinicProfile()
   if (!profile) redirect('/login')
-  if (profile.userRole !== 'platform_owner') redirect('/settings/team')
+  // Multi-clinic roles have no single clinic — manage AI per-clinic via /admin.
+  if (profile.isMultiClinic) redirect('/admin')
+  if (profile.userRole !== 'clinic_admin') redirect('/settings/team')
 
   const service = createServiceClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

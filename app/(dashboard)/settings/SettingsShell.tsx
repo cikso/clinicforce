@@ -57,14 +57,21 @@ export default function SettingsShell({ children, userRole }: SettingsShellProps
   const pathname = usePathname()
 
   const isPlatformOwner = userRole === 'platform_owner'
+  const isClinicOwner = userRole === 'clinic_owner'
   const isAdmin = ['clinic_admin', 'platform_owner'].includes(userRole)
 
-  // Platform owners see all tabs. Clinic admins see only Team. Staff see nothing admin.
-  const visibleTabs = isPlatformOwner
-    ? TABS
-    : isAdmin
-      ? TABS.filter((t) => t.href === '/settings/team')
-      : TABS.filter((t) => !t.adminOnly)
+  // platform_owner: hide per-clinic tabs (managed via /admin per-clinic);
+  //   keep Team / Notifications / Billing for platform-level admin.
+  // clinic_owner: zero settings — all admin (including team) lives in /admin.
+  // clinic_admin: only Team. Staff: only non-admin tabs.
+  const PLATFORM_OWNER_HIDDEN = ['/settings', '/settings/ai', '/settings/coverage']
+  const visibleTabs = isClinicOwner
+    ? []
+    : isPlatformOwner
+      ? TABS.filter((t) => !PLATFORM_OWNER_HIDDEN.includes(t.href))
+      : isAdmin
+        ? TABS.filter((t) => t.href === '/settings/team')
+        : TABS.filter((t) => !t.adminOnly)
 
   return (
     <div className="space-y-5">

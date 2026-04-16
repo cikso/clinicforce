@@ -4,7 +4,7 @@ import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
-  title: 'Platform Admin — ClinicForce',
+  title: 'Clinic Admin — ClinicForce',
 }
 
 export const dynamic = 'force-dynamic'
@@ -25,14 +25,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
 
-  const { data: cu } = await service
+  const { data: roles } = await service
     .from('clinic_users')
     .select('role')
     .eq('user_id', user.id)
-    .maybeSingle()
 
-  // platform_owner ONLY — clinic_admin and staff are redirected
-  if (!cu || cu.role !== 'platform_owner') redirect('/overview')
+  // platform_owner OR clinic_owner — anyone with a multi-clinic UX can manage clinics.
+  // clinic_owner is scoped to their owned clinics inside the page; the layout just
+  // gates access. clinic_admin and staff are redirected.
+  // A user may have multiple clinic_users rows so accept if ANY row matches.
+  const allowed = (roles ?? []).some(
+    (r) => r.role === 'platform_owner' || r.role === 'clinic_owner',
+  )
+  if (!allowed) redirect('/overview')
 
   return <>{children}</>
 }

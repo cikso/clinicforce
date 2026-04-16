@@ -3,11 +3,13 @@
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Card from '@/app/components/ui/Card'
-import Button from '@/app/components/ui/Button'
 import Badge from '@/app/components/ui/Badge'
 import EmptyState from '@/app/components/ui/EmptyState'
 import { Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+// NOTE: Invitations are sent exclusively from /admin (platform_owner only).
+// This page shows members + pending invites as read-mostly; invite sending UI lives there.
 
 /* ── Types ──────────────────────────────────────────────────────────────────── */
 
@@ -30,7 +32,6 @@ interface TeamClientProps {
   members: Member[]
   pendingInvites: Invite[]
   currentUserId: string
-  clinicId: string
 }
 
 const ROLE_STYLES: Record<string, { variant: 'info' | 'routine' | 'neutral' | 'urgent' | 'high'; label: string }> = {
@@ -42,15 +43,7 @@ const ROLE_STYLES: Record<string, { variant: 'info' | 'routine' | 'neutral' | 'u
   nurse: { variant: 'neutral', label: 'Team Member' },
 }
 
-const INVITE_ROLES = [
-  { value: 'clinic_admin', label: 'Clinic Admin' },
-  { value: 'staff', label: 'Team Member' },
-]
-
 const EDITABLE_ROLES = ['clinic_admin', 'staff']
-
-const inputCls = 'w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-colors outline-none'
-const selectCls = cn(inputCls, 'appearance-none bg-[url("data:image/svg+xml,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M3%204.5L6%207.5L9%204.5%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E")] bg-[length:12px] bg-[right_12px_center] bg-no-repeat pr-8')
 
 function Toast({ message, variant, onDismiss }: { message: string; variant: 'success' | 'error'; onDismiss: () => void }) {
   return (
@@ -83,47 +76,14 @@ function initialsColor(name: string | null): string {
 
 /* ── Component ──────────────────────────────────────────────────────────────── */
 
-export default function TeamClient({ members, pendingInvites, currentUserId, clinicId }: TeamClientProps) {
+export default function TeamClient({ members, pendingInvites, currentUserId }: TeamClientProps) {
   const router = useRouter()
-  const [inviteEmail, setInviteEmail] = useState('')
-  const [inviteRole, setInviteRole] = useState('staff')
-  const [inviting, setInviting] = useState(false)
   const [toast, setToast] = useState<{ message: string; variant: 'success' | 'error' } | null>(null)
 
   const showToast = useCallback((message: string, variant: 'success' | 'error') => {
     setToast({ message, variant })
     setTimeout(() => setToast(null), 3000)
   }, [])
-
-  async function handleInvite(e: React.FormEvent) {
-    e.preventDefault()
-    if (!inviteEmail.trim()) return
-    setInviting(true)
-    try {
-      // Try the admin invite endpoint first, fall back to settings API
-      const res = await fetch('/api/admin/invite', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: inviteEmail.trim(),
-          role: inviteRole,
-          clinicId,
-        }),
-      })
-      if (res.ok) {
-        showToast(`Invitation sent to ${inviteEmail}`, 'success')
-        setInviteEmail('')
-        router.refresh()
-      } else {
-        const err = await res.json().catch(() => ({}))
-        showToast((err as { error?: string }).error ?? 'Failed to send invite', 'error')
-      }
-    } catch {
-      showToast('Failed to send invite', 'error')
-    } finally {
-      setInviting(false)
-    }
-  }
 
   async function handleRoleChange(memberId: string, newRole: string) {
     try {
@@ -144,39 +104,6 @@ export default function TeamClient({ members, pendingInvites, currentUserId, cli
       }
     } catch {
       showToast('Failed to update role', 'error')
-    }
-  }
-
-  async function handleCancelInvite(inviteId: string) {
-    try {
-      const res = await fetch(`/api/settings?table=clinic_invites&id=${inviteId}`, {
-        method: 'DELETE',
-      })
-      if (res.ok) {
-        showToast('Invitation cancelled', 'success')
-        router.refresh()
-      } else {
-        showToast('Failed to cancel invite', 'error')
-      }
-    } catch {
-      showToast('Failed to cancel invite', 'error')
-    }
-  }
-
-  async function handleResendInvite(invite: Invite) {
-    try {
-      const res = await fetch('/api/admin/invite', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: invite.email,
-          role: invite.role,
-          clinicId,
-        }),
-      })
-      showToast(res.ok ? `Resent to ${invite.email}` : 'Failed to resend', res.ok ? 'success' : 'error')
-    } catch {
-      showToast('Failed to resend', 'error')
     }
   }
 
@@ -250,46 +177,13 @@ export default function TeamClient({ members, pendingInvites, currentUserId, cli
         </div>
       </Card>
 
-      {/* Invite New Member */}
-      <Card header={{ title: 'Invite New Member', subtitle: 'Send an email invitation to join your clinic' }}>
-        <form onSubmit={handleInvite} className="space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-[1fr_160px] gap-3">
-            <div>
-              <label className="block text-[12px] uppercase tracking-[0.5px] text-[var(--text-secondary)] font-semibold mb-1.5">
-                Email Address
-              </label>
-              <input
-                type="email"
-                required
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                className={inputCls}
-                placeholder="colleague@clinic.com.au"
-              />
-            </div>
-            <div>
-              <label className="block text-[12px] uppercase tracking-[0.5px] text-[var(--text-secondary)] font-semibold mb-1.5">
-                Role
-              </label>
-              <select
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value)}
-                className={selectCls}
-              >
-                {INVITE_ROLES.map((r) => (
-                  <option key={r.value} value={r.value}>{r.label}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <Button type="submit" variant="primary" size="md" loading={inviting}>
-            Send Invite
-          </Button>
-        </form>
-      </Card>
-
-      {/* Pending Invitations */}
-      <Card header={{ title: 'Pending Invitations', subtitle: `${pendingInvites.length} pending` }}>
+      {/* Pending Invitations (read-only) */}
+      <Card
+        header={{
+          title: 'Pending Invitations',
+          subtitle: `${pendingInvites.length} pending · Managed from Clinic Admin`,
+        }}
+      >
         {pendingInvites.length > 0 ? (
           <div className="space-y-2">
             {pendingInvites.map((inv) => {
@@ -312,14 +206,6 @@ export default function TeamClient({ members, pendingInvites, currentUserId, cli
                         </span>
                       )}
                     </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <Button variant="ghost" size="sm" onClick={() => handleResendInvite(inv)}>
-                      Resend
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleCancelInvite(inv.id)}>
-                      Cancel
-                    </Button>
                   </div>
                 </div>
               )

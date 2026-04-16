@@ -8,6 +8,9 @@ export const dynamic = 'force-dynamic'
 export default async function TeamPage() {
   const profile = await getClinicProfile()
   if (!profile) redirect('/login')
+  // clinic_owner manages team per-clinic from /admin, not via /settings.
+  // platform_owner can land here when drilled into a clinic.
+  if (profile.userRole === 'clinic_owner') redirect('/admin')
   if (!['clinic_admin', 'platform_owner'].includes(profile.userRole)) redirect('/settings')
 
   const service = createServiceClient(
@@ -53,7 +56,6 @@ export default async function TeamPage() {
       members={members}
       pendingInvites={pendingInvites}
       currentUserId={profile.userId}
-      clinicId={profile.clinicId}
     />
   )
 }
