@@ -276,6 +276,13 @@ html {
   0%, 100% { transform: scale(1); opacity: 0.4; }
   50%       { transform: scale(1.6); opacity: 0; }
 }
+/* Signature live-call pulse ring — used in DashboardTopbar LiveCallPulse */
+@keyframes live-ping {
+  75%, 100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
 @keyframes lp-typing {
   0%, 100% { opacity: 0.3; transform: translateY(0); }
   50%       { opacity: 1;   transform: translateY(-3px); }

@@ -1,8 +1,9 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { cn } from '@/lib/utils'
+import LiveCallPulse from './LiveCallPulse'
 
 const ROUTE_TITLES: Record<string, string> = {
   '/overview':      'Command Centre',
@@ -48,6 +49,11 @@ export default function DashboardTopbar({ userName }: DashboardTopbarProps) {
       <h1 className="text-[17px] font-bold text-[var(--text-primary)] font-heading whitespace-nowrap">
         {title}
       </h1>
+
+      {/* Live call pulse — signature moment, only visible when Stella is on a call */}
+      <Suspense fallback={null}>
+        <LiveCallPulse />
+      </Suspense>
 
       <div className="flex-1" />
 
