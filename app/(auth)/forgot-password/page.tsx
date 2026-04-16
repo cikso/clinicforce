@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-[440px]">
         {/* Logo */}
         <div className="flex items-center gap-2.5 mb-8">
-          <div className="w-9 h-9 rounded-lg bg-[#17C4BE] flex items-center justify-center">
+          <div className="w-9 h-9 rounded-lg bg-[#00D68F] flex items-center justify-center">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M10 2L3 6v8l7 4 7-4V6l-7-4z" fill="white" opacity="0.9" />
               <path d="M10 10V2L3 6l7 4z" fill="white" opacity="0.6" />
@@ -56,8 +56,8 @@ export default function ForgotPasswordPage() {
           {!sent ? (
             <>
               {/* Icon */}
-              <div className="w-12 h-12 rounded-xl bg-[#E5F9F8] flex items-center justify-center mb-5">
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#17C4BE" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <div className="w-12 h-12 rounded-xl bg-[#E6FBF2] flex items-center justify-center mb-5">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#00D68F" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="4" width="18" height="14" rx="2" />
                   <path d="M2 6l8.5 5.4a1.5 1.5 0 0 0 1.6 0L20 6" />
                 </svg>
@@ -84,7 +84,7 @@ export default function ForgotPasswordPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@clinic.com.au"
-                    className="w-full px-4 py-3 rounded-lg border border-[#E5E7EB] bg-white text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#17C4BE] focus:ring-2 focus:ring-[#17C4BE]/20 transition-all outline-none"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E5E7EB] bg-white text-[15px] text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#00D68F] focus:ring-2 focus:ring-[#00D68F]/20 transition-all outline-none"
                   />
                 </div>
 
@@ -100,7 +100,7 @@ export default function ForgotPasswordPage() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full h-12 flex items-center justify-center gap-2 rounded-lg bg-[#17C4BE] text-white text-[15px] font-semibold hover:bg-[#0F9995] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full h-12 flex items-center justify-center gap-2 rounded-lg bg-[#00D68F] text-white text-[15px] font-semibold hover:bg-[#00B578] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isPending && (
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
@@ -113,7 +113,7 @@ export default function ForgotPasswordPage() {
               </form>
 
               <div className="mt-5 text-center">
-                <Link href="/login" className="text-[13px] font-medium text-[#17C4BE] hover:text-[#0F9995] transition-colors">
+                <Link href="/login" className="text-[13px] font-medium text-[#00D68F] hover:text-[#00B578] transition-colors">
                   Back to sign in
                 </Link>
               </div>
@@ -140,7 +140,7 @@ export default function ForgotPasswordPage() {
               </p>
               <Link
                 href="/login"
-                className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#17C4BE] hover:text-[#0F9995] transition-colors"
+                className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#00D68F] hover:text-[#00B578] transition-colors"
               >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                   <path d="M10 2L4 7l6 5" />

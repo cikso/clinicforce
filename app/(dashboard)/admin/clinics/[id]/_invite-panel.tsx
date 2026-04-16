@@ -111,7 +111,7 @@ export default function InvitePanel({ clinicId, clinicName, invites }: Props) {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="user@clinic.com.au"
             style={{ ...inputStyle, width: '100%', boxSizing: 'border-box' }}
-            onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
+            onFocus={(e) => (e.target.style.borderColor = '#00D68F')}
             onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
           />
         </div>
@@ -127,7 +127,7 @@ export default function InvitePanel({ clinicId, clinicName, invites }: Props) {
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239B9B9B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
               backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.625rem center', paddingRight: '2rem',
             }}
-            onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
+            onFocus={(e) => (e.target.style.borderColor = '#00D68F')}
             onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
           >
             <option value="clinic_admin">Admin</option>
@@ -139,7 +139,7 @@ export default function InvitePanel({ clinicId, clinicName, invites }: Props) {
           disabled={isPending}
           style={{
             padding: '0.65rem 1.25rem',
-            backgroundColor: isPending ? '#45c5bf' : '#17C4BE',
+            backgroundColor: isPending ? '#45c5bf' : '#00D68F',
             color: '#ffffff',
             border: 'none',
             borderRadius: 8,
@@ -169,7 +169,7 @@ export default function InvitePanel({ clinicId, clinicName, invites }: Props) {
 
       {/* Success message */}
       {successMsg && (
-        <div style={{ padding: '0.75rem 1rem', backgroundColor: 'rgba(23,196,190,0.06)', border: '1px solid rgba(23,196,190,0.2)', borderRadius: 10, fontFamily: "'DM Sans'", fontSize: '0.875rem', color: '#17C4BE', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ padding: '0.75rem 1rem', backgroundColor: 'rgba(23,196,190,0.06)', border: '1px solid rgba(23,196,190,0.2)', borderRadius: 10, fontFamily: "'DM Sans'", fontSize: '0.875rem', color: '#00D68F', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6 9 17l-5-5"/>
           </svg>
@@ -197,7 +197,7 @@ export default function InvitePanel({ clinicId, clinicName, invites }: Props) {
                 const accepted = !!inv.accepted_at
                 const status = accepted ? 'accepted' : expired ? 'expired' : 'pending'
                 const statusColors = {
-                  accepted: { bg: 'rgba(23,196,190,0.07)', color: '#17C4BE', border: 'rgba(23,196,190,0.2)' },
+                  accepted: { bg: 'rgba(23,196,190,0.07)', color: '#00D68F', border: 'rgba(23,196,190,0.2)' },
                   expired:  { bg: '#F5F4F2',              color: '#9B9B9B',  border: '#E8E4DE' },
                   pending:  { bg: 'rgba(245,158,11,0.07)', color: '#B45309', border: 'rgba(245,158,11,0.2)' },
                 }[status]
@@ -242,7 +242,7 @@ export default function InvitePanel({ clinicId, clinicName, invites }: Props) {
                             padding: '0.3rem 0.625rem', backgroundColor: 'transparent',
                             border: '1px solid #E8E4DE', borderRadius: 6,
                             fontFamily: "'DM Sans'", fontSize: '0.75rem',
-                            color: copiedToken === inv.token ? '#17C4BE' : '#6B6B6B',
+                            color: copiedToken === inv.token ? '#00D68F' : '#6B6B6B',
                             cursor: 'pointer', transition: 'all 0.15s',
                           }}
                         >

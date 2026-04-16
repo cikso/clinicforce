@@ -57,7 +57,7 @@ export default function UpdatePasswordPage() {
 
           {/* Logo */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <span style={{ fontFamily: "'DM Sans'", fontWeight: 700, fontSize: '1.1rem', color: '#17C4BE', letterSpacing: '-0.01em' }}>
+            <span style={{ fontFamily: "'DM Sans'", fontWeight: 700, fontSize: '1.1rem', color: '#00D68F', letterSpacing: '-0.01em' }}>
               ClinicForce
             </span>
           </div>
@@ -76,7 +76,7 @@ export default function UpdatePasswordPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#17C4BE" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00D68F" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
@@ -110,7 +110,7 @@ export default function UpdatePasswordPage() {
                       borderRadius: 10, fontFamily: "'DM Sans'", fontSize: '0.95rem',
                       color: '#1A1A1A', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s',
                     }}
-                    onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
+                    onFocus={(e) => (e.target.style.borderColor = '#00D68F')}
                     onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
                   />
                   <button type="button" onClick={() => setShowPassword(v => !v)}
@@ -141,7 +141,7 @@ export default function UpdatePasswordPage() {
                     borderRadius: 10, fontFamily: "'DM Sans'", fontSize: '0.95rem',
                     color: '#1A1A1A', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s',
                   }}
-                  onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
+                  onFocus={(e) => (e.target.style.borderColor = '#00D68F')}
                   onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
                 />
               </div>
@@ -162,7 +162,7 @@ export default function UpdatePasswordPage() {
                 disabled={isPending}
                 style={{
                   width: '100%', padding: '0.875rem',
-                  backgroundColor: isPending ? '#45c5bf' : '#17C4BE',
+                  backgroundColor: isPending ? '#45c5bf' : '#00D68F',
                   color: '#ffffff', border: 'none', borderRadius: 10,
                   fontFamily: "'DM Sans'", fontSize: '0.95rem', fontWeight: 600,
                   cursor: isPending ? 'not-allowed' : 'pointer',

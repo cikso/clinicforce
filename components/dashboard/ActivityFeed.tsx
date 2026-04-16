@@ -7,12 +7,12 @@ interface ActivityFeedProps {
 
 const typeConfig: Record<string, { icon: React.ReactNode; color: string }> = {
   escalation: { icon: <AlertTriangle className="w-3.5 h-3.5" />, color: 'text-[#b91c1c] bg-rose-50' },
-  callback:   { icon: <Phone className="w-3.5 h-3.5" />, color: 'text-[#17C4BE] bg-teal-50' },
+  callback:   { icon: <Phone className="w-3.5 h-3.5" />, color: 'text-[#00D68F] bg-teal-50' },
   booking:    { icon: <Calendar className="w-3.5 h-3.5" />, color: 'text-sky-600 bg-sky-50' },
   coverage:   { icon: <Radio className="w-3.5 h-3.5" />, color: 'text-emerald-600 bg-emerald-50' },
   handled:    { icon: <CheckCircle className="w-3.5 h-3.5" />, color: 'text-slate-500 bg-slate-100' },
   // Legacy keys kept for backward compat
-  call:       { icon: <Phone className="w-3.5 h-3.5" />, color: 'text-[#17C4BE] bg-teal-50' },
+  call:       { icon: <Phone className="w-3.5 h-3.5" />, color: 'text-[#00D68F] bg-teal-50' },
   case:       { icon: <Zap className="w-3.5 h-3.5" />, color: 'text-amber-600 bg-amber-50' },
   assignment: { icon: <CheckCircle className="w-3.5 h-3.5" />, color: 'text-teal-600 bg-teal-50' },
   system:     { icon: <Radio className="w-3.5 h-3.5" />, color: 'text-slate-500 bg-slate-100' },

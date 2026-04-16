@@ -46,7 +46,7 @@ export default function LoginForm() {
             placeholder="you@clinic.com.au"
             required
             autoFocus
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#17C4BE] focus:border-transparent transition-all"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00D68F] focus:border-transparent transition-all"
           />
         </div>
 
@@ -61,7 +61,7 @@ export default function LoginForm() {
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#17C4BE] focus:border-transparent transition-all pr-10"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-900 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00D68F] focus:border-transparent transition-all pr-10"
             />
             <button
               type="button"
@@ -82,7 +82,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#17C4BE] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#00D68F] hover:bg-[#0e4f79] text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}
           {loading ? 'Signing in...' : 'Sign In'}

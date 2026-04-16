@@ -23,7 +23,7 @@ export default function AiWatchlistPanel({ cases, onSelectCase, onAction }: AiWa
     return (
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
         <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-4 h-4 text-[#17C4BE]" />
+          <Sparkles className="w-4 h-4 text-[#00D68F]" />
           <h3 className="text-sm font-bold text-slate-900">AI Clinical Watchlist</h3>
         </div>
         <p className="text-sm text-slate-400 text-center py-4">No flagged cases at this time.</p>
@@ -37,7 +37,7 @@ export default function AiWatchlistPanel({ cases, onSelectCase, onAction }: AiWa
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-        <Sparkles className="w-4 h-4 text-[#17C4BE]" />
+        <Sparkles className="w-4 h-4 text-[#00D68F]" />
         <h3 className="text-sm font-bold text-slate-900">AI Clinical Watchlist</h3>
         <span className="ml-auto text-[10px] font-bold text-[#b91c1c] bg-rose-50 px-2 py-0.5 rounded-full">
           {cases.length} flagged

@@ -124,8 +124,8 @@ export default function UrgentRulesPage() {
                       width: 18,
                       height: 18,
                       borderRadius: 5,
-                      backgroundColor: isChecked ? '#17C4BE' : '#ffffff',
-                      border: isChecked ? '1px solid #17C4BE' : '1px solid #D0CCC6',
+                      backgroundColor: isChecked ? '#00D68F' : '#ffffff',
+                      border: isChecked ? '1px solid #00D68F' : '1px solid #D0CCC6',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -197,7 +197,7 @@ export default function UrgentRulesPage() {
               resize: 'vertical',
               transition: 'border-color 0.15s',
             }}
-            onFocus={(e) => (e.target.style.borderColor = '#17C4BE')}
+            onFocus={(e) => (e.target.style.borderColor = '#00D68F')}
             onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
           />
         </Field>

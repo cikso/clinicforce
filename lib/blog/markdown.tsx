@@ -45,7 +45,7 @@ function renderInline(text: string): InlineNode[] {
       <a
         key={key}
         href={href}
-        className="text-[#17C4BE] underline underline-offset-4 hover:text-[#13ADA8]"
+        className="text-[#00D68F] underline underline-offset-4 hover:text-[#00B578]"
         {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       >
         {label}

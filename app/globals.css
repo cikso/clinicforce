@@ -88,9 +88,19 @@
 
   /* Shadow tokens */
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-card: 0 1px 3px rgba(15,23,42,0.04);
   --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
   --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08);
+  --shadow-xl: 0 18px 40px -4px rgba(15,23,42,0.05);
+  --shadow-feature: 0 22px 55px rgba(0,0,0,0.22);
+
+  /* Radius scale (aligned with landing 36px / 24px / 16px rhythm) */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 36px;
 }
 
 /* Smooth scroll for anchor links */
@@ -330,11 +340,10 @@ body {
 }
 
 /* ─── DASHBOARD TYPOGRAPHY OVERRIDES ─── */
-/* KPI stat numbers (KpiCard) — bumped to 900 weight, ink color, tighter tracking */
+/* KPI stat numbers (KpiCard) — ink color, tight tracking; weight comes from utility */
 .kpi-stat-value {
-  font-weight: 900 !important;
-  color: #0D0E12 !important;
-  letter-spacing: -1px !important;
+  color: #0D0E12;
+  letter-spacing: -1px;
 }
 
 /* Table headers */

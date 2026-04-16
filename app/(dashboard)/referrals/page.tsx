@@ -17,7 +17,7 @@ function initials(name: string) {
 function avatarBg(urgency: Urgency): string {
   if (urgency === 'CRITICAL') return '#DC2626'
   if (urgency === 'URGENT')   return '#D97706'
-  return '#17C4BE'
+  return '#00D68F'
 }
 
 const URGENCY_RANK: Record<Urgency, number> = { CRITICAL: 0, URGENT: 1, ROUTINE: 2 }

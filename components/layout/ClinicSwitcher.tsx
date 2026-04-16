@@ -46,9 +46,9 @@ export default function ClinicSwitcher() {
       </button>
 
       {open && (
-        <div className="fixed mt-2 w-56 bg-white border border-[#dddbda] rounded-lg shadow-lg z-50 overflow-hidden" style={{ left: 12, top: ref.current ? ref.current.getBoundingClientRect().bottom : 0 }}>
+        <div className="fixed mt-2 w-56 bg-white border border-[#E5EAF0] rounded-lg shadow-lg z-50 overflow-hidden" style={{ left: 12, top: ref.current ? ref.current.getBoundingClientRect().bottom : 0 }}>
           {/* Search */}
-          <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[#dddbda]">
+          <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[#E5EAF0]">
             <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <input
               ref={inputRef}
@@ -75,16 +75,16 @@ export default function ClinicSwitcher() {
                     setOpen(false)
                   }}
                   className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors ${
-                    isActive ? 'bg-[#E5F9F8]' : 'hover:bg-slate-50'
+                    isActive ? 'bg-[#E6FBF2]' : 'hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex-1 min-w-0">
-                    <p className={`text-[13px] truncate ${isActive ? 'font-semibold text-[#17C4BE]' : 'font-medium text-slate-800'}`}>
+                    <p className={`text-[13px] truncate ${isActive ? 'font-semibold text-[#00D68F]' : 'font-medium text-slate-800'}`}>
                       {clinic.name}
                     </p>
                     <p className="text-[10px] text-slate-400 capitalize">{clinic.vertical}</p>
                   </div>
-                  {isActive && <Check className="w-4 h-4 shrink-0 text-[#17C4BE]" />}
+                  {isActive && <Check className="w-4 h-4 shrink-0 text-[#00D68F]" />}
                 </button>
               )
             })}

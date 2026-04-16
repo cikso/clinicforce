@@ -84,7 +84,7 @@ export default function PrivacyPage() {
               For privacy enquiries or to exercise your rights, email{' '}
               <a
                 href="mailto:privacy@clinicforce.io"
-                className="text-[#17C4BE] underline decoration-[#17C4BE]/40 underline-offset-2 hover:decoration-[#17C4BE]"
+                className="text-[#00D68F] underline decoration-[#00D68F]/40 underline-offset-2 hover:decoration-[#00D68F]"
               >
                 privacy@clinicforce.io
               </a>
