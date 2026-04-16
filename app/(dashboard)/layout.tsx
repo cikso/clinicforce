@@ -7,6 +7,7 @@ import { getSubscription } from '@/lib/supabase/queries'
 import { createClient } from '@/lib/supabase/server'
 import DashboardSidebar from '@/app/components/dashboard/DashboardSidebar'
 import DashboardTopbar from '@/app/components/dashboard/DashboardTopbar'
+import CommandPalette from '@/app/components/dashboard/CommandPalette'
 import { ToastProvider } from '@/app/components/ui/Toast'
 
 export const dynamic = 'force-dynamic'
@@ -134,6 +135,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               </main>
             </div>
           </div>
+          <CommandPalette />
         </ToastProvider>
       </ClinicProvider>
     </VerticalProvider>
