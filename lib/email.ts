@@ -124,7 +124,11 @@ export async function sendInviteEmail({
   invitedBy: string
   role: string
 }) {
-  const roleFmt = role === 'clinic_admin' ? 'Admin' : 'Staff'
+  const roleFmt =
+    role === 'clinic_owner' ? 'Owner'
+    : role === 'clinic_admin' ? 'Admin'
+    : role === 'platform_owner' ? 'Platform Owner'
+    : 'Staff'
 
   const html = `
 <!DOCTYPE html>

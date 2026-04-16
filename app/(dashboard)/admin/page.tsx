@@ -1,27 +1,41 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
+import { getAccessibleClinics } from '@/lib/supabase/clinic-scope'
 import AdminDashboardClient, { type AdminClinic } from './AdminDashboardClient'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminPage() {
+  const profile = await getClinicProfile()
+  if (!profile) redirect('/login')
+
   const service = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } },
   )
 
+  // Scope clinics by what this user can actually see.
+  // platform_owner → all clinics. clinic_owner → only their owned clinics.
+  const accessible = await getAccessibleClinics(profile.userId, profile.userRole)
+  const accessibleIds = new Set(accessible.map((c) => c.id))
+
   // Fetch clinics, user counts, and subscriptions in parallel
   const [{ data: rawClinics }, { data: users }, { data: subscriptions }] = await Promise.all([
     service
       .from('clinics')
       .select('id, name, slug, phone, vertical, onboarding_completed, created_at, suburb')
+      .in('id', Array.from(accessibleIds))
       .order('created_at', { ascending: false }),
     service
       .from('clinic_users')
-      .select('id, clinic_id'),
+      .select('id, clinic_id')
+      .in('clinic_id', Array.from(accessibleIds)),
     service
       .from('subscriptions')
-      .select('clinic_id, plan, status, trial_ends_at'),
+      .select('clinic_id, plan, status, trial_ends_at')
+      .in('clinic_id', Array.from(accessibleIds)),
   ])
 
   // Count users per clinic
@@ -54,5 +68,13 @@ export default async function AdminPage() {
 
   const totalUsers = users?.length ?? 0
 
-  return <AdminDashboardClient clinics={clinics} totalUsers={totalUsers} />
+  const canCreateClinic = profile.userRole === 'platform_owner'
+
+  return (
+    <AdminDashboardClient
+      clinics={clinics}
+      totalUsers={totalUsers}
+      canCreateClinic={canCreateClinic}
+    />
+  )
 }

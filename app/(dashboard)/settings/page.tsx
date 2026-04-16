@@ -11,10 +11,11 @@ export default async function ClinicProfilePage() {
   const profile = await getClinicProfile()
   if (!profile) redirect('/login')
 
-  // Clinic admins only have Team in settings — redirect to /settings/team
-  if (profile.userRole !== 'platform_owner') {
-    redirect('/settings/team')
-  }
+  // Multi-clinic roles (platform_owner, clinic_owner) have no single clinic
+  // attached — edit per-clinic profile via /admin. Only clinic_admin can
+  // manage clinic profile; everyone else goes to Team.
+  if (profile.isMultiClinic) redirect('/admin')
+  if (profile.userRole !== 'clinic_admin') redirect('/settings/team')
 
   const service = createServiceClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

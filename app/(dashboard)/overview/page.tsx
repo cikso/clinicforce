@@ -3,11 +3,12 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
+import { getAccessibleClinics } from '@/lib/supabase/clinic-scope'
 import KpiCard from './components/KpiCard'
 import OverviewHeader from './components/OverviewHeader'
 import CallVolumeChart, { type ChartDataPoint } from './components/CallVolumeChart'
-import CallInboxPanel from './components/CallInboxPanel'
 import TaskList, { type Task } from './TaskList'
+import PortfolioOverview, { type ClinicMetrics } from './PortfolioOverview'
 
 export const metadata: Metadata = { title: 'Overview — ClinicForce' }
 export const dynamic = 'force-dynamic'
@@ -39,18 +40,6 @@ function sydneyDayBounds(daysAgo: number): { start: string; end: string } {
   const start  = new Date(`${dateStr}T00:00:00${offset}`)
   const end    = new Date(start.getTime() + 86_400_000)
   return { start: start.toISOString(), end: end.toISOString() }
-}
-
-function sydneyMonthStart(): string {
-  const parts = new Intl.DateTimeFormat('en-AU', {
-    timeZone: 'Australia/Sydney',
-    year: 'numeric', month: '2-digit',
-  }).formatToParts(new Date())
-  const y  = parts.find(p => p.type === 'year')!.value
-  const mo = parts.find(p => p.type === 'month')!.value
-  const dateStr = `${y}-${mo}-01`
-  const offset = sydneyUTCOffset(dateStr)
-  return new Date(`${dateStr}T00:00:00${offset}`).toISOString()
 }
 
 /* ─── KPI Icons ─── */
@@ -187,17 +176,155 @@ export default async function OverviewPage() {
 
   const today = sydneyDayBounds(0)
   const yesterday = sydneyDayBounds(1)
-  const monthStart = sydneyMonthStart()
+
+  /* ─── Multi-clinic branch (founder / clinic_owner) ───
+   * If the user is multi-clinic AND has not drilled into a specific clinic
+   * (no cf_active_clinic cookie → clinicId is empty), render the portfolio view.
+   * If they HAVE drilled in (clinicId is set), fall through to the single-clinic
+   * dashboard so they can see one clinic's command centre. */
+  if (profile?.isMultiClinic && !clinicId) {
+    const accessible = await getAccessibleClinics(profile.userId, profile.userRole)
+
+    if (accessible.length === 0) {
+      return (
+        <div className="-m-6 min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F4F6F9' }}>
+          <div className="bg-white rounded-lg p-8 max-w-md text-center" style={{ border: '1.5px solid #DDE1E7' }}>
+            <h1 className="text-[18px] font-bold text-[#0A2540] mb-2 font-heading">No clinics yet</h1>
+            <p className="text-[13px] text-[#637381]">
+              {profile.userRole === 'platform_owner'
+                ? 'Create the first clinic from Clinic Admin to populate this view.'
+                : 'You don’t own any clinics yet. The platform owner will assign clinics to you.'}
+            </p>
+          </div>
+        </div>
+      )
+    }
+
+    const clinicIds = accessible.map((c) => c.id)
+
+    // Single bulk fetch: today + yesterday across every accessible clinic
+    const [todayBulkRes, yesterdayBulkRes] = await Promise.all([
+      db
+        .from('call_inbox')
+        .select('clinic_id, summary, urgency, status, action_required, call_duration_seconds, created_at')
+        .in('clinic_id', clinicIds)
+        .gte('created_at', today.start)
+        .lt('created_at', today.end),
+      db
+        .from('call_inbox')
+        .select('clinic_id, summary, urgency, action_required, call_duration_seconds, created_at')
+        .in('clinic_id', clinicIds)
+        .gte('created_at', yesterday.start)
+        .lt('created_at', yesterday.end),
+    ])
+
+    type TodayCall = {
+      clinic_id: string
+      summary: string | null
+      urgency: string
+      status: string
+      action_required: string | null
+      call_duration_seconds: number | null
+      created_at: string
+    }
+    type YesterdayCall = Omit<TodayCall, 'status'>
+    const todayCalls = (todayBulkRes.data ?? []) as TodayCall[]
+    const yesterdayCalls = (yesterdayBulkRes.data ?? []) as YesterdayCall[]
+
+    const bookingKeywords = /\b(appointment|booking|check.?up|vaccination|dental|desex|neuter|spay)\b/i
+    const isAfterHoursIso = (iso: string) => {
+      const h = sydneyHour(iso)
+      const dow = sydneyWeekday(iso)
+      return dow === 0 || dow === 6 || h < 8 || h >= 18
+    }
+
+    // Bucket calls by clinic for fast aggregation per clinic
+    const byClinicToday = new Map<string, TodayCall[]>()
+    for (const c of todayCalls) {
+      const arr = byClinicToday.get(c.clinic_id) ?? []
+      arr.push(c)
+      byClinicToday.set(c.clinic_id, arr)
+    }
+    const byClinicYesterday = new Map<string, YesterdayCall[]>()
+    for (const c of yesterdayCalls) {
+      const arr = byClinicYesterday.get(c.clinic_id) ?? []
+      arr.push(c)
+      byClinicYesterday.set(c.clinic_id, arr)
+    }
+
+    const metrics: ClinicMetrics[] = accessible.map((clinic) => {
+      const t = byClinicToday.get(clinic.id) ?? []
+      const y = byClinicYesterday.get(clinic.id) ?? []
+
+      const callbacksToday = t.filter((c) => c.action_required).length
+      const callbacksActioned = t.filter((c) => c.action_required && c.status === 'ACTIONED').length
+      const callbacksYesterday = y.filter((c) => c.action_required).length
+
+      const urgentToday = t.filter((c) => c.urgency === 'URGENT' || c.urgency === 'CRITICAL').length
+      const urgentActioned = t.filter((c) => (c.urgency === 'URGENT' || c.urgency === 'CRITICAL') && c.status === 'ACTIONED').length
+      const urgentYesterday = y.filter((c) => c.urgency === 'URGENT' || c.urgency === 'CRITICAL').length
+
+      const bookingsToday = t.filter((c) => bookingKeywords.test(c.summary ?? '')).length
+      const bookingsYesterday = y.filter((c) => bookingKeywords.test(c.summary ?? '')).length
+
+      const afterHoursToday = t.filter((c) => isAfterHoursIso(c.created_at)).length
+      const afterHoursYesterday = y.filter((c) => isAfterHoursIso(c.created_at)).length
+
+      const dToday = t.map((c) => c.call_duration_seconds).filter((d): d is number => d !== null && d > 0)
+      const dYesterday = y.map((c) => c.call_duration_seconds).filter((d): d is number => d !== null && d > 0)
+      const avgDurationToday = dToday.length > 0 ? dToday.reduce((a, b) => a + b, 0) / dToday.length : 0
+      const avgDurationYesterday = dYesterday.length > 0 ? dYesterday.reduce((a, b) => a + b, 0) / dYesterday.length : 0
+
+      // Hourly buckets 08:00–18:00
+      const hourly: { hour: number; handled: number; callbacks: number }[] = []
+      for (let h = 8; h <= 18; h++) {
+        const inHour = t.filter((c) => sydneyHour(c.created_at) === h)
+        hourly.push({
+          hour: h,
+          handled: inHour.length,
+          callbacks: inHour.filter((c) => c.action_required).length,
+        })
+      }
+
+      return {
+        clinicId: clinic.id,
+        clinicName: clinic.name,
+        vertical: clinic.vertical,
+        suburb: clinic.suburb,
+        callsToday: t.length,
+        callbacksToday, callbacksActioned,
+        urgentToday, urgentActioned,
+        bookingsToday,
+        afterHoursToday,
+        avgDurationToday,
+        callsYesterday: y.length,
+        callbacksYesterday,
+        urgentYesterday,
+        bookingsYesterday,
+        afterHoursYesterday,
+        avgDurationYesterday,
+        hourly,
+      }
+    })
+
+    const todayLabel = new Date().toLocaleDateString('en-AU', {
+      timeZone: 'Australia/Sydney',
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    })
+
+    const roleLabel = profile.userRole === 'platform_owner' ? 'Platform owner' : 'Clinic owner'
+
+    return <PortfolioOverview clinics={metrics} todayLabel={todayLabel} roleLabel={roleLabel} />
+  }
+
 
   // ── Parallel queries ──
   const [
     todayCallsRes,
     yesterdayCallsRes,
-    recentCallsRes,
     clinicRes,
     last7dCallsRes,
     last30dCallsRes,
-    monthCallsRes,
     tasksRes,
   ] = await Promise.all([
     // Today's calls (full rows for KPI computation + chart)
@@ -215,14 +342,6 @@ export default async function OverviewPage() {
       .eq('clinic_id', clinicId)
       .gte('created_at', yesterday.start)
       .lt('created_at', yesterday.end) : Promise.resolve({ data: [] }),
-
-    // Recent 5 calls for inbox panel
-    clinicId ? db
-      .from('call_inbox')
-      .select('id, caller_name, summary, urgency, status, action_required, created_at')
-      .eq('clinic_id', clinicId)
-      .order('created_at', { ascending: false })
-      .limit(5) : Promise.resolve({ data: [] }),
 
     // Clinic record (coverage + name)
     clinicId ? db
@@ -247,13 +366,6 @@ export default async function OverviewPage() {
       .gte('created_at', sydneyDayBounds(29).start)
       .lt('created_at', today.end) : Promise.resolve({ data: [] }),
 
-    // Month-to-date calls (for new monthly KPI row)
-    clinicId ? db
-      .from('call_inbox')
-      .select('id, summary, action_required, status, created_at')
-      .eq('clinic_id', clinicId)
-      .gte('created_at', monthStart) : Promise.resolve({ data: [] }),
-
     // Unresolved tasks (newest first, cap 10)
     clinicId ? db
       .from('call_inbox')
@@ -266,8 +378,7 @@ export default async function OverviewPage() {
   ])
 
   const todayCalls = (todayCallsRes.data ?? []) as CallRow[]
-  const yesterdayCalls = (yesterdayCallsRes.data ?? []) as Array<{ id: string; urgency: string; status: string; action_required: string | null; call_duration_seconds: number | null }>
-  const recentCalls = (recentCallsRes.data ?? []) as Array<{ id: string; caller_name: string; summary: string; urgency: string; status: string; action_required: string | null; created_at: string }>
+  const yesterdayCalls = (yesterdayCallsRes.data ?? []) as Array<{ id: string; urgency: string; status: string; action_required: string | null; call_duration_seconds: number | null; created_at: string }>
   const clinicRecord = clinicRes.data as { name: string; coverage_mode: string; coverage_mode_activated_at: string | null; coverage_mode_activated_by: string | null } | null
 
   // ── KPI computations ──
@@ -307,49 +418,15 @@ export default async function OverviewPage() {
   const bookingsYesterday = yesterdayCalls.filter(c => bookingKeywords.test((c as unknown as { summary?: string }).summary ?? '')).length
   const bookingDelta = pctDelta(bookingsToday, bookingsYesterday)
 
-  // ── Monthly KPI computations ──
-  const monthCalls = (monthCallsRes.data ?? []) as Array<{ id: string; summary: string | null; action_required: string | null; status: string; created_at: string }>
-  const callsAnsweredMonth = monthCalls.length
-  const bookingsMonth = monthCalls.filter(c => bookingKeywords.test(c.summary ?? '')).length
-  const afterHoursMonth = monthCalls.filter(c => {
-    const h = sydneyHour(c.created_at)
-    const dow = sydneyWeekday(c.created_at)
+  // KPI 7: After-hours calls (outside Mon–Fri 08:00–18:00 Sydney)
+  const isAfterHours = (iso: string) => {
+    const h = sydneyHour(iso)
+    const dow = sydneyWeekday(iso)
     return dow === 0 || dow === 6 || h < 8 || h >= 18
-  }).length
-  const tasksPendingMonth = monthCalls.filter(c => c.action_required && c.status !== 'ACTIONED').length
-
-  // ── Call breakdown categorisation (reuses monthCalls; no extra query) ──
-  const rescheduleRe = /\b(cancel|reschedul|re-schedul|move|shift|postpon|change.*appointment)\b/i
-  const bookingCatRe = /\b(book|booking|appointment|scheduled?|vaccination|dental|desex|neuter|spay|check.?up)\b/i
-  const faqRe        = /\b(hours?|open|close|fee|fees|cost|price|pricing|parking|location|where|address|service|what.?to.?bring)\b/i
-  const escalateRe   = /\b(escalat|message|urgent|emergency|transfer|callback|call.?back|follow.?up)\b/i
-
-  type BreakdownBucket = 'Booking / appointment' | 'Reschedule / cancel' | 'FAQ / enquiry' | 'Escalated / message' | 'Other'
-  const breakdownCounts: Record<BreakdownBucket, number> = {
-    'Booking / appointment': 0,
-    'Reschedule / cancel':   0,
-    'FAQ / enquiry':         0,
-    'Escalated / message':   0,
-    'Other':                 0,
   }
-  for (const c of monthCalls) {
-    const s = c.summary ?? ''
-    let bucket: BreakdownBucket
-    if (c.action_required || escalateRe.test(s))  bucket = 'Escalated / message'
-    else if (rescheduleRe.test(s))                bucket = 'Reschedule / cancel'
-    else if (bookingCatRe.test(s))                bucket = 'Booking / appointment'
-    else if (faqRe.test(s))                       bucket = 'FAQ / enquiry'
-    else                                          bucket = 'Other'
-    breakdownCounts[bucket]++
-  }
-  const breakdownMax = Math.max(1, ...Object.values(breakdownCounts))
-  const breakdownRows: { label: BreakdownBucket; count: number; color: string }[] = [
-    { label: 'Booking / appointment', count: breakdownCounts['Booking / appointment'], color: '#6B3FA0' },
-    { label: 'Reschedule / cancel',   count: breakdownCounts['Reschedule / cancel'],   color: '#1A5FA8' },
-    { label: 'FAQ / enquiry',         count: breakdownCounts['FAQ / enquiry'],         color: '#0A7A5B' },
-    { label: 'Escalated / message',   count: breakdownCounts['Escalated / message'],   color: '#A0305A' },
-    { label: 'Other',                 count: breakdownCounts['Other'],                 color: '#8A94A6' },
-  ]
+  const afterHoursToday = todayCalls.filter(c => isAfterHours(c.created_at)).length
+  const afterHoursYesterday = yesterdayCalls.filter(c => isAfterHours(c.created_at)).length
+  const afterHoursDelta = pctDelta(afterHoursToday, afterHoursYesterday)
 
   // ── Unresolved tasks (client component input) ──
   const tasks = (tasksRes.data ?? []) as Task[]
@@ -431,82 +508,10 @@ export default async function OverviewPage() {
           todayLabel={todayLabel}
         />
 
-        {/* ── Monthly KPI Row ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <KpiCard
-            label="Calls answered"
-            value={String(callsAnsweredMonth)}
-            compareStat="This month"
-            delta="MTD"
-            deltaType="neutral"
-            iconBg="#EAF7F1"
-            iconColor="#0A7A5B"
-            icon={icons.phone}
-          />
-          <KpiCard
-            label="Bookings made"
-            value={String(bookingsMonth)}
-            compareStat="This month"
-            delta="MTD"
-            deltaType="neutral"
-            iconBg="#F2EEFB"
-            iconColor="#6B3FA0"
-            icon={icons.calendar}
-          />
-          <KpiCard
-            label="After-hours calls"
-            value={String(afterHoursMonth)}
-            compareStat="This month"
-            delta="MTD"
-            deltaType="neutral"
-            iconBg="#E6F0FB"
-            iconColor="#1A5FA8"
-            icon={icons.clock}
-          />
-          <KpiCard
-            label="Tasks pending"
-            value={String(tasksPendingMonth)}
-            compareStat="Awaiting follow-up"
-            delta="MTD"
-            deltaType="neutral"
-            iconBg="#FEF0F5"
-            iconColor="#A0305A"
-            icon={icons.callback}
-          />
-        </div>
-
-        {/* ── Call breakdown ── */}
-        <div className="bg-white rounded-lg p-5" style={{ border: '1.5px solid #DDE1E7' }}>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-sm font-semibold text-[#0A2540]">Call breakdown</h2>
-            <span className="text-[10px] uppercase tracking-[1px] font-semibold text-[#8A94A6]">This month</span>
-          </div>
-          <div className="space-y-2.5">
-            {breakdownRows.map(({ label, count, color }) => (
-              <div key={label} className="flex items-center gap-3">
-                <span className="text-xs font-medium text-[#0A2540] w-44 shrink-0 truncate">{label}</span>
-                <div className="flex-1 h-2 rounded-full bg-[#F4F6F9] overflow-hidden">
-                  <div
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${(count / breakdownMax) * 100}%`,
-                      backgroundColor: color,
-                    }}
-                  />
-                </div>
-                <span className="text-xs font-semibold text-[#0A2540] tabular-nums w-8 text-right shrink-0">{count}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Tasks for your team ── */}
-        <TaskList tasks={tasks} />
-
         {/* ── KPI Grid ── */}
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
           <KpiCard
-            label="Total Calls"
+            label="Calls Answered"
             value={String(totalToday)}
             compareStat={`vs ${totalYesterday} yesterday`}
             delta={totalDelta.text}
@@ -514,16 +519,6 @@ export default async function OverviewPage() {
             iconBg="#EAF7F1"
             iconColor="#0A7A5B"
             icon={icons.phone}
-          />
-          <KpiCard
-            label="Answer Rate"
-            value="100%"
-            compareStat={`All ${totalToday} calls handled`}
-            delta="100%"
-            deltaType="up"
-            iconBg="#E9F6EC"
-            iconColor="#1A7A3A"
-            icon={icons.check}
           />
           <KpiCard
             label="Callbacks Requested"
@@ -534,16 +529,6 @@ export default async function OverviewPage() {
             iconBg="#FEF0F5"
             iconColor="#A0305A"
             icon={icons.callback}
-          />
-          <KpiCard
-            label="Avg Duration"
-            value={avgToday > 0 ? formatDuration(avgToday) : '—'}
-            compareStat={durationDelta.text === '~0s' ? 'Same as yesterday' : `${durationDelta.text} than yesterday`}
-            delta={durationDelta.text}
-            deltaType={durationDelta.type}
-            iconBg="#E6F0FB"
-            iconColor="#1A5FA8"
-            icon={icons.clock}
           />
           <KpiCard
             label="Urgent Flags"
@@ -565,16 +550,36 @@ export default async function OverviewPage() {
             iconColor="#6B3FA0"
             icon={icons.calendar}
           />
+          <KpiCard
+            label="Avg Duration"
+            value={avgToday > 0 ? formatDuration(avgToday) : '—'}
+            compareStat={durationDelta.text === '~0s' ? 'Same as yesterday' : `${durationDelta.text} than yesterday`}
+            delta={durationDelta.text}
+            deltaType={durationDelta.type}
+            iconBg="#E6F0FB"
+            iconColor="#1A5FA8"
+            icon={icons.clock}
+          />
+          <KpiCard
+            label="After-hours Calls"
+            value={String(afterHoursToday)}
+            compareStat={`vs ${afterHoursYesterday} yesterday`}
+            delta={afterHoursDelta.text}
+            deltaType={afterHoursDelta.type}
+            iconBg="#E6F0FB"
+            iconColor="#1A5FA8"
+            icon={icons.clock}
+          />
         </div>
 
-        {/* ── Bottom Grid ── */}
+        {/* ── Tasks + Call Volume ── */}
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-3.5">
+          <TaskList tasks={tasks} />
           <CallVolumeChart
             hourlyData={hourlyData}
             weeklyData={weeklyData}
             monthlyData={monthlyData}
           />
-          <CallInboxPanel calls={recentCalls} />
         </div>
       </div>
     </div>

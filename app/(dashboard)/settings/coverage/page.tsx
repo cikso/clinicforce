@@ -43,7 +43,9 @@ function timeToPercent(time: string): number {
 export default async function CoveragePage() {
   const profile = await getClinicProfile()
   if (!profile) redirect('/login')
-  if (profile.userRole !== 'platform_owner') redirect('/settings/team')
+  // Multi-clinic roles have no single clinic — manage coverage per-clinic via /admin.
+  if (profile.isMultiClinic) redirect('/admin')
+  if (profile.userRole !== 'clinic_admin') redirect('/settings/team')
 
   const service = createServiceClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

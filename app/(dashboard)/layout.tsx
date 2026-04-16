@@ -3,6 +3,7 @@ import { VerticalProvider } from '@/context/VerticalContext'
 import { ClinicProvider, type ClinicOption, type IndustryConfig } from '@/context/ClinicContext'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
+import { getAccessibleClinics } from '@/lib/supabase/clinic-scope'
 import { getSubscription } from '@/lib/supabase/queries'
 import { createClient } from '@/lib/supabase/server'
 import DashboardSidebar from '@/app/components/dashboard/DashboardSidebar'
@@ -25,9 +26,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const vertical   = profile?.vertical   ?? 'vet'
   const clinicId   = profile?.clinicId   ?? ''
   const isPlatformOwner = profile?.isPlatformOwner ?? false
+  const isMultiClinic   = profile?.isMultiClinic   ?? false
+  const userRole        = profile?.userRole        ?? ''
 
-  // Platform owner: load all clinics for the switcher dropdown
-  let allClinics: ClinicOption[] = []
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   const service = serviceKey
     ? createServiceClient(
@@ -37,17 +38,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
       )
     : null
 
-  if (isPlatformOwner && service) {
-    const { data } = await service
-      .from('clinics')
-      .select('id, name, vertical')
-      .not('slug', 'eq', 'clinicforce-platform')
-      .order('name')
-    allClinics = (data ?? []) as ClinicOption[]
-  }
-
-  // Regular users: single-clinic array
-  if (!isPlatformOwner && clinicId) {
+  // Multi-clinic users (platform_owner / clinic_owner): load their accessible clinics
+  // for the switcher dropdown. Single-clinic users get a one-element list.
+  let allClinics: ClinicOption[] = []
+  if (isMultiClinic && profile) {
+    const accessible = await getAccessibleClinics(profile.userId, userRole)
+    allClinics = accessible.map((c) => ({ id: c.id, name: c.name, vertical: c.vertical }))
+  } else if (clinicId) {
     allClinics = [{ id: clinicId, name: clinicName, vertical }]
   }
 
@@ -114,6 +111,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         activeClinicId={clinicId}
         activeClinicName={clinicName}
         isPlatformOwner={isPlatformOwner}
+        isMultiClinic={isMultiClinic}
         industryConfig={industryConfig}
       >
         <ToastProvider>
@@ -126,7 +124,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               userName={userName}
               pendingTaskCount={pendingTaskCount}
               openSurveyActionCount={openSurveyActionCount}
-              isPlatformOwner={isPlatformOwner}
+              isMultiClinic={isMultiClinic}
             />
             <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
               <DashboardTopbar userName={userName} />

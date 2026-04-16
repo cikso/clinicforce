@@ -23,6 +23,7 @@ export interface AdminClinic {
 interface Props {
   clinics: AdminClinic[]
   totalUsers: number
+  canCreateClinic?: boolean
 }
 
 const VERTICAL_LABELS: Record<string, string> = {
@@ -72,7 +73,7 @@ function getPlanLabel(plan: string | null): string {
   return map[plan] ?? plan.charAt(0).toUpperCase() + plan.slice(1)
 }
 
-export default function AdminDashboardClient({ clinics, totalUsers }: Props) {
+export default function AdminDashboardClient({ clinics, totalUsers, canCreateClinic = true }: Props) {
   const [search, setSearch] = useState('')
   const [verticalFilter, setVerticalFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -109,21 +110,37 @@ export default function AdminDashboardClient({ clinics, totalUsers }: Props) {
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-[22px] font-heading font-bold text-[var(--text-primary)]">
-            Platform Admin
+            Clinic Admin
           </h1>
           <p className="text-[14px] text-[var(--text-secondary)] mt-0.5">
-            Manage all clinics and platform settings
+            Create clinics, manage invitations, and review platform access
           </p>
         </div>
-        <Link
-          href="/admin/clinics/new"
-          className="inline-flex items-center gap-2 h-10 px-4 rounded-lg bg-[var(--brand)] text-white text-[14px] font-semibold hover:bg-[var(--brand-hover)] active:scale-[0.98] transition-all"
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M7 2v10M2 7h10" />
-          </svg>
-          New Clinic
-        </Link>
+        {canCreateClinic && (
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/owners"
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-lg border border-[var(--border)] text-[var(--text-primary)] text-[14px] font-semibold hover:bg-[var(--bg-secondary)] active:scale-[0.98] transition-all"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="5" cy="4.5" r="2" />
+                <path d="M1.5 12c0-2 1.5-3.5 3.5-3.5s3.5 1.5 3.5 3.5" />
+                <circle cx="10" cy="4" r="1.5" />
+                <path d="M12.5 11c0-1.5-1-2.5-2.2-2.7" />
+              </svg>
+              Owners
+            </Link>
+            <Link
+              href="/admin/clinics/new"
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-lg bg-[var(--brand)] text-white text-[14px] font-semibold hover:bg-[var(--brand-hover)] active:scale-[0.98] transition-all"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M7 2v10M2 7h10" />
+              </svg>
+              New Clinic
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* KPI Cards */}

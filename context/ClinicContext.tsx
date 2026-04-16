@@ -16,8 +16,11 @@ interface ClinicContextValue {
   activeClinicId: string
   activeClinicName: string
   isPlatformOwner: boolean
+  /** True for platform_owner OR clinic_owner — anyone with a multi-clinic UX. */
+  isMultiClinic: boolean
   industryConfig: IndustryConfig
-  switchClinic: (clinicId: string) => void
+  /** Pass null to clear the active clinic (return to portfolio / all-clinics view). */
+  switchClinic: (clinicId: string | null) => void
 }
 
 const ClinicContext = createContext<ClinicContextValue>({
@@ -25,6 +28,7 @@ const ClinicContext = createContext<ClinicContextValue>({
   activeClinicId: '',
   activeClinicName: '',
   isPlatformOwner: false,
+  isMultiClinic: false,
   industryConfig: null,
   switchClinic: () => {},
 })
@@ -34,6 +38,7 @@ export function ClinicProvider({
   activeClinicId: initialClinicId,
   activeClinicName: initialClinicName,
   isPlatformOwner,
+  isMultiClinic,
   industryConfig = null,
   children,
 }: {
@@ -41,6 +46,7 @@ export function ClinicProvider({
   activeClinicId: string
   activeClinicName: string
   isPlatformOwner: boolean
+  isMultiClinic: boolean
   industryConfig?: IndustryConfig
   children: ReactNode
 }) {
@@ -49,12 +55,17 @@ export function ClinicProvider({
   const [activeClinicName, setActiveClinicName] = useState(initialClinicName)
 
   const switchClinic = useCallback(
-    (clinicId: string) => {
-      const clinic = clinics.find(c => c.id === clinicId)
-      if (!clinic) return
-
-      setActiveClinicId(clinicId)
-      setActiveClinicName(clinic.name)
+    (clinicId: string | null) => {
+      if (clinicId === null) {
+        // Portfolio mode: clear active clinic
+        setActiveClinicId('')
+        setActiveClinicName('')
+      } else {
+        const clinic = clinics.find(c => c.id === clinicId)
+        if (!clinic) return
+        setActiveClinicId(clinicId)
+        setActiveClinicName(clinic.name)
+      }
 
       fetch('/api/clinic-switch', {
         method: 'POST',
@@ -69,7 +80,7 @@ export function ClinicProvider({
 
   return (
     <ClinicContext.Provider
-      value={{ clinics, activeClinicId, activeClinicName, isPlatformOwner, industryConfig, switchClinic }}
+      value={{ clinics, activeClinicId, activeClinicName, isPlatformOwner, isMultiClinic, industryConfig, switchClinic }}
     >
       {children}
     </ClinicContext.Provider>
