@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/voice/shared'
+import { verifyTwilioRequest } from '@/lib/twilio/verify'
 
 export const preferredRegion = 'syd1'
 
@@ -8,6 +9,10 @@ export const preferredRegion = 'syd1'
 // NOTE: The Twilio number's "A message comes in" webhook must be pointed at
 //   https://app.clinicforce.io/api/survey/reply
 // in the Twilio console. This is a manual step done once per number.
+//
+// X-Twilio-Signature is verified before any DB reads or writes. An unsigned
+// request could inject bogus NPS scores, create fake survey_actions, or trick
+// the handler into sending TwiML replies on behalf of our Twilio number.
 
 function twiml(body?: string) {
   const inner = body ? `<Message>${escapeXml(body)}</Message>` : ''
@@ -22,10 +27,16 @@ function escapeXml(s: string) {
 }
 
 export async function POST(req: NextRequest) {
+  const verified = await verifyTwilioRequest(req)
+  if (!verified.valid) {
+    console.error('[survey/reply] signature verification failed:', verified.reason)
+    return new NextResponse('Forbidden', { status: 403 })
+  }
+
   try {
-    const formData = await req.formData().catch(() => null)
-    const from = formData?.get('From') as string | null
-    const body = (formData?.get('Body') as string | null)?.trim() ?? ''
+    const params = verified.params
+    const from = params.get('From')
+    const body = (params.get('Body') ?? '').trim()
 
     if (!from) {
       return twiml()
