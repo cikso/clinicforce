@@ -32,9 +32,16 @@ function twiml(xml: string) {
  *     -> if INACTIVE: dial real clinic number -> desk phone rings
  *
  * Setup in Twilio Console:
- *   Phone Numbers -> your number -> Voice
- *   "A call comes in" -> Webhook -> POST
- *   URL: https://app.clinicforce.io/api/twilio/incoming
+ *   Phone Numbers -> your number -> Voice & Fax
+ *     "A call comes in"      -> Webhook POST
+ *                                https://app.clinicforce.io/api/twilio/incoming
+ *     "Call status changes"  -> Webhook POST  (required for LiveCallPulse)
+ *                                https://app.clinicforce.io/api/twilio/status
+ *                                Events: completed
+ *
+ * The status callback is what lets the dashboard topbar pulse disappear
+ * when a Stella/ElevenLabs call ends. For the overflow (Dial) path, the
+ * <Dial action="..."> attribute already handles completion.
  */
 export async function POST(req: NextRequest) {
   const clinicNumber = process.env.CLINIC_REAL_NUMBER
@@ -44,8 +51,9 @@ export async function POST(req: NextRequest) {
 
     // Twilio sends form-encoded data including the called number (To) and caller (From)
     const formData = await req.formData().catch(() => null)
-    const toNumber   = formData?.get('To')   as string | null
-    const fromNumber = formData?.get('From') as string | null
+    const toNumber   = formData?.get('To')      as string | null
+    const fromNumber = formData?.get('From')    as string | null
+    const callSid    = formData?.get('CallSid') as string | null
 
     if (!toNumber) {
       console.error('[twilio/incoming] No To number in Twilio request')
@@ -100,6 +108,27 @@ export async function POST(req: NextRequest) {
 
     const isActive = coverageResult.data?.status === 'ACTIVE'
     const clinic   = clinicResult.data as Record<string, unknown> | null
+
+    // ── Record that a call is in progress. Powers LiveCallPulse in the
+    //    dashboard topbar via Supabase realtime. Deleted by /api/twilio/status
+    //    when the call completes. Fire-and-forget — never block the call flow.
+    const willBeHandledByStella = Boolean(isActive && clinic && agentId)
+    if (callSid) {
+      supabase
+        .from('active_calls')
+        .upsert(
+          {
+            clinic_id:    clinicId,
+            call_sid:     callSid,
+            caller_phone: fromNumber,
+            handled_by:   willBeHandledByStella ? 'STELLA' : 'CLINIC',
+          },
+          { onConflict: 'call_sid' },
+        )
+        .then(({ error }) => {
+          if (error) console.error('[twilio/incoming] active_calls upsert failed:', error.message)
+        })
+    }
 
     if (isActive && clinic && agentId) {
       // ── Coverage ON -> register call with ElevenLabs (authenticated + dynamic vars)
