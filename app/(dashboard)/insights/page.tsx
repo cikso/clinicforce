@@ -6,6 +6,8 @@ import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 import { getServiceSupabase } from '@/lib/voice/shared'
 import Card from '@/app/components/ui/Card'
 import StatCard from '@/app/components/ui/StatCard'
+import EmptyState from '@/app/components/ui/EmptyState'
+import { BarChart3, PieChart, MessageSquareQuote } from 'lucide-react'
 
 export const metadata: Metadata = { title: 'Insights — ClinicForce' }
 export const dynamic = 'force-dynamic'
@@ -283,8 +285,13 @@ export default async function InsightsPage({ searchParams }: Props) {
         {/* Call Volume Chart */}
         <Card header={{ title: 'Call Volume Trend', subtitle: 'AI-resolved vs total calls' }} className="lg:col-span-2">
           {totalCalls === 0 ? (
-            <div className="h-[180px] flex items-center justify-center text-[13px] text-[var(--text-tertiary)]">
-              No calls in this period
+            <div className="h-[180px] flex items-center justify-center">
+              <EmptyState
+                size="sm"
+                icon={<BarChart3 className="w-5 h-5" strokeWidth={1.5} />}
+                title="No calls in this period"
+                description="Once Stella starts fielding calls, volume trends will appear here."
+              />
             </div>
           ) : (
             <div className="relative">
@@ -355,8 +362,13 @@ export default async function InsightsPage({ searchParams }: Props) {
         {/* Resolution Donut */}
         <Card header={{ title: 'Resolution Breakdown', subtitle: 'How calls are resolved' }}>
           {totalCalls === 0 ? (
-            <div className="h-[200px] flex items-center justify-center text-[13px] text-[var(--text-tertiary)]">
-              No calls in this period
+            <div className="h-[200px] flex items-center justify-center">
+              <EmptyState
+                size="sm"
+                icon={<PieChart className="w-5 h-5" strokeWidth={1.5} />}
+                title="No calls in this period"
+                description="Resolution breakdown needs a few completed calls to chart."
+              />
             </div>
           ) : (
             <div className="flex flex-col items-center">
@@ -417,8 +429,12 @@ export default async function InsightsPage({ searchParams }: Props) {
         {/* Call Reasons */}
         <Card header={{ title: 'Top Call Reasons', subtitle: 'Volume by intent category' }}>
           {callReasons.length === 0 ? (
-            <div className="h-[120px] flex items-center justify-center text-[13px] text-[var(--text-tertiary)]">
-              No call data yet
+            <div className="h-[120px] flex items-center justify-center">
+              <EmptyState
+                size="sm"
+                icon={<BarChart3 className="w-5 h-5" strokeWidth={1.5} />}
+                title="No call data yet"
+              />
             </div>
           ) : (
             <div className="space-y-3">
@@ -489,8 +505,12 @@ export default async function InsightsPage({ searchParams }: Props) {
         {/* Call Urgency Breakdown */}
         <Card header={{ title: 'Call Urgency Breakdown', subtitle: 'Distribution by urgency level' }}>
           {totalCalls === 0 ? (
-            <div className="h-[120px] flex items-center justify-center text-[13px] text-[var(--text-tertiary)]">
-              No call data yet
+            <div className="h-[120px] flex items-center justify-center">
+              <EmptyState
+                size="sm"
+                icon={<PieChart className="w-5 h-5" strokeWidth={1.5} />}
+                title="No call data yet"
+              />
             </div>
           ) : (() => {
             const routine = calls.filter(c => c.urgency === 'ROUTINE').length
@@ -533,8 +553,13 @@ export default async function InsightsPage({ searchParams }: Props) {
         {/* Patient Satisfaction (from NPS surveys) */}
         <Card header={{ title: 'Patient Feedback', subtitle: 'Recent NPS survey responses' }}>
           {npsReviews.length === 0 ? (
-            <div className="h-[120px] flex items-center justify-center text-[13px] text-[var(--text-tertiary)]">
-              No survey responses yet
+            <div className="h-[120px] flex items-center justify-center">
+              <EmptyState
+                size="sm"
+                icon={<MessageSquareQuote className="w-5 h-5" strokeWidth={1.5} />}
+                title="No survey responses yet"
+                description="Send your first post-visit survey to start collecting feedback."
+              />
             </div>
           ) : (
             <div className="space-y-3">

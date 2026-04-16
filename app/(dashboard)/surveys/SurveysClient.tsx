@@ -11,6 +11,9 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import KpiCard from '../overview/components/KpiCard'
+import EmptyState from '@/app/components/ui/EmptyState'
+import TableEmptyRow from '@/app/components/ui/TableEmptyRow'
+import { TrendingUp, Inbox, ListChecks } from 'lucide-react'
 
 /* ─── Types ─── */
 
@@ -371,8 +374,13 @@ export default function SurveysClient({
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[220px] flex items-center justify-center text-[13px] text-[#B0BAC9]">
-              No response data yet
+            <div className="h-[220px] flex items-center justify-center">
+              <EmptyState
+                size="sm"
+                icon={<TrendingUp className="w-5 h-5" strokeWidth={1.5} />}
+                title="No response data yet"
+                description="NPS trend appears here once at least one patient responds to a survey."
+              />
             </div>
           )}
         </div>
@@ -420,11 +428,12 @@ export default function SurveysClient({
                 </thead>
                 <tbody>
                   {responses.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-[13px] text-[#B0BAC9]">
-                        No surveys sent yet
-                      </td>
-                    </tr>
+                    <TableEmptyRow
+                      colSpan={4}
+                      icon={<Inbox className="w-5 h-5" strokeWidth={1.5} />}
+                      title="No surveys sent yet"
+                      description="Responses appear here once a survey is sent and a patient replies."
+                    />
                   ) : (
                     responses.map(r => (
                       <tr key={r.id} className="border-t border-[#EEF0F4] hover:bg-[#FAFBFC]">
@@ -458,11 +467,12 @@ export default function SurveysClient({
                 </thead>
                 <tbody>
                   {actions.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-[13px] text-[#B0BAC9]">
-                        No actions yet
-                      </td>
-                    </tr>
+                    <TableEmptyRow
+                      colSpan={6}
+                      icon={<ListChecks className="w-5 h-5" strokeWidth={1.5} />}
+                      title="No actions yet"
+                      description="Low-NPS responses surface here automatically as follow-up actions."
+                    />
                   ) : (
                     actions.map(a => (
                       <tr key={a.id} className="border-t border-[#EEF0F4] hover:bg-[#FAFBFC]">
