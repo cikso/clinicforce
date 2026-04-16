@@ -16,7 +16,7 @@ export default function BookingsLoading() {
       </div>
 
       {/* Calendar card */}
-      <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-primary)] p-5">
+      <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-5">
         {/* Day headers */}
         <div className="grid grid-cols-7 gap-2 mb-4">
           {DAYS.map((day) => (

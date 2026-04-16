@@ -11,7 +11,7 @@ export default function KnowledgeLoading() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-primary)] p-5 space-y-3"
+            className="rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-5 space-y-3"
           >
             <Skeleton className="h-4 w-40" />
             <Skeleton className="h-3 w-full" />
