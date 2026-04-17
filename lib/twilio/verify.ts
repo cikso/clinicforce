@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server'
 import twilio from 'twilio'
-import { createClient } from '@supabase/supabase-js'
 
 /**
  * Twilio request signature verification — uses Twilio's official SDK
@@ -13,6 +12,11 @@ import { createClient } from '@supabase/supabase-js'
  *   rewrites). We try a set of likely-correct URLs — pinned env base,
  *   req.url, and x-forwarded-proto/host reconstructions — and accept if
  *   any yields a matching HMAC. The auth token gate is unchanged.
+ *
+ * Regional auth tokens: phone numbers using regional routing (AU1, IE1)
+ * are signed with that region's auth token, NOT the US1 token shown on
+ * the default console page. `TWILIO_AUTH_TOKEN` must be the regional
+ * token matching the number's active routing region.
  */
 
 export type VerifyResult =
@@ -102,53 +106,15 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
     return { valid: true, params }
   }
 
-  const keyList = Object.keys(paramMap).sort().join(',')
-  const baseDiag = {
+  console.error('[verifyTwilioRequest] signature mismatch', {
     triedUrls: Array.from(urls),
     pathname,
     fwdHost,
     fwdProto,
     providedHead: signature.slice(0, 12),
-    tokenConfigured: true,
-    tokenLen: authToken.length,
-    tokenTrimmedLen: authToken.trim().length,
-    tokenHasSurroundingWhitespace: authToken !== authToken.trim(),
     accountSidPrefix: (paramMap.AccountSid ?? '').slice(0, 10),
-    paramKeys: keyList,
     paramCount: Object.keys(paramMap).length,
-    validator: 'twilio-sdk',
-  }
-
-  console.error('[verifyTwilioRequest] signature mismatch', JSON.stringify(baseDiag))
-
-  // One-shot forensic capture to DB — writes the full raw body + signature
-  // into public.twilio_debug_captures on EVERY sig mismatch. Vercel log
-  // truncation hides the rawBody otherwise. Drop this whole block once the
-  // signing discrepancy is identified.
-  try {
-    const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    if (supaUrl && supaKey) {
-      const svc = createClient(supaUrl, supaKey, { auth: { persistSession: false } })
-      // Capture what OUR code computed for each tried URL so we can diff
-      // against Twilio's sig offline. Shows exactly where the HMAC diverges.
-      const ourSigs: Record<string, string> = {}
-      for (const url of urls) {
-        ourSigs[url] = twilio.getExpectedTwilioSignature(authToken, url, paramMap)
-      }
-      await svc.from('twilio_debug_captures').insert({
-        pathname,
-        url: req.url,
-        signature,
-        raw_body: rawBody,
-        fwd_host: fwdHost,
-        fwd_proto: fwdProto,
-        tried_urls: ourSigs,
-      })
-    }
-  } catch (e) {
-    console.error('[verifyTwilioRequest] debug capture write failed', e)
-  }
+  })
 
   return { valid: false, reason: 'Signature mismatch' }
 }
