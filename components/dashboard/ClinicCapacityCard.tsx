@@ -9,7 +9,7 @@ interface ClinicCapacityCardProps {
 function getLoadStatus(capacity: ClinicCapacity, pendingCount: number) {
   const roomsFree = capacity.totalRooms - capacity.occupiedRooms
   if (roomsFree === 0 || pendingCount > 6)
-    return { label: 'Critical Load', color: 'text-[#b91c1c]', bg: 'bg-rose-50', dot: 'bg-[#b91c1c]' }
+    return { label: 'Critical Load', color: 'text-[var(--error)]', bg: 'bg-rose-50', dot: 'bg-[var(--error)]' }
   if (roomsFree <= 1 || pendingCount > 4)
     return { label: 'High Load', color: 'text-amber-700', bg: 'bg-amber-50', dot: 'bg-amber-500' }
   if (pendingCount > 2)
@@ -78,7 +78,7 @@ export default function ClinicCapacityCard({ capacity, pendingCount }: ClinicCap
             <AlertCircle className="w-4 h-4 text-slate-400" />
             <span className="text-sm font-medium">Queue Load</span>
           </div>
-          <span className={`text-xs font-bold ${pendingCount > 4 ? 'text-[#b91c1c]' : 'text-slate-700'}`}>
+          <span className={`text-xs font-bold ${pendingCount > 4 ? 'text-[var(--error)]' : 'text-slate-700'}`}>
             {pendingCount} pending triage
           </span>
         </div>

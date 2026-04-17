@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import VeterinaryClinicsHubContent from '@/components/marketing/VeterinaryClinicsHubContent'
 import { CITIES } from '@/lib/seo/cities'
 
+export const dynamic = 'force-static'
+export const revalidate = 3600
+
 const BASE_URL = 'https://www.clinicforce.io'
 const URL = `${BASE_URL}/veterinary-clinics`
 const TITLE = 'AI Receptionist for Veterinary Clinics Australia | ClinicForce'

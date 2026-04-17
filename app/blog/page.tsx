@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import BlogIndexContent from '@/components/marketing/BlogIndexContent'
 import { listPosts } from '@/lib/blog/posts'
 
+export const dynamic = 'force-static'
+export const revalidate = 3600
+
 const BASE_URL = 'https://www.clinicforce.io'
 const URL = `${BASE_URL}/blog`
 const TITLE = 'Veterinary Clinic AI Receptionist Blog | ClinicForce'

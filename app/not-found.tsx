@@ -15,16 +15,16 @@ export default function NotFound() {
         </p>
         <div className="mt-6 flex items-center justify-center gap-3">
           <Link
-            href="/overview"
+            href="/"
             className="rounded-xl bg-[#00D68F] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#00B578]"
           >
-            Go to Dashboard
+            Back to Home
           </Link>
           <Link
-            href="/"
+            href="/overview"
             className="rounded-xl border border-[#E5E7EB] bg-white px-5 py-2.5 text-sm font-semibold text-[#111827] transition hover:bg-[#F3F4F6]"
           >
-            Back to Home
+            Go to Dashboard
           </Link>
         </div>
       </div>

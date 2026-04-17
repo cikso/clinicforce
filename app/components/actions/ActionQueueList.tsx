@@ -1,12 +1,48 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Badge from '@/app/components/ui/Badge'
 import Button from '@/app/components/ui/Button'
 import EmptyState from '@/app/components/ui/EmptyState'
 import TaskActionMenu from './TaskActionMenu'
 import { cn } from '@/lib/utils'
+
+// ─── Saved-view persistence ───────────────────────────────────────────────
+// Scoped by clinicId so switching clinics starts fresh.
+const STORAGE_KEY_PREFIX = 'cf.actionQueue.view'
+
+interface SavedView {
+  filter: 'all' | 'callback' | 'followup' | 'review' | 'urgent'
+  sort:   'newest' | 'oldest' | 'priority' | 'due'
+  search: string
+}
+
+function loadSavedView(clinicId: string): SavedView | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(`${STORAGE_KEY_PREFIX}.${clinicId}`)
+    if (!raw) return null
+    const v = JSON.parse(raw) as Partial<SavedView>
+    const okFilter = v.filter && ['all', 'callback', 'followup', 'review', 'urgent'].includes(v.filter)
+    const okSort   = v.sort   && ['newest', 'oldest', 'priority', 'due'].includes(v.sort)
+    if (okFilter && okSort) {
+      return {
+        filter: v.filter as SavedView['filter'],
+        sort:   v.sort as SavedView['sort'],
+        search: typeof v.search === 'string' ? v.search : '',
+      }
+    }
+    return null
+  } catch { return null }
+}
+
+function persistSavedView(clinicId: string, view: SavedView) {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(`${STORAGE_KEY_PREFIX}.${clinicId}`, JSON.stringify(view))
+  } catch { /* ignore quota / disabled storage */ }
+}
 
 /* ─── Types ─── */
 
@@ -108,6 +144,21 @@ export default function ActionQueueList({
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [completedOpen, setCompletedOpen] = useState(false)
+
+  // ── Saved-view: restore on mount / clinic switch ──────────────────────
+  useEffect(() => {
+    const saved = loadSavedView(clinicId)
+    if (saved) {
+      setFilter(saved.filter)
+      setSort(saved.sort)
+      setSearch(saved.search)
+    }
+  }, [clinicId])
+
+  // ── Saved-view: persist on change ─────────────────────────────────────
+  useEffect(() => {
+    persistSavedView(clinicId, { filter, sort, search })
+  }, [clinicId, filter, sort, search])
 
   /* ── Counts for filter pills ── */
   const counts = useMemo(() => ({

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { getServiceSupabase, normaliseAustralianPhone, validateSecret, validateWebhookHmac } from '@/lib/voice/shared'
 import { withRetry } from '@/lib/utils/withRetry'
 
@@ -154,6 +155,7 @@ export async function POST(req: NextRequest) {
         if (updateErr) throw updateErr
       }, { label: 'webhook/call-inbox-upsert' }).catch((err) => {
         console.error('[inbox/webhook] Update error (exact match):', err)
+        Sentry.captureException(err, { tags: { route: 'inbox/webhook', phase: 'exact-match' } })
       })
       return NextResponse.json({ ok: true, action: 'updated_exact' })
     }
@@ -195,6 +197,7 @@ export async function POST(req: NextRequest) {
       if (updateErr) throw updateErr
     }, { label: 'webhook/call-inbox-upsert' }).catch((err) => {
       console.error('[inbox/webhook] Update error (recent match):', err)
+      Sentry.captureException(err, { tags: { route: 'inbox/webhook', phase: 'recent-match' } })
     })
     return NextResponse.json({ ok: true, action: 'updated_recent' })
   }
@@ -246,6 +249,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[inbox/webhook] Insert error:', msg)
+    Sentry.captureException(err, { tags: { route: 'inbox/webhook', phase: 'insert' } })
     return NextResponse.json({ error: msg }, { status: 500 })
   }
 

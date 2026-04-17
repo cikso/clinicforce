@@ -10,9 +10,9 @@ interface AfterHoursCallsPanelProps {
 
 const riskConfig: Record<CallRisk, { pill: string; icon: React.ReactNode; border: string }> = {
   CRITICAL: {
-    pill: 'bg-rose-100 text-[#b91c1c]',
+    pill: 'bg-rose-100 text-[var(--error)]',
     icon: <Asterisk className="w-5 h-5" />,
-    border: 'border-l-[#b91c1c]',
+    border: 'border-l-[var(--error)]',
   },
   URGENT: {
     pill: 'bg-rose-100 text-rose-700',
@@ -32,7 +32,7 @@ const statusBadge: Record<CallStatus, { label: string; style: string; icon: Reac
   CASE_CREATED: { label: 'Case Created', style: 'bg-emerald-100 text-emerald-700', icon: <Check className="w-3 h-3" /> },
   QUEUED: { label: 'In Queue', style: 'bg-teal-100 text-teal-700', icon: <Check className="w-3 h-3" /> },
   CALLBACK_MARKED: { label: 'Callback Marked', style: 'bg-teal-100 text-teal-700', icon: <Check className="w-3 h-3" /> },
-  ESCALATED: { label: 'Escalated', style: 'bg-rose-100 text-[#b91c1c]', icon: <AlertTriangle className="w-3 h-3" /> },
+  ESCALATED: { label: 'Escalated', style: 'bg-rose-100 text-[var(--error)]', icon: <AlertTriangle className="w-3 h-3" /> },
 }
 
 function CallActions({ call, onAction }: { call: DashboardCall; onAction: (id: string, action: string) => void }) {
@@ -57,7 +57,7 @@ function CallActions({ call, onAction }: { call: DashboardCall; onAction: (id: s
         </button>
         <button
           onClick={() => onAction(call.id, 'ESCALATE')}
-          className="px-4 py-2 bg-[#b91c1c] text-white text-xs font-bold rounded-full hover:bg-red-800 transition-colors"
+          className="px-4 py-2 bg-[var(--error)] text-white text-xs font-bold rounded-full hover:bg-red-800 transition-colors"
         >
           Escalate
         </button>
@@ -127,7 +127,7 @@ export default function AfterHoursCallsPanel({ calls, onAction }: AfterHoursCall
               {/* Top row */}
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full ${call.aiRiskLabel === 'GENERAL' ? 'bg-teal-100 text-teal-600' : 'bg-rose-100 text-[#b91c1c]'} flex items-center justify-center`}>
+                  <div className={`w-10 h-10 rounded-full ${call.aiRiskLabel === 'GENERAL' ? 'bg-teal-100 text-teal-600' : 'bg-rose-100 text-[var(--error)]'} flex items-center justify-center`}>
                     {risk.icon}
                   </div>
                   <div>

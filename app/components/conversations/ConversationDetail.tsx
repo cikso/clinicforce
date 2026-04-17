@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Button from '@/app/components/ui/Button'
 import EmptyState from '@/app/components/ui/EmptyState'
 import CreateTaskModal from './CreateTaskModal'
+import ActivityTimeline from './ActivityTimeline'
 import type { CallItem } from './ConversationList'
 import { cn } from '@/lib/utils'
 
@@ -33,17 +34,17 @@ function formatDateTime(iso: string): string {
 /* ── Urgency & Status colour maps ───────────────────────────────────────────── */
 
 const URGENCY_BADGE: Record<string, { bg: string; label: string }> = {
-  CRITICAL: { bg: 'bg-[#ba1a1a]', label: 'EMERGENCY' },
-  URGENT:   { bg: 'bg-[#b45309]', label: 'URGENT' },
-  ROUTINE:  { bg: 'bg-[#0f6e56]', label: 'ROUTINE' },
+  CRITICAL: { bg: 'bg-[var(--error)]',   label: 'EMERGENCY' },
+  URGENT:   { bg: 'bg-[var(--warning)]', label: 'URGENT' },
+  ROUTINE:  { bg: 'bg-[var(--success)]', label: 'ROUTINE' },
 }
 
 const STATUS_BADGE: Record<string, { bg: string; label: string }> = {
-  UNREAD:   { bg: 'bg-[#0058a7]', label: 'UNREAD' },
-  READ:     { bg: 'bg-gray-400',  label: 'READ' },
-  REVIEWED: { bg: 'bg-gray-400',  label: 'REVIEWED' },
-  ACTIONED: { bg: 'bg-[#0f6e56]', label: 'ACTIONED' },
-  ARCHIVED: { bg: 'bg-gray-400',  label: 'ARCHIVED' },
+  UNREAD:   { bg: 'bg-[var(--info)]',    label: 'UNREAD' },
+  READ:     { bg: 'bg-gray-400',         label: 'READ' },
+  REVIEWED: { bg: 'bg-gray-400',         label: 'REVIEWED' },
+  ACTIONED: { bg: 'bg-[var(--success)]', label: 'ACTIONED' },
+  ARCHIVED: { bg: 'bg-gray-400',         label: 'ARCHIVED' },
 }
 
 /* ── Icons ──────────────────────────────────────────────────────────────────── */
@@ -62,7 +63,7 @@ const CalendarIcon = () => (
 )
 
 const InfoCircleIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0 text-[#b45309]">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0 text-[var(--warning)]">
     <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
     <path d="M8 7v4M8 5.5v.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
@@ -134,7 +135,7 @@ export default function ConversationDetail({
         {/* Hero row */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 flex-wrap min-w-0">
-            <h2 className="text-[28px] font-extrabold text-[var(--text-primary)] leading-tight" style={{ fontFamily: 'Manrope, sans-serif', fontWeight: 800 }}>
+            <h2 className="heading-3 font-heading font-extrabold text-[var(--text-primary)] leading-tight">
               {call.caller_name || 'Unknown Caller'}
             </h2>
             <span className={cn('text-[10px] font-bold uppercase tracking-wider text-white px-2.5 py-1 rounded', urgencyBadge.bg)}>
@@ -219,14 +220,29 @@ export default function ConversationDetail({
           </div>
         </div>
 
+        {/* Section 4: Activity Timeline */}
+        <ActivityTimeline
+          callId={call.id}
+          clinicId={clinicId}
+          call={{
+            id:              call.id,
+            created_at:      call.created_at,
+            updated_at:      call.updated_at ?? null,
+            urgency:         call.urgency,
+            status:          status,
+            caller_name:     call.caller_name ?? null,
+            action_required: call.action_required ?? null,
+          }}
+        />
+
       </div>
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <div className="shrink-0 bg-white border-t border-[var(--border)] px-8 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0f6e56] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0f6e56]" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--success)] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--success)]" />
           </span>
           <span className="text-[12px] text-[var(--text-secondary)]">
             {status} · Triage: {call.urgency}
@@ -258,12 +274,12 @@ export default function ConversationDetail({
 
 function DetailCard({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <div className="bg-white rounded-[10px] border border-[#eeeeed] p-4">
+    <div className="bg-white rounded-[10px] border border-[var(--border-subtle)] p-4">
       <span className="block text-[9px] font-bold uppercase tracking-[1px] text-[var(--text-tertiary)] mb-1.5">{label}</span>
-      <p className="text-[15px] font-semibold text-[var(--text-primary)]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+      <p className="text-body-lg font-heading font-semibold text-[var(--text-primary)]">
         {value}
       </p>
-      <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">{sub}</p>
+      <p className="text-caption text-[var(--text-tertiary)] mt-0.5">{sub}</p>
     </div>
   )
 }

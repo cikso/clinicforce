@@ -147,7 +147,7 @@ export default function MediaClient() {
                       {insight.type === 'ok' ? (
                         <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                       ) : (
-                        <AlertTriangle className="w-5 h-5 text-[#b91c1c] shrink-0 mt-0.5" />
+                        <AlertTriangle className="w-5 h-5 text-[var(--error)] shrink-0 mt-0.5" />
                       )}
                       <span className="text-sm text-slate-700 font-medium">{insight.text}</span>
                     </li>
@@ -175,7 +175,7 @@ export default function MediaClient() {
                 <button className="w-full py-4 bg-[var(--brand)] text-white rounded-full text-sm font-bold hover:bg-[var(--brand-hover)] transition-colors shadow-sm">
                   Approve &amp; Move to Follow-up
                 </button>
-                <button className="w-full py-4 bg-red-100 text-[#b91c1c] rounded-full text-sm font-bold hover:bg-red-200 transition-colors">
+                <button className="w-full py-4 bg-red-100 text-[var(--error)] rounded-full text-sm font-bold hover:bg-red-200 transition-colors">
                   Flag for Immediate Consult
                 </button>
                 <button className="w-full py-4 bg-slate-200 text-slate-800 rounded-full text-sm font-bold hover:bg-slate-300 transition-colors">
@@ -246,7 +246,7 @@ function MediaCard({
         <span
           className={`px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full ${
             isUrgent
-              ? 'bg-[#b91c1c] text-white'
+              ? 'bg-[var(--error)] text-white'
               : isRoutine
               ? 'bg-slate-800/70 text-white'
               : 'bg-[var(--brand)] text-white'

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useMemo, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import DataTable, { type DataTableColumn } from '@/app/components/ui/DataTable'
 
 export interface ClinicOption {
   id: string
@@ -43,6 +44,55 @@ export default function OwnersClient({ owners, pendingInvites, allClinics }: Pro
   const [showInvite, setShowInvite] = useState(false)
   const [editing, setEditing] = useState<OwnerRow | null>(null)
 
+  const ownerColumns = useMemo<DataTableColumn<OwnerRow>[]>(() => [
+    {
+      id: 'owner',
+      header: 'Owner',
+      width: '2fr',
+      sortValue: (o) => (o.name ?? o.email).toLowerCase(),
+      cell: (o) => (
+        <div className="min-w-0">
+          <p className="text-[14px] font-semibold text-[var(--text-primary)] truncate">
+            {o.name ?? o.email.split('@')[0]}
+          </p>
+          <p className="text-[12px] text-[var(--text-tertiary)] truncate">{o.email}</p>
+        </div>
+      ),
+    },
+    {
+      id: 'clinics',
+      header: 'Clinics',
+      width: '3fr',
+      sortValue: (o) => o.clinics.length,
+      cell: (o) => (
+        <div className="flex flex-wrap gap-1.5">
+          {o.clinics.length === 0 ? (
+            <span className="text-[12px] text-[var(--text-tertiary)] italic">No clinics</span>
+          ) : (
+            o.clinics.map((c) => (
+              <span
+                key={c.id}
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-secondary)]"
+                title={c.suburb ?? undefined}
+              >
+                {c.name}
+              </span>
+            ))
+          )}
+        </div>
+      ),
+    },
+    {
+      id: 'joined',
+      header: 'Joined',
+      width: '0.8fr',
+      sortValue: (o) => o.createdAt,
+      cell: (o) => (
+        <span className="text-[13px] text-[var(--text-tertiary)]">{formatDate(o.createdAt)}</span>
+      ),
+    },
+  ], [])
+
   return (
     <div className="max-w-[1100px]">
       {/* Header */}
@@ -76,79 +126,33 @@ export default function OwnersClient({ owners, pendingInvites, allClinics }: Pro
         </button>
       </div>
 
-      {/* Active owners table */}
-      <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl overflow-hidden shadow-[var(--shadow-card)] mb-6">
-        <div className="px-5 py-3 border-b border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-between">
+      {/* Active owners table (DataTable primitive — sortable headers) */}
+      <div className="mb-6">
+        <div className="px-5 py-2.5 mb-0">
           <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--text-tertiary)]">
             Active Owners ({owners.length})
           </p>
         </div>
-
-        {owners.length === 0 ? (
-          <div className="py-12 text-center">
-            <p className="text-[14px] text-[var(--text-tertiary)]">
+        <DataTable
+          data={owners}
+          columns={ownerColumns}
+          getRowId={(o) => o.userId}
+          onRowClick={(o) => setEditing(o)}
+          defaultSort={{ columnId: 'joined', direction: 'desc' }}
+          ariaLabel="Clinic owners"
+          rowActions={() => (
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-[var(--text-tertiary)]">
+              <circle cx="8" cy="3" r="1" />
+              <circle cx="8" cy="8" r="1" />
+              <circle cx="8" cy="13" r="1" />
+            </svg>
+          )}
+          emptyState={
+            <p className="text-center text-[14px] text-[var(--text-tertiary)] py-6">
               No clinic owners yet. Invite one to get started.
             </p>
-          </div>
-        ) : (
-          <div className="hidden md:grid grid-cols-[2fr_3fr_0.8fr_44px] gap-3 px-5 py-3 border-b border-[var(--border)] bg-[var(--bg-secondary)]">
-            {['Owner', 'Clinics', 'Joined', ''].map((h) => (
-              <span key={h} className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--text-tertiary)]">
-                {h}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {owners.map((o) => (
-          <div
-            key={o.userId}
-            className="grid grid-cols-1 md:grid-cols-[2fr_3fr_0.8fr_44px] gap-1 md:gap-3 px-5 py-3.5 items-center border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--bg-secondary)] transition-colors"
-          >
-            {/* Owner */}
-            <div className="min-w-0">
-              <p className="text-[14px] font-semibold text-[var(--text-primary)] truncate">
-                {o.name ?? o.email.split('@')[0]}
-              </p>
-              <p className="text-[12px] text-[var(--text-tertiary)] truncate">{o.email}</p>
-            </div>
-
-            {/* Clinics chips */}
-            <div className="flex flex-wrap gap-1.5">
-              {o.clinics.length === 0 ? (
-                <span className="text-[12px] text-[var(--text-tertiary)] italic">No clinics</span>
-              ) : (
-                o.clinics.map((c) => (
-                  <span
-                    key={c.id}
-                    className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-secondary)]"
-                    title={c.suburb ?? undefined}
-                  >
-                    {c.name}
-                  </span>
-                ))
-              )}
-            </div>
-
-            {/* Joined */}
-            <span className="text-[13px] text-[var(--text-tertiary)]">
-              {formatDate(o.createdAt)}
-            </span>
-
-            {/* Manage */}
-            <button
-              onClick={() => setEditing(o)}
-              className="flex items-center justify-center w-8 h-8 rounded-lg text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors"
-              title="Manage clinic assignments"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                <circle cx="8" cy="3" r="1" />
-                <circle cx="8" cy="8" r="1" />
-                <circle cx="8" cy="13" r="1" />
-              </svg>
-            </button>
-          </div>
-        ))}
+          }
+        />
       </div>
 
       {/* Pending invites */}

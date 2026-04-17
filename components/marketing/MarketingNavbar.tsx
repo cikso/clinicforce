@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 
-export default function MarketingNavbar({ onBookDemo }: { onBookDemo: () => void }) {
+export default function MarketingNavbar({ onBookDemo }: { onBookDemo?: () => void }) {
   return (
     <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,10 +14,7 @@ export default function MarketingNavbar({ onBookDemo }: { onBookDemo: () => void
                 CF
               </span>
             </div>
-            <span
-              className="text-[#1A1A1A] font-bold text-xl tracking-tight"
-              style={{ fontFamily: 'var(--font-geist-sans)' }}
-            >
+            <span className="text-[#1A1A1A] font-bold text-xl tracking-tight font-heading">
               ClinicForce
             </span>
           </Link>
@@ -48,12 +45,21 @@ export default function MarketingNavbar({ onBookDemo }: { onBookDemo: () => void
             >
               Clinic Login
             </a>
-            <button
-              onClick={onBookDemo}
-              className="text-sm font-semibold text-white bg-[#00D68F] hover:bg-[#00B578] transition-colors duration-150 px-4 py-2 rounded-lg cursor-pointer"
-            >
-              Book a Demo
-            </button>
+            {onBookDemo ? (
+              <button
+                onClick={onBookDemo}
+                className="text-sm font-semibold text-white bg-[#00D68F] hover:bg-[#00B578] transition-colors duration-150 px-4 py-2 rounded-lg cursor-pointer"
+              >
+                Book a Demo
+              </button>
+            ) : (
+              <Link
+                href="/#cta"
+                className="text-sm font-semibold text-white bg-[#00D68F] hover:bg-[#00B578] transition-colors duration-150 px-4 py-2 rounded-lg"
+              >
+                Book a Demo
+              </Link>
+            )}
           </div>
         </div>
       </div>

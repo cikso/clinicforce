@@ -93,7 +93,7 @@ const NAV_ITEMS: { label: string; icon: React.ReactNode; href: string; badgeKey?
   { label: 'Insights',       icon: icons.barChart,  href: '/insights' },
   { label: 'Bookings',       icon: icons.calendar,  href: '/bookings', comingSoon: true },
   { label: 'SMS Hub',        icon: icons.message,   href: '/sms', comingSoon: true },
-  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys', comingSoon: true },
+  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys' },
   { label: 'Settings',       icon: icons.cog,       href: '/settings' },
 ]
 

@@ -33,7 +33,7 @@ export default function QuickActionsPanel({ onNewCase, onEscalate, onAssign, onB
       label: 'Escalate to ER',
       sublabel: 'Emergency flag',
       onClick: onEscalate,
-      color: 'bg-rose-50 text-[#b91c1c] hover:bg-rose-100',
+      color: 'bg-rose-50 text-[var(--error)] hover:bg-rose-100',
     },
     {
       icon: <UserCheck className="w-4 h-4" />,

@@ -20,7 +20,7 @@ export default function EscalateModal({ isOpen, caseId, caseName, onClose, onCon
         <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm pointer-events-auto">
           <div className="p-6 text-center">
             <div className="w-14 h-14 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <AlertTriangle className="w-7 h-7 text-[#b91c1c]" />
+              <AlertTriangle className="w-7 h-7 text-[var(--error)]" />
             </div>
             <h2 className="text-xl font-bold text-slate-900 mb-2">Escalate to ER?</h2>
             <p className="text-sm text-slate-500 leading-relaxed mb-6">
@@ -37,7 +37,7 @@ export default function EscalateModal({ isOpen, caseId, caseName, onClose, onCon
               </button>
               <button
                 onClick={() => { onConfirm(caseId); onClose() }}
-                className="flex-1 py-3 bg-[#b91c1c] text-white font-bold rounded-full hover:bg-red-800 transition-colors text-sm"
+                className="flex-1 py-3 bg-[var(--error)] text-white font-bold rounded-full hover:bg-red-800 transition-colors text-sm"
               >
                 Escalate Now
               </button>
