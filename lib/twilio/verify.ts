@@ -21,12 +21,29 @@ export type VerifyResult =
 export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResult> {
   const authToken = process.env.TWILIO_AUTH_TOKEN
   const skip = process.env.TWILIO_SKIP_SIGNATURE_VALIDATION === 'true'
+  const expectedAccountSid = process.env.TWILIO_ACCOUNT_SID
 
   const rawBody = await req.text()
   const params  = new URLSearchParams(rawBody)
 
+  // Defense-in-depth: always require the webhook body's AccountSid to match
+  // our env TWILIO_ACCOUNT_SID. Not as strong as HMAC verification, but
+  // stops the common "attacker hit the webhook URL with random form data"
+  // class of abuse even when signature verification is disabled.
+  if (expectedAccountSid) {
+    const bodyAccountSid = params.get('AccountSid')
+    if (!bodyAccountSid || bodyAccountSid !== expectedAccountSid) {
+      console.error('[verifyTwilioRequest] AccountSid mismatch', {
+        expectedPrefix: expectedAccountSid.slice(0, 10),
+        gotPrefix:      (bodyAccountSid ?? '').slice(0, 10),
+        path:           req.nextUrl.pathname,
+      })
+      return { valid: false, reason: 'AccountSid mismatch' }
+    }
+  }
+
   if (skip) {
-    console.warn('[verifyTwilioRequest] TWILIO_SKIP_SIGNATURE_VALIDATION=true — skipping validation (dev only)')
+    console.warn('[verifyTwilioRequest] TWILIO_SKIP_SIGNATURE_VALIDATION=true — skipping HMAC check (AccountSid still enforced)')
     return { valid: true, params }
   }
 
