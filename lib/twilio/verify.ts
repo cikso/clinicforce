@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import twilio from 'twilio'
+import { createClient } from '@supabase/supabase-js'
 
 /**
  * Twilio request signature verification — uses Twilio's official SDK
@@ -118,20 +119,29 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
     validator: 'twilio-sdk',
   }
 
-  // Opt-in forensic log for one-off debugging. Enable by setting
-  // TWILIO_DEBUG_LOG_BODY=true in Vercel, make ONE test call to capture the
-  // exact URL + body + full signature that Twilio sent, then disable and
-  // remove the env var. Body may contain phone numbers — only turn this on
-  // briefly, only on a non-production clinic.
-  if (process.env.TWILIO_DEBUG_LOG_BODY === 'true') {
-    console.error('[verifyTwilioRequest] FULL body for signature debugging', JSON.stringify({
-      ...baseDiag,
-      signature,              // full header (NOT a secret — Twilio sends it)
-      reqUrl: req.url,
-      rawBody,                // literal form-encoded body
-    }))
-  } else {
-    console.error('[verifyTwilioRequest] signature mismatch', JSON.stringify(baseDiag))
+  console.error('[verifyTwilioRequest] signature mismatch', JSON.stringify(baseDiag))
+
+  // One-shot forensic capture to DB — writes the full raw body + signature
+  // into public.twilio_debug_captures on EVERY sig mismatch. Vercel log
+  // truncation hides the rawBody otherwise. Drop this whole block once the
+  // signing discrepancy is identified.
+  try {
+    const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (supaUrl && supaKey) {
+      const svc = createClient(supaUrl, supaKey, { auth: { persistSession: false } })
+      await svc.from('twilio_debug_captures').insert({
+        pathname,
+        url: req.url,
+        signature,
+        raw_body: rawBody,
+        fwd_host: fwdHost,
+        fwd_proto: fwdProto,
+        tried_urls: Array.from(urls),
+      })
+    }
+  } catch (e) {
+    console.error('[verifyTwilioRequest] debug capture write failed', e)
   }
 
   return { valid: false, reason: 'Signature mismatch' }
