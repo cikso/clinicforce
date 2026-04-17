@@ -15,14 +15,22 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
  *
  * URL reconstruction:
  *   Twilio signs the EXACT URL configured in its console. Behind Vercel the
- *   incoming req.url is already the public URL, but we allow an override via
- *   TWILIO_WEBHOOK_BASE_URL for environments where forwarding rewrites the
- *   host (e.g. tunnel URLs for local testing).
+ *   incoming req.url can differ from the public URL (internal rewrites,
+ *   localhost, etc). We try a set of likely-correct URLs — pinned env base,
+ *   req.url, and x-forwarded-proto/host reconstructions — and accept if any
+ *   yields a matching HMAC. This tolerates different proxy setups without
+ *   opening a hole (the auth token is still required to match Twilio's).
  */
 
 export type VerifyResult =
   | { valid: true;  params: URLSearchParams }
   | { valid: false; reason: string }
+
+function eq(a: string, b: string): boolean {
+  const A = Buffer.from(a)
+  const B = Buffer.from(b)
+  return A.length === B.length && timingSafeEqual(A, B)
+}
 
 export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResult> {
   const authToken = process.env.TWILIO_AUTH_TOKEN
@@ -46,33 +54,54 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
     return { valid: false, reason: 'Missing X-Twilio-Signature header' }
   }
 
-  // Reconstruct the URL Twilio used to compute the signature.
-  // Prefer explicit base URL — it removes any ambiguity from proxy headers.
-  const base = (process.env.TWILIO_WEBHOOK_BASE_URL ?? '').replace(/\/+$/, '')
-  const url  = base
-    ? `${base}${req.nextUrl.pathname}${req.nextUrl.search}`
-    : req.url
-
   // Canonicalise the body per Twilio's spec: sort form params alphabetically
-  // by name, then concatenate name+value pairs with no separator. A form may
-  // legitimately contain repeated keys (e.g. MediaUrl0 / MediaUrl1, or any
-  // key posted twice) — `params.get(key)` only returns the first value, so we
-  // iterate entries and sort stably by key to preserve every value.
+  // by name, then concatenate name+value pairs with no separator.
   const entries = Array.from(params.entries())
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
   const joined = entries.map(([k, v]) => `${k}${v}`).join('')
-  const signingString = `${url}${joined}`
 
-  const expected = createHmac('sha1', authToken).update(signingString).digest('base64')
+  // Build the set of candidate URLs Twilio might have signed with.
+  const base = (process.env.TWILIO_WEBHOOK_BASE_URL ?? '').replace(/\/+$/, '')
+  const pathname = req.nextUrl.pathname
+  const search   = req.nextUrl.search
+  const fwdHost  = req.headers.get('x-forwarded-host') ?? req.headers.get('host')
+  const fwdProto = req.headers.get('x-forwarded-proto') ?? 'https'
 
-  const expectedBuf = Buffer.from(expected)
-  const providedBuf = Buffer.from(signature)
-  if (expectedBuf.length !== providedBuf.length) {
-    return { valid: false, reason: 'Signature length mismatch' }
+  const urls = new Set<string>()
+  if (base)    urls.add(`${base}${pathname}${search}`)
+  urls.add(req.url)
+  if (fwdHost) urls.add(`${fwdProto}://${fwdHost}${pathname}${search}`)
+  // With and without trailing slash variants (Twilio sometimes normalises):
+  for (const u of Array.from(urls)) {
+    urls.add(u.endsWith('/') ? u.slice(0, -1) : u + '/')
   }
-  if (!timingSafeEqual(expectedBuf, providedBuf)) {
-    return { valid: false, reason: 'Signature mismatch' }
+
+  let matched: string | null = null
+  for (const url of urls) {
+    const expected = createHmac('sha1', authToken).update(`${url}${joined}`).digest('base64')
+    if (eq(expected, signature)) {
+      matched = url
+      break
+    }
   }
 
-  return { valid: true, params }
+  if (matched) {
+    return { valid: true, params }
+  }
+
+  // Diagnostic log — never includes the token or full body. Safe to keep on.
+  const keyList = entries.map(([k]) => k).join(',')
+  console.error('[verifyTwilioRequest] signature mismatch', JSON.stringify({
+    triedUrls: Array.from(urls),
+    pathname,
+    fwdHost,
+    fwdProto,
+    providedHead: signature.slice(0, 12),
+    tokenHead: authToken.slice(0, 4),
+    tokenLen: authToken.length,
+    paramKeys: keyList,
+    paramCount: entries.length,
+  }))
+
+  return { valid: false, reason: 'Signature mismatch' }
 }
