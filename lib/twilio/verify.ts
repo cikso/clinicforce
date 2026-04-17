@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import twilio from 'twilio'
+import { createClient } from '@supabase/supabase-js'
 
 /**
  * Twilio request signature verification — uses Twilio's official SDK
@@ -21,12 +22,29 @@ export type VerifyResult =
 export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResult> {
   const authToken = process.env.TWILIO_AUTH_TOKEN
   const skip = process.env.TWILIO_SKIP_SIGNATURE_VALIDATION === 'true'
+  const expectedAccountSid = process.env.TWILIO_ACCOUNT_SID
 
   const rawBody = await req.text()
   const params  = new URLSearchParams(rawBody)
 
+  // Defense-in-depth: always require the webhook body's AccountSid to match
+  // our env TWILIO_ACCOUNT_SID. Not as strong as HMAC verification, but
+  // stops the common "attacker hit the webhook URL with random form data"
+  // class of abuse even when signature verification is disabled.
+  if (expectedAccountSid) {
+    const bodyAccountSid = params.get('AccountSid')
+    if (!bodyAccountSid || bodyAccountSid !== expectedAccountSid) {
+      console.error('[verifyTwilioRequest] AccountSid mismatch', {
+        expectedPrefix: expectedAccountSid.slice(0, 10),
+        gotPrefix:      (bodyAccountSid ?? '').slice(0, 10),
+        path:           req.nextUrl.pathname,
+      })
+      return { valid: false, reason: 'AccountSid mismatch' }
+    }
+  }
+
   if (skip) {
-    console.warn('[verifyTwilioRequest] TWILIO_SKIP_SIGNATURE_VALIDATION=true — skipping validation (dev only)')
+    console.warn('[verifyTwilioRequest] TWILIO_SKIP_SIGNATURE_VALIDATION=true — skipping HMAC check (AccountSid still enforced)')
     return { valid: true, params }
   }
 
@@ -85,7 +103,7 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
   }
 
   const keyList = Object.keys(paramMap).sort().join(',')
-  console.error('[verifyTwilioRequest] signature mismatch', JSON.stringify({
+  const baseDiag = {
     triedUrls: Array.from(urls),
     pathname,
     fwdHost,
@@ -99,7 +117,32 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
     paramKeys: keyList,
     paramCount: Object.keys(paramMap).length,
     validator: 'twilio-sdk',
-  }))
+  }
+
+  console.error('[verifyTwilioRequest] signature mismatch', JSON.stringify(baseDiag))
+
+  // One-shot forensic capture to DB — writes the full raw body + signature
+  // into public.twilio_debug_captures on EVERY sig mismatch. Vercel log
+  // truncation hides the rawBody otherwise. Drop this whole block once the
+  // signing discrepancy is identified.
+  try {
+    const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (supaUrl && supaKey) {
+      const svc = createClient(supaUrl, supaKey, { auth: { persistSession: false } })
+      await svc.from('twilio_debug_captures').insert({
+        pathname,
+        url: req.url,
+        signature,
+        raw_body: rawBody,
+        fwd_host: fwdHost,
+        fwd_proto: fwdProto,
+        tried_urls: Array.from(urls),
+      })
+    }
+  } catch (e) {
+    console.error('[verifyTwilioRequest] debug capture write failed', e)
+  }
 
   return { valid: false, reason: 'Signature mismatch' }
 }
