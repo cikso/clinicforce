@@ -67,14 +67,21 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
   const fwdHost  = req.headers.get('x-forwarded-host') ?? req.headers.get('host')
   const fwdProto = req.headers.get('x-forwarded-proto') ?? 'https'
 
+  // Pathname variants — trailing slash matters to Twilio's signer but the
+  // slash must sit between the path and the query string, not at the end of
+  // the whole URL. Toggle on the pathname only, then append the search string.
+  const pathVariants = new Set<string>([
+    pathname,
+    pathname.endsWith('/') ? pathname.slice(0, -1) : pathname + '/',
+  ])
+
   const urls = new Set<string>()
-  if (base)    urls.add(`${base}${pathname}${search}`)
-  urls.add(req.url)
-  if (fwdHost) urls.add(`${fwdProto}://${fwdHost}${pathname}${search}`)
-  // With and without trailing slash variants (Twilio sometimes normalises):
-  for (const u of Array.from(urls)) {
-    urls.add(u.endsWith('/') ? u.slice(0, -1) : u + '/')
+  for (const p of pathVariants) {
+    if (base)    urls.add(`${base}${p}${search}`)
+    if (fwdHost) urls.add(`${fwdProto}://${fwdHost}${p}${search}`)
   }
+  // req.url is already formed with its own path+query; include verbatim.
+  urls.add(req.url)
 
   let matched: string | null = null
   for (const url of urls) {
@@ -97,8 +104,7 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
     fwdHost,
     fwdProto,
     providedHead: signature.slice(0, 12),
-    tokenHead: authToken.slice(0, 4),
-    tokenLen: authToken.length,
+    tokenConfigured: true,
     paramKeys: keyList,
     paramCount: entries.length,
   }))
