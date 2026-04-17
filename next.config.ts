@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const securityHeaders = [
   { key: 'X-Frame-Options', value: 'DENY' },
@@ -14,8 +15,11 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://*.supabase.co https://api.elevenlabs.io wss://*.supabase.co",
+      // Supabase realtime + ElevenLabs + Sentry ingest (EU region)
+      "connect-src 'self' https://*.supabase.co https://api.elevenlabs.io wss://*.supabase.co https://*.sentry.io https://*.ingest.de.sentry.io",
       "frame-ancestors 'none'",
+      // Sentry tunnel/report endpoints
+      "worker-src 'self' blob:",
     ].join('; '),
   },
 ]
@@ -31,4 +35,15 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Sentry build plugin options
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  // Suppress noisy logs in CI / local
+  silent: !process.env.CI,
+  // Source maps: upload then delete so they never ship publicly.
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+});

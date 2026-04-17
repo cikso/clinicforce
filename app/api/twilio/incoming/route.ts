@@ -4,6 +4,7 @@ import {
   buildDynamicVariables,
   CLINIC_SELECT_FIELDS,
 } from '@/lib/voice/shared'
+import { verifyTwilioRequest } from '@/lib/twilio/verify'
 
 export const preferredRegion = 'syd1'
 
@@ -46,14 +47,22 @@ function twiml(xml: string) {
 export async function POST(req: NextRequest) {
   const clinicNumber = process.env.CLINIC_REAL_NUMBER
 
+  // Verify X-Twilio-Signature BEFORE doing anything else. An unsigned request
+  // could forge a call, poison active_calls, or flood us with ElevenLabs spend.
+  const verified = await verifyTwilioRequest(req)
+  if (!verified.valid) {
+    console.error('[twilio/incoming] signature verification failed:', verified.reason)
+    return new NextResponse('Forbidden', { status: 403 })
+  }
+
   try {
     const supabase = getServiceSupabase()
 
-    // Twilio sends form-encoded data including the called number (To) and caller (From)
-    const formData = await req.formData().catch(() => null)
-    const toNumber   = formData?.get('To')      as string | null
-    const fromNumber = formData?.get('From')    as string | null
-    const callSid    = formData?.get('CallSid') as string | null
+    // verifyTwilioRequest already consumed the body and returned parsed params.
+    const params     = verified.params
+    const toNumber   = params.get('To')
+    const fromNumber = params.get('From')
+    const callSid    = params.get('CallSid')
 
     if (!toNumber) {
       console.error('[twilio/incoming] No To number in Twilio request')
