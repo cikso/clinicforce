@@ -130,6 +130,12 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
     const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY
     if (supaUrl && supaKey) {
       const svc = createClient(supaUrl, supaKey, { auth: { persistSession: false } })
+      // Capture what OUR code computed for each tried URL so we can diff
+      // against Twilio's sig offline. Shows exactly where the HMAC diverges.
+      const ourSigs: Record<string, string> = {}
+      for (const url of urls) {
+        ourSigs[url] = twilio.getExpectedTwilioSignature(authToken, url, paramMap)
+      }
       await svc.from('twilio_debug_captures').insert({
         pathname,
         url: req.url,
@@ -137,7 +143,7 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
         raw_body: rawBody,
         fwd_host: fwdHost,
         fwd_proto: fwdProto,
-        tried_urls: Array.from(urls),
+        tried_urls: ourSigs,
       })
     }
   } catch (e) {
