@@ -84,12 +84,24 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
   urls.add(req.url)
 
   let matched: string | null = null
-  for (const url of urls) {
-    const expected = createHmac('sha1', authToken).update(`${url}${joined}`).digest('base64')
-    if (eq(expected, signature)) {
-      matched = url
-      break
+
+  // Copy-pasting the token through Vercel's env UI can leave a trailing
+  // newline or whitespace. Try both the raw and trimmed values before
+  // rejecting — if the trimmed one succeeds, the user has a silent env
+  // var hygiene problem and we self-heal until they clean it up.
+  const tokens = authToken === authToken.trim()
+    ? [authToken]
+    : [authToken, authToken.trim()]
+
+  for (const token of tokens) {
+    for (const url of urls) {
+      const expected = createHmac('sha1', token).update(`${url}${joined}`).digest('base64')
+      if (eq(expected, signature)) {
+        matched = url
+        break
+      }
     }
+    if (matched) break
   }
 
   if (matched) {
@@ -105,6 +117,10 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
     fwdProto,
     providedHead: signature.slice(0, 12),
     tokenConfigured: true,
+    tokenLen: authToken.length,
+    tokenTrimmedLen: authToken.trim().length,
+    tokenHasSurroundingWhitespace: authToken !== authToken.trim(),
+    accountSidPrefix: (params.get('AccountSid') ?? '').slice(0, 10),
     paramKeys: keyList,
     paramCount: entries.length,
   }))
