@@ -102,7 +102,7 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
   }
 
   const keyList = Object.keys(paramMap).sort().join(',')
-  console.error('[verifyTwilioRequest] signature mismatch', JSON.stringify({
+  const baseDiag = {
     triedUrls: Array.from(urls),
     pathname,
     fwdHost,
@@ -116,7 +116,23 @@ export async function verifyTwilioRequest(req: NextRequest): Promise<VerifyResul
     paramKeys: keyList,
     paramCount: Object.keys(paramMap).length,
     validator: 'twilio-sdk',
-  }))
+  }
+
+  // Opt-in forensic log for one-off debugging. Enable by setting
+  // TWILIO_DEBUG_LOG_BODY=true in Vercel, make ONE test call to capture the
+  // exact URL + body + full signature that Twilio sent, then disable and
+  // remove the env var. Body may contain phone numbers — only turn this on
+  // briefly, only on a non-production clinic.
+  if (process.env.TWILIO_DEBUG_LOG_BODY === 'true') {
+    console.error('[verifyTwilioRequest] FULL body for signature debugging', JSON.stringify({
+      ...baseDiag,
+      signature,              // full header (NOT a secret — Twilio sends it)
+      reqUrl: req.url,
+      rawBody,                // literal form-encoded body
+    }))
+  } else {
+    console.error('[verifyTwilioRequest] signature mismatch', JSON.stringify(baseDiag))
+  }
 
   return { valid: false, reason: 'Signature mismatch' }
 }
