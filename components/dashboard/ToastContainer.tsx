@@ -16,7 +16,7 @@ interface ToastContainerProps {
 
 const variantConfig = {
   success: { bg: 'bg-white border-l-4 border-l-teal-500', icon: <Check className="w-4 h-4 text-teal-600" />, iconBg: 'bg-teal-50' },
-  warning: { bg: 'bg-white border-l-4 border-l-[#b91c1c]', icon: <AlertTriangle className="w-4 h-4 text-[#b91c1c]" />, iconBg: 'bg-rose-50' },
+  warning: { bg: 'bg-white border-l-4 border-l-[var(--error)]', icon: <AlertTriangle className="w-4 h-4 text-[var(--error)]" />, iconBg: 'bg-rose-50' },
   info: { bg: 'bg-white border-l-4 border-l-[#0891b2]', icon: <Info className="w-4 h-4 text-[#0891b2]" />, iconBg: 'bg-[#0891b2]/[0.07]' },
 }
 

@@ -2,8 +2,10 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Building2, SearchX } from 'lucide-react'
 import EmptyState from '@/app/components/ui/EmptyState'
+import DataTable, { type DataTableColumn } from '@/app/components/ui/DataTable'
 
 export interface AdminClinic {
   id: string
@@ -74,9 +76,82 @@ function getPlanLabel(plan: string | null): string {
 }
 
 export default function AdminDashboardClient({ clinics, totalUsers, canCreateClinic = true }: Props) {
+  const router = useRouter()
   const [search, setSearch] = useState('')
   const [verticalFilter, setVerticalFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+
+  // DataTable column defs — colocated with the admin page because the cell
+  // renderers reference status + plan helpers defined in this file.
+  const columns = useMemo<DataTableColumn<AdminClinic>[]>(() => [
+    {
+      id: 'name',
+      header: 'Clinic',
+      width: '2fr',
+      sortValue: (c) => c.name.toLowerCase(),
+      cell: (c) => (
+        <div className="min-w-0">
+          <p className="text-[14px] font-semibold text-[var(--text-primary)] truncate">{c.name}</p>
+          <p className="text-[12px] text-[var(--text-tertiary)] truncate">
+            {c.slug}{c.suburb ? ` · ${c.suburb}` : ''}
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: 'industry',
+      header: 'Industry',
+      width: '1fr',
+      sortValue: (c) => VERTICAL_LABELS[c.vertical] ?? c.vertical,
+      cell: (c) => VERTICAL_LABELS[c.vertical] ?? c.vertical,
+    },
+    {
+      id: 'plan',
+      header: 'Plan',
+      width: '0.8fr',
+      sortValue: (c) => c.plan ?? '',
+      cell: (c) => getPlanLabel(c.plan),
+    },
+    {
+      id: 'status',
+      header: 'Status',
+      width: '0.8fr',
+      sortValue: (c) => (c.onboarding_completed ? 'Active' : 'Setup'),
+      cell: (c) => {
+        const status = getClinicStatus(c)
+        return (
+          <span
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold"
+            style={{
+              backgroundColor: status.bg,
+              color: status.color,
+              border: `1px solid ${status.border}`,
+            }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: status.color }} />
+            {status.label}
+          </span>
+        )
+      },
+    },
+    {
+      id: 'users',
+      header: 'Users',
+      width: '0.6fr',
+      align: 'right',
+      sortValue: (c) => c.user_count,
+      cell: (c) => <span className="text-[13px] text-[var(--text-secondary)]">{c.user_count}</span>,
+    },
+    {
+      id: 'created',
+      header: 'Created',
+      width: '0.8fr',
+      sortValue: (c) => c.created_at,
+      cell: (c) => (
+        <span className="text-[13px] text-[var(--text-tertiary)]">{formatDate(c.created_at)}</span>
+      ),
+    },
+  ], [])
 
   // KPIs
   const totalClinics = clinics.length
@@ -247,18 +322,20 @@ export default function AdminDashboardClient({ clinics, totalUsers, canCreateCli
           : `${filtered.length} of ${clinics.length} clinics`}
       </p>
 
-      {/* Clinic Table */}
-      <div className="bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl overflow-hidden shadow-[var(--shadow-card)]">
-        {/* Table header */}
-        <div className="hidden md:grid grid-cols-[2fr_1fr_0.8fr_0.8fr_0.6fr_0.8fr_44px] gap-3 px-5 py-3 border-b border-[var(--border)] bg-[var(--bg-secondary)]">
-          {['Clinic', 'Industry', 'Plan', 'Status', 'Users', 'Created', ''].map((h) => (
-            <span key={h} className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[var(--text-tertiary)]">
-              {h}
-            </span>
-          ))}
-        </div>
-
-        {!filtered.length ? (
+      {/* Clinic Table (DataTable primitive — sortable headers + sticky) */}
+      <DataTable
+        data={filtered}
+        columns={columns}
+        getRowId={(c) => c.id}
+        onRowClick={(c) => router.push(`/admin/clinics/${c.id}`)}
+        defaultSort={{ columnId: 'created', direction: 'desc' }}
+        ariaLabel="Clinics"
+        rowActions={() => (
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-[var(--text-tertiary)]">
+            <path d="M6 3l5 5-5 5" />
+          </svg>
+        )}
+        emptyState={
           clinics.length === 0 ? (
             <EmptyState
               icon={<Building2 className="w-6 h-6" strokeWidth={1.5} />}
@@ -272,74 +349,8 @@ export default function AdminDashboardClient({ clinics, totalUsers, canCreateCli
               description="Try a different search term or clear the filters to see all clinics."
             />
           )
-        ) : (
-          filtered.map((clinic) => {
-            const status = getClinicStatus(clinic)
-            return (
-              <div
-                key={clinic.id}
-                className="grid grid-cols-1 md:grid-cols-[2fr_1fr_0.8fr_0.8fr_0.6fr_0.8fr_44px] gap-1 md:gap-3 px-5 py-3.5 items-center border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--bg-secondary)] transition-colors"
-              >
-                {/* Clinic Name */}
-                <div className="min-w-0">
-                  <p className="text-[14px] font-semibold text-[var(--text-primary)] truncate">
-                    {clinic.name}
-                  </p>
-                  <p className="text-[12px] text-[var(--text-tertiary)] truncate">
-                    {clinic.slug}{clinic.suburb ? ` · ${clinic.suburb}` : ''}
-                  </p>
-                </div>
-
-                {/* Industry */}
-                <span className="text-[13px] text-[var(--text-secondary)]">
-                  {VERTICAL_LABELS[clinic.vertical] ?? clinic.vertical}
-                </span>
-
-                {/* Plan */}
-                <span className="text-[13px] text-[var(--text-secondary)]">
-                  {getPlanLabel(clinic.plan)}
-                </span>
-
-                {/* Status */}
-                <div>
-                  <span
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold"
-                    style={{
-                      backgroundColor: status.bg,
-                      color: status.color,
-                      border: `1px solid ${status.border}`,
-                    }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: status.color }} />
-                    {status.label}
-                  </span>
-                </div>
-
-                {/* Users */}
-                <span className="text-[13px] text-[var(--text-secondary)]">
-                  {clinic.user_count}
-                </span>
-
-                {/* Created */}
-                <span className="text-[13px] text-[var(--text-tertiary)]">
-                  {formatDate(clinic.created_at)}
-                </span>
-
-                {/* Action */}
-                <Link
-                  href={`/admin/clinics/${clinic.id}`}
-                  className="flex items-center justify-center w-8 h-8 rounded-lg text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors"
-                  title="View clinic"
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                    <path d="M6 3l5 5-5 5" />
-                  </svg>
-                </Link>
-              </div>
-            )
-          })
-        )}
-      </div>
+        }
+      />
     </div>
   )
 }

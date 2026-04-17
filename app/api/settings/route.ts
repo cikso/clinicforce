@@ -62,8 +62,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid table.' }, { status: 400 })
   }
 
-  // For tables that need clinic scope, verify ownership
-  const resolvedClinicId = clinicId || cu.clinic_id
+  // Only platform_owner can target an arbitrary clinic via the request body.
+  // Everyone else is pinned to their own clinic_users.clinic_id — prevents a
+  // clinic_admin from writing to another clinic by passing clinicId in the body.
+  const isPlatformOwner = cu.role === 'platform_owner'
+  const resolvedClinicId = isPlatformOwner && clinicId ? clinicId : cu.clinic_id
 
   if (table === 'clinics') {
     const { error } = await service

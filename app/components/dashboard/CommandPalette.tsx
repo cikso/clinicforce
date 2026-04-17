@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, Search, Check } from 'lucide-react'
+import { Building2, Phone, ListChecks, Search, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useClinic } from '@/context/ClinicContext'
 import { createClient } from '@/lib/supabase/client'
@@ -44,6 +44,8 @@ export default function CommandPalette() {
   const [open, setOpen]           = useState(false)
   const [query, setQuery]         = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
+  const [dbResults, setDbResults] = useState<Command[]>([])
+  const [dbSearching, setDbSearching] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef  = useRef<HTMLDivElement>(null)
 
@@ -71,7 +73,82 @@ export default function CommandPalette() {
     return out
   }, [clinicCommands, isPlatformOwner])
 
-  const filtered = useMemo(() => filterCommands(allCommands, query), [allCommands, query])
+  const staticFiltered = useMemo(() => filterCommands(allCommands, query), [allCommands, query])
+
+  // DB results always appear first when the query is substantive — users
+  // expect "search" to surface real records over nav items.
+  const filtered = useMemo(() => {
+    if (query.trim().length < 2) return staticFiltered
+    return [...dbResults, ...staticFiltered]
+  }, [staticFiltered, dbResults, query])
+
+  // ── Debounced DB search across call_inbox + tasks for the active clinic.
+  //    RLS scopes the query to the user's clinic automatically — no manual
+  //    clinic_id filter needed. Bail out for short queries to avoid hammering
+  //    Supabase on every keystroke.
+  useEffect(() => {
+    const q = query.trim()
+    if (q.length < 2) {
+      setDbResults([])
+      setDbSearching(false)
+      return
+    }
+
+    setDbSearching(true)
+    const handle = window.setTimeout(async () => {
+      try {
+        const supabase = createClient()
+        const like = `%${q.replace(/[%_]/g, (m) => `\\${m}`)}%`
+
+        const [callRes, taskRes] = await Promise.all([
+          supabase
+            .from('call_inbox')
+            .select('id, caller_name, caller_phone, summary, urgency, created_at')
+            .or(
+              `caller_name.ilike.${like},caller_phone.ilike.${like},summary.ilike.${like}`,
+            )
+            .order('created_at', { ascending: false })
+            .limit(5),
+          supabase
+            .from('tasks')
+            .select('id, title, description, priority, status, created_at')
+            .or(`title.ilike.${like},description.ilike.${like}`)
+            .order('created_at', { ascending: false })
+            .limit(5),
+        ])
+
+        const calls = (callRes.data ?? []).map((c): Command => ({
+          id:    `db-call-${c.id}`,
+          label: c.caller_name || c.caller_phone || 'Unknown caller',
+          group: 'results',
+          icon:  Phone,
+          href:  `/conversations?call=${c.id}`,
+          hint:  c.urgency === 'CRITICAL' ? 'EMERGENCY'
+               : c.urgency === 'URGENT'   ? 'Urgent call'
+               : 'Call',
+        }))
+
+        const tasks = (taskRes.data ?? []).map((t): Command => ({
+          id:    `db-task-${t.id}`,
+          label: t.title as string,
+          group: 'results',
+          icon:  ListChecks,
+          href:  `/actions?task=${t.id}`,
+          hint:  (t.priority as string) ? `${t.priority} · task` : 'Task',
+        }))
+
+        setDbResults([...calls, ...tasks])
+      } catch {
+        setDbResults([])
+      } finally {
+        setDbSearching(false)
+      }
+    }, 220)
+
+    return () => {
+      window.clearTimeout(handle)
+    }
+  }, [query])
 
   // Reset active index when the filter changes or the modal opens.
   useEffect(() => {
@@ -234,12 +311,18 @@ export default function CommandPalette() {
         >
           {filtered.length === 0 ? (
             <div className="px-5 py-8 text-center">
-              <p className="text-[13px] text-[var(--text-secondary,#566275)]">
-                No results for <span className="font-semibold">&ldquo;{query}&rdquo;</span>
-              </p>
-              <p className="text-[12px] text-[var(--text-tertiary,#8A94A6)] mt-1">
-                Try a shorter search or check spelling.
-              </p>
+              {dbSearching ? (
+                <p className="text-[13px] text-[var(--text-tertiary,#8A94A6)]">Searching your clinic…</p>
+              ) : (
+                <>
+                  <p className="text-[13px] text-[var(--text-secondary,#566275)]">
+                    No results for <span className="font-semibold">&ldquo;{query}&rdquo;</span>
+                  </p>
+                  <p className="text-[12px] text-[var(--text-tertiary,#8A94A6)] mt-1">
+                    Try a shorter search or check spelling.
+                  </p>
+                </>
+              )}
             </div>
           ) : (
             groupedResults.map((grp) => (

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import {
   getServiceSupabase,
   buildDynamicVariables,
@@ -59,11 +60,18 @@ export async function POST(req: NextRequest) {
         .eq('id', voiceAgent.clinic_id)
         .single()
       return data as Record<string, unknown> | null
-    }, { label: 'initiate/clinic-lookup' }).catch(() => null)
+    }, { label: 'initiate/clinic-lookup' }).catch((err) => {
+      Sentry.captureException(err, { tags: { route: 'initiate' }, extra: { toNumber } })
+      return null
+    })
   }
 
   if (!clinic) {
     console.error('[/api/initiate] Clinic lookup failed for Twilio number:', toNumber)
+    Sentry.captureMessage('initiate: clinic lookup failed', {
+      level: 'warning',
+      extra: { toNumber },
+    })
     return NextResponse.json({
       type: 'conversation_initiation_client_data',
       dynamic_variables: {

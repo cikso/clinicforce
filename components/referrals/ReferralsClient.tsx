@@ -34,7 +34,7 @@ export default function ReferralsClient() {
             Coordinating emergency care with 24/7 partners.
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-red-100 text-[#b91c1c] rounded-full font-bold">
+        <div className="flex items-center gap-2 px-4 py-2 bg-red-100 text-[var(--error)] rounded-full font-bold">
           <Asterisk className="w-5 h-5" />
           <span>{mockReferrals.length} Active Referrals</span>
         </div>
@@ -70,16 +70,16 @@ export default function ReferralsClient() {
             <div className="grid grid-cols-3 gap-6">
               {mockPartnerClinics.map((clinic) => {
                 const borderColor = clinic.isAtCapacity
-                  ? 'border-t-[#b91c1c]'
+                  ? 'border-t-[var(--error)]'
                   : clinic.waitMinutes && clinic.waitMinutes <= 20
                   ? 'border-t-emerald-400'
                   : 'border-t-[var(--brand)]'
                 const statusBg = clinic.isAtCapacity
-                  ? 'bg-red-100 text-[#b91c1c]'
+                  ? 'bg-red-100 text-[var(--error)]'
                   : 'bg-emerald-100 text-emerald-700'
                 const statusLabel = clinic.isAtCapacity ? 'At Capacity' : 'Open Now'
                 const waitColor = clinic.isAtCapacity
-                  ? 'text-[#b91c1c]'
+                  ? 'text-[var(--error)]'
                   : clinic.waitMinutes && clinic.waitMinutes <= 20
                   ? 'text-emerald-600'
                   : 'text-[var(--brand)]'
@@ -206,10 +206,10 @@ export default function ReferralsClient() {
 
 function ReferralCard({ referral }: { referral: Referral }) {
   const isStat = referral.urgencyLevel === 'STAT'
-  const borderColor = isStat ? 'border-l-[#b91c1c]' : 'border-l-[var(--brand)]'
-  const iconBg = isStat ? 'bg-red-100 text-[#b91c1c]' : 'bg-teal-100 text-[var(--brand)]'
-  const stepColor = isStat ? '#b91c1c' : '#00D68F'
-  const badgeBg = isStat ? 'bg-[#b91c1c] text-white' : 'bg-[var(--brand)] text-white'
+  const borderColor = isStat ? 'border-l-[var(--error)]' : 'border-l-[var(--brand)]'
+  const iconBg = isStat ? 'bg-red-100 text-[var(--error)]' : 'bg-teal-100 text-[var(--brand)]'
+  const stepColor = isStat ? 'var(--error)' : '#00D68F'
+  const badgeBg = isStat ? 'bg-[var(--error)] text-white' : 'bg-[var(--brand)] text-white'
 
   const stepLabels = ['Notified', 'Case Sent', 'Ack', 'Arrived']
 

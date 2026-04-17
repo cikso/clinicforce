@@ -180,25 +180,31 @@ export function formatHours(hours: Record<string, string>): string {
 
 // ── Build dynamic variables from a clinic record ─────────────────────────────
 
+// Clinic-entered text flows into the agent's prompt context. Collapse any
+// control chars so a multi-line "services" field can't break prompt formatting.
+function clean(value: unknown): string {
+  return String(value ?? '').replace(/[\r\n\t\f\v]+/g, ' ').trim()
+}
+
 export function buildDynamicVariables(
   clinic: Record<string, unknown>,
 ): Record<string, string> {
   const meta = VERTICAL_META[String(clinic.vertical ?? 'vet')] ?? VERTICAL_META.vet
   return {
-    clinic_name:               String(clinic.name ?? ''),
-    clinic_id:                 String(clinic.id ?? ''),
+    clinic_name:               clean(clinic.name),
+    clinic_id:                 clean(clinic.id),
     vertical_type:             meta.verticalType,
-    professional_title:        String(clinic.professional_title ?? meta.professionalTitle),
-    clinic_address:            [clinic.address, clinic.suburb].filter(Boolean).join(', '),
-    clinic_phone:              String(clinic.phone ?? ''),
+    professional_title:        clean(clinic.professional_title) || meta.professionalTitle,
+    clinic_address:            clean([clinic.address, clinic.suburb].filter(Boolean).join(', ')),
+    clinic_phone:              clean(clinic.phone),
     clinic_hours:              clinic.business_hours
-      ? formatHours(clinic.business_hours as Record<string, string>)
-      : String(clinic.clinic_hours ?? ''),
-    emergency_partner_name:    String(clinic.after_hours_partner ?? ''),
-    emergency_partner_address: String(clinic.emergency_partner_address ?? ''),
-    emergency_partner_phone:   String(clinic.after_hours_phone ?? ''),
-    clinic_services:           String(clinic.services ?? ''),
-    subject_label:             String(clinic.subject_label ?? meta.subjectLabel),
+      ? clean(formatHours(clinic.business_hours as Record<string, string>))
+      : clean(clinic.clinic_hours),
+    emergency_partner_name:    clean(clinic.after_hours_partner),
+    emergency_partner_address: clean(clinic.emergency_partner_address),
+    emergency_partner_phone:   clean(clinic.after_hours_phone),
+    clinic_services:           clean(clinic.services),
+    subject_label:             clean(clinic.subject_label) || meta.subjectLabel,
     subject_name:              meta.subjectName,
   }
 }

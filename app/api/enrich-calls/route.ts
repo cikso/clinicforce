@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { getServiceSupabase } from '@/lib/voice/shared'
 
 export const preferredRegion = 'syd1'
@@ -48,6 +49,7 @@ export async function GET() {
     elConversations = (data.conversations as Array<Record<string, unknown>>) ?? []
   } catch (err) {
     console.error('[enrich-calls] Failed to fetch ElevenLabs conversations:', err)
+    Sentry.captureException(err, { tags: { route: 'enrich-calls', phase: 'list' } })
     return NextResponse.json({ error: 'Failed to fetch from ElevenLabs' }, { status: 502 })
   }
 
@@ -110,6 +112,7 @@ export async function GET() {
         callTitle = (detail.analysis?.call_summary_title as string) ?? null
       } catch (err) {
         console.error(`[enrich-calls] Failed to fetch detail for ${convId}:`, err)
+        Sentry.captureException(err, { tags: { route: 'enrich-calls', phase: 'detail' }, extra: { convId } })
         continue
       }
     }

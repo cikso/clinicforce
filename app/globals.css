@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800;9..40,900&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -8,9 +7,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --font-heading: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  /* Fonts wired via next/font in app/layout.tsx. The --font-geist-sans /
+     --font-geist-mono / --font-heading CSS variables are injected on <html>
+     so font-family fallbacks Just Work with no FOUT. */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-heading: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -100,6 +102,32 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-2xl: 36px;
+
+  /* ── Type scale ──────────────────────────────────────────────────────────
+     Discrete sizes only. Stop using Tailwind arbitrary values like
+     text-[11px]. Reach for .text-micro / .text-caption / .text-body etc.
+     from the utility layer below, or Tailwind's text-xs..text-6xl.  */
+  --text-micro:   10px; /* badge eyebrow, legal footer */
+  --text-caption: 11px; /* micro label on a card */
+  --text-small:   12px; /* dense table cell, helper copy */
+  --text-body:    14px; /* default body in dashboard */
+  --text-body-lg: 15px; /* marketing body */
+  --text-lead:    16px; /* intro paragraphs */
+  --text-title:   18px; /* card titles */
+  --text-h4:      20px;
+  --text-h3:      24px;
+  --text-h2:      32px;
+  --text-h1:      44px; /* hero */
+
+  --leading-tight:   1.15;
+  --leading-snug:    1.35;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
+
+  --tracking-tight:  -0.02em;
+  --tracking-normal:  0;
+  --tracking-wide:   0.02em;
+  --tracking-eyebrow: 0.14em;
 }
 
 /* Smooth scroll for anchor links */
@@ -199,8 +227,7 @@ html {
     box-shadow: none;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    @apply bg-background text-foreground font-sans;
   }
   html {
     @apply font-sans;
@@ -224,13 +251,13 @@ html {
 
 @layer utilities {
   .font-heading {
-    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
   }
   .font-body {
-    font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   }
   .font-mono-data {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
   }
   .glass-panel {
     @apply bg-white/60 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.04)];
@@ -241,6 +268,22 @@ html {
   .micro-label {
     @apply text-[10px] uppercase tracking-[0.2em] font-semibold;
   }
+
+  /* ── Type scale utilities ──────────────────────────────────────────────
+     Prefer these over Tailwind arbitrary values. Pairs size with line-height
+     so hierarchy is consistent across surfaces.  */
+  .text-micro    { font-size: 10px; line-height: 1.3;  }
+  .text-caption  { font-size: 11px; line-height: 1.35; }
+  .text-small    { font-size: 12px; line-height: 1.45; }
+  .text-body     { font-size: 14px; line-height: 1.5;  }
+  .text-body-lg  { font-size: 15px; line-height: 1.55; }
+  .text-lead     { font-size: 16px; line-height: 1.6;  }
+  .text-title    { font-size: 18px; line-height: 1.4;  font-weight: 600; }
+  .heading-4     { font-size: 20px; line-height: 1.3;  font-weight: 700; letter-spacing: -0.01em; }
+  .heading-3     { font-size: 24px; line-height: 1.25; font-weight: 700; letter-spacing: -0.015em; }
+  .heading-2     { font-size: 32px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; }
+  .heading-1     { font-size: 44px; line-height: 1.08; font-weight: 900; letter-spacing: -0.025em; }
+  .eyebrow       { font-size: 10px; line-height: 1.2;  font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
   /* Enterprise hover affordance for list rows + cards */
   .row-hover {
     @apply transition-colors duration-150 hover:bg-[var(--bg-hover)];
@@ -344,7 +387,6 @@ html {
 
 /* ─── SITEWIDE TYPOGRAPHY (landing + dashboard) ─── */
 body {
-  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   color: #3A3A3A;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

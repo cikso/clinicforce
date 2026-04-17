@@ -11,7 +11,7 @@ interface UrgentCasesTableProps {
 }
 
 const urgencyConfig: Record<CaseUrgency, { label: string; pill: string; dot: string }> = {
-  CRITICAL: { label: 'Critical', pill: 'bg-[#b91c1c] text-white', dot: 'bg-white' },
+  CRITICAL: { label: 'Critical', pill: 'bg-[var(--error)] text-white', dot: 'bg-white' },
   URGENT: { label: 'Urgent', pill: 'bg-amber-100 text-amber-700', dot: 'bg-amber-500' },
   ROUTINE: { label: 'Routine', pill: 'bg-teal-50 text-teal-700', dot: 'bg-teal-500' },
 }
@@ -27,7 +27,7 @@ const sourceConfig: Record<IntakeSource, { label: string; color: string; icon: R
 const statusLabel: Record<string, { text: string; color: string }> = {
   HANDLED:          { text: 'Handled',          color: 'text-emerald-600 bg-emerald-50' },
   CALLBACK_REQUIRED: { text: 'Callback Needed', color: 'text-amber-600 bg-amber-50' },
-  ESCALATED:        { text: 'Escalated',        color: 'text-[#b91c1c] bg-rose-50' },
+  ESCALATED:        { text: 'Escalated',        color: 'text-[var(--error)] bg-rose-50' },
   PENDING:          { text: 'Pending',           color: 'text-teal-600 bg-teal-50' },
   BOOKING_REQUESTED: { text: 'Book Appt',       color: 'text-sky-600 bg-sky-50' },
   // Legacy values kept for safety
@@ -38,7 +38,7 @@ const statusLabel: Record<string, { text: string; color: string }> = {
 }
 
 function actionLabel(c: DashboardCase): { label: string; style: string } {
-  if (c.urgency === 'CRITICAL') return { label: 'Admit to ER', style: 'bg-[#b91c1c] text-white hover:bg-red-800' }
+  if (c.urgency === 'CRITICAL') return { label: 'Admit to ER', style: 'bg-[var(--error)] text-white hover:bg-red-800' }
   if (c.status === 'CALLBACK_REQUIRED') return { label: 'Triage Now', style: 'bg-[var(--brand)] text-white hover:bg-[var(--brand-hover)]' }
   if (c.status === 'PENDING') return { label: 'Review', style: 'bg-slate-100 text-slate-700 hover:bg-slate-200' }
   if (!c.clinician) return { label: 'Assign', style: 'bg-slate-100 text-slate-700 hover:bg-slate-200' }
@@ -126,7 +126,7 @@ export default function UrgentCasesTable({ cases, selectedId, onSelectCase, onAc
                           <span className={`w-1.5 h-1.5 rounded-full ${urg.dot} ${c.urgency === 'CRITICAL' ? 'animate-pulse' : ''}`} />
                           {urg.label}
                         </span>
-                        <span className={`text-sm font-bold ${c.urgency === 'CRITICAL' ? 'text-[#b91c1c]' : c.urgency === 'URGENT' ? 'text-amber-600' : 'text-slate-600'}`}>
+                        <span className={`text-sm font-bold ${c.urgency === 'CRITICAL' ? 'text-[var(--error)]' : c.urgency === 'URGENT' ? 'text-amber-600' : 'text-slate-600'}`}>
                           {c.waitMinutes}m
                         </span>
                       </div>

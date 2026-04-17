@@ -17,6 +17,7 @@ export type CommandGroup =
   | 'platform'
   | 'clinics'
   | 'actions'
+  | 'results'
 
 export interface Command {
   id:         string
@@ -153,4 +154,5 @@ export const GROUP_LABELS: Record<CommandGroup, string> = {
   platform:   'Platform',
   clinics:    'Switch clinic',
   actions:    'Actions',
+  results:    'Matches in your clinic',
 }

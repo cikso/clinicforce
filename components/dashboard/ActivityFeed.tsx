@@ -6,7 +6,7 @@ interface ActivityFeedProps {
 }
 
 const typeConfig: Record<string, { icon: React.ReactNode; color: string }> = {
-  escalation: { icon: <AlertTriangle className="w-3.5 h-3.5" />, color: 'text-[#b91c1c] bg-rose-50' },
+  escalation: { icon: <AlertTriangle className="w-3.5 h-3.5" />, color: 'text-[var(--error)] bg-rose-50' },
   callback:   { icon: <Phone className="w-3.5 h-3.5" />, color: 'text-[var(--brand)] bg-teal-50' },
   booking:    { icon: <Calendar className="w-3.5 h-3.5" />, color: 'text-sky-600 bg-sky-50' },
   coverage:   { icon: <Radio className="w-3.5 h-3.5" />, color: 'text-emerald-600 bg-emerald-50' },

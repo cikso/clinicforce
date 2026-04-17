@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import EmptyState from '@/app/components/ui/EmptyState'
+import Button from '@/app/components/ui/Button'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
@@ -23,6 +24,7 @@ export interface CallItem {
   industry_data: Record<string, unknown> | null
   elevenlabs_conversation_id: string | null
   created_at: string
+  updated_at?: string | null
 }
 
 interface ConversationListProps {
@@ -51,17 +53,48 @@ function formatTimestamp(iso: string): string {
 }
 
 const URGENCY_PILL: Record<string, { bg: string; label: string }> = {
-  CRITICAL: { bg: 'bg-[#ba1a1a]', label: 'EMERGENCY' },
-  URGENT:   { bg: 'bg-[#b45309]', label: 'URGENT' },
-  ROUTINE:  { bg: 'bg-[#0f6e56]', label: 'ROUTINE' },
+  CRITICAL: { bg: 'bg-[var(--error)]',   label: 'EMERGENCY' },
+  URGENT:   { bg: 'bg-[var(--warning)]', label: 'URGENT' },
+  ROUTINE:  { bg: 'bg-[var(--success)]', label: 'ROUTINE' },
 }
 
 function leftBorderColor(call: CallItem, isSelected: boolean): string {
-  if (isSelected) return '#0058a7'
-  if (call.status === 'UNREAD') return '#0058a7'
-  if (call.urgency === 'CRITICAL') return '#ba1a1a'
-  if (call.urgency === 'URGENT') return '#b45309'
-  return '#0f6e56'
+  if (isSelected)                    return 'var(--info)'
+  if (call.status === 'UNREAD')      return 'var(--info)'
+  if (call.urgency === 'CRITICAL')   return 'var(--error)'
+  if (call.urgency === 'URGENT')     return 'var(--warning)'
+  return 'var(--success)'
+}
+
+// ─── Saved-view persistence ────────────────────────────────────────────────
+// Lightweight per-surface persistence: remember the last filter/search the
+// user chose so reopening the Call Inbox doesn't reset their view. Scoped by
+// clinicId so switching clinics starts fresh.
+const STORAGE_KEY_PREFIX = 'cf.callInbox.view'
+
+interface SavedView {
+  filter: Filter
+  search: string
+}
+
+function loadSavedView(clinicId: string): SavedView | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(`${STORAGE_KEY_PREFIX}.${clinicId}`)
+    if (!raw) return null
+    const v = JSON.parse(raw) as Partial<SavedView>
+    if (v.filter && ['all', 'unread', 'urgent', 'actioned'].includes(v.filter)) {
+      return { filter: v.filter as Filter, search: typeof v.search === 'string' ? v.search : '' }
+    }
+    return null
+  } catch { return null }
+}
+
+function persistSavedView(clinicId: string, view: SavedView) {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(`${STORAGE_KEY_PREFIX}.${clinicId}`, JSON.stringify(view))
+  } catch { /* ignore quota / disabled storage */ }
 }
 
 export default function ConversationList({
@@ -76,6 +109,24 @@ export default function ConversationList({
   const [search, setSearch] = useState('')
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(initialCalls.length >= 20)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [bulkBusy, setBulkBusy] = useState(false)
+
+  // Restore the user's last filter/search for this clinic on mount. Runs once
+  // per clinic switch — avoids flicker because initial state is 'all'.
+  useEffect(() => {
+    const saved = loadSavedView(clinicId)
+    if (saved) {
+      setFilter(saved.filter)
+      setSearch(saved.search)
+    }
+  }, [clinicId])
+
+  // Persist whenever filter or search settles. Runs on every keystroke in
+  // search, which is fine — localStorage.setItem is synchronous and cheap.
+  useEffect(() => {
+    persistSavedView(clinicId, { filter, search })
+  }, [clinicId, filter, search])
 
   const updateCallStatus = useCallback((id: string, newStatus: string) => {
     setCalls(prev => prev.map(c => c.id === id ? { ...c, status: newStatus } : c))
@@ -84,6 +135,44 @@ export default function ConversationList({
   if (typeof window !== 'undefined') {
     (window as unknown as Record<string, unknown>).__updateCallStatus = updateCallStatus
   }
+
+  // ── Bulk selection + actions ──────────────────────────────────────────
+  const toggleSelect = (id: string, ev?: React.MouseEvent) => {
+    ev?.stopPropagation()
+    setSelected(prev => {
+      const s = new Set(prev)
+      if (s.has(id)) s.delete(id)
+      else s.add(id)
+      return s
+    })
+  }
+
+  const clearSelection = () => setSelected(new Set())
+
+  const bulkUpdateStatus = useCallback(async (newStatus: string) => {
+    const ids = Array.from(selected)
+    if (ids.length === 0) return
+    setBulkBusy(true)
+
+    // Optimistic: update UI immediately, roll back if the write fails.
+    const before = calls
+    setCalls(prev => prev.map(c => ids.includes(c.id) ? { ...c, status: newStatus } : c))
+    clearSelection()
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('call_inbox')
+        .update({ status: newStatus, updated_at: new Date().toISOString() })
+        .in('id', ids)
+      if (error) throw error
+    } catch {
+      // Roll back on failure — don't leave the UI lying to the user.
+      setCalls(before)
+    } finally {
+      setBulkBusy(false)
+    }
+  }, [selected, calls])
 
   const counts = useMemo(() => ({
     all: calls.length,
@@ -197,42 +286,73 @@ export default function ConversationList({
               const pill = URGENCY_PILL[call.urgency] ?? URGENCY_PILL.ROUTINE
               const borderColor = leftBorderColor(call, isSelected)
 
+              const isChecked = selected.has(call.id)
               return (
-                <button
+                <div
                   key={call.id}
-                  onClick={() => onSelect(call)}
                   className={cn(
-                    'w-full text-left px-4 py-3 border-b border-[var(--border-subtle)] transition-colors relative',
-                    isSelected ? 'bg-[var(--brand-light)]' : 'hover:bg-[var(--bg-hover)]',
+                    'group relative border-b border-[var(--border-subtle)] transition-colors',
+                    isSelected ? 'bg-[var(--brand-light)]' :
+                    isChecked  ? 'bg-[var(--brand-light)]/60' :
+                                 'hover:bg-[var(--bg-hover)]',
                   )}
                   style={{ borderLeft: `3px solid ${borderColor}` }}
                 >
-                  {/* Top row: name + time */}
-                  <div className="flex items-center justify-between gap-2 mb-1">
+                  {/* Checkbox — shown on hover or when any row is selected */}
+                  <button
+                    onClick={(e) => toggleSelect(call.id, e)}
+                    aria-label={isChecked ? 'Deselect call' : 'Select call'}
+                    className={cn(
+                      'absolute top-3 left-2 w-[16px] h-[16px] rounded border flex items-center justify-center transition-all z-10',
+                      isChecked
+                        ? 'bg-[var(--brand)] border-[var(--brand)] opacity-100'
+                        : 'border-[var(--border)] bg-white',
+                      isChecked || selected.size > 0
+                        ? 'opacity-100'
+                        : 'opacity-0 group-hover:opacity-100 focus:opacity-100',
+                    )}
+                  >
+                    {isChecked && (
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => onSelect(call)}
+                    className={cn(
+                      'w-full text-left px-4 py-3 transition-colors',
+                      selected.size > 0 ? 'pl-7' : '',
+                    )}
+                  >
+                    {/* Top row: name + time */}
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className={cn(
+                        'text-[13px] truncate',
+                        isUnread ? 'font-bold text-[var(--text-primary)]' : 'font-semibold text-[var(--text-primary)]',
+                      )}>
+                        {call.caller_name || 'Unknown'}
+                      </span>
+                      <span className="text-[11px] text-[var(--text-tertiary)] shrink-0 font-mono-data">
+                        {formatTimestamp(call.created_at)}
+                      </span>
+                    </div>
+
+                    {/* Urgency pill */}
                     <span className={cn(
-                      'text-[13px] truncate',
-                      isUnread ? 'font-bold text-[var(--text-primary)]' : 'font-semibold text-[var(--text-primary)]',
+                      'inline-block text-[9px] font-bold uppercase tracking-wider text-white px-2 py-0.5 rounded mb-1.5',
+                      pill.bg,
                     )}>
-                      {call.caller_name || 'Unknown'}
+                      {pill.label}
                     </span>
-                    <span className="text-[11px] text-[var(--text-tertiary)] shrink-0 font-mono-data">
-                      {formatTimestamp(call.created_at)}
-                    </span>
-                  </div>
 
-                  {/* Urgency pill */}
-                  <span className={cn(
-                    'inline-block text-[9px] font-bold uppercase tracking-wider text-white px-2 py-0.5 rounded mb-1.5',
-                    pill.bg,
-                  )}>
-                    {pill.label}
-                  </span>
-
-                  {/* Summary preview */}
-                  <p className="text-[12px] text-[var(--text-secondary)] line-clamp-2 leading-relaxed">
-                    {call.summary || 'No summary available'}
-                  </p>
-                </button>
+                    {/* Summary preview */}
+                    <p className="text-[12px] text-[var(--text-secondary)] line-clamp-2 leading-relaxed">
+                      {call.summary || 'No summary available'}
+                    </p>
+                  </button>
+                </div>
               )
             })}
 
@@ -251,6 +371,42 @@ export default function ConversationList({
           </div>
         )}
       </div>
+
+      {/* Bulk action bar — floats at the bottom of the list pane when any
+          calls are selected. Mirrors the Salesforce mass-action pattern. */}
+      {selected.size > 0 && (
+        <div className="shrink-0 sticky bottom-0 left-0 right-0 flex items-center gap-2 border-t border-[var(--border)] bg-[var(--bg-primary)] px-3 py-2.5 shadow-[0_-4px_12px_rgba(15,23,42,0.05)]">
+          <span className="text-caption font-semibold text-[var(--text-primary)]">
+            {selected.size} selected
+          </span>
+          <div className="flex-1" />
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={bulkBusy}
+            onClick={() => bulkUpdateStatus('READ')}
+          >
+            Mark read
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            disabled={bulkBusy}
+            onClick={() => bulkUpdateStatus('ACTIONED')}
+          >
+            Mark actioned
+          </Button>
+          <button
+            onClick={clearSelection}
+            aria-label="Clear selection"
+            className="p-1.5 rounded-md text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+              <path d="M3 3l8 8M11 3l-8 8" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   )
 }

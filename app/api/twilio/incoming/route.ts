@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import {
   getServiceSupabase,
   buildDynamicVariables,
@@ -194,6 +195,10 @@ export async function POST(req: NextRequest) {
           registerResponse.status,
           errText,
         )
+        Sentry.captureMessage('ElevenLabs register-call failed', {
+          level: 'error',
+          extra: { status: registerResponse.status, errText, clinicId, toNumber },
+        })
         // Fallback: dial the clinic directly
         if (clinicNumber) {
           return twiml(`
@@ -236,6 +241,7 @@ export async function POST(req: NextRequest) {
 
   } catch (err) {
     console.error('[twilio/incoming] Error:', err)
+    Sentry.captureException(err, { tags: { route: 'twilio/incoming' } })
     if (clinicNumber) {
       return twiml(`
 <Response>

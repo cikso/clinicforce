@@ -85,7 +85,7 @@ export default function BookingsClient() {
               const isEmergency = booking.appointmentType.toLowerCase().includes('emergency') || booking.appointmentType.toLowerCase().includes('triage')
               return (
                 <div key={booking.id} className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 relative overflow-hidden">
-                  <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${isEmergency ? 'bg-[#b91c1c]' : 'bg-[#bae6fd]'}`}></div>
+                  <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${isEmergency ? 'bg-[var(--error)]' : 'bg-[#bae6fd]'}`}></div>
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-100">
@@ -101,7 +101,7 @@ export default function BookingsClient() {
                       </div>
                     </div>
                     {isEmergency && (
-                      <span className="px-3 py-1 bg-red-100 text-[#b91c1c] text-[10px] font-bold rounded-full uppercase tracking-wider">
+                      <span className="px-3 py-1 bg-red-100 text-[var(--error)] text-[10px] font-bold rounded-full uppercase tracking-wider">
                         {booking.appointmentType}
                       </span>
                     )}
@@ -160,7 +160,7 @@ export default function BookingsClient() {
             {/* Timeline */}
             <div className="space-y-5 relative before:absolute before:inset-y-0 before:left-[72px] before:w-px before:bg-slate-100">
               {[
-                { time: '09:00 AM', label: 'Surgery Room 1 • Occupied', badge: 'CRITICAL', badgeBg: 'bg-red-100 text-[#b91c1c]', barColor: 'bg-[#b91c1c]', filled: true },
+                { time: '09:00 AM', label: 'Surgery Room 1 • Occupied', badge: 'CRITICAL', badgeBg: 'bg-red-100 text-[var(--error)]', barColor: 'bg-[var(--error)]', filled: true },
                 { time: '10:30 AM', label: null, badge: null, barColor: null, filled: false },
                 { time: '11:00 AM', label: 'Checkup • Bella (Cavalier)', vet: 'Dr. Walsh', filled: true, blue: true },
                 { time: '01:30 PM', label: null, filled: false },

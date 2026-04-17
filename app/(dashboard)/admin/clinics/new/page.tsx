@@ -375,6 +375,24 @@ export default function NewClinicPage() {
               <p className="text-[12px] text-[var(--text-tertiary)] mt-1">
                 Optional. The Twilio number assigned to this clinic&apos;s AI agent.
               </p>
+              {twilioPhone.trim() && (
+                <div className="mt-3 p-3 rounded-lg bg-[var(--warning-light,#FFFBEB)] border border-[var(--warning,#D97706)]/25">
+                  <p className="text-[12px] font-semibold text-[var(--text-primary)] mb-1.5">
+                    Twilio Console setup required
+                  </p>
+                  <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">
+                    In Twilio, open this number&apos;s Voice &amp; Fax settings and set:
+                  </p>
+                  <ul className="mt-1.5 space-y-0.5 text-[12px] text-[var(--text-secondary)] leading-relaxed font-mono">
+                    <li>• <span className="font-semibold not-italic font-sans">Incoming call webhook:</span> <code>https://app.clinicforce.io/api/twilio/incoming</code></li>
+                    <li>• <span className="font-semibold not-italic font-sans">Status callback URL:</span> <code>https://app.clinicforce.io/api/twilio/status</code></li>
+                    <li>• <span className="font-semibold not-italic font-sans">Events:</span> completed</li>
+                  </ul>
+                  <p className="text-[12px] text-[var(--text-tertiary)] leading-relaxed mt-1.5">
+                    Without the status callback, call durations will be missing in the dashboard.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Greeting */}
