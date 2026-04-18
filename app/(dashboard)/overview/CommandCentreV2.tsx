@@ -682,13 +682,22 @@ function LiveCallHero({
   clinicId: string
   coverageMode: string
 }) {
+  // Local mirror of coverage mode so the orb + card palette flip instantly
+  // when the toggle is clicked, without waiting for a page refresh to pick
+  // up the new server-rendered value. CoverageModeToggle calls onModeChange
+  // on click (optimistic) and again on PATCH success.
+  const [currentMode, setCurrentMode] = useState(coverageMode)
+  // Keep local state in sync if the parent prop changes (e.g. after a
+  // router.refresh() following some other mode change).
+  useEffect(() => { setCurrentMode(coverageMode) }, [coverageMode])
+
   // Orb / card palette is driven by one of three states the user cares about:
   //   • On a call  → amber  (data-urgency="URGENT")
   //   • AI off     → red    (data-urgency="CRITICAL")
   //   • AI on idle → green  (data-urgency="IDLE")
   // Caller-urgency detail still shows in the per-call pill + LIVE badge so we
   // don't lose that signal — just the orb is simplified.
-  const isOff = coverageMode === 'off'
+  const isOff = currentMode === 'off'
 
   if (!live?.active) {
     const dataUrgency = isOff ? 'CRITICAL' : 'IDLE'
@@ -717,7 +726,11 @@ function LiveCallHero({
         </div>
         {clinicId && (
           <div className="cc-livecall-actions">
-            <CoverageModeToggle initialMode={coverageMode} clinicId={clinicId} />
+            <CoverageModeToggle
+              initialMode={currentMode}
+              clinicId={clinicId}
+              onModeChange={setCurrentMode}
+            />
           </div>
         )}
       </div>
@@ -795,13 +808,6 @@ function LiveCallHero({
             <span>{live.trailSummary}</span>
           </div>
         )}
-      </div>
-
-      <div className="cc-livecall-actions">
-        <button type="button" className="cc-btn cc-btn-secondary">Listen in</button>
-        <button type="button" className="cc-btn cc-btn-primary cc-btn-takeover">
-          Take over
-        </button>
       </div>
     </div>
   )

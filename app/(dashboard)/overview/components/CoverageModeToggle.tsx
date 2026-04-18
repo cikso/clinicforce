@@ -86,6 +86,10 @@ export default function CoverageModeToggle({ initialMode, clinicId, onModeChange
         )
       })}
       <style>{`
+        /* Specificity note: these live inside .cf-cc-v2 which has
+           '.cf-cc-v2 button' and other scoped rules. The '.cf-cov-toggle .cf-cov-btn'
+           compound selector (0,2,0) beats '.cf-cc-v2 button' (0,1,1) so colours
+           come through cleanly. */
         .cf-cov-toggle {
           display: inline-flex;
           align-items: center;
@@ -96,30 +100,34 @@ export default function CoverageModeToggle({ initialMode, clinicId, onModeChange
           border-radius: 10px;
           flex-shrink: 0;
         }
-        .cf-cov-btn {
+        .cf-cov-toggle .cf-cov-btn {
           height: 30px;
           padding: 0 12px;
           border: none;
           background: transparent;
           border-radius: 7px;
+          font-family: inherit;
           font-size: 12.5px;
           font-weight: 600;
           color: var(--text-secondary);
           cursor: pointer;
           transition: background-color 140ms ease, color 140ms ease;
           white-space: nowrap;
+          line-height: 1;
+          letter-spacing: 0;
         }
-        .cf-cov-btn:hover:not(:disabled):not(.cf-cov-btn-active) {
+        .cf-cov-toggle .cf-cov-btn:hover:not(:disabled):not(.cf-cov-btn-active) {
           color: var(--text-primary);
         }
-        .cf-cov-btn:disabled { cursor: wait; }
-        .cf-cov-btn-active {
+        .cf-cov-toggle .cf-cov-btn:disabled { cursor: wait; opacity: 0.85; }
+        .cf-cov-toggle .cf-cov-btn-active {
           background: var(--brand);
-          color: white;
+          color: #ffffff;
           box-shadow: 0 1px 2px rgba(0,0,0,0.08);
         }
-        .cf-cov-btn-off.cf-cov-btn-active {
+        .cf-cov-toggle .cf-cov-btn-off.cf-cov-btn-active {
           background: var(--error);
+          color: #ffffff;
         }
       `}</style>
     </div>

@@ -395,7 +395,7 @@ export default function ConversationList({
                     )}
                   >
                     {/* Top row: name + time */}
-                    <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
                       <span className={cn(
                         'text-[13px] truncate',
                         isUnread ? 'font-bold text-[var(--text-primary)]' : 'font-semibold text-[var(--text-primary)]',
@@ -406,6 +406,20 @@ export default function ConversationList({
                         {formatTimestamp(call.created_at)}
                       </span>
                     </div>
+
+                    {/* Phone — shown directly under the name so the caller ID is always
+                        visible even when the agent captured a full name. Hidden when we
+                        only have a phone (it's already the headline in that case). */}
+                    {call.caller_phone
+                      && call.caller_phone !== '—'
+                      && call.caller_name
+                      && call.caller_name.toLowerCase() !== 'unknown caller'
+                      && call.caller_name.toLowerCase() !== 'unknown'
+                      && call.caller_name.trim() !== call.caller_phone.trim() && (
+                      <p className="text-[11px] text-[var(--text-tertiary)] font-mono-data mb-1">
+                        {call.caller_phone}
+                      </p>
+                    )}
 
                     {/* Urgency pill */}
                     <span className={cn(
