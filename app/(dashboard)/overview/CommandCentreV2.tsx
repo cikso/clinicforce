@@ -14,6 +14,7 @@ import {
   ComposedChart,
 } from 'recharts'
 import CoverageModeToggle from './components/CoverageModeToggle'
+import { useActiveCall } from '@/lib/hooks/useActiveCall'
 import './command-centre-v2.css'
 
 /* ─── Types (match what the server page passes in) ─── */
@@ -672,7 +673,7 @@ export default function CommandCentreV2(props: CommandCentreProps) {
 /* ─── Sub-components ─── */
 
 function LiveCallHero({
-  live,
+  live: serverLive,
   shortQuote,
   clinicId,
   coverageMode,
@@ -690,6 +691,27 @@ function LiveCallHero({
   // Keep local state in sync if the parent prop changes (e.g. after a
   // router.refresh() following some other mode change).
   useEffect(() => { setCurrentMode(coverageMode) }, [coverageMode])
+
+  // Realtime subscription + 5s polling fallback. When a call comes in while
+  // the page is already open, we switch to "active" without requiring a
+  // refresh; when it ends, we clear back to idle.
+  const realtimeCall = useActiveCall()
+
+  // Hybrid live-call resolution:
+  //   • realtimeCall present → show active card (prefer server's richer data
+  //     if the same call, else synthesise from realtime row)
+  //   • realtimeCall null    → idle card (even if server had one — it ended)
+  const live: LiveCall | null = realtimeCall
+    ? (serverLive ?? {
+        active: true,
+        caller_name: realtimeCall.callerName,
+        patient: null,
+        urgency: 'ROUTINE',
+        transcriptQuote: realtimeCall.reason ?? null,
+        trailSummary: null,
+        startedAt: new Date(Date.now() - realtimeCall.duration * 1000).toISOString(),
+      })
+    : null
 
   // Orb / card palette is driven by one of three states the user cares about:
   //   • On a call  → amber  (data-urgency="URGENT")

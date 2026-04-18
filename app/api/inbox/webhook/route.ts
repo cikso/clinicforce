@@ -145,11 +145,12 @@ export async function POST(req: NextRequest) {
       const enriched = extractCallerInfo(transcript, '—', structured)
       const industryData = buildIndustryData(transcript, structured)
 
-      // Backfill caller_phone from Twilio's caller_id if the existing row
-      // has no phone (or a placeholder '—'). Twilio's caller_id is the
-      // authoritative source for inbound calls.
-      const existingPhone = (exactMatch.caller_phone ?? '').trim()
-      const needsPhoneBackfill = !existingPhone || existingPhone === '—'
+      // Twilio's caller_id is the AUTHORITATIVE phone for inbound calls.
+      // Always overwrite with it when present — what Stella hears on the call
+      // is often mistranscribed (e.g. "0414 232 390" when the real number is
+      // 391). Twilio's caller_id comes from the PSTN signalling layer.
+      // Name: Twilio only has external_caller_id_name (AU rarely populates
+      // this via CNAM). Fall back only if we have no name yet.
       const existingName = (exactMatch.caller_name ?? '').trim()
       const needsNameBackfill = !existingName || existingName.toLowerCase() === 'unknown caller'
 
@@ -166,7 +167,7 @@ export async function POST(req: NextRequest) {
             industry_data:         industryData,
             ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
             ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
-            ...(needsPhoneBackfill && twilioCallerId ? { caller_phone: twilioCallerId } : {}),
+            ...(twilioCallerId ? { caller_phone: twilioCallerId } : {}),
             ...(needsNameBackfill && twilioCallerName ? { caller_name: twilioCallerName } : {}),
           })
           .eq('id', exactMatch.id)
@@ -197,10 +198,8 @@ export async function POST(req: NextRequest) {
     const enriched = extractCallerInfo(transcript, '—', structured)
     const industryData = buildIndustryData(transcript, structured)
 
-    // Same backfill logic as Step 1 — if the tool-created row didn't capture
-    // a phone/name, use Twilio's authoritative caller_id.
-    const existingPhone = (recentMatch.caller_phone ?? '').trim()
-    const needsPhoneBackfill = !existingPhone || existingPhone === '—'
+    // Same logic as Step 1 — Twilio's caller_id is authoritative for the
+    // phone (always overwrite). Name: only backfill when missing.
     const existingName = (recentMatch.caller_name ?? '').trim()
     const needsNameBackfill = !existingName || existingName.toLowerCase() === 'unknown caller'
 
@@ -218,7 +217,7 @@ export async function POST(req: NextRequest) {
           elevenlabs_conversation_id: conversationId,
           ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
           ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
-          ...(needsPhoneBackfill && twilioCallerId ? { caller_phone: twilioCallerId } : {}),
+          ...(twilioCallerId ? { caller_phone: twilioCallerId } : {}),
           ...(needsNameBackfill && twilioCallerName ? { caller_name: twilioCallerName } : {}),
         })
         .eq('id', recentMatch.id)
