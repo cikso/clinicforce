@@ -44,7 +44,7 @@
   color: var(--ink);
   letter-spacing: -0.02em;
 }
-.cf-cc-v2 .cc-max { max-width: 1440px; margin: 0 auto; }
+.cf-cc-v2 .cc-max { max-width: 1680px; margin: 0 auto; }
 
 /* ─── Page greeting ─── */
 .cf-cc-v2 .cc-greet {
@@ -366,6 +366,7 @@
 .cf-cc-v2 .cc-kpi-band {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
+  /* 6 cards → 6-col grid; adjust below to 3/2 at narrower widths */
   gap: 14px;
   margin-bottom: 24px;
 }

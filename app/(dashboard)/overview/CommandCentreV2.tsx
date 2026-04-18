@@ -122,11 +122,6 @@ export interface CommandCentreProps {
 
 /* ─── Helpers ─── */
 
-function formatShortAUD(n: number): string {
-  if (n >= 1000) return `$${(n / 1000).toFixed(1).replace(/\.0$/, '')}k`
-  return `$${n}`
-}
-
 function formatDuration(secs: number): string {
   if (secs <= 0) return '0:00'
   const m = Math.floor(secs / 60)
@@ -281,12 +276,6 @@ const IconCheck = ({ size = 12, strokeWidth = 2.5 }: { size?: number; strokeWidt
     <path d="M3 8.5L6.5 12L13 4" />
   </svg>
 )
-const IconMissed = () => (
-  <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M3.5 3.5L14.5 14.5M14.5 3.5L3.5 14.5" strokeOpacity="0.2" />
-    <path d="M16 12.5c-1.2 0-2.4-.2-3.5-.6a.8.8 0 0 0-.8.2l-1.6 2A12.1 12.1 0 0 1 4.5 8.5L6.4 7a.8.8 0 0 0 .2-.8C6.2 5 6 3.8 6 2.6a.8.8 0 0 0-.8-.8H2.6a.8.8 0 0 0-.8.8A13.4 13.4 0 0 0 15.2 16a.8.8 0 0 0 .8-.8v-2a.8.8 0 0 0-.8-.8z" />
-  </svg>
-)
 const IconCalendar = () => (
   <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <rect x="2" y="3" width="14" height="13" rx="1.5" />
@@ -296,11 +285,6 @@ const IconCalendar = () => (
 const IconBolt = () => (
   <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <path d="M10 2L3 10h5l-1 6 7-8h-5l1-6z" />
-  </svg>
-)
-const IconDollar = () => (
-  <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M9 2v14M13 4.5c-.8-1-2.2-1.5-4-1.5-2.5 0-4 1.1-4 2.8 0 1.5 1.3 2.3 4 2.8 2.7.5 4 1.3 4 2.8 0 1.7-1.5 2.8-4 2.8-1.8 0-3.2-.5-4-1.5" />
   </svg>
 )
 const IconHeart = () => (
@@ -334,17 +318,6 @@ export default function CommandCentreV2(props: CommandCentreProps) {
   const chartData = range === 'today' ? chartHourly : range === 'week' ? chartWeekly : chartMonthly
 
   const totalPending = pendingActions.filter((t) => t.status !== 'DONE').length
-
-  const coverageTitle = coverage.mode === 'off'
-    ? 'Coverage is OFF'
-    : coverage.mode === 'all_calls'
-      ? 'Coverage is ACTIVE'
-      : 'Coverage is ACTIVE'
-  const coverageDetail = coverage.mode === 'off'
-    ? 'Stella is paused · All calls will ring your reception directly'
-    : coverage.mode === 'all_calls'
-      ? `All-calls mode · Stella is answering every inbound call · Next business-day coverage starts ${coverage.nextBusinessDayStart}`
-      : `After-hours mode · Stella is answering calls outside ${coverage.windowStart} - ${coverage.windowEnd} · Next business-day coverage starts ${coverage.nextBusinessDayStart}`
 
   const shortQuote = useMemo(() => {
     const q = liveCall?.transcriptQuote ?? ''
@@ -396,16 +369,6 @@ export default function CommandCentreV2(props: CommandCentreProps) {
             sparkColor="var(--brand)"
           />
           <KpiCard
-            icon={<IconMissed />}
-            iconBg="var(--bg-secondary)"
-            iconColor="var(--text-tertiary)"
-            label="Missed calls"
-            value={String(kpi.missedToday)}
-            delta={{ text: '0%', type: 'neutral' }}
-            spark={new Array(14).fill(0)}
-            sparkColor="var(--text-tertiary)"
-          />
-          <KpiCard
             icon={<IconCalendar />}
             iconBg="#F2EEFB"
             iconColor="#6B3FA0"
@@ -416,6 +379,26 @@ export default function CommandCentreV2(props: CommandCentreProps) {
             sparkColor="#8B5CF6"
           />
           <KpiCard
+            icon={<IconShield />}
+            iconBg="#FEF2F2"
+            iconColor="var(--error)"
+            label="Urgent triaged"
+            value={String(urgentCases.length)}
+            delta={{ text: urgentCases.length > 0 ? 'active' : 'none', type: 'neutral' }}
+            spark={new Array(14).fill(0).map((_, i) => (i === 13 ? urgentCases.length : 0))}
+            sparkColor="var(--error)"
+          />
+          <KpiCard
+            icon={<IconCheck size={18} />}
+            iconBg="#FEF3C7"
+            iconColor="var(--warning)"
+            label="Action queue"
+            value={String(totalPending)}
+            delta={{ text: totalPending > 0 ? 'pending' : 'clear', type: 'neutral' }}
+            spark={new Array(14).fill(0).map((_, i) => (i === 13 ? totalPending : 0))}
+            sparkColor="var(--warning)"
+          />
+          <KpiCard
             icon={<IconBolt />}
             iconBg="var(--brand-light)"
             iconColor="var(--brand-dark)"
@@ -424,16 +407,6 @@ export default function CommandCentreV2(props: CommandCentreProps) {
             delta={kpi.avgAnswerDelta}
             spark={kpi.answerSparkline}
             sparkColor="var(--brand)"
-          />
-          <KpiCard
-            icon={<IconDollar />}
-            iconBg="#ECFDF5"
-            iconColor="var(--success)"
-            label="Revenue recovered"
-            value={formatShortAUD(kpi.revenueRecovered)}
-            delta={kpi.revenueDelta}
-            spark={kpi.revenueSparkline}
-            sparkColor="var(--success)"
           />
           <KpiCard
             icon={<IconHeart />}
@@ -603,16 +576,6 @@ export default function CommandCentreV2(props: CommandCentreProps) {
               })}
             </div>
           </div>
-        </div>
-
-        {/* ─── Coverage strip ─── */}
-        <div className="cc-coverage">
-          <span className="cc-coverage-icon"><IconShield /></span>
-          <div className="cc-coverage-body">
-            <span className="cc-coverage-title">{coverageTitle}</span>
-            <span className="cc-coverage-detail"> · {coverageDetail}</span>
-          </div>
-          <Link href="/settings/coverage" className="cc-btn cc-btn-primary">Adjust coverage</Link>
         </div>
 
         {/* ─── Activity feed + Clinic capacity ─── */}
