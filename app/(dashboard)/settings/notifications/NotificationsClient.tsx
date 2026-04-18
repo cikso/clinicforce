@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import Card from '@/app/components/ui/Card'
 import Button from '@/app/components/ui/Button'
 import Toggle from '@/app/components/ui/Toggle'
-import { cn } from '@/lib/utils'
+import { useToast } from '@/app/components/ui/Toast'
 
 /* ── Types ──────────────────────────────────────────────────────────────────── */
 
@@ -13,24 +13,6 @@ interface NotificationsClientProps {
 }
 
 const inputCls = 'w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-colors outline-none'
-
-function Toast({ message, variant, onDismiss }: { message: string; variant: 'success' | 'error'; onDismiss: () => void }) {
-  return (
-    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 fade-in duration-200">
-      <div className={cn(
-        'flex items-center gap-2.5 px-4 py-3 rounded-lg shadow-[var(--shadow-md)] border',
-        variant === 'success'
-          ? 'bg-[var(--success-light)] border-[var(--success)]/20 text-[var(--success)]'
-          : 'bg-[var(--error-light)] border-[var(--error)]/20 text-[var(--error)]',
-      )}>
-        <span className="text-[13px] font-medium">{message}</span>
-        <button onClick={onDismiss} className="ml-2 opacity-60 hover:opacity-100">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 3l6 6M9 3l-6 6" /></svg>
-        </button>
-      </div>
-    </div>
-  )
-}
 
 /* ── Component ──────────────────────────────────────────────────────────────── */
 
@@ -53,12 +35,7 @@ export default function NotificationsClient({ settings }: NotificationsClientPro
   const [quietEnd, setQuietEnd] = useState((settings?.quiet_hours_end as string) ?? '07:00')
 
   const [saving, setSaving] = useState(false)
-  const [toast, setToast] = useState<{ message: string; variant: 'success' | 'error' } | null>(null)
-
-  const showToast = useCallback((message: string, variant: 'success' | 'error') => {
-    setToast({ message, variant })
-    setTimeout(() => setToast(null), 3000)
-  }, [])
+  const { toast } = useToast()
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -83,9 +60,13 @@ export default function NotificationsClient({ settings }: NotificationsClientPro
           },
         }),
       })
-      showToast(res.ok ? 'Notification preferences saved' : 'Failed to save', res.ok ? 'success' : 'error')
+      if (res.ok) {
+        toast({ type: 'success', title: 'Notification preferences saved' })
+      } else {
+        toast({ type: 'error', title: 'Failed to save' })
+      }
     } catch {
-      showToast('Failed to save', 'error')
+      toast({ type: 'error', title: 'Failed to save' })
     } finally {
       setSaving(false)
     }
@@ -93,8 +74,6 @@ export default function NotificationsClient({ settings }: NotificationsClientPro
 
   return (
     <div className="space-y-5 max-w-[680px]">
-      {toast && <Toast message={toast.message} variant={toast.variant} onDismiss={() => setToast(null)} />}
-
       <form onSubmit={handleSave} className="space-y-5">
         {/* Alert Channels */}
         <Card header={{ title: 'Alert Channels', subtitle: 'How you want to receive notifications' }}>

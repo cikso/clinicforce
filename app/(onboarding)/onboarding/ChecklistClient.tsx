@@ -8,43 +8,41 @@ import { useRouter } from 'next/navigation'
 const STEPS = [
   {
     key: 'clinic_profile',
-    label: 'Complete Clinic Profile',
+    label: 'Complete clinic profile',
     description: 'Add your clinic name, address, phone number, and contact details.',
-    cta: 'Mark as Done',
+    cta: 'Mark as done',
   },
   {
     key: 'staff_added',
-    label: 'Add Your Team',
+    label: 'Add your team',
     description: 'Invite staff members so your team can access the dashboard and manage calls.',
-    cta: 'Mark as Done',
+    cta: 'Mark as done',
   },
   {
     key: 'voice_agent_configured',
-    label: 'Configure Voice Agent',
+    label: 'Configure voice agent',
     description: 'Connect your ElevenLabs agent ID and assign your Twilio phone number.',
-    cta: 'Mark as Done',
+    cta: 'Mark as done',
   },
   {
     key: 'phone_forwarding_set',
-    label: 'Set Up Phone Forwarding',
-    description: 'Forward your clinic\'s number to the AI receptionist line to start routing calls.',
-    cta: 'Mark as Done',
+    label: 'Set up phone forwarding',
+    description: 'Forward your clinic\u2019s number to the AI receptionist line to start routing calls.',
+    cta: 'Mark as done',
   },
   {
     key: 'test_call_done',
-    label: 'Make a Test Call',
+    label: 'Make a test call',
     description: 'Call your clinic number to verify the AI receptionist answers and responds correctly.',
-    cta: 'Mark as Done',
+    cta: 'Mark as done',
   },
   {
     key: 'go_live',
-    label: 'Go Live',
+    label: 'Go live',
     description: 'All systems are ready. Activate your AI receptionist to start taking real patient calls.',
-    cta: 'Activate & Go Live',
+    cta: 'Activate & go live',
   },
 ] as const
-
-type StepKey = typeof STEPS[number]['key']
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -58,28 +56,7 @@ interface Props {
   initialSteps: StepRow[]
 }
 
-// ── Design tokens ─────────────────────────────────────────────────────────────
-
-const T = {
-  bg:           '#0A1628',
-  surface:      '#0F1E30',
-  surfaceHover: '#132336',
-  border:       'rgba(255,255,255,0.07)',
-  borderActive: 'rgba(0,212,170,0.35)',
-  teal:         '#00D4AA',
-  tealDim:      'rgba(0,212,170,0.15)',
-  tealDimBorder:'rgba(0,212,170,0.25)',
-  text:         '#EEF2F7',
-  muted:        '#6B85A0',
-  faint:        '#3A4F63',
-  danger:       '#FF6B6B',
-}
-
-// ── Keyframe style injected once ──────────────────────────────────────────────
-
-const SPIN_STYLE = `@keyframes cf-checklist-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`
-
-// ── CheckIcon ─────────────────────────────────────────────────────────────────
+// ── Icons ─────────────────────────────────────────────────────────────────────
 
 function CheckIcon({ size = 16 }: { size?: number }) {
   return (
@@ -89,8 +66,6 @@ function CheckIcon({ size = 16 }: { size?: number }) {
     </svg>
   )
 }
-
-// ── LockIcon ──────────────────────────────────────────────────────────────────
 
 function LockIcon() {
   return (
@@ -102,13 +77,11 @@ function LockIcon() {
   )
 }
 
-// ── SpinnerIcon ───────────────────────────────────────────────────────────────
-
 function SpinnerIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="2.5"
-      style={{ animation: 'cf-checklist-spin 0.75s linear infinite' }}>
+      style={{ animation: 'cf-cl-spin 0.75s linear infinite' }}>
       <path d="M21 12a9 9 0 1 1-6.219-8.56" />
     </svg>
   )
@@ -119,25 +92,11 @@ function SpinnerIcon() {
 function ProgressBar({ done, total }: { done: number; total: number }) {
   const pct = total === 0 ? 0 : Math.round((done / total) * 100)
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      <div style={{
-        flex: 1,
-        height: 6,
-        background: 'rgba(255,255,255,0.08)',
-        borderRadius: 999,
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          height: '100%',
-          width: `${pct}%`,
-          background: `linear-gradient(90deg, ${T.teal}, #00f0c4)`,
-          borderRadius: 999,
-          transition: 'width 0.4s ease',
-        }} />
+    <div className="cf-cl-progress" role="progressbar" aria-valuenow={done} aria-valuemin={0} aria-valuemax={total}>
+      <div className="cf-cl-progress-track">
+        <div className="cf-cl-progress-fill" style={{ width: `${pct}%` }} />
       </div>
-      <span style={{ fontSize: 12, fontWeight: 600, color: T.teal, whiteSpace: 'nowrap' }}>
-        {done} / {total}
-      </span>
+      <span className="cf-cl-progress-label">{done} / {total}</span>
     </div>
   )
 }
@@ -157,99 +116,37 @@ interface StepCardProps {
 
 function StepCard({ index, label, description, cta, isDone, isActive, isLoading, onComplete }: StepCardProps) {
   const isLocked = !isDone && !isActive
+  const state = isDone ? 'done' : isActive ? 'active' : 'locked'
 
   return (
-    <div style={{
-      display: 'flex',
-      gap: 16,
-      padding: '20px 22px',
-      borderRadius: 14,
-      background: isDone ? 'rgba(0,212,170,0.06)' : isActive ? T.surface : 'transparent',
-      border: '1px solid',
-      borderColor: isDone ? T.tealDimBorder : isActive ? T.border : 'transparent',
-      opacity: isLocked ? 0.45 : 1,
-      transition: 'opacity 0.2s, background 0.2s',
-    }}>
-
+    <div className={`cf-cl-step cf-cl-step-${state}`}>
       {/* Step indicator */}
-      <div style={{ flexShrink: 0, paddingTop: 2 }}>
+      <div className="cf-cl-step-dot" aria-hidden>
         {isDone ? (
-          <div style={{
-            width: 28,
-            height: 28,
-            borderRadius: '50%',
-            background: T.teal,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#0A1628',
-          }}>
-            <CheckIcon size={14} />
-          </div>
+          <CheckIcon size={14} />
+        ) : isLocked ? (
+          <LockIcon />
         ) : (
-          <div style={{
-            width: 28,
-            height: 28,
-            borderRadius: '50%',
-            border: `2px solid ${isActive ? T.teal : T.faint}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: isActive ? T.teal : T.faint,
-            fontSize: 12,
-            fontWeight: 700,
-          }}>
-            {isLocked ? <LockIcon /> : index + 1}
-          </div>
+          <span className="cf-cl-step-num">{index + 1}</span>
         )}
       </div>
 
       {/* Text */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{
-          margin: '0 0 4px',
-          fontSize: 15,
-          fontWeight: 600,
-          color: isDone ? T.muted : T.text,
-          textDecoration: isDone ? 'line-through' : 'none',
-          lineHeight: 1.3,
-        }}>
-          {label}
-        </p>
-        <p style={{
-          margin: 0,
-          fontSize: 13,
-          color: isDone ? T.faint : T.muted,
-          lineHeight: 1.55,
-        }}>
-          {description}
-        </p>
+      <div className="cf-cl-step-body">
+        <p className="cf-cl-step-label">{label}</p>
+        <p className="cf-cl-step-desc">{description}</p>
 
-        {/* CTA (shown for active step only) */}
         {isActive && (
           <button
+            type="button"
             onClick={onComplete}
             disabled={isLoading}
-            style={{
-              marginTop: 14,
-              padding: '9px 20px',
-              background: isLoading ? 'rgba(0,212,170,0.5)' : T.teal,
-              color: '#0A1628',
-              border: 'none',
-              borderRadius: 8,
-              fontSize: 13,
-              fontWeight: 700,
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 7,
-              transition: 'background 0.15s',
-            }}
+            className="cf-cl-cta"
           >
             {isLoading ? (
               <>
                 <SpinnerIcon />
-                Saving…
+                Saving&hellip;
               </>
             ) : (
               <>
@@ -266,22 +163,7 @@ function StepCard({ index, label, description, cta, isDone, isActive, isLoading,
 
       {/* Done badge */}
       {isDone && (
-        <div style={{
-          flexShrink: 0,
-          alignSelf: 'flex-start',
-          padding: '3px 9px',
-          background: T.tealDim,
-          border: `1px solid ${T.tealDimBorder}`,
-          borderRadius: 999,
-          fontSize: 11,
-          fontWeight: 700,
-          color: T.teal,
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase',
-          whiteSpace: 'nowrap',
-        }}>
-          Done
-        </div>
+        <div className="cf-cl-badge">Done</div>
       )}
     </div>
   )
@@ -303,6 +185,7 @@ export default function ChecklistClient({ initialSteps }: Props) {
   const [error, setError] = useState<string | null>(null)
 
   const completedCount = steps.filter((s) => s.completed).length
+  const allDone = completedCount === STEPS.length
 
   async function completeStep(stepKey: string) {
     if (completing) return
@@ -341,74 +224,37 @@ export default function ChecklistClient({ initialSteps }: Props) {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: T.bg,
-      fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
-      color: T.text,
-    }}>
-      <style>{SPIN_STYLE}</style>
-
+    <div className="cf-cl">
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <header style={{
-        height: 60,
-        background: T.surface,
-        borderBottom: `1px solid ${T.border}`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 28px',
-        flexShrink: 0,
-      }}>
-        <span style={{ fontWeight: 800, fontSize: 15, color: T.teal, letterSpacing: '-0.01em' }}>
-          ClinicForce
-        </span>
-        <span style={{ fontSize: 12, color: T.muted, fontWeight: 500 }}>
-          {completedCount === STEPS.length ? 'All steps complete!' : 'Setup checklist'}
+      <header className="cf-cl-nav">
+        <div className="cf-cl-logo">
+          <div className="cf-cl-logo-mark" aria-hidden>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2L3 6v8l7 4 7-4V6l-7-4z" fill="currentColor" opacity="0.9" />
+              <path d="M10 10V2L3 6l7 4z" fill="currentColor" opacity="0.6" />
+            </svg>
+          </div>
+          <span className="cf-cl-logo-text">ClinicForce</span>
+        </div>
+        <span className="cf-cl-nav-meta">
+          {allDone ? 'All steps complete' : 'Setup checklist'}
         </span>
       </header>
 
       {/* ── Main content ───────────────────────────────────────────────── */}
-      <main style={{
-        maxWidth: 620,
-        margin: '0 auto',
-        padding: '52px 24px 80px',
-      }}>
-
+      <main className="cf-cl-main">
         {/* Title block */}
-        <div style={{ marginBottom: 36 }}>
-          <p style={{
-            margin: '0 0 8px',
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: T.teal,
-          }}>
-            Getting Started
-          </p>
-          <h1 style={{
-            margin: '0 0 10px',
-            fontSize: 28,
-            fontWeight: 700,
-            color: T.text,
-            lineHeight: 1.2,
-            letterSpacing: '-0.02em',
-          }}>
-            Get your clinic ready to go live
-          </h1>
-          <p style={{ margin: '0 0 20px', fontSize: 14, color: T.muted, lineHeight: 1.6 }}>
-            Complete each step in order to activate your AI receptionist.
-            It only takes a few minutes.
+        <div className="cf-cl-title-block">
+          <p className="cf-cl-eyebrow">Getting started</p>
+          <h1 className="cf-cl-title">Get your clinic ready to go live</h1>
+          <p className="cf-cl-subtitle">
+            Complete each step in order to activate your AI receptionist. It only takes a few minutes.
           </p>
           <ProgressBar done={completedCount} total={STEPS.length} />
         </div>
 
-        {/* Divider */}
-        <div style={{ height: 1, background: T.border, marginBottom: 8 }} />
-
         {/* Step list */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div className="cf-cl-list">
           {STEPS.map((step, index) => {
             const row = steps[index]
             const isDone   = row.completed
@@ -433,21 +279,9 @@ export default function ChecklistClient({ initialSteps }: Props) {
 
         {/* Error banner */}
         {error && (
-          <div style={{
-            marginTop: 20,
-            padding: '12px 16px',
-            background: 'rgba(255,107,107,0.12)',
-            border: '1px solid rgba(255,107,107,0.3)',
-            borderRadius: 10,
-            fontSize: 13,
-            color: T.danger,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}>
+          <div className="cf-cl-error" role="alert">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-              style={{ flexShrink: 0 }}>
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -455,8 +289,255 @@ export default function ChecklistClient({ initialSteps }: Props) {
             {error}
           </div>
         )}
-
       </main>
+
+      {/* ── Scoped styles ──────────────────────────────────────────────── */}
+      <style>{`
+        @keyframes cf-cl-spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+
+        .cf-cl {
+          min-height: 100vh;
+          background: var(--bg-secondary);
+          color: var(--text-primary);
+          font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+        }
+
+        .cf-cl-nav {
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 24px;
+          background: var(--bg-primary);
+          border-bottom: 1px solid var(--border);
+        }
+        .cf-cl-logo { display: inline-flex; align-items: center; gap: 10px; }
+        .cf-cl-logo-mark {
+          width: 28px;
+          height: 28px;
+          border-radius: 8px;
+          background: var(--brand);
+          color: white;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .cf-cl-logo-text {
+          font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+          font-weight: 800;
+          font-size: 15px;
+          letter-spacing: -0.01em;
+        }
+        .cf-cl-nav-meta {
+          font-size: 12.5px;
+          font-weight: 500;
+          color: var(--text-tertiary);
+        }
+
+        .cf-cl-main {
+          max-width: 640px;
+          margin: 0 auto;
+          padding: 48px 24px 80px;
+        }
+
+        .cf-cl-title-block { margin-bottom: 32px; }
+        .cf-cl-eyebrow {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--brand-dark);
+          margin: 0 0 10px;
+        }
+        .cf-cl-title {
+          font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+          font-size: 28px;
+          font-weight: 800;
+          line-height: 1.15;
+          letter-spacing: -0.02em;
+          color: var(--text-primary);
+          margin: 0 0 10px;
+        }
+        .cf-cl-subtitle {
+          font-size: 14.5px;
+          line-height: 1.55;
+          color: var(--text-secondary);
+          margin: 0 0 22px;
+          max-width: 540px;
+        }
+
+        .cf-cl-progress {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .cf-cl-progress-track {
+          flex: 1;
+          height: 6px;
+          border-radius: 999px;
+          background: var(--bg-hover);
+          overflow: hidden;
+        }
+        .cf-cl-progress-fill {
+          height: 100%;
+          border-radius: 999px;
+          background: linear-gradient(90deg, var(--brand) 0%, #2fdfa5 100%);
+          transition: width 400ms ease;
+        }
+        .cf-cl-progress-label {
+          font-size: 12px;
+          font-weight: 700;
+          color: var(--brand-dark);
+          font-variant-numeric: tabular-nums;
+          white-space: nowrap;
+        }
+
+        .cf-cl-list {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .cf-cl-step {
+          display: flex;
+          gap: 16px;
+          padding: 18px 20px;
+          border-radius: 14px;
+          background: transparent;
+          border: 1px solid transparent;
+          transition: background-color 200ms ease, border-color 200ms ease, opacity 200ms ease;
+        }
+        .cf-cl-step-done {
+          background: var(--brand-light);
+          border-color: rgba(0, 214, 143, 0.25);
+        }
+        .cf-cl-step-active {
+          background: var(--bg-primary);
+          border-color: var(--border);
+          box-shadow: var(--shadow-card);
+        }
+        .cf-cl-step-locked {
+          opacity: 0.55;
+        }
+
+        .cf-cl-step-dot {
+          flex-shrink: 0;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 2px;
+          background: transparent;
+          border: 2px solid var(--border);
+          color: var(--text-tertiary);
+          transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+        }
+        .cf-cl-step-done .cf-cl-step-dot {
+          background: var(--brand);
+          color: white;
+          border-color: var(--brand);
+        }
+        .cf-cl-step-active .cf-cl-step-dot {
+          border-color: var(--brand);
+          color: var(--brand);
+        }
+        .cf-cl-step-num {
+          font-size: 12px;
+          font-weight: 700;
+          font-variant-numeric: tabular-nums;
+          line-height: 1;
+        }
+
+        .cf-cl-step-body {
+          flex: 1;
+          min-width: 0;
+        }
+        .cf-cl-step-label {
+          margin: 0 0 4px;
+          font-size: 15px;
+          font-weight: 700;
+          line-height: 1.3;
+          color: var(--text-primary);
+          font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+          letter-spacing: -0.005em;
+        }
+        .cf-cl-step-done .cf-cl-step-label {
+          color: var(--text-secondary);
+          text-decoration: line-through;
+        }
+        .cf-cl-step-desc {
+          margin: 0;
+          font-size: 13px;
+          line-height: 1.55;
+          color: var(--text-secondary);
+        }
+
+        .cf-cl-cta {
+          margin-top: 14px;
+          padding: 9px 18px;
+          background: var(--brand);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          transition: background-color 140ms ease, transform 90ms ease;
+        }
+        .cf-cl-cta:hover:not(:disabled) {
+          background: var(--brand-hover);
+        }
+        .cf-cl-cta:active:not(:disabled) {
+          transform: scale(0.985);
+        }
+        .cf-cl-cta:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .cf-cl-badge {
+          flex-shrink: 0;
+          align-self: flex-start;
+          padding: 3px 10px;
+          background: var(--brand-light);
+          border: 1px solid rgba(0, 214, 143, 0.25);
+          border-radius: 999px;
+          font-size: 10.5px;
+          font-weight: 700;
+          color: var(--brand-dark);
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          white-space: nowrap;
+        }
+
+        .cf-cl-error {
+          margin-top: 20px;
+          padding: 10px 14px;
+          background: var(--error-light);
+          border: 1px solid rgba(220, 38, 38, 0.2);
+          border-radius: 10px;
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--error);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .cf-cl-error svg { flex-shrink: 0; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .cf-cl-progress-fill,
+          .cf-cl-step,
+          .cf-cl-step-dot,
+          .cf-cl-cta { transition: none; }
+        }
+      `}</style>
     </div>
   )
 }

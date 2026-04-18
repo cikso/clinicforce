@@ -86,20 +86,39 @@ const icons = {
   ),
 }
 
-const NAV_ITEMS: { label: string; icon: React.ReactNode; href: string; badgeKey?: 'tasks' | 'surveys'; comingSoon?: boolean }[] = [
+type NavItem = {
+  label: string
+  icon: React.ReactNode
+  href: string
+  badgeKey?: 'tasks' | 'surveys'
+  comingSoon?: boolean
+  /**
+   * Roles that should see this item. Omit for "visible to everyone who can
+   * reach this layout". The layout has already gated access, so this is pure
+   * UX noise-reduction — hiding items a role can't meaningfully act on.
+   */
+  roles?: string[]
+}
+
+const NAV_ITEMS: NavItem[] = [
   { label: 'Command Centre', icon: icons.grid,      href: '/overview' },
   { label: 'Call Inbox',     icon: icons.phone,     href: '/conversations' },
   { label: 'Action Queue',   icon: icons.list,      href: '/actions', badgeKey: 'tasks' },
-  { label: 'Insights',       icon: icons.barChart,  href: '/insights' },
+  { label: 'Insights',       icon: icons.barChart,  href: '/insights',
+    roles: ['platform_owner', 'clinic_owner', 'clinic_admin'] },
   { label: 'Bookings',       icon: icons.calendar,  href: '/bookings', comingSoon: true },
   { label: 'SMS Hub',        icon: icons.message,   href: '/sms', comingSoon: true },
-  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys' },
-  { label: 'Settings',       icon: icons.cog,       href: '/settings' },
+  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys',
+    roles: ['platform_owner', 'clinic_owner', 'clinic_admin'] },
+  { label: 'Settings',       icon: icons.cog,       href: '/settings',
+    roles: ['platform_owner', 'clinic_owner', 'clinic_admin'] },
 ]
 
 interface DashboardSidebarProps {
   clinicName: string
   userName: string
+  /** Supabase role — used to trim nav for staff-level users. */
+  userRole?: string
   pendingTaskCount: number
   openSurveyActionCount?: number
   isMultiClinic?: boolean
@@ -108,10 +127,14 @@ interface DashboardSidebarProps {
 export default function DashboardSidebar({
   clinicName,
   userName,
+  userRole = '',
   pendingTaskCount,
   openSurveyActionCount = 0,
   isMultiClinic = false,
 }: DashboardSidebarProps) {
+  const visibleNav = NAV_ITEMS.filter(
+    (item) => !item.roles || item.roles.includes(userRole),
+  )
   const badgeCounts: Record<string, number> = {
     tasks: pendingTaskCount,
     surveys: openSurveyActionCount,
@@ -159,7 +182,7 @@ export default function DashboardSidebar({
       {/* Navigation */}
       <nav className="flex-1 px-3 py-3 overflow-y-auto">
         <div className="space-y-0.5">
-          {NAV_ITEMS.map(({ label, icon, href, badgeKey, comingSoon }) => {
+          {visibleNav.map(({ label, icon, href, badgeKey, comingSoon }) => {
             const active = isActive(href)
             const count = badgeKey ? badgeCounts[badgeKey] ?? 0 : 0
             return (

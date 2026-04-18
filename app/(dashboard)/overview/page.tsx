@@ -5,6 +5,13 @@ import { redirect } from 'next/navigation'
 import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 import { getAccessibleClinics } from '@/lib/supabase/clinic-scope'
 import PortfolioOverview, { type ClinicMetrics } from './PortfolioOverview'
+import StaffToday, {
+  type StaffTodayUrgent,
+  type StaffTodayCallback,
+  type StaffTodayTask,
+} from './StaffToday'
+import OwnerImpactHero from '@/app/components/dashboard/OwnerImpactHero'
+import OverviewHeader from './components/OverviewHeader'
 import CommandCentreV2, {
   type KpiInput,
   type UrgentCase,
@@ -245,6 +252,124 @@ export default async function OverviewPage() {
     return <PortfolioOverview clinics={metrics} todayLabel={todayLabel} roleLabel={roleLabel} />
   }
 
+  /* ─── Staff Today view (receptionist / nurse / vet) ─────────────────
+     Roles that operate the clinic day-to-day but don't own analytics.
+     They get a focused single-column view of what needs them personally,
+     not the revenue/NPS deck. Admins and owners still fall through to the
+     full Command Centre below. */
+  const STAFF_ROLES = ['receptionist', 'nurse', 'vet']
+  if (user && profile && clinicId && STAFF_ROLES.includes(profile.userRole)) {
+    const [staffTasksRes, staffUrgentRes, staffCallbacksRes, staffClinicRes, staffActiveCallRes] = await Promise.all([
+      db.from('tasks')
+        .select('id, title, description, priority, due_at, created_at')
+        .eq('clinic_id', clinicId)
+        .eq('assigned_to', user.id)
+        .neq('status', 'DONE')
+        .order('due_at', { ascending: true, nullsFirst: false })
+        .limit(12),
+      db.from('call_inbox')
+        .select('id, caller_name, caller_phone, summary, urgency, created_at')
+        .eq('clinic_id', clinicId)
+        .in('urgency', ['CRITICAL', 'URGENT'])
+        .neq('status', 'ACTIONED')
+        .order('created_at', { ascending: false })
+        .limit(3),
+      db.from('call_inbox')
+        .select('id, caller_name, summary, urgency, created_at')
+        .eq('clinic_id', clinicId)
+        .not('action_required', 'is', null)
+        .neq('status', 'ACTIONED')
+        .order('created_at', { ascending: false })
+        .limit(10),
+      db.from('clinics')
+        .select('name, suburb, coverage_mode')
+        .eq('id', clinicId)
+        .maybeSingle(),
+      db.from('active_calls')
+        .select('call_sid')
+        .eq('clinic_id', clinicId)
+        .eq('handled_by', 'STELLA')
+        .limit(1)
+        .maybeSingle(),
+    ])
+
+    const staffClinic = staffClinicRes.data as { name: string; suburb: string | null; coverage_mode: string | null } | null
+    const coverageLiveNow = !!staffActiveCallRes.data
+
+    const myTasks: StaffTodayTask[] = ((staffTasksRes.data ?? []) as Array<{
+      id: string
+      title: string
+      description: string | null
+      priority: string
+      due_at: string | null
+      created_at: string
+    }>).map((t) => ({
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      priority:
+        t.priority === 'URGENT' || t.priority === 'HIGH' || t.priority === 'NORMAL' || t.priority === 'LOW'
+          ? t.priority
+          : 'NORMAL',
+      dueAt: t.due_at,
+      createdAt: t.created_at,
+    }))
+
+    const urgentNow: StaffTodayUrgent[] = ((staffUrgentRes.data ?? []) as Array<{
+      id: string
+      caller_name: string | null
+      caller_phone: string | null
+      summary: string | null
+      urgency: string
+      created_at: string
+    }>).map((c) => ({
+      id: c.id,
+      callerName: c.caller_name ?? 'Unknown caller',
+      callerPhone: c.caller_phone ?? '',
+      summary: c.summary ?? '\u2014',
+      urgency: c.urgency === 'CRITICAL' ? 'CRITICAL' : 'URGENT',
+      createdAt: c.created_at,
+    }))
+
+    const myCallbacks: StaffTodayCallback[] = ((staffCallbacksRes.data ?? []) as Array<{
+      id: string
+      caller_name: string | null
+      summary: string | null
+      urgency: string
+      created_at: string
+    }>).map((c) => ({
+      id: c.id,
+      callerName: c.caller_name ?? 'Unknown caller',
+      summary: c.summary ?? '\u2014',
+      urgency: c.urgency === 'CRITICAL' ? 'CRITICAL' : c.urgency === 'URGENT' ? 'URGENT' : 'ROUTINE',
+      createdAt: c.created_at,
+    }))
+
+    const hrSyd = parseInt(new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney', hour: 'numeric', hour12: false }), 10)
+    const greeting = hrSyd < 12 ? 'Good morning' : hrSyd < 18 ? 'Good afternoon' : 'Good evening'
+    const firstName = profile.userName?.split(' ')[0] ?? (user.email?.split('@')[0] ?? 'there')
+    const todayLabel = new Date().toLocaleDateString('en-AU', {
+      timeZone: 'Australia/Sydney',
+      weekday: 'long', day: 'numeric', month: 'long',
+    })
+
+    return (
+      <StaffToday
+        firstName={firstName}
+        greeting={greeting}
+        todayLabel={todayLabel}
+        clinicId={clinicId}
+        clinicName={staffClinic?.name ?? profile.clinicName}
+        clinicSuburb={staffClinic?.suburb ?? null}
+        coverageMode={staffClinic?.coverage_mode ?? null}
+        coverageLiveNow={coverageLiveNow}
+        urgentNow={urgentNow}
+        myCallbacks={myCallbacks}
+        myTasks={myTasks}
+      />
+    )
+  }
+
   /* ─── Single-clinic Command Centre ─────────────────────────────────── */
 
   // 14-day window for sparklines
@@ -289,7 +414,7 @@ export default async function OverviewPage() {
       .lt('created_at', today.end) : Promise.resolve({ data: [] }),
 
     clinicId ? db.from('call_inbox')
-      .select('id, action_required, created_at')
+      .select('id, action_required, summary, call_duration_seconds, created_at')
       .eq('clinic_id', clinicId)
       .gte('created_at', sydneyDayBounds(29).start)
       .lt('created_at', today.end) : Promise.resolve({ data: [] }),
@@ -453,7 +578,13 @@ export default async function OverviewPage() {
   }
   const chartWeekly = Object.entries(weekMap).map(([label, v]) => ({ label, ...v }))
 
-  const last30d = (last30dCallsRes.data ?? []) as Array<{ id: string; action_required: string | null; created_at: string }>
+  const last30d = (last30dCallsRes.data ?? []) as Array<{
+    id: string
+    action_required: string | null
+    summary: string | null
+    call_duration_seconds: number | null
+    created_at: string
+  }>
   const monthMap: Record<string, { answered: number; forwarded: number; missed: number }> = {}
   for (let i = 29; i >= 0; i--) {
     const bounds = sydneyDayBounds(i)
@@ -575,8 +706,43 @@ export default async function OverviewPage() {
     weekday: 'long', day: 'numeric', month: 'long',
   })
 
+  // ── Owner/founder impact hero ──────────────────────────────────────────
+  // Reframes the last-30-day ops data as a "this is what we did for you"
+  // summary. Only rendered for roles who care about impact, not operators
+  // running the day-to-day (admin/staff see the standard Command Centre).
+  const showOwnerHero =
+    profile?.userRole === 'clinic_owner' || profile?.userRole === 'platform_owner'
+  const thirtyDayCalls = last30d.length
+  const thirtyDayBookings = last30d.filter((c) => bookingKeywords.test(c.summary ?? '')).length
+  const thirtyDayRevenue = thirtyDayBookings * avgApptValue
+  const thirtyDayDurationSecs = last30d
+    .map((c) => c.call_duration_seconds)
+    .filter((d): d is number => d !== null && d > 0)
+    .reduce((a, b) => a + b, 0)
+  const thirtyDayHoursSaved = Math.max(0, Math.round(thirtyDayDurationSecs / 3600))
+  const heroSparse = thirtyDayCalls === 0
+
   return (
-    <div className="-m-6">
+    <>
+      {/* AI coverage mode toggle — restored. Off / Business hours / After hours.
+          Calls PATCH /api/clinic/:clinicId/mode and toasts the result. */}
+      {clinicId && (
+        <OverviewHeader
+          initialMode={coverageMode}
+          clinicId={clinicId}
+        />
+      )}
+      {showOwnerHero && (
+        <OwnerImpactHero
+          firstName={firstName}
+          callsHandled={thirtyDayCalls}
+          bookingsCaptured={thirtyDayBookings}
+          revenueRecovered={thirtyDayRevenue}
+          hoursSaved={thirtyDayHoursSaved}
+          sparse={heroSparse}
+        />
+      )}
+      <div className="-m-6">
       <CommandCentreV2
         firstName={firstName}
         greeting={greeting}
@@ -595,6 +761,7 @@ export default async function OverviewPage() {
         chartWeekly={chartWeekly}
         chartMonthly={chartMonthly}
       />
-    </div>
+      </div>
+    </>
   )
 }

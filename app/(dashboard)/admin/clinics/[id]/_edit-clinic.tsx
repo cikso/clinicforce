@@ -138,11 +138,15 @@ export default function EditClinic({ clinic }: { clinic: ClinicData }) {
         </div>
 
         {success && (
-          <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[#ECFDF5] border border-[#059669]/15 mb-4">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#059669" strokeWidth="1.5" strokeLinecap="round">
+          <div
+            role="status"
+            className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[var(--success-light)] mb-4"
+            style={{ border: '1px solid rgba(var(--success-rgb), 0.2)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--success)" strokeWidth="1.5" strokeLinecap="round">
               <circle cx="7" cy="7" r="5.5" /><path d="M5 7l1.5 1.5L9 5.5" />
             </svg>
-            <span className="text-[13px] text-[#059669] font-medium">Clinic details updated successfully.</span>
+            <span className="text-[13px] text-[var(--success)] font-medium">Clinic details updated successfully.</span>
           </div>
         )}
 
@@ -293,11 +297,15 @@ export default function EditClinic({ clinic }: { clinic: ClinicData }) {
 
         {/* Error */}
         {error && (
-          <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[#FEF2F2] border border-[#DC2626]/15">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round" className="shrink-0">
+          <div
+            role="alert"
+            className="flex items-center gap-2 px-4 py-3 rounded-lg bg-[var(--error-light)]"
+            style={{ border: '1px solid rgba(var(--error-rgb), 0.2)' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--error)" strokeWidth="1.5" strokeLinecap="round" className="shrink-0">
               <circle cx="7" cy="7" r="5.5" /><path d="M7 4.5v3M7 9.5v.01" />
             </svg>
-            <span className="text-[13px] text-[#DC2626] font-medium">{error}</span>
+            <span className="text-[13px] text-[var(--error)] font-medium">{error}</span>
           </div>
         )}
 

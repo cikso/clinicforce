@@ -244,17 +244,34 @@ export default async function InsightsPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-5">
-      {/* Top Bar */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-3">
-          <h2 className="text-[17px] font-bold text-[var(--text-primary)] font-heading">Insights</h2>
-          <span className="text-[13px] text-[var(--text-secondary)]">{periodLabel}</span>
+      {/* Page Header + period switcher */}
+      <header className="flex items-start justify-between flex-wrap gap-3 cf-enter">
+        <div className="min-w-0">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] mb-1.5">
+            <Link href="/overview" className="hover:text-[var(--text-primary)] transition-colors">
+              Dashboard
+            </Link>
+            <span aria-hidden>/</span>
+            <span className="text-[var(--text-primary)] font-medium">Insights</span>
+          </nav>
+          <h1 className="text-[22px] font-heading font-bold text-[var(--text-primary)] tracking-[-0.01em]">
+            Insights
+          </h1>
+          <p className="mt-1 text-[14px] text-[var(--text-secondary)]">
+            Call patterns, resolution rates, and patient feedback — {periodLabel.toLowerCase()}.
+          </p>
         </div>
-        <div className="flex items-center gap-1 bg-[var(--bg-secondary)] rounded-lg p-0.5 border border-[var(--border-subtle)]">
+        <div
+          className="flex items-center gap-1 bg-[var(--bg-secondary)] rounded-lg p-0.5 border border-[var(--border-subtle)] shrink-0"
+          role="tablist"
+          aria-label="Time range"
+        >
           {PERIOD_OPTIONS.map((opt) => (
             <Link
               key={opt.value}
               href={`/insights?period=${opt.value}`}
+              role="tab"
+              aria-selected={periodDays === opt.value}
               className={`px-3 py-1 rounded-md text-[12px] font-medium transition-colors ${
                 periodDays === opt.value
                   ? 'bg-white text-[var(--text-primary)] shadow-sm'
@@ -265,10 +282,10 @@ export default async function InsightsPage({ searchParams }: Props) {
             </Link>
           ))}
         </div>
-      </div>
+      </header>
 
       {/* KPI Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 cf-enter cf-enter-delay-1">
         <StatCard label="Total Calls" value={totalCalls} delta={pctDelta(totalCalls, prevTotalCalls)} />
         <StatCard label="AI Resolution Rate" value={`${aiResolutionRate}%`} delta={pctDelta(aiResolutionRate, prevAiRate)} />
         <StatCard label="Avg Call Duration" value={formatDuration(avgDuration)} delta={durationDelta} />
@@ -281,7 +298,7 @@ export default async function InsightsPage({ searchParams }: Props) {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 cf-enter cf-enter-delay-2">
         {/* Call Volume Chart */}
         <Card header={{ title: 'Call Volume Trend', subtitle: 'AI-resolved vs total calls' }} className="lg:col-span-2">
           {totalCalls === 0 ? (
@@ -425,7 +442,7 @@ export default async function InsightsPage({ searchParams }: Props) {
       </div>
 
       {/* Second Row: Call Reasons + Heatmap */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 cf-enter cf-enter-delay-3">
         {/* Call Reasons */}
         <Card header={{ title: 'Top Call Reasons', subtitle: 'Volume by intent category' }}>
           {callReasons.length === 0 ? (
@@ -501,7 +518,7 @@ export default async function InsightsPage({ searchParams }: Props) {
       </div>
 
       {/* Third Row: Call Urgency + Patient Satisfaction */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 cf-enter cf-enter-delay-4">
         {/* Call Urgency Breakdown */}
         <Card header={{ title: 'Call Urgency Breakdown', subtitle: 'Distribution by urgency level' }}>
           {totalCalls === 0 ? (
@@ -573,11 +590,19 @@ export default async function InsightsPage({ searchParams }: Props) {
                       <span className="text-[12px] font-medium text-[var(--text-primary)]">{r.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-full ${
-                        r.score >= 9 ? 'bg-green-100 text-green-700'
-                        : r.score >= 7 ? 'bg-yellow-100 text-yellow-700'
-                        : 'bg-red-100 text-red-700'
-                      }`}>
+                      <span
+                        className="text-[11px] font-bold px-1.5 py-0.5 rounded-full"
+                        style={{
+                          backgroundColor:
+                            r.score >= 9 ? 'var(--success-light)'
+                            : r.score >= 7 ? 'var(--warning-light)'
+                            : 'var(--error-light)',
+                          color:
+                            r.score >= 9 ? 'var(--success)'
+                            : r.score >= 7 ? 'var(--warning)'
+                            : 'var(--error)',
+                        }}
+                      >
                         {r.score}/10
                       </span>
                       <span className="text-[10px] text-[var(--text-tertiary)]">{r.time}</span>

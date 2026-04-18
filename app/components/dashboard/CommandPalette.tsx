@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, Phone, ListChecks, Search, Check } from 'lucide-react'
+import { Building2, Phone, ListChecks, Search, Check, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useClinic } from '@/context/ClinicContext'
 import { createClient } from '@/lib/supabase/client'
@@ -14,6 +14,36 @@ import {
   filterCommands,
   type Command,
 } from '@/lib/command-palette/commands'
+
+// Tracks the last handful of commands the user actually ran so we can surface
+// them at the top of an empty palette. DB-search results (id prefix `db-`) are
+// intentionally excluded — those records come and go, pinning them stale.
+const RECENT_KEY = 'cf-palette-recent-v1'
+const RECENT_MAX = 5
+
+function loadRecent(): string[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = window.localStorage.getItem(RECENT_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+function pushRecent(id: string) {
+  if (typeof window === 'undefined') return
+  if (id.startsWith('db-')) return
+  try {
+    const current = loadRecent().filter((x) => x !== id)
+    current.unshift(id)
+    window.localStorage.setItem(RECENT_KEY, JSON.stringify(current.slice(0, RECENT_MAX)))
+  } catch {
+    // quota errors etc — not critical
+  }
+}
 
 /**
  * Custom DOM event the topbar (or anywhere else) dispatches to open the
@@ -46,8 +76,14 @@ export default function CommandPalette() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [dbResults, setDbResults] = useState<Command[]>([])
   const [dbSearching, setDbSearching] = useState(false)
+  const [recentIds, setRecentIds] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef  = useRef<HTMLDivElement>(null)
+
+  // Hydrate recent list from localStorage on mount
+  useEffect(() => {
+    setRecentIds(loadRecent())
+  }, [])
 
   // ── Build the full command list. Clinic switcher is only surfaced for
   //    platform owners AND only when there's more than one clinic to switch
@@ -75,12 +111,30 @@ export default function CommandPalette() {
 
   const staticFiltered = useMemo(() => filterCommands(allCommands, query), [allCommands, query])
 
+  // Recent commands: only shown when the query is empty. Tagged into their
+  // own group so the rendered header reads "Recent" rather than the original
+  // group. We clone rather than mutate the source command so grouping logic
+  // downstream groups them together.
+  const recentCommands = useMemo<Command[]>(() => {
+    if (query.trim().length > 0 || recentIds.length === 0) return []
+    const byId = new Map(allCommands.map((c) => [c.id, c]))
+    return recentIds
+      .map((id) => byId.get(id))
+      .filter((c): c is Command => !!c)
+      .map((c) => ({ ...c, group: 'recent', icon: Clock }))
+  }, [recentIds, allCommands, query])
+
   // DB results always appear first when the query is substantive — users
-  // expect "search" to surface real records over nav items.
+  // expect "search" to surface real records over nav items. When the query
+  // is empty we lead with Recent for muscle memory.
   const filtered = useMemo(() => {
-    if (query.trim().length < 2) return staticFiltered
+    if (query.trim().length < 2) {
+      return recentCommands.length > 0
+        ? [...recentCommands, ...staticFiltered]
+        : staticFiltered
+    }
     return [...dbResults, ...staticFiltered]
-  }, [staticFiltered, dbResults, query])
+  }, [staticFiltered, dbResults, query, recentCommands])
 
   // ── Debounced DB search across call_inbox + tasks for the active clinic.
   //    RLS scopes the query to the user's clinic automatically — no manual
@@ -205,6 +259,12 @@ export default function CommandPalette() {
   const runCommand = useCallback(
     async (cmd: Command) => {
       closePalette()
+      // Persist + reflect in-memory so the Recent group updates without a reload.
+      pushRecent(cmd.id)
+      setRecentIds((prev) => {
+        if (cmd.id.startsWith('db-')) return prev
+        return [cmd.id, ...prev.filter((x) => x !== cmd.id)].slice(0, RECENT_MAX)
+      })
       if (cmd.href) {
         router.push(cmd.href)
         return

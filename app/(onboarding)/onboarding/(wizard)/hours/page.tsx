@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   StepCard, Field, SubmitButton, ErrorBanner, BackButton, Toggle,
-  stepHeading, stepSubheading, inputBase,
+  stepHeading, stepSubheading, inputBase, StepDescription,
 } from '../../_components'
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -51,20 +51,21 @@ export default function HoursPage() {
   return (
     <StepCard>
       <BackButton href="/onboarding/clinic-details" />
-      <p style={stepSubheading}>Step 2 of 3</p>
+      <p style={stepSubheading}>Step 2 of 4</p>
       <h1 style={stepHeading}>Opening hours</h1>
-      <p style={{ fontFamily: "'DM Sans'", fontSize: '0.925rem', color: '#6B6B6B', marginBottom: '2rem', lineHeight: 1.5 }}>
+      <StepDescription>
         Your AI receptionist uses these hours to tell callers when you&apos;re open and when to expect a callback.
-      </p>
+      </StepDescription>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
         {/* Day rows */}
         <div
           style={{
-            border: '1px solid #E8E4DE',
+            border: '1px solid var(--border)',
             borderRadius: 12,
             overflow: 'hidden',
-            marginBottom: '1.5rem',
+            marginBottom: '24px',
+            backgroundColor: 'var(--bg-primary)',
           }}
         >
           {DAYS.map((day, i) => {
@@ -75,74 +76,88 @@ export default function HoursPage() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '1rem',
-                  padding: '0.875rem 1rem',
-                  borderBottom: i < DAYS.length - 1 ? '1px solid #F0EDE8' : 'none',
-                  backgroundColor: '#ffffff',
+                  gap: '16px',
+                  padding: '14px 16px',
+                  borderBottom: i < DAYS.length - 1 ? '1px solid var(--border-subtle)' : 'none',
                 }}
               >
-                {/* Toggle */}
                 <Toggle
                   checked={h.open}
                   onChange={(v) => setDay(day, { open: v })}
                 />
 
-                {/* Day name */}
                 <span
                   style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: '0.875rem',
+                    fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+                    fontSize: '14px',
                     fontWeight: 500,
-                    color: h.open ? '#1A1A1A' : '#B0B0B0',
+                    color: h.open ? 'var(--text-primary)' : 'var(--text-tertiary)',
                     width: 90,
                     flexShrink: 0,
-                    transition: 'color 0.2s',
+                    transition: 'color 180ms ease',
                   }}
                 >
                   {day}
                 </span>
 
-                {/* Time pickers or Closed label */}
                 {h.open ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', flex: 1 }}>
-                    <Field label="">
-                      <input
-                        type="time"
-                        value={h.start}
-                        onChange={(e) => setDay(day, { start: e.target.value })}
-                        style={{
-                          ...inputBase,
-                          padding: '0.5rem 0.75rem',
-                          fontSize: '0.875rem',
-                          width: 120,
-                        }}
-                        onFocus={(e) => (e.target.style.borderColor = '#00D68F')}
-                        onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
-                      />
-                    </Field>
-                    <span style={{ fontFamily: "'DM Sans'", fontSize: '0.82rem', color: '#9B9B9B' }}>to</span>
-                    <Field label="">
-                      <input
-                        type="time"
-                        value={h.end}
-                        onChange={(e) => setDay(day, { end: e.target.value })}
-                        style={{
-                          ...inputBase,
-                          padding: '0.5rem 0.75rem',
-                          fontSize: '0.875rem',
-                          width: 120,
-                        }}
-                        onFocus={(e) => (e.target.style.borderColor = '#00D68F')}
-                        onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
-                      />
-                    </Field>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
+                    <input
+                      type="time"
+                      aria-label={`${day} opening time`}
+                      value={h.start}
+                      onChange={(e) => setDay(day, { start: e.target.value })}
+                      style={{
+                        ...inputBase,
+                        padding: '8px 12px',
+                        fontSize: '13.5px',
+                        width: 120,
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = 'var(--brand)'
+                        e.target.style.boxShadow = '0 0 0 3px rgba(0, 214, 143, 0.18)'
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = 'var(--border)'
+                        e.target.style.boxShadow = 'none'
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+                        fontSize: '12.5px',
+                        color: 'var(--text-tertiary)',
+                      }}
+                    >
+                      to
+                    </span>
+                    <input
+                      type="time"
+                      aria-label={`${day} closing time`}
+                      value={h.end}
+                      onChange={(e) => setDay(day, { end: e.target.value })}
+                      style={{
+                        ...inputBase,
+                        padding: '8px 12px',
+                        fontSize: '13.5px',
+                        width: 120,
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = 'var(--brand)'
+                        e.target.style.boxShadow = '0 0 0 3px rgba(0, 214, 143, 0.18)'
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = 'var(--border)'
+                        e.target.style.boxShadow = 'none'
+                      }}
+                    />
                   </div>
                 ) : (
                   <span
                     style={{
-                      fontFamily: "'DM Sans'",
-                      fontSize: '0.82rem',
-                      color: '#B0B0B0',
+                      fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+                      fontSize: '12.5px',
+                      color: 'var(--text-tertiary)',
                       flex: 1,
                     }}
                   >

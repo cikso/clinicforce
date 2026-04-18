@@ -115,40 +115,125 @@
 .cf-cc-v2 .cc-btn-ghost:hover { color: var(--ink); }
 
 /* ─── Live call hero card ─── */
+/* Urgency-reactive frame via [data-urgency]: the whole card shifts palette so
+   a routine call doesn't look like an emergency. Brand green for IDLE/ROUTINE,
+   amber for URGENT, red for CRITICAL. The Stella orb + waveform inherit the
+   accent via --cc-live-accent so we set the colour in one place. */
 .cf-cc-v2 .cc-livecall {
-  background: linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 60%);
-  border: 1.5px solid rgba(220, 38, 38, 0.35);
+  --cc-live-accent: var(--brand);
+  --cc-live-accent-rgb: 0, 214, 143;
+  --cc-live-bg: #F0FCF6;
+  --cc-live-border: rgba(0, 214, 143, 0.28);
+  --cc-live-glow: rgba(0, 214, 143, 0.22);
+  background: linear-gradient(135deg, var(--cc-live-bg) 0%, #FFFFFF 65%);
+  border: 1.5px solid var(--cc-live-border);
   border-radius: 20px;
   padding: 24px;
   margin-bottom: 28px;
-  box-shadow: 0 20px 50px -20px rgba(220, 38, 38, 0.15);
+  box-shadow: 0 18px 44px -20px var(--cc-live-glow);
   display: flex;
   align-items: center;
   gap: 22px;
   position: relative;
   overflow: hidden;
+  transition: background 320ms ease, border-color 320ms ease, box-shadow 320ms ease;
+}
+.cf-cc-v2 .cc-livecall[data-urgency="URGENT"] {
+  --cc-live-accent: var(--warning);
+  --cc-live-accent-rgb: 217, 119, 6;
+  --cc-live-bg: #FFFBEB;
+  --cc-live-border: rgba(217, 119, 6, 0.32);
+  --cc-live-glow: rgba(217, 119, 6, 0.2);
+}
+.cf-cc-v2 .cc-livecall[data-urgency="CRITICAL"] {
+  --cc-live-accent: var(--error);
+  --cc-live-accent-rgb: 220, 38, 38;
+  --cc-live-bg: #FFF5F5;
+  --cc-live-border: rgba(220, 38, 38, 0.38);
+  --cc-live-glow: rgba(220, 38, 38, 0.22);
 }
 .cf-cc-v2 .cc-livecall-caught {
-  background: linear-gradient(135deg, #F0FCF6 0%, #FFFFFF 60%);
-  border-color: rgba(0, 214, 143, 0.25);
-  box-shadow: 0 10px 40px -20px rgba(0, 214, 143, 0.2);
+  /* No active call — keep the calm variant tokens already set on the base class */
+  box-shadow: 0 10px 40px -22px var(--cc-live-glow);
 }
+
+/* Stella orb + concentric pulse rings.
+   The rings live in the wrap behind the orb so overflow from the card clips
+   them cleanly at the edge; the orb sits above on z-index 2. */
+.cf-cc-v2 .cc-stella-orb-wrap {
+  position: relative;
+  width: 80px; height: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cf-cc-v2 .cc-orb-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--cc-live-accent-rgb), 0.5);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.cf-cc-v2 .cc-livecall-active .cc-orb-ring-1 {
+  animation: cc-orb-ring 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+.cf-cc-v2 .cc-livecall-active .cc-orb-ring-2 {
+  animation: cc-orb-ring 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.1s;
+}
+@keyframes cc-orb-ring {
+  0%   { transform: scale(0.85); opacity: 0.55; }
+  70%  { transform: scale(1.7); opacity: 0; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+
 .cf-cc-v2 .cc-stella-orb {
+  position: relative;
+  z-index: 2;
   width: 80px; height: 80px; border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, rgba(255,255,255,0.95) 0%, rgba(0,214,143,0.45) 40%, rgba(0,214,143,0.1) 80%);
-  box-shadow: 0 0 30px rgba(0,214,143,0.3), inset 0 0 20px rgba(255,255,255,0.5);
+  background: radial-gradient(
+    circle at 40% 35%,
+    rgba(255,255,255,0.95) 0%,
+    rgba(var(--cc-live-accent-rgb), 0.45) 40%,
+    rgba(var(--cc-live-accent-rgb), 0.1) 80%
+  );
+  box-shadow:
+    0 0 28px rgba(var(--cc-live-accent-rgb), 0.32),
+    inset 0 0 20px rgba(255,255,255,0.55);
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-geist-mono), monospace;
   font-size: 11px; font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--ink);
-  flex-shrink: 0;
-  animation: cc-orb-pulse 3.5s ease-in-out infinite;
+  animation: cc-orb-pulse 3.2s ease-in-out infinite;
+  transition: box-shadow 320ms ease, background 320ms ease;
+}
+/* Active orb breathes at speech cadence — felt too sluggish at 3.5s; 1.6s
+   sits around natural speech/breath rate without getting anxious. */
+.cf-cc-v2 .cc-stella-orb-active {
+  animation: cc-orb-pulse-active 1.6s ease-in-out infinite;
 }
 @keyframes cc-orb-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(0,214,143,0.3), inset 0 0 20px rgba(255,255,255,0.5); }
-  50% { transform: scale(1.05); box-shadow: 0 0 45px rgba(0,214,143,0.45), inset 0 0 20px rgba(255,255,255,0.5); }
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.04); }
 }
+@keyframes cc-orb-pulse-active {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 28px rgba(var(--cc-live-accent-rgb), 0.32),
+      inset 0 0 20px rgba(255,255,255,0.55);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 44px rgba(var(--cc-live-accent-rgb), 0.48),
+      inset 0 0 20px rgba(255,255,255,0.55);
+  }
+}
+
 .cf-cc-v2 .cc-livecall-body { flex: 1; min-width: 0; }
 .cf-cc-v2 .cc-livecall-head {
   display: flex; align-items: center; gap: 12px;
@@ -204,19 +289,78 @@
   font-size: 12px; color: var(--text-secondary);
   font-family: var(--font-geist-mono), monospace;
 }
-.cf-cc-v2 .cc-wave { display: inline-flex; gap: 2px; align-items: center; height: 14px; }
-.cf-cc-v2 .cc-wave span {
-  display: block; width: 2px; background: var(--error);
-  border-radius: 2px;
-  animation: cc-wave 1s ease-in-out infinite;
+
+/* ── LIVE badge — sits at the top of the head row, urgency-accented ──── */
+.cf-cc-v2 .cc-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 7px;
+  border-radius: 6px;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--cc-live-accent);
+  background: rgba(var(--cc-live-accent-rgb), 0.1);
+  border: 1px solid rgba(var(--cc-live-accent-rgb), 0.25);
 }
-.cf-cc-v2 .cc-wave span:nth-child(1) { animation-delay: 0s; }
-.cf-cc-v2 .cc-wave span:nth-child(2) { animation-delay: 0.1s; }
-.cf-cc-v2 .cc-wave span:nth-child(3) { animation-delay: 0.2s; }
-.cf-cc-v2 .cc-wave span:nth-child(4) { animation-delay: 0.15s; }
-.cf-cc-v2 .cc-wave span:nth-child(5) { animation-delay: 0.05s; }
-@keyframes cc-wave { 0%, 100% { height: 20%; } 50% { height: 100%; } }
+.cf-cc-v2 .cc-live-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cc-live-accent);
+  box-shadow: 0 0 0 0 rgba(var(--cc-live-accent-rgb), 0.6);
+  animation: cc-live-badge-dot 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes cc-live-badge-dot {
+  0%   { box-shadow: 0 0 0 0 rgba(var(--cc-live-accent-rgb), 0.6); }
+  70%  { box-shadow: 0 0 0 6px rgba(var(--cc-live-accent-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--cc-live-accent-rgb), 0); }
+}
+
+/* ── Waveform — 14 bars at varied heights, each with its own delay/speed.
+      Feels like the call's breath rather than 5 identical bouncing sticks.
+      --cc-bar-h (peak height, 35–100%) is set per-bar inline.  */
+.cf-cc-v2 .cc-waveform {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 28px;
+  margin: 6px 0 10px;
+  width: fit-content;
+}
+.cf-cc-v2 .cc-waveform span {
+  display: block;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to top,
+    rgba(var(--cc-live-accent-rgb), 0.4),
+    rgba(var(--cc-live-accent-rgb), 0.9)
+  );
+  /* min height visible even at rest so the waveform reads as "alive" without
+     jarring gaps between bars */
+  height: 22%;
+  transform-origin: bottom center;
+  animation: cc-waveform-bar 0.9s ease-in-out infinite;
+}
+@keyframes cc-waveform-bar {
+  0%, 100% { height: 22%; opacity: 0.65; }
+  50%      { height: var(--cc-bar-h, 80%); opacity: 1; }
+}
+
 .cf-cc-v2 .cc-livecall-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+/* Take over button gets a subtle urgency-coloured glow pulse so the eye lands
+   there first. Keeps the base button styling; only adds a soft shadow. */
+.cf-cc-v2 .cc-btn-takeover {
+  box-shadow: 0 0 0 0 rgba(var(--cc-live-accent-rgb), 0);
+  animation: cc-btn-takeover-pulse 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes cc-btn-takeover-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--cc-live-accent-rgb), 0.35); }
+  50%      { box-shadow: 0 0 0 8px rgba(var(--cc-live-accent-rgb), 0); }
+}
 
 /* ─── KPI band ─── */
 .cf-cc-v2 .cc-kpi-band {
@@ -269,7 +413,58 @@
 .cf-cc-v2 .cc-delta-up     { background: var(--brand-light); color: var(--brand-dark); }
 .cf-cc-v2 .cc-delta-down   { background: #FEF2F2; color: var(--error); }
 .cf-cc-v2 .cc-delta-neutral{ background: var(--bg-secondary); color: var(--text-tertiary); }
-.cf-cc-v2 .cc-spark { width: 72px; height: 24px; flex-shrink: 0; }
+.cf-cc-v2 .cc-spark { width: 72px; height: 24px; flex-shrink: 0; display: block; }
+.cf-cc-v2 .cc-spark-wrap {
+  position: relative;
+  width: 72px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.cf-cc-v2 .cc-spark-wrap:hover .cc-spark,
+.cf-cc-v2 .cc-spark-wrap:focus-within .cc-spark {
+  cursor: crosshair;
+}
+/* Entrance: draw the line in on mount. Stops animating after the first run
+   so re-renders don't replay the sweep. */
+.cf-cc-v2 .cc-spark-line {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: cc-spark-draw 600ms cubic-bezier(0.4, 0, 0.2, 1) 80ms both;
+}
+@keyframes cc-spark-draw {
+  to { stroke-dashoffset: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-cc-v2 .cc-spark-line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+.cf-cc-v2 .cc-spark-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  padding: 3px 6px;
+  background: var(--text-primary);
+  color: white;
+  font-size: 10.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 5;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.18);
+}
+.cf-cc-v2 .cc-spark-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 3px solid transparent;
+  border-top-color: var(--text-primary);
+}
 
 /* ─── Chart section ─── */
 .cf-cc-v2 .cc-card {
@@ -536,7 +731,13 @@
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
   .cf-cc-v2 .cc-stella-orb,
-  .cf-cc-v2 .cc-wave span,
+  .cf-cc-v2 .cc-stella-orb-active,
+  .cf-cc-v2 .cc-orb-ring,
+  .cf-cc-v2 .cc-waveform span,
   .cf-cc-v2 .cc-live-dot,
+  .cf-cc-v2 .cc-live-badge-dot,
+  .cf-cc-v2 .cc-btn-takeover,
   .cf-cc-v2 .cc-urgency-pill .dot { animation: none !important; }
+  .cf-cc-v2 .cc-orb-ring { opacity: 0 !important; }
+  .cf-cc-v2 .cc-waveform span { height: 45% !important; }
 }

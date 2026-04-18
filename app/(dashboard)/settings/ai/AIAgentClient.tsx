@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import Card from '@/app/components/ui/Card'
 import Button from '@/app/components/ui/Button'
 import Toggle from '@/app/components/ui/Toggle'
 import StatusDot from '@/app/components/ui/StatusDot'
+import { useToast } from '@/app/components/ui/Toast'
 import { cn } from '@/lib/utils'
 
 /* ── Types ──────────────────────────────────────────────────────────────────── */
@@ -26,31 +27,6 @@ interface AIAgentClientProps {
 }
 
 const inputCls = 'w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-colors outline-none'
-
-/* ── Toast ──────────────────────────────────────────────────────────────────── */
-
-function Toast({ message, variant, onDismiss }: { message: string; variant: 'success' | 'error'; onDismiss: () => void }) {
-  return (
-    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 fade-in duration-200">
-      <div className={cn(
-        'flex items-center gap-2.5 px-4 py-3 rounded-lg shadow-[var(--shadow-md)] border',
-        variant === 'success'
-          ? 'bg-[var(--success-light)] border-[var(--success)]/20 text-[var(--success)]'
-          : 'bg-[var(--error-light)] border-[var(--error)]/20 text-[var(--error)]',
-      )}>
-        {variant === 'success' ? (
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3.5 7.5L6 10l4.5-6" /></svg>
-        ) : (
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="7" cy="7" r="5.5" /><path d="M7 4.5v3M7 9.5v.01" /></svg>
-        )}
-        <span className="text-[13px] font-medium">{message}</span>
-        <button onClick={onDismiss} className="ml-2 opacity-60 hover:opacity-100">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 3l6 6M9 3l-6 6" /></svg>
-        </button>
-      </div>
-    </div>
-  )
-}
 
 /* ── Component ──────────────────────────────────────────────────────────────── */
 
@@ -77,12 +53,10 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
   const [savingAgent, setSavingAgent] = useState(false)
   const [savingPrefs, setSavingPrefs] = useState(false)
   const [savingKeywords, setSavingKeywords] = useState(false)
-  const [toast, setToast] = useState<{ message: string; variant: 'success' | 'error' } | null>(null)
+  const { toast } = useToast()
 
-  const showToast = useCallback((message: string, variant: 'success' | 'error') => {
-    setToast({ message, variant })
-    setTimeout(() => setToast(null), 3000)
-  }, [])
+  function showSuccess(title: string) { toast({ type: 'success', title }) }
+  function showError(title: string)   { toast({ type: 'error', title }) }
 
   async function handleToggleAgent() {
     if (!voiceAgent) return
@@ -99,11 +73,15 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
           data: { is_active: newState },
         }),
       })
-      showToast(res.ok ? `Stella AI ${newState ? 'activated' : 'deactivated'}` : 'Failed to update', res.ok ? 'success' : 'error')
-      if (!res.ok) setIsActive(!newState)
+      if (res.ok) {
+        showSuccess(`Stella AI ${newState ? 'activated' : 'deactivated'}`)
+      } else {
+        showError('Failed to update')
+        setIsActive(!newState)
+      }
     } catch {
       setIsActive(!newState)
-      showToast('Failed to update', 'error')
+      showError('Failed to update')
     } finally {
       setSavingAgent(false)
     }
@@ -126,9 +104,13 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
           },
         }),
       })
-      showToast(res.ok ? 'Call handling preferences saved' : 'Failed to save', res.ok ? 'success' : 'error')
+      if (res.ok) {
+        showSuccess('Call handling preferences saved')
+      } else {
+        showError('Failed to save')
+      }
     } catch {
-      showToast('Failed to save', 'error')
+      showError('Failed to save')
     } finally {
       setSavingPrefs(false)
     }
@@ -148,9 +130,13 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
           },
         }),
       })
-      showToast(res.ok ? 'Triage keywords saved' : 'Failed to save', res.ok ? 'success' : 'error')
+      if (res.ok) {
+        showSuccess('Triage keywords saved')
+      } else {
+        showError('Failed to save')
+      }
     } catch {
-      showToast('Failed to save', 'error')
+      showError('Failed to save')
     } finally {
       setSavingKeywords(false)
     }
@@ -184,8 +170,6 @@ export default function AIAgentClient({ voiceAgent, clinicName, callHandlingPref
 
   return (
     <div className="space-y-5 max-w-[680px]">
-      {toast && <Toast message={toast.message} variant={toast.variant} onDismiss={() => setToast(null)} />}
-
       {/* Agent Status Card */}
       <Card header={{ title: 'Agent Status', subtitle: 'Control your AI voice agent' }}>
         {voiceAgent ? (
