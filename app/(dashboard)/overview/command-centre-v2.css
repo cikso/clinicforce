@@ -193,6 +193,7 @@
   position: relative;
   z-index: 2;
   width: 80px; height: 80px; border-radius: 50%;
+  border: 2px solid rgba(var(--cc-live-accent-rgb), 0.55);
   background: radial-gradient(
     circle at 40% 35%,
     rgba(255,255,255,0.95) 0%,
@@ -208,7 +209,23 @@
   letter-spacing: 0.14em;
   color: var(--ink);
   animation: cc-orb-pulse 3.2s ease-in-out infinite;
-  transition: box-shadow 320ms ease, background 320ms ease;
+  transition: box-shadow 320ms ease, background 320ms ease, border-color 320ms ease;
+}
+/* Emergency (CRITICAL) orb: stronger red ring + deeper red inner shade,
+   mirroring the "amazing" outer-card treatment inside the orb itself. */
+.cf-cc-v2 .cc-livecall[data-urgency="CRITICAL"] .cc-stella-orb {
+  border-color: rgba(220, 38, 38, 0.85);
+  background: radial-gradient(
+    circle at 40% 35%,
+    rgba(255, 245, 245, 0.95) 0%,
+    rgba(220, 38, 38, 0.55) 45%,
+    rgba(220, 38, 38, 0.18) 85%
+  );
+  box-shadow:
+    0 0 32px rgba(220, 38, 38, 0.45),
+    inset 0 0 22px rgba(255, 255, 255, 0.4),
+    inset 0 0 0 1px rgba(220, 38, 38, 0.3);
+  color: #7F1D1D;
 }
 /* Active orb breathes at speech cadence — felt too sluggish at 3.5s; 1.6s
    sits around natural speech/breath rate without getting anxious. */
