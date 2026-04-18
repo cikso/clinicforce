@@ -801,6 +801,13 @@
   background: var(--brand-light);
   border-color: rgba(0, 214, 143, 0.3);
   color: var(--brand-dark);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.cf-landing-v2 .comment-pill.pos .badge {
+  font-size: 9px; background: var(--brand-dark); color: white;
+  padding: 1px 5px; border-radius: 4px;
+  font-family: var(--font-geist-mono), monospace;
+  font-style: normal; font-weight: 700; letter-spacing: 0.02em;
 }
 .cf-landing-v2 .comment-pill.neg {
   background: #FEF2F2;

@@ -571,7 +571,7 @@ export default function HeroSection({ onBookDemo }: { onBookDemo?: () => void })
                   'Live in 48 hours',
                   'Switch AI on or off anytime',
                   'No lock-in contracts',
-                  '$15 a day, fully staffed',
+                  '$13 a day, fully staffed',
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-1.5">
                     <CheckIcon className="w-3.5 h-3.5 text-[#00D68F] flex-shrink-0" />
