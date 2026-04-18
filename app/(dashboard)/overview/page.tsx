@@ -488,11 +488,23 @@ export default async function OverviewPage() {
   /* ─── KPI computations ─── */
 
   const bookingKeywords = /\b(appointment|booking|check.?up|vaccination|dental|desex|neuter|spay)\b/i
+  const isAfterHours = (iso: string) => {
+    const h = sydneyHour(iso)
+    const dow = sydneyWeekday(iso)
+    return dow === 0 || dow === 6 || h < 8 || h >= 18
+  }
+
   const bookingsToday     = todayCalls.filter((c) => bookingKeywords.test(c.summary ?? '')).length
   const bookingsYesterday = yesterdayCalls.filter((c) => bookingKeywords.test(c.summary ?? '')).length
 
   const callsToday     = todayCalls.length
   const callsYesterday = yesterdayCalls.length
+
+  const afterHoursToday     = todayCalls.filter((c) => isAfterHours(c.created_at)).length
+  const afterHoursYesterday = yesterdayCalls.filter((c) => isAfterHours(c.created_at)).length
+
+  const conversionToday     = callsToday     > 0 ? (bookingsToday     / callsToday)     * 100 : 0
+  const conversionYesterday = callsYesterday > 0 ? (bookingsYesterday / callsYesterday) * 100 : 0
 
   const durationsToday = todayCalls.map((c) => c.call_duration_seconds).filter((d): d is number => d !== null && d > 0)
   const avgToday = durationsToday.length > 0 ? durationsToday.reduce((a, b) => a + b, 0) / durationsToday.length : 0
@@ -501,8 +513,6 @@ export default async function OverviewPage() {
 
   const vertical = clinicRecord?.vertical ?? 'vet'
   const avgApptValue = AVG_APPOINTMENT_AUD[vertical] ?? 150
-  const revenueToday     = bookingsToday * avgApptValue
-  const revenueYesterday = bookingsYesterday * avgApptValue
 
   const npsValidScores = npsRows.map((r) => r.nps_score).filter((n): n is number => n != null)
   const npsScore = npsValidScores.length > 0
@@ -510,39 +520,35 @@ export default async function OverviewPage() {
     : null
 
   // ── Sparklines: daily counts over 14d ──
-  const sparkBuckets: Record<number, { calls: number; bookings: number; duration: number; durationN: number; revenue: number }> = {}
-  for (let i = 13; i >= 0; i--) sparkBuckets[i] = { calls: 0, bookings: 0, duration: 0, durationN: 0, revenue: 0 }
+  const sparkBuckets: Array<{ calls: number; afterHours: number }> = Array.from({ length: 14 }, () => ({ calls: 0, afterHours: 0 }))
   const sparkStartMs = new Date(sparkStart).getTime()
   for (const c of sparkRaw) {
     const dayIdx = 13 - Math.floor((new Date(c.created_at).getTime() - sparkStartMs) / 86_400_000)
     if (dayIdx < 0 || dayIdx > 13) continue
     sparkBuckets[dayIdx].calls += 1
-    if (bookingKeywords.test('')) { /* noop — we don't have summary here */ }
+    if (isAfterHours(c.created_at)) sparkBuckets[dayIdx].afterHours += 1
   }
-  // Simpler: count calls per day, that's enough for shape
-  const callsSparkline = Object.values(sparkBuckets).map((b) => b.calls)
-  // For other sparklines, use same call-count shape as a reasonable proxy
-  const bookingsSparkline = callsSparkline.map((n) => Math.round(n * (bookingsToday / Math.max(1, callsToday))))
-  const answerSparkline   = callsSparkline.map(() => avgToday)
-  const revenueSparkline  = bookingsSparkline.map((b) => b * avgApptValue)
-  const npsSparkline      = callsSparkline.map(() => npsScore ?? 72)
+  const callsSparkline       = sparkBuckets.map((b) => b.calls)
+  const afterHoursSparkline  = sparkBuckets.map((b) => b.afterHours)
+  const conversionSparkline  = callsSparkline.map(() => Math.round(conversionToday))
+  const durationSparkline    = callsSparkline.map(() => Math.round(avgToday))
+  const npsSparkline         = callsSparkline.map(() => npsScore ?? 72)
 
   const kpi: KpiInput = {
     callsToday,
     callsDelta: pctDelta(callsToday, callsYesterday),
-    missedToday: 0,
-    bookingsToday,
-    bookingsDelta: pctDelta(bookingsToday, bookingsYesterday),
-    avgAnswerSeconds: Math.round(avgToday),
-    avgAnswerDelta: pctDelta(Math.round(avgYesterday), Math.round(avgToday)), // lower is better — invert
-    revenueRecovered: revenueToday,
-    revenueDelta: pctDelta(revenueToday, revenueYesterday),
+    afterHoursToday,
+    afterHoursDelta: pctDelta(afterHoursToday, afterHoursYesterday),
+    conversionRate: conversionToday,
+    conversionDelta: pctDelta(Math.round(conversionToday), Math.round(conversionYesterday)),
+    avgCallDurationSeconds: Math.round(avgToday),
+    durationDelta: pctDelta(Math.round(avgToday), Math.round(avgYesterday)),
     npsScore,
     npsDelta: { text: npsScore != null ? '+0' : '—', type: 'neutral' },
     callsSparkline,
-    bookingsSparkline,
-    answerSparkline,
-    revenueSparkline,
+    afterHoursSparkline,
+    conversionSparkline,
+    durationSparkline,
     npsSparkline,
   }
 
