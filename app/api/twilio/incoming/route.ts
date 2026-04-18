@@ -161,6 +161,26 @@ export async function POST(req: NextRequest) {
         return twiml(`<Response><Say>Sorry, we could not route your call. Please try again later.</Say></Response>`)
       }
 
+      // Log a call_inbox entry so the clinic can see in the dashboard that a
+      // call came in while AI was off. No transcript/summary since Stella
+      // didn't answer — just caller phone + coverage reason. Fire-and-forget
+      // so it never blocks the dial.
+      supabase
+        .from('call_inbox')
+        .insert({
+          clinic_id:        clinicId,
+          caller_name:      null,
+          caller_phone:     fromNumber ?? null,
+          summary:          'Call forwarded to reception — AI was off.',
+          urgency:          'ROUTINE',
+          status:           'UNREAD',
+          coverage_reason:  'AI off — forwarded to reception',
+          action_required:  null,
+        })
+        .then(({ error }) => {
+          if (error) console.error('[twilio/incoming] call_inbox insert failed:', error.message)
+        })
+
       console.log(`[twilio/incoming] coverage_mode=off → dialling reception ${receptionNumber}`)
       return twiml(`
 <Response>

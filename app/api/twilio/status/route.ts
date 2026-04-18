@@ -45,15 +45,21 @@ export async function POST(req: NextRequest) {
     const params     = verified.params
     const callSid    = params.get('CallSid')
     const status     = params.get('CallStatus')
-    const durationRaw = params.get('CallDuration')
+    // Dial action callbacks send DialCallStatus, not CallStatus. Previously
+    // this route only checked CallStatus, so the AI-off direct-dial path's
+    // active_calls row never got cleaned up when the Dial completed.
+    const dialStatus = params.get('DialCallStatus')
+    const durationRaw = params.get('CallDuration') ?? params.get('DialCallDuration')
     const duration    = durationRaw ? Number(durationRaw) : null
 
-    // Only act on terminal statuses; for Dial action callbacks the event
-    // fires once on completion so this is a no-op filter, but for phone-level
-    // status callbacks we'd otherwise trigger on every ringing/answered
-    // transition.
-    const isTerminal = !status
-      || ['completed', 'busy', 'failed', 'no-answer', 'canceled'].includes(status)
+    const TERMINAL_STATUSES = ['completed', 'busy', 'failed', 'no-answer', 'canceled']
+    // Only act on terminal statuses; for phone-level status callbacks we'd
+    // otherwise trigger on every ringing/answered transition. For Dial action
+    // callbacks we trigger once on completion via DialCallStatus.
+    const isTerminal =
+      (!status && !dialStatus) ||
+      (status && TERMINAL_STATUSES.includes(status)) ||
+      (dialStatus && TERMINAL_STATUSES.includes(dialStatus))
 
     if (callSid && isTerminal) {
       const supabase = getServiceSupabase()

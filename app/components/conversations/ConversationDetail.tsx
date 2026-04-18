@@ -20,6 +20,18 @@ interface ConversationDetailProps {
 
 /* ── Formatters ─────────────────────────────────────────────────────────────── */
 
+/**
+ * Caller name for display. Falls back to phone number when the name is missing
+ * or a generic placeholder. Matches ConversationList.displayCaller.
+ */
+function displayCaller(name: string | null | undefined, phone: string | null | undefined): string {
+  const n = (name ?? '').trim()
+  const p = (phone ?? '').trim()
+  if (n && n.toLowerCase() !== 'unknown caller' && n.toLowerCase() !== 'unknown') return n
+  if (p && p !== '—') return p
+  return 'Unknown caller'
+}
+
 function formatDateTime(iso: string): string {
   try {
     const d = new Date(iso)
@@ -136,7 +148,7 @@ export default function ConversationDetail({
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 flex-wrap min-w-0">
             <h2 className="heading-3 font-heading font-extrabold text-[var(--text-primary)] leading-tight">
-              {call.caller_name || 'Unknown Caller'}
+              {displayCaller(call.caller_name, call.caller_phone)}
             </h2>
             <span className={cn('text-[10px] font-bold uppercase tracking-wider text-white px-2.5 py-1 rounded', urgencyBadge.bg)}>
               {urgencyBadge.label}
