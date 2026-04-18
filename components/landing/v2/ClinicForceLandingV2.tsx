@@ -278,7 +278,7 @@ export default function ClinicForceLandingV2() {
             <a href="#footer">Company</a>
           </div>
           <div className="nav-right">
-            <Link href="https://app.clinicforce.io" className="nav-signin">Sign in</Link>
+            <Link href="https://app.clinicforce.io" className="nav-signin">Clinic Login</Link>
             <a className="btn btn-primary" href="#cta" onMouseMove={onCtaMouseMove}>
               Book a demo <span className="arrow"><ArrowRight /></span>
             </a>
@@ -570,7 +570,7 @@ export default function ClinicForceLandingV2() {
               <div className="eyebrow">04 — Surveys</div>
               <h2 className="section-heading" style={{ marginTop: 14 }}>{v.sec4H}</h2>
               <p>{v.sec4B}</p>
-              <p>When someone scores you below a 7, we auto-create a follow-up task and route it to the right vet. You get to the call before they get to Google Reviews.</p>
+              <p>{v.sec4B2}</p>
             </div>
             <div className="col-visual reveal">
               <NpsCard />
@@ -646,8 +646,8 @@ export default function ClinicForceLandingV2() {
           <h2 className="section-heading" style={{ margin: '14px auto 0', textAlign: 'center' }}>One flat rate. Everything included.</h2>
           <div className="pricing-card reveal">
             <div className="price-head">
-              <div className="price-tag">$15<span className="per">/ day</span></div>
-              <div className="price-sub">$450 / month<br />billed monthly</div>
+              <div className="price-tag">$13<span className="per">/ day</span></div>
+              <div className="price-sub">$390 / month<br />billed monthly</div>
             </div>
             <div className="features-list">
               {[
@@ -716,7 +716,7 @@ export default function ClinicForceLandingV2() {
               <ul>
                 <li><Link href="/blog">Blog</Link></li>
                 <li><a href="#pricing">Pricing</a></li>
-                <li><Link href="https://app.clinicforce.io">Sign in</Link></li>
+                <li><Link href="https://app.clinicforce.io">Clinic Login</Link></li>
               </ul>
             </div>
             <div className="footer-col">
@@ -898,15 +898,18 @@ function NpsCard() {
         <span className="comment-pill pos">&ldquo;Felt heard&rdquo;</span>
         <span className="comment-pill">&ldquo;Easy booking&rdquo;</span>
         <span className="comment-pill pos">&ldquo;Dr. Chen was amazing&rdquo;</span>
+        <span className="comment-pill pos">
+          <span className="badge pos">PROMOTER</span>
+          Posted to Google ↗
+        </span>
         <span className="comment-pill neg">
           <span className="badge">DETRACTOR</span>
-          Auto-routed to Dr. Chen
+          Follow-up task created
         </span>
-        <span className="comment-pill">&ldquo;Clean clinic&rdquo;</span>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '1px solid var(--border-subtle)', fontFamily: "var(--font-geist-mono), monospace", fontSize: 11, color: 'var(--text-tertiary)' }}>
         <span>142 responses · 90 days</span>
-        <span>3 detractors · all contacted ✓</span>
+        <span>38 → Google · 3 detractors handled ✓</span>
       </div>
     </div>
   )

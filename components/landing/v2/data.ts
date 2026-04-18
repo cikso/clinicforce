@@ -22,6 +22,7 @@ export interface Vertical {
   sec3B: string
   sec4H: string
   sec4B: string
+  sec4B2: string
 }
 
 export const VERTICALS: Record<VerticalKey, Vertical> = {
@@ -40,8 +41,9 @@ export const VERTICALS: Record<VerticalKey, Vertical> = {
     sec2B: "She sees which clinicians have availability and which don't. She confirms the right slot with the caller, writes it into your schedule, and sends an SMS confirmation before they hang up.",
     sec3H: "Appointments confirmed before they happen. No-shows down to near zero.",
     sec3B: "SMS reminders go out 24 hours and 2 hours before each appointment — with a one-tap YES / RESCHEDULE. Automated recalls tuned to your clinic type keep your books full without a single reminder phone call.",
-    sec4H: "Catch unhappy patients before they post the 1-star review.",
-    sec4B: "Every appointment triggers a two-question SMS survey. Responses roll up into a live NPS dashboard your team can scan in ten seconds.",
+    sec4H: "Turn happy patients into 5-star Google Reviews — automatically.",
+    sec4B: "Every appointment triggers a two-question SMS survey. Promoters (4–5 stars) get a one-tap link that posts straight to your Google Business page — so your best patients build your reputation for you.",
+    sec4B2: "If someone scores you below a 7, we auto-create a follow-up task and route it to the right clinician. You get to the call before they get to Google Reviews — turning a near-miss into a loyal patient.",
   },
   vet: {
     headline: 'Every <span class="accent">vet</span> call.<br>Every booking.<br><span class="accent">Zero missed.</span>',
@@ -58,8 +60,9 @@ export const VERTICALS: Record<VerticalKey, Vertical> = {
     sec2B: "She sees Dr. Patel's Thursday is packed but Dr. Chen has a 4:30 opening. She confirms it with the pet owner on the call, writes it into your schedule, and sends an SMS confirmation before they hang up.",
     sec3H: "Appointments confirmed before they happen. No-shows down to near zero.",
     sec3B: "SMS reminders go out 24 hours and 2 hours before each appointment — with a one-tap YES / RESCHEDULE. Follow-up recalls for vaccinations, annual check-ups, and post-ops keep your chair full without a single reminder phone call.",
-    sec4H: "Catch unhappy pet owners before they post the 1-star review.",
-    sec4B: "Every appointment triggers a two-question SMS survey. Responses roll up into a live NPS dashboard your team can scan in ten seconds.",
+    sec4H: "Turn happy pet owners into 5-star Google Reviews — automatically.",
+    sec4B: "Every appointment triggers a two-question SMS survey. Promoters (4–5 stars) get a one-tap link that posts straight to your Google Business page — so your best pet owners build your reputation for you.",
+    sec4B2: "If someone scores you below a 7, we auto-create a follow-up task and route it to the right vet. You get to the call before they get to Google Reviews — turning a near-miss into a loyal client.",
   },
   dental: {
     headline: 'Every <span class="accent">dental</span> call.<br>Every booking.<br><span class="accent">Zero missed.</span>',
@@ -76,8 +79,9 @@ export const VERTICALS: Record<VerticalKey, Vertical> = {
     sec2B: "She sees Dr. Singh's Thursday hygienist chair is packed but Dr. Murphy has a 4:30 opening. She confirms it with the patient on the call, writes it into your schedule, and sends an SMS confirmation before they hang up.",
     sec3H: "Chairs confirmed before they happen. No-shows down to near zero.",
     sec3B: "SMS reminders go out 24 hours and 2 hours before each appointment — with a one-tap YES / RESCHEDULE. Automated 6-month recalls for hygienist visits and check-ups keep every chair full without a single reminder phone call.",
-    sec4H: "Catch unhappy patients before they post the 1-star review.",
-    sec4B: "Every appointment triggers a two-question SMS survey. Responses roll up into a live NPS dashboard your practice manager can scan in ten seconds.",
+    sec4H: "Turn happy patients into 5-star Google Reviews — automatically.",
+    sec4B: "Every appointment triggers a two-question SMS survey. Promoters (4–5 stars) get a one-tap link that posts straight to your Google Business page — so your best patients build your reputation for you.",
+    sec4B2: "If someone scores you below a 7, we auto-create a follow-up task and route it to the right dentist. You get to the call before they get to Google Reviews — turning a near-miss into a loyal patient.",
   },
   gp: {
     headline: 'Every <span class="accent">patient</span> call.<br>Every booking.<br><span class="accent">Zero missed.</span>',
@@ -94,8 +98,9 @@ export const VERTICALS: Record<VerticalKey, Vertical> = {
     sec2B: "She sees Dr. Patel's Thursday is packed but Dr. Chen has a 4:30 opening for a standard consult. She confirms it with the patient on the call, writes it into your schedule, and sends an SMS confirmation before they hang up.",
     sec3H: "Appointments confirmed before they happen. No-shows down to near zero.",
     sec3B: "SMS reminders go out 24 hours and 2 hours before each appointment — with a one-tap YES / RESCHEDULE. Automated recalls for care plans, immunisations, and health assessments keep your books full without a single reminder phone call.",
-    sec4H: "Catch unhappy patients before they post the 1-star review.",
-    sec4B: "Every appointment triggers a two-question SMS survey. Responses roll up into a live NPS dashboard your practice manager can scan in ten seconds.",
+    sec4H: "Turn happy patients into 5-star Google Reviews — automatically.",
+    sec4B: "Every appointment triggers a two-question SMS survey. Promoters (4–5 stars) get a one-tap link that posts straight to your Google Business page — so your best patients build your reputation for you.",
+    sec4B2: "If someone scores you below a 7, we auto-create a follow-up task and route it to the right GP. You get to the call before they get to Google Reviews — turning a near-miss into a loyal patient.",
   },
   chiro: {
     headline: 'Every <span class="accent">patient</span> call.<br>Every booking.<br><span class="accent">Zero missed.</span>',
@@ -112,8 +117,9 @@ export const VERTICALS: Record<VerticalKey, Vertical> = {
     sec2B: "She sees Dr. Lee's Thursday is packed but Dr. Novak has a 4:30 opening. She confirms it with the patient on the call, writes it into your schedule, and sends an SMS confirmation before they hang up.",
     sec3H: "Appointments confirmed before they happen. No-shows down to near zero.",
     sec3B: "SMS reminders go out 24 hours and 2 hours before each appointment — with a one-tap YES / RESCHEDULE. Automated care-plan recalls and re-evaluation reminders keep your adjustment schedule full without a single reminder phone call.",
-    sec4H: "Catch unhappy patients before they post the 1-star review.",
-    sec4B: "Every appointment triggers a two-question SMS survey. Responses roll up into a live NPS dashboard your clinic director can scan in ten seconds.",
+    sec4H: "Turn happy patients into 5-star Google Reviews — automatically.",
+    sec4B: "Every appointment triggers a two-question SMS survey. Promoters (4–5 stars) get a one-tap link that posts straight to your Google Business page — so your best patients build your reputation for you.",
+    sec4B2: "If someone scores you below a 7, we auto-create a follow-up task and route it to the right chiropractor. You get to the call before they get to Google Reviews — turning a near-miss into a loyal patient.",
   },
 }
 

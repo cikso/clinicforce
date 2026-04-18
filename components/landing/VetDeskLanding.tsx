@@ -424,7 +424,7 @@ export function ClinicForceLanding() {
                 See how ClinicForce fits into your clinic before another week of missed calls.
               </h2>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-[#566275]">
-                Book a walkthrough to see how coverage, escalation, bookings, and handoff can work for your clinic. At $15 a day, it&apos;s less than a part-time hire — and it&apos;s on when you need it and off when you don&apos;t.
+                Book a walkthrough to see how coverage, escalation, bookings, and handoff can work for your clinic. At $13 a day, it&apos;s less than a part-time hire — and it&apos;s on when you need it and off when you don&apos;t.
               </p>
             </div>
 
