@@ -18,6 +18,11 @@ export interface ActiveCall {
  *  if the Twilio status callback never fires for a Stella/ElevenLabs call). */
 const STALE_AFTER_MS = 15 * 60 * 1000
 
+/** After this long, the ticker assumes the call is stuck (status webhook
+ *  didn't fire) and clears the pulse locally — user gets a stale indicator
+ *  cleared without needing to refresh. Real calls don't last this long. */
+const MAX_CALL_DURATION_MS = 10 * 60 * 1000
+
 interface DbActiveCall {
   id:           string
   clinic_id:    string
@@ -126,11 +131,19 @@ export function useActiveCall(): ActiveCall | null {
 
     seed()
 
-    // Local duration ticker — updates regardless of network traffic.
+    // Local duration ticker — updates regardless of network traffic. If the
+    // call has been "active" longer than MAX_CALL_DURATION_MS, we assume the
+    // Twilio status webhook failed to fire and the row is stuck — clear it
+    // locally so the user isn't stuck with a fake pulse forever.
     tickId = setInterval(() => {
       setCall((prev) => {
         if (!prev || startedAtRef.current == null) return prev
-        return { ...prev, duration: Math.floor((Date.now() - startedAtRef.current) / 1000) }
+        const elapsed = Date.now() - startedAtRef.current
+        if (elapsed > MAX_CALL_DURATION_MS) {
+          startedAtRef.current = null
+          return null
+        }
+        return { ...prev, duration: Math.floor(elapsed / 1000) }
       })
     }, 1000)
 

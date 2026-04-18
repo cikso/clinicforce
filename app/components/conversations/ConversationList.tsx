@@ -35,6 +35,19 @@ interface ConversationListProps {
   clinicId: string
 }
 
+/**
+ * Caller name for display. Falls back to the phone number when the name is
+ * missing, blank, or a generic "Unknown" placeholder the webhook wrote when
+ * it couldn't extract a name from the transcript.
+ */
+function displayCaller(name: string | null | undefined, phone: string | null | undefined): string {
+  const n = (name ?? '').trim()
+  const p = (phone ?? '').trim()
+  if (n && n.toLowerCase() !== 'unknown caller' && n.toLowerCase() !== 'unknown') return n
+  if (p && p !== '—') return p
+  return 'Unknown caller'
+}
+
 function formatTimestamp(iso: string): string {
   try {
     const d = new Date(iso)
@@ -387,7 +400,7 @@ export default function ConversationList({
                         'text-[13px] truncate',
                         isUnread ? 'font-bold text-[var(--text-primary)]' : 'font-semibold text-[var(--text-primary)]',
                       )}>
-                        {call.caller_name || 'Unknown'}
+                        {displayCaller(call.caller_name, call.caller_phone)}
                       </span>
                       <span className="text-[11px] text-[var(--text-tertiary)] shrink-0 font-mono-data">
                         {formatTimestamp(call.created_at)}
