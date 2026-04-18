@@ -22,19 +22,18 @@ import './command-centre-v2.css'
 export interface KpiInput {
   callsToday: number
   callsDelta: { text: string; type: 'up' | 'down' | 'neutral' }
-  missedToday: number
-  bookingsToday: number
-  bookingsDelta: { text: string; type: 'up' | 'down' | 'neutral' }
-  avgAnswerSeconds: number // Stella's "answer time" proxy — for now 0
-  avgAnswerDelta: { text: string; type: 'up' | 'down' | 'neutral' }
-  revenueRecovered: number // AUD — rough estimate from bookings
-  revenueDelta: { text: string; type: 'up' | 'down' | 'neutral' }
+  afterHoursToday: number
+  afterHoursDelta: { text: string; type: 'up' | 'down' | 'neutral' }
+  conversionRate: number // 0–100, bookings ÷ calls
+  conversionDelta: { text: string; type: 'up' | 'down' | 'neutral' }
+  avgCallDurationSeconds: number
+  durationDelta: { text: string; type: 'up' | 'down' | 'neutral' }
   npsScore: number | null
   npsDelta: { text: string; type: 'up' | 'down' | 'neutral' }
   callsSparkline: number[] // last 14 days, length up to 14
-  bookingsSparkline: number[]
-  answerSparkline: number[]
-  revenueSparkline: number[]
+  afterHoursSparkline: number[]
+  conversionSparkline: number[]
+  durationSparkline: number[]
   npsSparkline: number[]
 }
 
@@ -303,6 +302,11 @@ const IconArrow = () => (
     <path d="M6 4l4 4-4 4" />
   </svg>
 )
+const IconMoon = () => (
+  <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M15 10.5A6 6 0 0 1 7.5 3a.5.5 0 0 0-.7-.5A7 7 0 1 0 15.5 11.2a.5.5 0 0 0-.5-.7z" />
+  </svg>
+)
 
 /* ─── Component ─── */
 
@@ -369,14 +373,34 @@ export default function CommandCentreV2(props: CommandCentreProps) {
             sparkColor="var(--brand)"
           />
           <KpiCard
+            icon={<IconMoon />}
+            iconBg="#EEF2FF"
+            iconColor="#4F46E5"
+            label="After-hours calls"
+            value={kpi.afterHoursToday.toLocaleString()}
+            delta={kpi.afterHoursDelta}
+            spark={kpi.afterHoursSparkline}
+            sparkColor="#4F46E5"
+          />
+          <KpiCard
             icon={<IconCalendar />}
             iconBg="#F2EEFB"
             iconColor="#6B3FA0"
-            label="Bookings made"
-            value={kpi.bookingsToday.toLocaleString()}
-            delta={kpi.bookingsDelta}
-            spark={kpi.bookingsSparkline}
+            label="Booking conversion"
+            value={`${Math.round(kpi.conversionRate)}%`}
+            delta={kpi.conversionDelta}
+            spark={kpi.conversionSparkline}
             sparkColor="#8B5CF6"
+          />
+          <KpiCard
+            icon={<IconBolt />}
+            iconBg="var(--brand-light)"
+            iconColor="var(--brand-dark)"
+            label="Avg call duration"
+            value={formatDuration(kpi.avgCallDurationSeconds)}
+            delta={kpi.durationDelta}
+            spark={kpi.durationSparkline}
+            sparkColor="var(--brand)"
           />
           <KpiCard
             icon={<IconShield />}
@@ -387,26 +411,6 @@ export default function CommandCentreV2(props: CommandCentreProps) {
             delta={{ text: urgentCases.length > 0 ? 'active' : 'none', type: 'neutral' }}
             spark={new Array(14).fill(0).map((_, i) => (i === 13 ? urgentCases.length : 0))}
             sparkColor="var(--error)"
-          />
-          <KpiCard
-            icon={<IconCheck size={18} />}
-            iconBg="#FEF3C7"
-            iconColor="var(--warning)"
-            label="Action queue"
-            value={String(totalPending)}
-            delta={{ text: totalPending > 0 ? 'pending' : 'clear', type: 'neutral' }}
-            spark={new Array(14).fill(0).map((_, i) => (i === 13 ? totalPending : 0))}
-            sparkColor="var(--warning)"
-          />
-          <KpiCard
-            icon={<IconBolt />}
-            iconBg="var(--brand-light)"
-            iconColor="var(--brand-dark)"
-            label="Avg answer time"
-            value={formatDuration(kpi.avgAnswerSeconds)}
-            delta={kpi.avgAnswerDelta}
-            spark={kpi.answerSparkline}
-            sparkColor="var(--brand)"
           />
           <KpiCard
             icon={<IconHeart />}
@@ -575,56 +579,6 @@ export default function CommandCentreV2(props: CommandCentreProps) {
                 )
               })}
             </div>
-          </div>
-        </div>
-
-        {/* ─── Activity feed + Clinic capacity ─── */}
-        <div className="cc-midgrid" style={{ gridTemplateColumns: '1.2fr 1fr' }}>
-          <div className="cc-card cc-activity">
-            <div className="cc-sec-head">
-              <div className="cc-sec-title">
-                Activity
-                <span className="cc-live-dot" aria-hidden />
-              </div>
-              <span className="cc-sec-link" style={{ cursor: 'default', color: 'var(--text-tertiary)' }}>Last hour</span>
-            </div>
-            {activity.length === 0 ? (
-              <div className="cc-empty">No activity in the last hour.</div>
-            ) : activity.slice(0, 6).map((a) => (
-              <div key={a.id} className="cc-act-row">
-                <span className={`cc-act-icon ${a.kind.toLowerCase()}`} aria-hidden>
-                  {a.kind === 'CALL' ? <IconPhone /> : a.kind === 'TASK' ? <IconCheck size={14} /> : <IconBolt />}
-                </span>
-                <span className="cc-act-time">{hhmm(a.at)}</span>
-                <span className={`cc-act-tag ${a.kind.toLowerCase()}`}>{a.kind}</span>
-                <span className="cc-act-msg">{a.message}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="cc-card cc-capacity">
-            <div className="cc-sec-head">
-              <div className="cc-sec-title">Clinic capacity today</div>
-              <Link href="/bookings" className="cc-sec-link">View schedule <IconArrow /></Link>
-            </div>
-            {vetCapacity.length === 0 ? (
-              <div className="cc-empty">No clinicians configured yet. Add your team in Settings.</div>
-            ) : vetCapacity.map((v) => {
-              const pct = v.capacity > 0 ? Math.min(100, Math.round((v.used / v.capacity) * 100)) : 0
-              const fillClass = pct >= 95 ? 'full' : pct >= 85 ? 'near' : ''
-              return (
-                <div key={v.id} className="cc-cap-row">
-                  <div>
-                    <div className="cc-cap-name">{v.name}</div>
-                    <div className="cc-cap-role">{v.role}</div>
-                  </div>
-                  <div className="cc-cap-bar">
-                    <div className={`cc-cap-fill ${fillClass}`} style={{ width: `${pct}%` }} />
-                  </div>
-                  <div className="cc-cap-ratio">{v.used}/{v.capacity}</div>
-                </div>
-              )
-            })}
           </div>
         </div>
 
