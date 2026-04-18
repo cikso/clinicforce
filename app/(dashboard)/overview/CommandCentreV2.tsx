@@ -13,6 +13,7 @@ import {
   Line,
   ComposedChart,
 } from 'recharts'
+import CoverageModeToggle from './components/CoverageModeToggle'
 import './command-centre-v2.css'
 
 /* ─── Types (match what the server page passes in) ─── */
@@ -102,6 +103,7 @@ export interface CommandCentreProps {
   firstName: string
   greeting: string                // "Good morning" | "Good afternoon" | "Good evening"
   todayLabel: string              // "Monday, 14 April"
+  clinicId: string
   clinicName: string
   clinicSuburb: string | null
   kpi: KpiInput
@@ -321,7 +323,7 @@ const IconArrow = () => (
 
 export default function CommandCentreV2(props: CommandCentreProps) {
   const {
-    firstName, greeting, todayLabel, clinicName, clinicSuburb,
+    firstName, greeting, todayLabel, clinicId, clinicName, clinicSuburb,
     kpi, liveCall, coverage,
     urgentCases, pendingActions, recentCalls, activity, vetCapacity,
     chartHourly, chartWeekly, chartMonthly,
@@ -373,7 +375,12 @@ export default function CommandCentreV2(props: CommandCentreProps) {
         </div>
 
         {/* ─── Live call hero ─── */}
-        <LiveCallHero live={liveCall} shortQuote={shortQuote} />
+        <LiveCallHero
+          live={liveCall}
+          shortQuote={shortQuote}
+          clinicId={clinicId}
+          coverageMode={coverage.mode}
+        />
 
         {/* ─── KPI band ─── */}
         <div className="cc-kpi-band">
@@ -664,28 +671,61 @@ export default function CommandCentreV2(props: CommandCentreProps) {
 
 /* ─── Sub-components ─── */
 
-function LiveCallHero({ live, shortQuote }: { live: LiveCall | null; shortQuote: string }) {
+function LiveCallHero({
+  live,
+  shortQuote,
+  clinicId,
+  coverageMode,
+}: {
+  live: LiveCall | null
+  shortQuote: string
+  clinicId: string
+  coverageMode: string
+}) {
+  // Orb / card palette is driven by one of three states the user cares about:
+  //   • On a call  → amber  (data-urgency="URGENT")
+  //   • AI off     → red    (data-urgency="CRITICAL")
+  //   • AI on idle → green  (data-urgency="IDLE")
+  // Caller-urgency detail still shows in the per-call pill + LIVE badge so we
+  // don't lose that signal — just the orb is simplified.
+  const isOff = coverageMode === 'off'
+
   if (!live?.active) {
-    // Empty / caught-up state — calmer treatment. Orb still breathes slowly so
-    // the surface feels alive, but no pulse rings or waveform.
+    const dataUrgency = isOff ? 'CRITICAL' : 'IDLE'
+    const statusPill = isOff
+      ? { cls: 'cc-urgency-emergency', label: 'AI OFF' }
+      : { cls: 'cc-urgency-routine',   label: 'READY' }
+    const statusLine = isOff
+      ? 'AI is off — calls are being forwarded straight to reception.'
+      : 'Answering calls as they come in — your clinic is fully covered right now.'
+
     return (
-      <div className="cc-livecall cc-livecall-caught" data-urgency="IDLE">
+      <div className="cc-livecall cc-livecall-caught" data-urgency={dataUrgency}>
         <div className="cc-stella-orb-wrap">
           <div className="cc-stella-orb">STELLA</div>
         </div>
         <div className="cc-livecall-body">
           <div className="cc-livecall-head">
-            <span className="cc-livecall-caller">Stella is standing by</span>
-            <span className="cc-urgency-pill cc-urgency-routine">READY</span>
+            <span className="cc-livecall-caller">
+              {isOff ? 'Stella is off duty' : 'Stella is standing by'}
+            </span>
+            <span className={`cc-urgency-pill ${statusPill.cls}`}>{statusPill.label}</span>
           </div>
           <p className="cc-livecall-quote" style={{ fontStyle: 'normal', color: 'var(--text-secondary)' }}>
-            Answering calls as they come in — your clinic is fully covered right now.
+            {statusLine}
           </p>
         </div>
+        {clinicId && (
+          <div className="cc-livecall-actions">
+            <CoverageModeToggle initialMode={coverageMode} clinicId={clinicId} />
+          </div>
+        )}
       </div>
     )
   }
 
+  // Active call — always amber regardless of caller urgency classification.
+  // (Urgency detail still shows in the per-call pill next to the caller name.)
   const urgencyClass =
     live.urgency === 'CRITICAL' ? 'cc-urgency-emergency' :
     live.urgency === 'URGENT'   ? 'cc-urgency-urgent'    :
@@ -707,7 +747,7 @@ function LiveCallHero({ live, shortQuote }: { live: LiveCall | null; shortQuote:
   ]
 
   return (
-    <div className="cc-livecall cc-livecall-active" data-urgency={live.urgency}>
+    <div className="cc-livecall cc-livecall-active" data-urgency="URGENT">
       <div className="cc-stella-orb-wrap">
         {/* Two concentric rings expanding outward — the "incoming signal" cue. */}
         <span className="cc-orb-ring cc-orb-ring-1" aria-hidden />

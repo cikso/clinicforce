@@ -211,8 +211,12 @@ export default function ConversationDetail({
         <div>
           <span className="block text-[9px] font-bold uppercase tracking-[1.5px] text-[var(--text-tertiary)] mb-2">Call Details</span>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Card 1: Caller Name */}
-            <DetailCard label="CALLER NAME" value={call.caller_name || '—'} sub="Existing caller" />
+            {/* Card 1: Caller Name — fall back to phone if no name was captured */}
+            <DetailCard
+              label="CALLER NAME"
+              value={call.caller_name || call.caller_phone || '—'}
+              sub={call.caller_name ? 'Existing caller' : 'Phone — no name captured'}
+            />
 
             {/* Card 2: Phone */}
             <DetailCard label="PHONE" value={call.caller_phone || '—'} sub="Primary mobile" />

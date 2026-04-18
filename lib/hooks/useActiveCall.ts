@@ -23,6 +23,11 @@ const STALE_AFTER_MS = 15 * 60 * 1000
  *  cleared without needing to refresh. Real calls don't last this long. */
 const MAX_CALL_DURATION_MS = 10 * 60 * 1000
 
+/** Polling interval for the seed query. Backup for when Supabase realtime
+ *  events don't reach the client (RLS, replica-identity, or a missed
+ *  subscription). Keeps the pulse within ~5s of truth without a refresh. */
+const POLL_INTERVAL_MS = 5000
+
 interface DbActiveCall {
   id:           string
   clinic_id:    string
@@ -108,8 +113,10 @@ export function useActiveCall(): ActiveCall | null {
     const supabase = createClient()
     let cancelled  = false
     let tickId:   ReturnType<typeof setInterval> | null = null
+    let pollId:   ReturnType<typeof setInterval> | null = null
 
-    // Seed from existing row if the page was refreshed mid-call.
+    // Seed from existing row if the page was refreshed mid-call. Also used
+    // by the polling fallback so UI self-heals if realtime events miss.
     const seed = async () => {
       const staleCutoff = new Date(Date.now() - STALE_AFTER_MS).toISOString()
       const { data } = await supabase
@@ -123,13 +130,30 @@ export function useActiveCall(): ActiveCall | null {
         .maybeSingle<DbActiveCall>()
 
       if (cancelled) return
+
       if (data) {
-        startedAtRef.current = new Date(data.started_at).getTime()
-        setCall(toActiveCall(data))
+        const startedMs = new Date(data.started_at).getTime()
+        // Only update if it's a new/different call — avoid thrashing state
+        // on every poll tick.
+        if (startedAtRef.current !== startedMs) {
+          startedAtRef.current = startedMs
+          setCall(toActiveCall(data))
+        }
+      } else {
+        // No active call — clear UI if we were showing one.
+        if (startedAtRef.current !== null) {
+          startedAtRef.current = null
+          setCall(null)
+        }
       }
     }
 
     seed()
+
+    // Polling fallback — if realtime INSERT/DELETE events don't reach us
+    // (RLS quirk, replica-identity, dropped subscription), the UI still
+    // gets within ~POLL_INTERVAL_MS of the truth without a refresh.
+    pollId = setInterval(seed, POLL_INTERVAL_MS)
 
     // Local duration ticker — updates regardless of network traffic. If the
     // call has been "active" longer than MAX_CALL_DURATION_MS, we assume the
@@ -183,6 +207,7 @@ export function useActiveCall(): ActiveCall | null {
     return () => {
       cancelled = true
       if (tickId) clearInterval(tickId)
+      if (pollId) clearInterval(pollId)
       supabase.removeChannel(channel)
     }
   }, [demo, activeClinicId])

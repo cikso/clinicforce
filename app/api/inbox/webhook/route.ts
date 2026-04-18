@@ -124,11 +124,19 @@ export async function POST(req: NextRequest) {
 
   const structured = { analysis, dataCollection, payload }
 
+  // Twilio's real caller ID (E.164). More reliable than any phone Stella
+  // asks for in-conversation — use it to backfill when tool-created rows
+  // didn't capture a phone, or to normalise when Stella wrote a spoken form.
+  const twilioCallerId = typeof phoneCall.caller_id === 'string' ? phoneCall.caller_id.trim() : ''
+  const twilioCallerName = typeof phoneCall.external_caller_id_name === 'string'
+    ? phoneCall.external_caller_id_name.trim()
+    : ''
+
   // ── Step 1: Exact conversation_id match ───────────────────────
   if (conversationId) {
     const { data: exactMatch } = await supabase
       .from('call_inbox')
-      .select('id')
+      .select('id, caller_phone, caller_name')
       .eq('elevenlabs_conversation_id', conversationId)
       .eq('clinic_id', clinicId)
       .maybeSingle()
@@ -136,6 +144,15 @@ export async function POST(req: NextRequest) {
     if (exactMatch) {
       const enriched = extractCallerInfo(transcript, '—', structured)
       const industryData = buildIndustryData(transcript, structured)
+
+      // Backfill caller_phone from Twilio's caller_id if the existing row
+      // has no phone (or a placeholder '—'). Twilio's caller_id is the
+      // authoritative source for inbound calls.
+      const existingPhone = (exactMatch.caller_phone ?? '').trim()
+      const needsPhoneBackfill = !existingPhone || existingPhone === '—'
+      const existingName = (exactMatch.caller_name ?? '').trim()
+      const needsNameBackfill = !existingName || existingName.toLowerCase() === 'unknown caller'
+
       await withRetry(async () => {
         const { error: updateErr } = await supabase
           .from('call_inbox')
@@ -149,6 +166,8 @@ export async function POST(req: NextRequest) {
             industry_data:         industryData,
             ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
             ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
+            ...(needsPhoneBackfill && twilioCallerId ? { caller_phone: twilioCallerId } : {}),
+            ...(needsNameBackfill && twilioCallerName ? { caller_name: twilioCallerName } : {}),
           })
           .eq('id', exactMatch.id)
 
@@ -166,7 +185,7 @@ export async function POST(req: NextRequest) {
 
   const { data: recentMatch } = await supabase
     .from('call_inbox')
-    .select('id')
+    .select('id, caller_phone, caller_name')
     .eq('clinic_id', clinicId)
     .is('elevenlabs_conversation_id', null)
     .gte('created_at', tenMinsAgo)
@@ -177,6 +196,14 @@ export async function POST(req: NextRequest) {
   if (recentMatch) {
     const enriched = extractCallerInfo(transcript, '—', structured)
     const industryData = buildIndustryData(transcript, structured)
+
+    // Same backfill logic as Step 1 — if the tool-created row didn't capture
+    // a phone/name, use Twilio's authoritative caller_id.
+    const existingPhone = (recentMatch.caller_phone ?? '').trim()
+    const needsPhoneBackfill = !existingPhone || existingPhone === '—'
+    const existingName = (recentMatch.caller_name ?? '').trim()
+    const needsNameBackfill = !existingName || existingName.toLowerCase() === 'unknown caller'
+
     await withRetry(async () => {
       const { error: updateErr } = await supabase
         .from('call_inbox')
@@ -191,6 +218,8 @@ export async function POST(req: NextRequest) {
           elevenlabs_conversation_id: conversationId,
           ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
           ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
+          ...(needsPhoneBackfill && twilioCallerId ? { caller_phone: twilioCallerId } : {}),
+          ...(needsNameBackfill && twilioCallerName ? { caller_name: twilioCallerName } : {}),
         })
         .eq('id', recentMatch.id)
 
