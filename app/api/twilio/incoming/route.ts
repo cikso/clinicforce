@@ -111,18 +111,23 @@ export async function POST(req: NextRequest) {
         .single(),
       supabase
         .from('clinics')
-        .select(`${CLINIC_SELECT_FIELDS}, reception_number`)
+        .select(`${CLINIC_SELECT_FIELDS}, reception_number, coverage_mode`)
         .eq('id', clinicId)
         .single(),
     ])
 
-    const isActive = coverageResult.data?.status === 'ACTIVE'
-    const clinic   = clinicResult.data as Record<string, unknown> | null
+    const isActive     = coverageResult.data?.status === 'ACTIVE'
+    const clinic       = clinicResult.data as Record<string, unknown> | null
+    const coverageMode = String(clinic?.coverage_mode ?? 'after_hours')
 
     // ── Record that a call is in progress. Powers LiveCallPulse in the
     //    dashboard topbar via Supabase realtime. Deleted by /api/twilio/status
     //    when the call completes. Fire-and-forget — never block the call flow.
-    const willBeHandledByStella = Boolean(isActive && clinic && agentId)
+    // When coverage_mode is 'off' the call never reaches Stella — mark as
+    // CLINIC-handled so the topbar doesn't flash a Stella pulse.
+    const willBeHandledByStella = Boolean(
+      isActive && clinic && agentId && coverageMode !== 'off',
+    )
     if (callSid) {
       supabase
         .from('active_calls')
@@ -138,6 +143,31 @@ export async function POST(req: NextRequest) {
         .then(({ error }) => {
           if (error) console.error('[twilio/incoming] active_calls upsert failed:', error.message)
         })
+    }
+
+    // ── AI OFF → direct dial reception, skip ElevenLabs entirely ──────────
+    // Clinic flipped "AI off" via the overview toggle (sets clinics.coverage_mode).
+    // Previously the call still went through ElevenLabs which read the same flag
+    // in /api/initiate and did an in-conversation transfer — callers heard a
+    // Stella line first + we paid for an ElevenLabs conversation per call.
+    // Now: direct Dial, no Stella, no charge.
+    if (coverageMode === 'off' && clinic) {
+      const receptionNumber = String(
+        clinic.reception_number ?? clinic.phone ?? clinicNumber ?? '',
+      ).trim()
+
+      if (!receptionNumber) {
+        console.error('[twilio/incoming] coverage_mode=off but no reception_number / phone for clinic', clinicId)
+        return twiml(`<Response><Say>Sorry, we could not route your call. Please try again later.</Say></Response>`)
+      }
+
+      console.log(`[twilio/incoming] coverage_mode=off → dialling reception ${receptionNumber}`)
+      return twiml(`
+<Response>
+  <Dial timeout="30" action="/api/twilio/status">
+    <Number>${receptionNumber}</Number>
+  </Dial>
+</Response>`)
     }
 
     if (isActive && clinic && agentId) {
