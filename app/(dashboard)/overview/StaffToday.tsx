@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useMemo } from 'react'
 import { Phone, AlertTriangle, ListChecks, Clock, ChevronRight, Shield } from 'lucide-react'
+import OverviewHeader from './components/OverviewHeader'
 
 /**
  * StaffToday — focused single-column view for receptionists, nurses, and
@@ -47,6 +48,7 @@ export interface StaffTodayProps {
   firstName: string
   greeting: string             // "Good morning" / "Good afternoon" / "Good evening"
   todayLabel: string           // "Monday, 14 April"
+  clinicId: string
   clinicName: string
   clinicSuburb: string | null
   coverageMode: string | null  // 'after_hours' | 'business_hours' | 'always_on' etc.
@@ -93,6 +95,7 @@ export default function StaffToday({
   firstName,
   greeting,
   todayLabel,
+  clinicId,
   clinicName,
   clinicSuburb,
   coverageMode,
@@ -112,6 +115,16 @@ export default function StaffToday({
 
   return (
     <div className="max-w-[720px] mx-auto space-y-4">
+      {/* AI coverage mode toggle — same control admins + owners see on the
+          Command Centre. Staff can flip modes too (e.g. receptionist turning
+          Stella on during a lunch break). */}
+      {clinicId && (
+        <OverviewHeader
+          initialMode={coverageMode ?? 'business_hours'}
+          clinicId={clinicId}
+        />
+      )}
+
       {/* Header */}
       <header className="cf-enter">
         <p className="eyebrow text-[var(--text-tertiary)]">{todayLabel}</p>

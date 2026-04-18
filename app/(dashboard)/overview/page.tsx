@@ -358,6 +358,7 @@ export default async function OverviewPage() {
         firstName={firstName}
         greeting={greeting}
         todayLabel={todayLabel}
+        clinicId={clinicId}
         clinicName={staffClinic?.name ?? profile.clinicName}
         clinicSuburb={staffClinic?.suburb ?? null}
         coverageMode={staffClinic?.coverage_mode ?? null}
