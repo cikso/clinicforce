@@ -15,12 +15,6 @@ interface SettingsTab {
 
 const TABS: SettingsTab[] = [
   {
-    label: 'Clinic Profile',
-    href: '/settings',
-    subtitle: 'Name, contact details, hours, and vertical configuration.',
-    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><rect x="2" y="2" width="12" height="12" rx="2" /><path d="M5.5 6.5h5M5.5 9.5h3" /></svg>,
-  },
-  {
     label: 'AI Agent',
     href: '/settings/ai',
     subtitle: 'Voice, tone, and how Stella handles inbound calls.',
@@ -37,7 +31,7 @@ const TABS: SettingsTab[] = [
   {
     label: 'Team',
     href: '/settings/team',
-    subtitle: 'Members and pending invites for this clinic.',
+    subtitle: 'Add or remove teammates and set their access level.',
     icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><circle cx="6" cy="5.5" r="2" /><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4" /><circle cx="11.5" cy="5" r="1.5" /><path d="M14 12.5c0-1.7-1.1-3-2.5-3" /></svg>,
     adminOnly: true,
   },
@@ -72,7 +66,7 @@ export default function SettingsShell({ children, userRole }: SettingsShellProps
   //   keep Team / Notifications / Billing for platform-level admin.
   // clinic_owner: zero settings — all admin (including team) lives in /admin.
   // clinic_admin: only Team. Staff: only non-admin tabs.
-  const PLATFORM_OWNER_HIDDEN = ['/settings', '/settings/ai', '/settings/coverage']
+  const PLATFORM_OWNER_HIDDEN = ['/settings/ai', '/settings/coverage']
   const visibleTabs = isClinicOwner
     ? []
     : isPlatformOwner

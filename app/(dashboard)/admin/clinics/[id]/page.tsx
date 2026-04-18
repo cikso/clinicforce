@@ -6,6 +6,7 @@ import EditClinic from './_edit-clinic'
 import InvitePanel from './_invite-panel'
 import CoverageControl from './_coverage-control'
 import DeleteClinicButton from './_delete-clinic'
+import UserRow from './_user-row'
 import EmptyState from '@/app/components/ui/EmptyState'
 
 interface PageProps {
@@ -15,15 +16,6 @@ interface PageProps {
 const VERTICAL_LABELS: Record<string, string> = {
   vet: 'Veterinary', dental: 'Dental', gp: 'General Practice',
   chiro: 'Chiropractic', allied_health: 'Allied Health', specialist: 'Specialist',
-}
-
-const ROLE_LABELS: Record<string, string> = {
-  clinic_admin: 'Admin',
-  staff: 'Staff',
-  receptionist: 'Receptionist',
-  vet: 'Vet',
-  nurse: 'Nurse',
-  platform_owner: 'Platform Owner',
 }
 
 export const dynamic = 'force-dynamic'
@@ -115,23 +107,13 @@ export default async function ClinicDetailPage({ params }: PageProps) {
         ) : (
           <div className="divide-y divide-[var(--border)]">
             {users.map((u) => (
-              <div key={u.id} className="flex items-center justify-between py-3">
-                <p className="text-[14px] font-medium text-[var(--text-primary)]">
-                  {u.name ?? '—'}
-                </p>
-                <span
-                  className="px-2.5 py-1 rounded-full text-[12px] font-semibold"
-                  style={{
-                    backgroundColor: u.role === 'clinic_admin' ? 'var(--success-light)' : 'var(--bg-secondary)',
-                    color:           u.role === 'clinic_admin' ? 'var(--success)'       : 'var(--text-secondary)',
-                    border:          u.role === 'clinic_admin'
-                      ? '1px solid rgba(var(--success-rgb), 0.2)'
-                      : '1px solid var(--border)',
-                  }}
-                >
-                  {ROLE_LABELS[u.role] ?? u.role}
-                </span>
-              </div>
+              <UserRow
+                key={u.id}
+                memberId={u.id}
+                memberName={u.name}
+                role={u.role}
+                canRemove={u.role !== 'platform_owner' && u.role !== 'clinic_owner'}
+              />
             ))}
           </div>
         )}
