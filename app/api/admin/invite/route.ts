@@ -21,12 +21,6 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorised.' }, { status: 401 })
 
-  const { data: cu } = await supabase
-    .from('clinic_users').select('role').eq('user_id', user.id).single()
-  if (!cu || !['clinic_admin', 'platform_owner'].includes(cu.role)) {
-    return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
-  }
-
   let body: { clinic_id?: string; email?: string; role?: string }
   try { body = await request.json() } catch {
     return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
@@ -47,6 +41,20 @@ export async function POST(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
+
+  // Caller must be platform_owner, OR clinic_admin/clinic_owner of the target clinic.
+  // Multi-clinic users can have many rows so use maybeSingle on the scoped query.
+  const { data: callerRoles } = await service
+    .from('clinic_users')
+    .select('role, clinic_id')
+    .eq('user_id', user.id)
+  const isPlatformOwner = (callerRoles ?? []).some((r) => r.role === 'platform_owner')
+  const hasClinicAccess = (callerRoles ?? []).some(
+    (r) => r.clinic_id === clinic_id && ['clinic_admin', 'clinic_owner'].includes(r.role),
+  )
+  if (!isPlatformOwner && !hasClinicAccess) {
+    return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
+  }
 
   // Check clinic exists
   const { data: clinic } = await service.from('clinics').select('id, name').eq('id', clinic_id).single()
@@ -129,12 +137,6 @@ export async function DELETE(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorised.' }, { status: 401 })
 
-  const { data: cu } = await supabase
-    .from('clinic_users').select('role').eq('user_id', user.id).single()
-  if (!cu || !['clinic_admin', 'platform_owner'].includes(cu.role)) {
-    return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
-  }
-
   const { searchParams } = new URL(request.url)
   const inviteId = searchParams.get('id')
   if (!inviteId) return NextResponse.json({ error: 'Invite id is required.' }, { status: 400 })
@@ -144,6 +146,26 @@ export async function DELETE(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
+
+  // Load invite to know which clinic it belongs to, then check caller has rights.
+  const { data: invite } = await service
+    .from('clinic_invites')
+    .select('clinic_id')
+    .eq('id', inviteId)
+    .maybeSingle()
+  if (!invite) return NextResponse.json({ error: 'Invite not found.' }, { status: 404 })
+
+  const { data: callerRoles } = await service
+    .from('clinic_users')
+    .select('role, clinic_id')
+    .eq('user_id', user.id)
+  const isPlatformOwner = (callerRoles ?? []).some((r) => r.role === 'platform_owner')
+  const hasClinicAccess = (callerRoles ?? []).some(
+    (r) => r.clinic_id === invite.clinic_id && ['clinic_admin', 'clinic_owner'].includes(r.role),
+  )
+  if (!isPlatformOwner && !hasClinicAccess) {
+    return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
+  }
 
   const { error: delError } = await service
     .from('clinic_invites')

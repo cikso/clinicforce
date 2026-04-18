@@ -108,7 +108,7 @@ const NAV_ITEMS: NavItem[] = [
     roles: ['platform_owner', 'clinic_owner', 'clinic_admin'] },
   { label: 'Bookings',       icon: icons.calendar,  href: '/bookings', comingSoon: true },
   { label: 'SMS Hub',        icon: icons.message,   href: '/sms', comingSoon: true },
-  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys',
+  { label: 'Surveys',        icon: icons.clipboard, href: '/surveys', comingSoon: true,
     roles: ['platform_owner', 'clinic_owner', 'clinic_admin'] },
   { label: 'Settings',       icon: icons.cog,       href: '/settings',
     roles: ['platform_owner', 'clinic_owner', 'clinic_admin'] },

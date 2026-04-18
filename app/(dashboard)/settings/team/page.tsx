@@ -53,6 +53,7 @@ export default async function TeamPage() {
 
   return (
     <TeamClient
+      clinicId={profile.clinicId}
       members={members}
       pendingInvites={pendingInvites}
       currentUserId={profile.userId}
