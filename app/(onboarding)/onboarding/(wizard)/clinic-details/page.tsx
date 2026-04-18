@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   StepCard, Field, Input, Textarea, SubmitButton, ErrorBanner,
-  stepHeading, stepSubheading,
+  stepHeading, stepSubheading, StepDescription,
 } from '../../_components'
 
 export default function ClinicDetailsPage() {
@@ -50,13 +50,13 @@ export default function ClinicDetailsPage() {
 
   return (
     <StepCard>
-      <p style={stepSubheading}>Step 1 of 3</p>
+      <p style={stepSubheading}>Step 1 of 4</p>
       <h1 style={stepHeading}>Tell us about your clinic</h1>
-      <p style={{ fontFamily: "'DM Sans'", fontSize: '0.925rem', color: '#6B6B6B', marginBottom: '2rem', lineHeight: 1.5 }}>
+      <StepDescription>
         This information personalises your AI receptionist and appears in call summaries.
-      </p>
+      </StepDescription>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.125rem' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
         <Field label="Clinic name *">
           <Input value={form.name} onChange={set('name')} placeholder="Baulkham Hills Pet Clinic" required />
         </Field>
@@ -98,28 +98,36 @@ export default function ClinicDetailsPage() {
 
         {/* After-hours emergency partner */}
         <div style={{
-          marginTop: '0.5rem',
-          border: '1px solid #E8E4DE',
+          marginTop: '8px',
+          border: '1px solid var(--border)',
           borderRadius: 12,
-          padding: '1.25rem',
+          padding: '20px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1rem',
+          gap: '16px',
+          backgroundColor: 'var(--bg-secondary)',
         }}>
           <div>
             <p style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: '#9B9B9B',
-              letterSpacing: '0.04em',
+              fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+              fontSize: '10px',
+              fontWeight: 700,
+              color: 'var(--text-tertiary)',
+              letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              marginBottom: '0.25rem',
+              marginBottom: '4px',
+              marginTop: 0,
             }}>
-              After-Hours Emergency Partner
+              After-hours emergency partner
             </p>
-            <p style={{ fontFamily: "'DM Sans'", fontSize: '0.78rem', color: '#9B9B9B' }}>
-              If a caller has an emergency outside your hours, Stella will direct them here
+            <p style={{
+              fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+              fontSize: '12.5px',
+              color: 'var(--text-secondary)',
+              lineHeight: 1.5,
+              margin: 0,
+            }}>
+              If a caller has an emergency outside your hours, Stella will direct them here.
             </p>
           </div>
 

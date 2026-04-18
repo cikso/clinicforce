@@ -48,41 +48,45 @@ export default async function ClinicDetailPage({ params }: PageProps) {
 
   return (
     <div className="max-w-[760px]">
-      {/* Back */}
-      <Link
-        href="/admin"
-        className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-6"
-      >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-          <path d="M10 2L4 7l6 5" />
-        </svg>
-        All Clinics
-      </Link>
+      {/* Breadcrumb — matches Settings / Insights header pattern */}
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] mb-1.5 cf-enter">
+        <Link href="/overview" className="hover:text-[var(--text-primary)] transition-colors">
+          Dashboard
+        </Link>
+        <span aria-hidden>/</span>
+        <Link href="/admin" className="hover:text-[var(--text-primary)] transition-colors">
+          Clinic Admin
+        </Link>
+        <span aria-hidden>/</span>
+        <span className="text-[var(--text-primary)] font-medium truncate">{clinic.name}</span>
+      </nav>
 
       {/* Clinic header */}
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-[22px] font-heading font-bold text-[var(--text-primary)]">
+      <header className="flex items-start justify-between mb-6 cf-enter">
+        <div className="min-w-0">
+          <div className="flex items-center gap-3 mb-1 flex-wrap">
+            <h1 className="text-[22px] font-heading font-bold text-[var(--text-primary)] tracking-[-0.01em]">
               {clinic.name}
             </h1>
             <span
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold"
               style={{
-                backgroundColor: clinic.onboarding_completed ? '#ECFDF5' : '#FFFBEB',
-                color: clinic.onboarding_completed ? '#059669' : '#D97706',
-                border: `1px solid ${clinic.onboarding_completed ? 'rgba(5,150,105,0.2)' : 'rgba(217,119,6,0.2)'}`,
+                backgroundColor: clinic.onboarding_completed ? 'var(--success-light)' : 'var(--warning-light)',
+                color:           clinic.onboarding_completed ? 'var(--success)'       : 'var(--warning)',
+                border:          clinic.onboarding_completed
+                  ? '1px solid rgba(var(--success-rgb), 0.2)'
+                  : '1px solid rgba(var(--warning-rgb), 0.2)',
               }}
             >
               <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'currentColor' }} />
-              {clinic.onboarding_completed ? 'Active' : 'Pending Setup'}
+              {clinic.onboarding_completed ? 'Active' : 'Pending setup'}
             </span>
           </div>
           <p className="text-[14px] text-[var(--text-secondary)]">
             {VERTICAL_LABELS[clinic.vertical] ?? clinic.vertical} · {clinic.slug}
           </p>
         </div>
-      </div>
+      </header>
 
       {/* Editable details card */}
       <EditClinic clinic={{ ...clinic, voice_phone: voiceAgent?.twilio_phone_number ?? null }} />
@@ -118,9 +122,11 @@ export default async function ClinicDetailPage({ params }: PageProps) {
                 <span
                   className="px-2.5 py-1 rounded-full text-[12px] font-semibold"
                   style={{
-                    backgroundColor: u.role === 'clinic_admin' ? '#ECFDF5' : 'var(--bg-secondary)',
-                    color: u.role === 'clinic_admin' ? '#059669' : 'var(--text-secondary)',
-                    border: `1px solid ${u.role === 'clinic_admin' ? 'rgba(5,150,105,0.2)' : 'var(--border)'}`,
+                    backgroundColor: u.role === 'clinic_admin' ? 'var(--success-light)' : 'var(--bg-secondary)',
+                    color:           u.role === 'clinic_admin' ? 'var(--success)'       : 'var(--text-secondary)',
+                    border:          u.role === 'clinic_admin'
+                      ? '1px solid rgba(var(--success-rgb), 0.2)'
+                      : '1px solid var(--border)',
                   }}
                 >
                   {ROLE_LABELS[u.role] ?? u.role}

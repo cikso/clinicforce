@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Card from '@/app/components/ui/Card'
 import Badge from '@/app/components/ui/Badge'
 import EmptyState from '@/app/components/ui/EmptyState'
+import { useToast } from '@/app/components/ui/Toast'
 import { Users } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 // NOTE: Invitations are sent exclusively from /admin (platform_owner only).
 // This page shows members + pending invites as read-mostly; invite sending UI lives there.
@@ -45,24 +44,6 @@ const ROLE_STYLES: Record<string, { variant: 'info' | 'routine' | 'neutral' | 'u
 
 const EDITABLE_ROLES = ['clinic_admin', 'staff']
 
-function Toast({ message, variant, onDismiss }: { message: string; variant: 'success' | 'error'; onDismiss: () => void }) {
-  return (
-    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 fade-in duration-200">
-      <div className={cn(
-        'flex items-center gap-2.5 px-4 py-3 rounded-lg shadow-[var(--shadow-md)] border',
-        variant === 'success'
-          ? 'bg-[var(--success-light)] border-[var(--success)]/20 text-[var(--success)]'
-          : 'bg-[var(--error-light)] border-[var(--error)]/20 text-[var(--error)]',
-      )}>
-        <span className="text-[13px] font-medium">{message}</span>
-        <button onClick={onDismiss} className="ml-2 opacity-60 hover:opacity-100">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 3l6 6M9 3l-6 6" /></svg>
-        </button>
-      </div>
-    </div>
-  )
-}
-
 function getInitials(name: string | null): string {
   if (!name) return '?'
   return name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
@@ -78,12 +59,7 @@ function initialsColor(name: string | null): string {
 
 export default function TeamClient({ members, pendingInvites, currentUserId }: TeamClientProps) {
   const router = useRouter()
-  const [toast, setToast] = useState<{ message: string; variant: 'success' | 'error' } | null>(null)
-
-  const showToast = useCallback((message: string, variant: 'success' | 'error') => {
-    setToast({ message, variant })
-    setTimeout(() => setToast(null), 3000)
-  }, [])
+  const { toast } = useToast()
 
   async function handleRoleChange(memberId: string, newRole: string) {
     try {
@@ -97,13 +73,13 @@ export default function TeamClient({ members, pendingInvites, currentUserId }: T
         }),
       })
       if (res.ok) {
-        showToast('Role updated', 'success')
+        toast({ type: 'success', title: 'Role updated' })
         router.refresh()
       } else {
-        showToast('Failed to update role', 'error')
+        toast({ type: 'error', title: 'Failed to update role' })
       }
     } catch {
-      showToast('Failed to update role', 'error')
+      toast({ type: 'error', title: 'Failed to update role' })
     }
   }
 
@@ -113,8 +89,6 @@ export default function TeamClient({ members, pendingInvites, currentUserId }: T
 
   return (
     <div className="space-y-5 max-w-[680px]">
-      {toast && <Toast message={toast.message} variant={toast.variant} onDismiss={() => setToast(null)} />}
-
       {/* Current Team */}
       <Card header={{ title: 'Current Team', subtitle: `${members.length} member${members.length === 1 ? '' : 's'}` }}>
         <div className="space-y-2">

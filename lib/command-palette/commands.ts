@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 
 export type CommandGroup =
+  | 'recent'
   | 'navigation'
   | 'platform'
   | 'clinics'
@@ -150,6 +151,7 @@ export function filterCommands(commands: Command[], query: string): Command[] {
 }
 
 export const GROUP_LABELS: Record<CommandGroup, string> = {
+  recent:     'Recent',
   navigation: 'Navigation',
   platform:   'Platform',
   clinics:    'Switch clinic',

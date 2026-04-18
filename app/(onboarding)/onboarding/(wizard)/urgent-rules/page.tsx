@@ -3,8 +3,8 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  StepCard, Field, Select, SubmitButton, ErrorBanner, BackButton,
-  stepHeading, stepSubheading,
+  StepCard, Field, Select, Textarea, SubmitButton, ErrorBanner, BackButton,
+  stepHeading, stepSubheading, StepDescription,
 } from '../../_components'
 
 const PRESET_SYMPTOMS = [
@@ -80,22 +80,33 @@ export default function UrgentRulesPage() {
       <BackButton href="/onboarding/call-handling" />
       <p style={stepSubheading}>Step 4 of 4</p>
       <h1 style={stepHeading}>Urgent triage rules</h1>
-      <p style={{ fontFamily: "'DM Sans'", fontSize: '0.925rem', color: '#6B6B6B', marginBottom: '2rem', lineHeight: 1.5 }}>
+      <StepDescription>
         Select which symptoms your AI receptionist should flag as urgent. Callers reporting these will be prioritised for same-day follow-up.
-      </p>
+      </StepDescription>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
         {/* Symptom checklist */}
         <div>
-          <p style={{ fontFamily: "'DM Sans'", fontSize: '0.82rem', fontWeight: 600, color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.875rem' }}>
+          <p style={{
+            fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+            fontSize: '10px',
+            fontWeight: 700,
+            color: 'var(--text-tertiary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.14em',
+            marginBottom: '12px',
+            marginTop: 0,
+          }}>
             Urgent symptoms
           </p>
           <div
+            role="group"
+            aria-label="Urgent symptoms"
             style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gap: '0.5rem',
+              gap: '8px',
             }}
           >
             {PRESET_SYMPTOMS.map((sym) => {
@@ -104,34 +115,37 @@ export default function UrgentRulesPage() {
                 <button
                   key={sym}
                   type="button"
+                  role="checkbox"
+                  aria-checked={isChecked}
                   onClick={() => toggleSymptom(sym)}
                   style={{
                     display: 'flex',
                     alignItems: 'flex-start',
-                    gap: '0.625rem',
-                    padding: '0.75rem',
-                    backgroundColor: isChecked ? 'rgba(23,196,190,0.06)' : '#F9F8F6',
-                    border: isChecked ? '1px solid rgba(23,196,190,0.35)' : '1px solid #E8E4DE',
+                    gap: '10px',
+                    padding: '12px',
+                    backgroundColor: isChecked ? 'var(--brand-light)' : 'var(--bg-secondary)',
+                    border: isChecked ? '1px solid rgba(0, 214, 143, 0.35)' : '1px solid var(--border-subtle)',
                     borderRadius: 10,
                     cursor: 'pointer',
                     textAlign: 'left',
-                    transition: 'all 0.15s',
+                    transition: 'background-color 140ms ease, border-color 140ms ease',
                   }}
                 >
                   {/* Checkbox */}
                   <div
+                    aria-hidden
                     style={{
                       width: 18,
                       height: 18,
                       borderRadius: 5,
-                      backgroundColor: isChecked ? '#00D68F' : '#ffffff',
-                      border: isChecked ? '1px solid #00D68F' : '1px solid #D0CCC6',
+                      backgroundColor: isChecked ? 'var(--brand)' : 'var(--bg-primary)',
+                      border: isChecked ? '1px solid var(--brand)' : '1px solid var(--border-strong)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
                       marginTop: 1,
-                      transition: 'all 0.15s',
+                      transition: 'background-color 140ms ease, border-color 140ms ease',
                     }}
                   >
                     {isChecked && (
@@ -142,11 +156,11 @@ export default function UrgentRulesPage() {
                   </div>
                   <span
                     style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: '0.825rem',
-                      color: isChecked ? '#1A1A1A' : '#6B6B6B',
+                      fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+                      fontSize: '13px',
+                      color: isChecked ? 'var(--text-primary)' : 'var(--text-secondary)',
                       lineHeight: 1.4,
-                      fontWeight: isChecked ? 500 : 400,
+                      fontWeight: isChecked ? 600 : 500,
                     }}
                   >
                     {sym}
@@ -178,27 +192,11 @@ export default function UrgentRulesPage() {
           label="Additional triage notes (optional)"
           hint="Any custom instructions for your AI receptionist when handling urgent calls."
         >
-          <textarea
+          <Textarea
             value={customNote}
             onChange={(e) => setCustomNote(e.target.value)}
             placeholder="e.g. Always collect the pet's age and weight for any urgent call..."
             rows={3}
-            style={{
-              width: '100%',
-              padding: '0.75rem 1rem',
-              backgroundColor: '#ffffff',
-              border: '1px solid #E8E4DE',
-              borderRadius: 10,
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: '0.95rem',
-              color: '#1A1A1A',
-              outline: 'none',
-              boxSizing: 'border-box',
-              resize: 'vertical',
-              transition: 'border-color 0.15s',
-            }}
-            onFocus={(e) => (e.target.style.borderColor = '#00D68F')}
-            onBlur={(e) => (e.target.style.borderColor = '#E8E4DE')}
           />
         </Field>
 

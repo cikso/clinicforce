@@ -2,25 +2,57 @@
 
 import React from 'react'
 
+/**
+ * Shared wizard primitives.
+ *
+ * Aligns with the app's design tokens (brand/border/text vars, Geist +
+ * heading fonts) so onboarding matches the dashboard users land on next.
+ * The components intentionally stay plain — pages compose them into step
+ * layouts without needing wrapper state.
+ */
+
 // ── Shared style constants ─────────────────────────────────────────────────
 
 export const stepHeading: React.CSSProperties = {
-  fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-  fontSize: '1.875rem',
-  fontWeight: 700,
-  color: '#1A1A1A',
-  lineHeight: 1.2,
-  marginBottom: '0.4rem',
+  fontFamily: 'var(--font-heading), ui-sans-serif, system-ui, sans-serif',
+  fontSize: '26px',
+  fontWeight: 800,
+  color: 'var(--text-primary)',
+  lineHeight: 1.15,
+  letterSpacing: '-0.02em',
+  marginBottom: '6px',
 }
 
 export const stepSubheading: React.CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif",
-  fontSize: '0.8rem',
-  fontWeight: 600,
-  color: '#00D68F',
-  letterSpacing: '0.06em',
+  fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+  fontSize: '10px',
+  fontWeight: 700,
+  color: 'var(--brand-dark)',
+  letterSpacing: '0.14em',
   textTransform: 'uppercase',
-  marginBottom: '0.5rem',
+  marginBottom: '8px',
+}
+
+// ── StepDescription ───────────────────────────────────────────────────────
+// Shared intro paragraph that sits between the step heading and the form.
+// Wizard pages used to inline this 4x with slightly different whitespace —
+// centralising keeps them consistent and tokenised.
+
+export function StepDescription({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      style={{
+        fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+        fontSize: '14px',
+        lineHeight: 1.55,
+        color: 'var(--text-secondary)',
+        marginBottom: '28px',
+        marginTop: 0,
+      }}
+    >
+      {children}
+    </p>
+  )
 }
 
 // ── StepCard ──────────────────────────────────────────────────────────────
@@ -30,11 +62,12 @@ export function StepCard({ children }: { children: React.ReactNode }) {
     <div
       style={{
         width: '100%',
-        maxWidth: 560,
-        backgroundColor: '#ffffff',
-        border: '1px solid #E8E4DE',
+        maxWidth: 580,
+        backgroundColor: 'var(--bg-primary)',
+        border: '1px solid var(--border)',
         borderRadius: 16,
-        padding: '2.5rem',
+        padding: '36px',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       {children}
@@ -54,20 +87,28 @@ export function Field({
   children: React.ReactNode
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       <label
         style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: '0.875rem',
-          fontWeight: 500,
-          color: '#1A1A1A',
+          fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+          fontSize: '13px',
+          fontWeight: 600,
+          color: 'var(--text-primary)',
         }}
       >
         {label}
       </label>
       {children}
       {hint && (
-        <p style={{ fontFamily: "'DM Sans'", fontSize: '0.78rem', color: '#9B9B9B', marginTop: '0.1rem' }}>
+        <p
+          style={{
+            fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+            fontSize: '12px',
+            color: 'var(--text-tertiary)',
+            marginTop: '2px',
+            lineHeight: 1.5,
+          }}
+        >
           {hint}
         </p>
       )}
@@ -79,16 +120,25 @@ export function Field({
 
 export const inputBase: React.CSSProperties = {
   width: '100%',
-  padding: '0.75rem 1rem',
-  backgroundColor: '#ffffff',
-  border: '1px solid #E8E4DE',
+  padding: '10px 14px',
+  backgroundColor: 'var(--bg-primary)',
+  border: '1px solid var(--border)',
   borderRadius: 10,
-  fontFamily: "'DM Sans', sans-serif",
-  fontSize: '0.95rem',
-  color: '#1A1A1A',
+  fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+  fontSize: '14px',
+  color: 'var(--text-primary)',
   outline: 'none',
   boxSizing: 'border-box',
-  transition: 'border-color 0.15s',
+  transition: 'border-color 140ms ease, box-shadow 140ms ease',
+}
+
+function applyFocus(el: HTMLElement) {
+  el.style.borderColor = 'var(--brand)'
+  el.style.boxShadow = '0 0 0 3px rgba(0, 214, 143, 0.18)'
+}
+function applyBlur(el: HTMLElement) {
+  el.style.borderColor = 'var(--border)'
+  el.style.boxShadow = 'none'
 }
 
 export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
@@ -96,8 +146,8 @@ export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       style={{ ...inputBase, ...props.style }}
-      onFocus={(e) => { e.target.style.borderColor = '#00D68F'; props.onFocus?.(e) }}
-      onBlur={(e) => { e.target.style.borderColor = '#E8E4DE'; props.onBlur?.(e) }}
+      onFocus={(e) => { applyFocus(e.target); props.onFocus?.(e) }}
+      onBlur={(e) => { applyBlur(e.target); props.onBlur?.(e) }}
     />
   )
 }
@@ -112,14 +162,16 @@ export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
         ...inputBase,
         cursor: 'pointer',
         appearance: 'none',
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239B9B9B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+        // Carets use the text-tertiary token rendered as hex since data URIs can't
+        // evaluate CSS vars. Keep in sync if the token changes.
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238A96A3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
         backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'right 0.75rem center',
-        paddingRight: '2.5rem',
+        backgroundPosition: 'right 12px center',
+        paddingRight: '40px',
         ...props.style,
       }}
-      onFocus={(e) => { e.target.style.borderColor = '#00D68F'; props.onFocus?.(e) }}
-      onBlur={(e) => { e.target.style.borderColor = '#E8E4DE'; props.onBlur?.(e) }}
+      onFocus={(e) => { applyFocus(e.target); props.onFocus?.(e) }}
+      onBlur={(e) => { applyBlur(e.target); props.onBlur?.(e) }}
     />
   )
 }
@@ -133,11 +185,12 @@ export function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement
       style={{
         ...inputBase,
         resize: 'vertical',
-        minHeight: 80,
+        minHeight: 88,
+        lineHeight: 1.5,
         ...props.style,
       }}
-      onFocus={(e) => { e.target.style.borderColor = '#00D68F'; props.onFocus?.(e) }}
-      onBlur={(e) => { e.target.style.borderColor = '#E8E4DE'; props.onBlur?.(e) }}
+      onFocus={(e) => { applyFocus(e.target); props.onFocus?.(e) }}
+      onBlur={(e) => { applyBlur(e.target); props.onBlur?.(e) }}
     />
   )
 }
@@ -155,7 +208,7 @@ export function Toggle({
 }) {
   return (
     <label
-      style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', cursor: 'pointer' }}
+      style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
     >
       <button
         type="button"
@@ -166,12 +219,12 @@ export function Toggle({
           width: 40,
           height: 22,
           borderRadius: 999,
-          backgroundColor: checked ? '#00D68F' : '#E8E4DE',
+          backgroundColor: checked ? 'var(--brand)' : 'var(--border)',
           border: 'none',
           cursor: 'pointer',
           position: 'relative',
           flexShrink: 0,
-          transition: 'background-color 0.2s',
+          transition: 'background-color 180ms ease',
           padding: 0,
         }}
       >
@@ -184,13 +237,20 @@ export function Toggle({
             height: 16,
             borderRadius: '50%',
             backgroundColor: '#ffffff',
-            transition: 'left 0.2s',
+            boxShadow: '0 1px 2px rgba(15,23,42,0.18)',
+            transition: 'left 180ms ease',
             display: 'block',
           }}
         />
       </button>
       {label && (
-        <span style={{ fontFamily: "'DM Sans'", fontSize: '0.875rem', color: '#1A1A1A' }}>
+        <span
+          style={{
+            fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+            fontSize: '14px',
+            color: 'var(--text-primary)',
+          }}
+        >
           {label}
         </span>
       )}
@@ -215,24 +275,26 @@ export function SubmitButton({
       disabled={isPending}
       style={{
         width: '100%',
-        padding: '0.875rem',
-        backgroundColor: isPending ? '#45c5bf' : '#00D68F',
+        padding: '14px',
+        backgroundColor: isPending ? 'var(--brand-dark)' : 'var(--brand)',
         color: '#ffffff',
         border: 'none',
         borderRadius: 10,
-        fontFamily: "'DM Sans', sans-serif",
-        fontSize: '0.95rem',
-        fontWeight: 600,
+        fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+        fontSize: '14px',
+        fontWeight: 700,
         cursor: isPending ? 'not-allowed' : 'pointer',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '0.5rem',
-        transition: 'background-color 0.15s, transform 0.1s',
-        marginTop: '0.5rem',
+        gap: '8px',
+        transition: 'background-color 140ms ease, transform 90ms ease',
+        marginTop: '8px',
+        letterSpacing: '0.01em',
       }}
-      onMouseDown={(e) => { if (!isPending) e.currentTarget.style.transform = 'scale(0.98)' }}
+      onMouseDown={(e) => { if (!isPending) e.currentTarget.style.transform = 'scale(0.985)' }}
       onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+      onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
     >
       {isPending ? (
         <>
@@ -263,13 +325,17 @@ export function BackButton({ href }: { href: string }) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '0.4rem',
-        fontFamily: "'DM Sans', sans-serif",
-        fontSize: '0.875rem',
-        color: '#6B6B6B',
+        gap: '6px',
+        fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+        fontSize: '13px',
+        fontWeight: 500,
+        color: 'var(--text-secondary)',
         textDecoration: 'none',
-        marginBottom: '1.25rem',
+        marginBottom: '18px',
+        transition: 'color 140ms ease',
       }}
+      onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text-primary)' }}
+      onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-secondary)' }}
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M19 12H5M12 5l-7 7 7 7" />
@@ -283,9 +349,26 @@ export function BackButton({ href }: { href: string }) {
 
 export function ErrorBanner({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ padding: '0.75rem 1rem', backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10, fontFamily: "'DM Sans'", fontSize: '0.875rem', color: '#DC2626', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <div
+      role="alert"
+      style={{
+        padding: '10px 14px',
+        backgroundColor: 'var(--error-light)',
+        border: '1px solid rgba(220, 38, 38, 0.2)',
+        borderRadius: 10,
+        fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+        fontSize: '13px',
+        fontWeight: 500,
+        color: 'var(--error)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+      }}
+    >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-        <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
       {children}
     </div>

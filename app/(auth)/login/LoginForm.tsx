@@ -59,6 +59,12 @@ export default function LoginForm({ next }: { next: string }) {
         className="hidden lg:flex w-[55%] relative overflow-hidden flex-col justify-between p-10"
         style={{ background: 'linear-gradient(135deg, #00D68F 0%, #00B578 100%)' }}
       >
+        {/* Animated gradient-mesh overlay — respects prefers-reduced-motion */}
+        <div className="cf-mesh pointer-events-none absolute inset-0">
+          <div className="cf-mesh-blob cf-mesh-blob-a" />
+          <div className="cf-mesh-blob cf-mesh-blob-b" />
+          <div className="cf-mesh-blob cf-mesh-blob-c" />
+        </div>
         {/* Logo */}
         <div className="flex items-center gap-2.5 relative z-10">
           <div className="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center backdrop-blur-sm">
@@ -240,12 +246,83 @@ export default function LoginForm({ next }: { next: string }) {
             </button>
           </form>
 
+          {/* Trust badges */}
+          <div className="mt-8 flex items-center justify-center gap-4 flex-wrap text-[11px] font-medium text-[#6B7280]">
+            <span className="inline-flex items-center gap-1.5">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 1L2 2.5v4C2 9 4 10.5 6 11c2-.5 4-2 4-4.5v-4L6 1z" />
+                <path d="M4.5 6l1 1 2-2" />
+              </svg>
+              AU Privacy Act
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="6" cy="6" r="5" />
+                <path d="M1 6h10M6 1c1.5 1.5 2.5 3.3 2.5 5S7.5 9.5 6 11C4.5 9.5 3.5 7.7 3.5 6S4.5 2.5 6 1z" />
+              </svg>
+              AU data residency
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2.5" y="5" width="7" height="5.5" rx="1" />
+                <path d="M4 5V3.5a2 2 0 0 1 4 0V5" />
+              </svg>
+              SOC 2-ready
+            </span>
+          </div>
+
           {/* Bottom text */}
-          <p className="mt-8 text-center text-[13px] text-[#9CA3AF]">
+          <p className="mt-5 text-center text-[13px] text-[#9CA3AF]">
             Need access? Contact your ClinicForce administrator.
           </p>
         </div>
       </div>
+
+      {/* Scoped styles — animated mesh behind the brand panel */}
+      <style>{`
+        .cf-mesh { filter: blur(48px); opacity: 0.55; }
+        .cf-mesh-blob {
+          position: absolute;
+          width: 520px;
+          height: 520px;
+          border-radius: 9999px;
+          mix-blend-mode: screen;
+          will-change: transform;
+        }
+        .cf-mesh-blob-a {
+          top: -180px; left: -120px;
+          background: radial-gradient(circle at center, #34f5a8 0%, transparent 70%);
+          animation: cf-mesh-drift-a 18s ease-in-out infinite alternate;
+        }
+        .cf-mesh-blob-b {
+          bottom: -220px; right: -140px;
+          width: 620px; height: 620px;
+          background: radial-gradient(circle at center, #0df5b6 0%, transparent 70%);
+          animation: cf-mesh-drift-b 22s ease-in-out infinite alternate;
+        }
+        .cf-mesh-blob-c {
+          top: 30%; left: 35%;
+          width: 360px; height: 360px;
+          background: radial-gradient(circle at center, #7af0c6 0%, transparent 70%);
+          animation: cf-mesh-drift-c 26s ease-in-out infinite alternate;
+          opacity: 0.7;
+        }
+        @keyframes cf-mesh-drift-a {
+          from { transform: translate(0, 0) scale(1);    }
+          to   { transform: translate(60px, 40px) scale(1.1); }
+        }
+        @keyframes cf-mesh-drift-b {
+          from { transform: translate(0, 0) scale(1);    }
+          to   { transform: translate(-50px, -30px) scale(1.08); }
+        }
+        @keyframes cf-mesh-drift-c {
+          from { transform: translate(0, 0) scale(1);    }
+          to   { transform: translate(-40px, 50px) scale(1.05); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .cf-mesh-blob { animation: none !important; }
+        }
+      `}</style>
     </div>
   )
 }

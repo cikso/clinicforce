@@ -9,6 +9,8 @@ import { createClient } from '@/lib/supabase/server'
 import DashboardSidebar from '@/app/components/dashboard/DashboardSidebar'
 import DashboardTopbar from '@/app/components/dashboard/DashboardTopbar'
 import CommandPalette from '@/app/components/dashboard/CommandPalette'
+import KeyboardShortcutsOverlay from '@/app/components/dashboard/KeyboardShortcutsOverlay'
+import KeyboardNavShortcuts from '@/app/components/dashboard/KeyboardNavShortcuts'
 import { ToastProvider } from '@/app/components/ui/Toast'
 
 export const dynamic = 'force-dynamic'
@@ -122,6 +124,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <DashboardSidebar
               clinicName={clinicName}
               userName={userName}
+              userRole={userRole}
               pendingTaskCount={pendingTaskCount}
               openSurveyActionCount={openSurveyActionCount}
               isMultiClinic={isMultiClinic}
@@ -134,6 +137,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </div>
           </div>
           <CommandPalette />
+          <KeyboardShortcutsOverlay />
+          <KeyboardNavShortcuts />
         </ToastProvider>
       </ClinicProvider>
     </VerticalProvider>

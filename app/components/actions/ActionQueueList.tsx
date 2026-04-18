@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Badge from '@/app/components/ui/Badge'
 import Button from '@/app/components/ui/Button'
 import EmptyState from '@/app/components/ui/EmptyState'
 import TaskActionMenu from './TaskActionMenu'
+import ActionDetailPane from './ActionDetailPane'
 import { cn } from '@/lib/utils'
 
 // ─── Saved-view persistence ───────────────────────────────────────────────
@@ -144,6 +145,10 @@ export default function ActionQueueList({
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [completedOpen, setCompletedOpen] = useState(false)
+  // Split-pane focus state — distinct from `selected` (checkboxes for bulk ops).
+  // `focusedId` drives both the detail pane and the j/k keyboard navigation.
+  const [focusedId, setFocusedId] = useState<string | null>(null)
+  const listRef = useRef<HTMLDivElement>(null)
 
   // ── Saved-view: restore on mount / clinic switch ──────────────────────
   useEffect(() => {
@@ -204,7 +209,34 @@ export default function ActionQueueList({
     return result
   }, [tasks, filter, search, sort])
 
-  /* ── Mutations ── */
+  const focusedTask = useMemo(
+    () => visible.find((t) => t.id === focusedId) ?? null,
+    [visible, focusedId],
+  )
+
+  // Keep focus valid as the visible list changes (filter/search/done-marking).
+  // If the focused task drops out of the list, slide to the nearest neighbour
+  // rather than leaving the pane blank — reduces whiplash during bulk work.
+  useEffect(() => {
+    if (visible.length === 0) {
+      if (focusedId !== null) setFocusedId(null)
+      return
+    }
+    if (focusedId === null) {
+      setFocusedId(visible[0].id)
+      return
+    }
+    if (!visible.some((t) => t.id === focusedId)) {
+      setFocusedId(visible[0].id)
+    }
+  }, [visible, focusedId])
+
+  // Scroll the focused row into view when the user navigates via keyboard.
+  useEffect(() => {
+    if (!focusedId || !listRef.current) return
+    const el = listRef.current.querySelector<HTMLElement>(`[data-task-id="${focusedId}"]`)
+    el?.scrollIntoView({ block: 'nearest' })
+  }, [focusedId])
 
   const markDone = useCallback(async (id: string) => {
     const task = tasks.find(t => t.id === id)
@@ -257,6 +289,57 @@ export default function ActionQueueList({
     const supabase = createClient()
     await supabase.from('tasks').update({ priority }).eq('id', id)
   }, [])
+
+  /* ── Keyboard navigation ──────────────────────────────────────────────
+     j/↓ move down, k/↑ move up, Enter/Space open (redundant since the row
+     is already focused for preview), x marks the focused task done, Esc
+     clears focus. Skipped when the user is typing in an input/select so
+     search + assign selects still work. */
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      // No modifier combos — those belong to the palette/shortcuts panel.
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+
+      const target = e.target as HTMLElement | null
+      const isEditable =
+        !!target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.getAttribute('contenteditable') === 'true')
+      if (isEditable) return
+
+      if (visible.length === 0) return
+      const idx = focusedId ? visible.findIndex((t) => t.id === focusedId) : -1
+
+      const key = e.key
+      if (key === 'ArrowDown' || key === 'j') {
+        e.preventDefault()
+        const next = idx < 0 ? 0 : Math.min(idx + 1, visible.length - 1)
+        setFocusedId(visible[next].id)
+        return
+      }
+      if (key === 'ArrowUp' || key === 'k') {
+        e.preventDefault()
+        const prev = idx < 0 ? 0 : Math.max(idx - 1, 0)
+        setFocusedId(visible[prev].id)
+        return
+      }
+      if (key === 'Escape') {
+        if (focusedId !== null) {
+          e.preventDefault()
+          setFocusedId(null)
+        }
+        return
+      }
+      if (key === 'x' && focusedId) {
+        e.preventDefault()
+        markDone(focusedId)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [visible, focusedId, markDone])
 
   /* ── Bulk actions ── */
 
@@ -347,7 +430,7 @@ export default function ActionQueueList({
         </div>
       </div>
 
-      {/* Task List */}
+      {/* Task List + Detail Pane (split at lg+) */}
       {visible.length === 0 ? (
         <EmptyState
           icon={
@@ -360,21 +443,45 @@ export default function ActionQueueList({
           description={filter === 'all' ? 'No pending actions right now.' : 'Try a different filter.'}
         />
       ) : (
-        <div className="space-y-1.5">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] gap-4 items-start">
+        <div
+          ref={listRef}
+          className="space-y-1.5 lg:max-h-[calc(100vh-220px)] lg:overflow-y-auto lg:pr-1"
+        >
           {visible.map((task) => {
             const due = dueLabel(task.due_at)
             const assigneeName = task.assigned_to ? (staffMap[task.assigned_to] ?? 'Unknown') : 'Unassigned'
             const isSelected = selected.has(task.id)
+            const isFocused = focusedId === task.id
 
             return (
               <div
                 key={task.id}
+                data-task-id={task.id}
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  // Let interactive controls inside the row do their own thing.
+                  const tgt = e.target as HTMLElement
+                  if (tgt.closest('button, a, select, input, [role="menu"]')) return
+                  setFocusedId(task.id)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    setFocusedId(task.id)
+                  }
+                }}
                 className={cn(
-                  'flex items-start gap-3 px-4 py-3 rounded-xl border bg-[var(--bg-primary)] transition-all',
+                  'flex items-start gap-3 px-4 py-3 rounded-xl border bg-[var(--bg-primary)] transition-all cursor-pointer',
                   'border-l-[3px]',
                   priorityBorder(task.priority),
-                  isSelected ? 'border-[var(--brand)] bg-[var(--brand-light)]' : 'border-[var(--border)]',
-                  'hover:shadow-[var(--shadow-sm)]',
+                  isSelected && 'bg-[var(--brand-light)]',
+                  isFocused
+                    ? 'border-[var(--brand)] ring-1 ring-[var(--brand)]/30 shadow-[var(--shadow-sm)]'
+                    : isSelected
+                      ? 'border-[var(--brand)]'
+                      : 'border-[var(--border)] hover:shadow-[var(--shadow-sm)]',
                 )}
               >
                 {/* Checkbox */}
@@ -432,6 +539,23 @@ export default function ActionQueueList({
             )
           })}
         </div>
+
+        {/* Detail pane — desktop only. Mobile falls back to row interactions. */}
+        <div className="hidden lg:block sticky top-0 self-start">
+          <div className="rounded-xl border border-[var(--border)] bg-white shadow-[var(--shadow-card)] overflow-hidden h-[calc(100vh-220px)]">
+            <ActionDetailPane
+              task={focusedTask}
+              staff={staff}
+              staffMap={staffMap}
+              onMarkDone={markDone}
+              onAssign={assignTo}
+              onChangePriority={changePriority}
+              onChangeStatus={changeStatus}
+              onClose={() => setFocusedId(null)}
+            />
+          </div>
+        </div>
+      </div>
       )}
 
       {/* Completed Today */}

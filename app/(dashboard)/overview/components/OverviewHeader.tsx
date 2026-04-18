@@ -1,81 +1,118 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useToast } from '@/app/components/ui/Toast'
+
+/**
+ * 3-mode AI coverage toggle. Lives at the top of the single-clinic overview.
+ * Calls PATCH /api/clinic/:clinicId/mode; rolls back local state if the API
+ * rejects the change. Keeps the modes intentionally simple (off / business
+ * hours / after hours) — the richer 6-mode switcher remains on the admin
+ * per-clinic page for platform owners.
+ */
 
 const MODE_BUTTONS = [
-  { label: 'AI Off',         value: 'off' },
-  { label: 'Business Hours', value: 'business_hours' },
-  { label: 'After Hours',    value: 'after_hours' },
+  { label: 'AI off',         value: 'off' },
+  { label: 'Business hours', value: 'business_hours' },
+  { label: 'After hours',    value: 'after_hours' },
 ] as const
 
 type CoverageMode = typeof MODE_BUTTONS[number]['value']
 
-const STATUS_TEXT: Record<CoverageMode, { text: string; dot: string; color: string }> = {
-  business_hours: { text: 'Active: Stella is covering your phones',       dot: '#22C55E', color: 'text-gray-600' },
-  off:            { text: 'AI is turned off — calls go to your phones',   dot: '#EF4444', color: 'text-red-500'  },
-  after_hours:    { text: 'Active: Stella is covering after-hours calls', dot: '#22C55E', color: 'text-gray-600' },
+const STATUS_TEXT: Record<CoverageMode, { text: string; tone: 'brand' | 'error' }> = {
+  business_hours: { text: 'Active · Stella is covering your phones',        tone: 'brand' },
+  after_hours:    { text: 'Active · Stella is covering after-hours calls',  tone: 'brand' },
+  off:            { text: 'AI is off · calls go straight to your phones',   tone: 'error' },
 }
 
 interface OverviewHeaderProps {
   initialMode: string
   clinicId: string
-  todayLabel: string
 }
 
-export default function OverviewHeader({ initialMode, clinicId, todayLabel }: OverviewHeaderProps) {
+export default function OverviewHeader({ initialMode, clinicId }: OverviewHeaderProps) {
   const [mode, setMode] = useState<CoverageMode>(
-    (MODE_BUTTONS.find(b => b.value === initialMode)?.value) ?? 'business_hours'
+    (MODE_BUTTONS.find((b) => b.value === initialMode)?.value) ?? 'business_hours',
   )
+  const [saving, setSaving] = useState(false)
+  const { toast } = useToast()
   const status = STATUS_TEXT[mode]
 
-  const handleModeClick = useCallback(async (newMode: CoverageMode) => {
-    const prevMode = mode
-    setMode(newMode)
-
-    try {
-      const res = await fetch(`/api/clinic/${clinicId}/mode`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: newMode }),
-      })
-      if (!res.ok) throw new Error('Failed to update mode')
-    } catch {
-      setMode(prevMode)
-    }
-  }, [mode, clinicId])
+  const handleModeClick = useCallback(
+    async (newMode: CoverageMode) => {
+      if (newMode === mode || saving) return
+      const prev = mode
+      setMode(newMode)
+      setSaving(true)
+      try {
+        const res = await fetch(`/api/clinic/${clinicId}/mode`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: newMode }),
+        })
+        if (!res.ok) throw new Error('Failed to update mode')
+        toast({ type: 'success', title: `Coverage set to ${MODE_BUTTONS.find((b) => b.value === newMode)?.label}` })
+      } catch {
+        setMode(prev)
+        toast({ type: 'error', title: 'Could not update coverage mode' })
+      } finally {
+        setSaving(false)
+      }
+    },
+    [mode, saving, clinicId, toast],
+  )
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-5 py-3 mb-4 flex items-center justify-between">
-      {/* Title */}
-      <h1 className="text-lg font-bold text-gray-900 border-r border-gray-200 pr-5 mr-5">Overview</h1>
-      {/* Status + Mode buttons */}
-      <div className="flex items-center gap-4 mx-auto">
-        <div className="flex items-center gap-1.5">
-          <span
-            className="inline-block w-2.5 h-2.5 rounded-full transition-colors duration-300"
-            style={{ backgroundColor: status.dot }}
-          />
-          <span className={`text-xs font-medium ${status.color}`}>
-            {status.text}
-          </span>
-        </div>
-        <div className="flex items-center gap-3 sm:gap-4">
-          {MODE_BUTTONS.map(({ label, value }) => (
+    <div
+      className="flex items-center justify-between gap-4 flex-wrap mb-5 rounded-xl bg-[var(--bg-primary)] px-5 py-3 shadow-[var(--shadow-card)] cf-enter"
+      style={{ border: '1px solid var(--border)' }}
+    >
+      {/* Status */}
+      <div className="flex items-center gap-2 min-w-0">
+        <span
+          className={`relative flex h-2.5 w-2.5 shrink-0 transition-colors duration-300 rounded-full ${
+            status.tone === 'brand' ? 'bg-[var(--brand)]' : 'bg-[var(--error)]'
+          }`}
+          aria-hidden
+        >
+          {status.tone === 'brand' && (
+            <span className="absolute inset-0 rounded-full bg-[var(--brand)] opacity-60 animate-ping" />
+          )}
+        </span>
+        <span
+          className={`text-[12.5px] font-medium truncate ${
+            status.tone === 'brand' ? 'text-[var(--text-secondary)]' : 'text-[var(--error)]'
+          }`}
+        >
+          {status.text}
+        </span>
+      </div>
+
+      {/* Mode buttons */}
+      <div role="tablist" aria-label="AI coverage mode" className="flex items-center gap-1 bg-[var(--bg-secondary)] rounded-lg p-0.5 border border-[var(--border-subtle)] shrink-0">
+        {MODE_BUTTONS.map(({ label, value }) => {
+          const active = mode === value
+          return (
             <button
               key={value}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              disabled={saving}
               onClick={() => handleModeClick(value)}
-              className={
-                mode === value
-                  ? 'bg-teal-600 border border-teal-600 text-white text-xs font-bold rounded px-3 py-1'
-                  : 'bg-white border border-gray-300 rounded text-xs font-medium text-gray-800 px-3 py-1 hover:bg-gray-50 transition-colors'
-              }
+              className={`h-8 px-3 rounded-md text-[12.5px] font-semibold transition-colors disabled:cursor-wait ${
+                active
+                  ? value === 'off'
+                    ? 'bg-[var(--error)] text-white shadow-sm'
+                    : 'bg-[var(--brand)] text-white shadow-sm'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              }`}
             >
               {label}
             </button>
-          ))}
-        </div>
+          )
+        })}
       </div>
-      <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">{todayLabel}</span>
     </div>
   )
 }

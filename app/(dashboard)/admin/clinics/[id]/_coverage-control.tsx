@@ -85,15 +85,17 @@ export default function CoverageControl({ clinicId, clinicName, initialMode, act
         <span
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold"
           style={{
-            backgroundColor: isActive ? '#ECFDF5' : '#F3F4F6',
-            color: isActive ? '#059669' : '#6B7280',
-            border: `1px solid ${isActive ? 'rgba(5,150,105,0.2)' : '#E5E7EB'}`,
+            backgroundColor: isActive ? 'var(--success-light)' : 'var(--bg-hover)',
+            color:           isActive ? 'var(--success)'       : 'var(--text-secondary)',
+            border:          isActive
+              ? '1px solid rgba(var(--success-rgb), 0.2)'
+              : '1px solid var(--border)',
           }}
         >
           {isActive && (
             <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#059669] opacity-75" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#059669]" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--success)] opacity-75" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[var(--success)]" />
             </span>
           )}
           {isActive ? 'Active' : 'Off'}

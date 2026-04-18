@@ -158,19 +158,87 @@ function deterministicColor(seed: string): string {
 
 /* ─── Inline SVG sparkline (Recharts is heavy for 72x24 px) ─── */
 
-function Sparkline({ data, color = '#00B578' }: { data: number[]; color?: string }) {
+function Sparkline({
+  data,
+  color = '#00B578',
+  ariaLabel,
+  formatValue,
+}: {
+  data: number[]
+  color?: string
+  ariaLabel?: string
+  /** Formats the hover tooltip value. Defaults to Intl.NumberFormat. */
+  formatValue?: (value: number) => string
+}) {
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null)
+
   if (data.length < 2) return <svg className="cc-spark" viewBox="0 0 72 24" />
+
   const max = Math.max(...data, 1)
   const min = Math.min(...data, 0)
   const range = max - min || 1
   const step = 72 / (data.length - 1)
-  const points = data
-    .map((v, i) => `${i * step},${24 - ((v - min) / range) * 20 - 2}`)
-    .join(' ')
+  const coords = data.map((v, i) => ({
+    x: i * step,
+    y: 24 - ((v - min) / range) * 20 - 2,
+    v,
+  }))
+  const points = coords.map((c) => `${c.x},${c.y}`).join(' ')
+
+  function onMove(e: React.PointerEvent<SVGSVGElement>) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 72
+    // Snap to nearest data point
+    const idx = Math.round(x / step)
+    const clamped = Math.max(0, Math.min(idx, data.length - 1))
+    setHoverIdx(clamped)
+  }
+
+  const active = hoverIdx !== null ? coords[hoverIdx] : null
+  const fmt = formatValue ?? ((n: number) => new Intl.NumberFormat('en-AU').format(Math.round(n)))
+
   return (
-    <svg className="cc-spark" viewBox="0 0 72 24" preserveAspectRatio="none" aria-hidden>
-      <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <div className="cc-spark-wrap" role={ariaLabel ? 'img' : undefined} aria-label={ariaLabel}>
+      <svg
+        className="cc-spark"
+        viewBox="0 0 72 24"
+        preserveAspectRatio="none"
+        onPointerMove={onMove}
+        onPointerLeave={() => setHoverIdx(null)}
+      >
+        <polyline
+          className="cc-spark-line"
+          points={points}
+          fill="none"
+          stroke={color}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {active && (
+          <>
+            <line
+              x1={active.x}
+              x2={active.x}
+              y1={0}
+              y2={24}
+              stroke={color}
+              strokeOpacity={0.25}
+              strokeWidth={0.75}
+            />
+            <circle cx={active.x} cy={active.y} r={2.25} fill="white" stroke={color} strokeWidth={1.25} />
+          </>
+        )}
+      </svg>
+      {active && (
+        <span
+          className="cc-spark-tip"
+          style={{ left: `${(active.x / 72) * 100}%` }}
+        >
+          {fmt(active.v)}
+        </span>
+      )}
+    </div>
   )
 }
 
@@ -598,10 +666,13 @@ export default function CommandCentreV2(props: CommandCentreProps) {
 
 function LiveCallHero({ live, shortQuote }: { live: LiveCall | null; shortQuote: string }) {
   if (!live?.active) {
-    // Empty / caught-up state — calmer treatment.
+    // Empty / caught-up state — calmer treatment. Orb still breathes slowly so
+    // the surface feels alive, but no pulse rings or waveform.
     return (
-      <div className="cc-livecall cc-livecall-caught">
-        <div className="cc-stella-orb">STELLA</div>
+      <div className="cc-livecall cc-livecall-caught" data-urgency="IDLE">
+        <div className="cc-stella-orb-wrap">
+          <div className="cc-stella-orb">STELLA</div>
+        </div>
         <div className="cc-livecall-body">
           <div className="cc-livecall-head">
             <span className="cc-livecall-caller">Stella is standing by</span>
@@ -621,11 +692,35 @@ function LiveCallHero({ live, shortQuote }: { live: LiveCall | null; shortQuote:
                                   'cc-urgency-routine'
   const urgencyLabel = live.urgency === 'CRITICAL' ? 'EMERGENCY' : live.urgency
 
+  // 14 bars with pseudo-random height seeds + delay offsets. Bars animate
+  // independently so the waveform feels organic rather than 5 identical bouncy
+  // sticks. The seeds are stable across renders — no `Math.random` — so React
+  // doesn't re-key on every paint.
+  const waveformBars = [
+    { seed: 0.45, delay: 0    }, { seed: 0.72, delay: 0.08 },
+    { seed: 0.58, delay: 0.16 }, { seed: 0.91, delay: 0.04 },
+    { seed: 0.35, delay: 0.20 }, { seed: 0.80, delay: 0.12 },
+    { seed: 0.55, delay: 0.02 }, { seed: 0.70, delay: 0.18 },
+    { seed: 0.42, delay: 0.10 }, { seed: 0.88, delay: 0.06 },
+    { seed: 0.50, delay: 0.14 }, { seed: 0.65, delay: 0.22 },
+    { seed: 0.38, delay: 0.09 }, { seed: 0.78, delay: 0.17 },
+  ]
+
   return (
-    <div className="cc-livecall">
-      <div className="cc-stella-orb">STELLA</div>
+    <div className="cc-livecall cc-livecall-active" data-urgency={live.urgency}>
+      <div className="cc-stella-orb-wrap">
+        {/* Two concentric rings expanding outward — the "incoming signal" cue. */}
+        <span className="cc-orb-ring cc-orb-ring-1" aria-hidden />
+        <span className="cc-orb-ring cc-orb-ring-2" aria-hidden />
+        <div className="cc-stella-orb cc-stella-orb-active">STELLA</div>
+      </div>
+
       <div className="cc-livecall-body">
         <div className="cc-livecall-head">
+          <span className="cc-live-badge" aria-label="Call in progress">
+            <span className="cc-live-badge-dot" aria-hidden />
+            LIVE
+          </span>
           <span className="cc-livecall-caller">{live.caller_name ?? 'Unknown caller'}</span>
           {live.patient && <span className="cc-livecall-meta">· {live.patient}</span>}
           <span className={`cc-urgency-pill ${urgencyClass}`}>
@@ -634,19 +729,39 @@ function LiveCallHero({ live, shortQuote }: { live: LiveCall | null; shortQuote:
           </span>
           <LiveTimer startedAt={live.startedAt} />
         </div>
+
+        {/* Always-present waveform — the visceral "conversation breath" signal.
+            Unlike the old 5-bar wave which only showed with a trail summary. */}
+        <div className="cc-waveform" aria-hidden>
+          {waveformBars.map((b, i) => (
+            <span
+              key={i}
+              style={{
+                // Scale amplitude from the pseudo-random seed so bars don't
+                // all hit 100% at once. 0.35 floor keeps the quietest bar
+                // visible.
+                ['--cc-bar-h' as string]: `${35 + b.seed * 65}%`,
+                animationDelay: `${b.delay}s`,
+              }}
+            />
+          ))}
+        </div>
+
         {shortQuote && (
           <p className="cc-livecall-quote">&ldquo;{shortQuote}&rdquo;</p>
         )}
         {live.trailSummary && (
           <div className="cc-livecall-trail">
-            <span className="cc-wave"><span /><span /><span /><span /><span /></span>
             <span>{live.trailSummary}</span>
           </div>
         )}
       </div>
+
       <div className="cc-livecall-actions">
         <button type="button" className="cc-btn cc-btn-secondary">Listen in</button>
-        <button type="button" className="cc-btn cc-btn-primary">Take over</button>
+        <button type="button" className="cc-btn cc-btn-primary cc-btn-takeover">
+          Take over
+        </button>
       </div>
     </div>
   )
@@ -701,7 +816,7 @@ function KpiCard({ icon, iconBg, iconColor, label, value, delta, spark, sparkCol
         <span className={`cc-delta cc-delta-${delta.type}`}>
           {delta.type === 'up' ? '▲' : delta.type === 'down' ? '▼' : '—'} {delta.text}
         </span>
-        <Sparkline data={spark} color={sparkColor} />
+        <Sparkline data={spark} color={sparkColor} ariaLabel={`${label} — last 14 days`} />
       </div>
     </div>
   )

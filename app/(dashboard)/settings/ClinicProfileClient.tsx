@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import Card from '@/app/components/ui/Card'
 import Button from '@/app/components/ui/Button'
 import Toggle from '@/app/components/ui/Toggle'
+import { useToast } from '@/app/components/ui/Toast'
 import { cn } from '@/lib/utils'
 
 /* ── Types ──────────────────────────────────────────────────────────────────── */
@@ -105,31 +106,6 @@ function Field({ label, note, children }: { label: string; note?: string; childr
 const inputCls = 'w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-white text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-colors outline-none'
 const selectCls = cn(inputCls, 'appearance-none bg-[url("data:image/svg+xml,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M3%204.5L6%207.5L9%204.5%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E")] bg-[length:12px] bg-[right_12px_center] bg-no-repeat pr-8')
 
-/* ── Toast ──────────────────────────────────────────────────────────────────── */
-
-function Toast({ message, variant, onDismiss }: { message: string; variant: 'success' | 'error'; onDismiss: () => void }) {
-  return (
-    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 fade-in duration-200">
-      <div className={cn(
-        'flex items-center gap-2.5 px-4 py-3 rounded-lg shadow-[var(--shadow-md)] border',
-        variant === 'success'
-          ? 'bg-[var(--success-light)] border-[var(--success)]/20 text-[var(--success)]'
-          : 'bg-[var(--error-light)] border-[var(--error)]/20 text-[var(--error)]',
-      )}>
-        {variant === 'success' ? (
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3.5 7.5L6 10l4.5-6" /></svg>
-        ) : (
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="7" cy="7" r="5.5" /><path d="M7 4.5v3M7 9.5v.01" /></svg>
-        )}
-        <span className="text-[13px] font-medium">{message}</span>
-        <button onClick={onDismiss} className="ml-2 opacity-60 hover:opacity-100 transition-opacity">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 3l6 6M9 3l-6 6" /></svg>
-        </button>
-      </div>
-    </div>
-  )
-}
-
 /* ── Component ──────────────────────────────────────────────────────────────── */
 
 export default function ClinicProfileClient({ clinic }: { clinic: Clinic }) {
@@ -154,12 +130,7 @@ export default function ClinicProfileClient({ clinic }: { clinic: Clinic }) {
 
   const [saving, setSaving] = useState(false)
   const [savingHours, setSavingHours] = useState(false)
-  const [toast, setToast] = useState<{ message: string; variant: 'success' | 'error' } | null>(null)
-
-  const showToast = useCallback((message: string, variant: 'success' | 'error') => {
-    setToast({ message, variant })
-    setTimeout(() => setToast(null), 3000)
-  }, [])
+  const { toast } = useToast()
 
   function setField(key: string, value: string) {
     setForm((f) => ({ ...f, [key]: value }))
@@ -195,9 +166,13 @@ export default function ClinicProfileClient({ clinic }: { clinic: Clinic }) {
           },
         }),
       })
-      showToast(res.ok ? 'Profile saved successfully' : 'Failed to save profile', res.ok ? 'success' : 'error')
+      if (res.ok) {
+        toast({ type: 'success', title: 'Profile saved' })
+      } else {
+        toast({ type: 'error', title: 'Failed to save profile' })
+      }
     } catch {
-      showToast('Failed to save profile', 'error')
+      toast({ type: 'error', title: 'Failed to save profile' })
     } finally {
       setSaving(false)
     }
@@ -215,9 +190,13 @@ export default function ClinicProfileClient({ clinic }: { clinic: Clinic }) {
           data: { business_hours: hours },
         }),
       })
-      showToast(res.ok ? 'Business hours saved' : 'Failed to save hours', res.ok ? 'success' : 'error')
+      if (res.ok) {
+        toast({ type: 'success', title: 'Business hours saved' })
+      } else {
+        toast({ type: 'error', title: 'Failed to save hours' })
+      }
     } catch {
-      showToast('Failed to save hours', 'error')
+      toast({ type: 'error', title: 'Failed to save hours' })
     } finally {
       setSavingHours(false)
     }
@@ -225,8 +204,6 @@ export default function ClinicProfileClient({ clinic }: { clinic: Clinic }) {
 
   return (
     <div className="space-y-5 max-w-[680px]">
-      {toast && <Toast message={toast.message} variant={toast.variant} onDismiss={() => setToast(null)} />}
-
       {/* Clinic Details Card */}
       <Card header={{ title: 'Clinic Details', subtitle: 'Basic information about your clinic' }}>
         <form onSubmit={handleProfileSave} className="space-y-4">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import EmptyState from '@/app/components/ui/EmptyState'
 import Button from '@/app/components/ui/Button'
 import { cn } from '@/lib/utils'
@@ -111,6 +111,7 @@ export default function ConversationList({
   const [hasMore, setHasMore] = useState(initialCalls.length >= 20)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [bulkBusy, setBulkBusy] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   // Restore the user's last filter/search for this clinic on mount. Runs once
   // per clinic switch — avoids flicker because initial state is 'all'.
@@ -198,6 +199,59 @@ export default function ConversationList({
     return result
   }, [calls, filter, search])
 
+  // Auto-select the first visible call when landing on the inbox. Admins and
+  // staff expect immediate context — an empty pane on page load costs a click
+  // to make useful. Only fires when nothing is selected; respects the ?id=
+  // URL param which the Shell resolves first.
+  useEffect(() => {
+    if (!selectedId && filtered.length > 0) {
+      onSelect(filtered[0])
+    }
+  }, [selectedId, filtered, onSelect])
+
+  // ── Keyboard navigation ──────────────────────────────────────────────
+  // j/↓ next, k/↑ previous, Enter re-focuses, Esc clears if the back button
+  // is showing (mobile handled by Shell). Skipped when typing in an input,
+  // textarea, or select so search and filters still work naturally.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      const target = e.target as HTMLElement | null
+      const isEditable =
+        !!target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.getAttribute('contenteditable') === 'true')
+      if (isEditable) return
+
+      if (filtered.length === 0) return
+      const idx = selectedId ? filtered.findIndex((c) => c.id === selectedId) : -1
+
+      if (e.key === 'ArrowDown' || e.key === 'j') {
+        e.preventDefault()
+        const next = idx < 0 ? 0 : Math.min(idx + 1, filtered.length - 1)
+        onSelect(filtered[next])
+        return
+      }
+      if (e.key === 'ArrowUp' || e.key === 'k') {
+        e.preventDefault()
+        const prev = idx < 0 ? 0 : Math.max(idx - 1, 0)
+        onSelect(filtered[prev])
+        return
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [filtered, selectedId, onSelect])
+
+  // Scroll the selected row into view as the user navigates.
+  useEffect(() => {
+    if (!selectedId || !scrollRef.current) return
+    const el = scrollRef.current.querySelector<HTMLElement>(`[data-call-id="${selectedId}"]`)
+    el?.scrollIntoView({ block: 'nearest' })
+  }, [selectedId])
+
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return
     setLoadingMore(true)
@@ -271,7 +325,7 @@ export default function ConversationList({
       </div>
 
       {/* Call List */}
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {filtered.length === 0 ? (
           <EmptyState
             title="No calls found"
@@ -290,6 +344,7 @@ export default function ConversationList({
               return (
                 <div
                   key={call.id}
+                  data-call-id={call.id}
                   className={cn(
                     'group relative border-b border-[var(--border-subtle)] transition-colors',
                     isSelected ? 'bg-[var(--brand-light)]' :
