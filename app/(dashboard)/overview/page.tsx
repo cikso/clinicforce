@@ -11,7 +11,6 @@ import StaffToday, {
   type StaffTodayTask,
 } from './StaffToday'
 import OwnerImpactHero from '@/app/components/dashboard/OwnerImpactHero'
-import OverviewHeader from './components/OverviewHeader'
 import CommandCentreV2, {
   type KpiInput,
   type UrgentCase,
@@ -724,14 +723,9 @@ export default async function OverviewPage() {
 
   return (
     <>
-      {/* AI coverage mode toggle — restored. Off / Business hours / After hours.
-          Calls PATCH /api/clinic/:clinicId/mode and toasts the result. */}
-      {clinicId && (
-        <OverviewHeader
-          initialMode={coverageMode}
-          clinicId={clinicId}
-        />
-      )}
+      {/* AI coverage mode toggle is now rendered inside the Stella standby
+          card in CommandCentreV2 (LiveCallHero) — per the user's request
+          to consolidate that control into the hero card. */}
       {showOwnerHero && (
         <OwnerImpactHero
           firstName={firstName}
@@ -747,6 +741,7 @@ export default async function OverviewPage() {
         firstName={firstName}
         greeting={greeting}
         todayLabel={todayLabel}
+        clinicId={clinicId}
         clinicName={clinicRecord?.name ?? 'Your clinic'}
         clinicSuburb={clinicRecord?.suburb ?? null}
         kpi={kpi}
