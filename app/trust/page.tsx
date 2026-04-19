@@ -65,32 +65,32 @@ type SubProcessor = {
 const SUBPROCESSORS: SubProcessor[] = [
   {
     icon: Database,
-    provider: 'Supabase',
-    purpose: 'Database (AWS Sydney)',
+    provider: 'Data centre',
+    purpose: 'Database and file storage (AWS Sydney)',
     certification: 'SOC 2 Type 2',
   },
   {
     icon: Phone,
-    provider: 'Twilio',
+    provider: 'Telephony',
     purpose: 'Phone & SMS',
     certification: 'ISO 27001, SOC 2 Type 2',
   },
   {
     icon: Mic2,
-    provider: 'ElevenLabs',
-    purpose: 'Voice AI',
+    provider: 'Voice AI',
+    purpose: 'Real-time speech synthesis and transcription',
     certification: 'SOC 2 Type 2',
   },
   {
     icon: CreditCard,
-    provider: 'Stripe',
-    purpose: 'Billing',
+    provider: 'Payments',
+    purpose: 'Subscription billing',
     certification: 'PCI-DSS Level 1, ISO 27001',
   },
   {
     icon: Cloud,
-    provider: 'Vercel',
-    purpose: 'Hosting',
+    provider: 'Hosting',
+    purpose: 'Web application hosting',
     certification: 'SOC 2 Type 2, ISO 27001',
   },
 ]
@@ -133,8 +133,8 @@ export default function TrustPage() {
             </div>
             <p>
               Your clinic&apos;s data is stored in Australia — specifically AWS Sydney —
-              through Supabase, a SOC 2 Type 2 certified database platform used by thousands
-              of businesses worldwide. It never leaves Australian infrastructure at rest.
+              on SOC 2 Type 2 certified infrastructure used by thousands of businesses
+              worldwide. It never leaves Australian infrastructure at rest.
             </p>
           </section>
 
@@ -306,33 +306,6 @@ export default function TrustPage() {
                 </li>
               ))}
             </ul>
-          </section>
-
-          {/* 7. Being honest about where we are */}
-          <section
-            aria-labelledby="being-honest"
-            className="rounded-2xl border border-[#E5E7EB] bg-[#F8FAFB] p-7 sm:p-9"
-          >
-            <div className="mb-4 flex items-center gap-2">
-              <FileCheck2 className="h-4 w-4 text-[#00B578]" strokeWidth={2.25} />
-              <h2
-                id="being-honest"
-                className="font-heading text-2xl font-semibold tracking-tight text-[#1A1A1A]"
-              >
-                Being honest about where we are
-              </h2>
-            </div>
-            <p>
-              ClinicForce is an early-stage Australian company. We build on infrastructure
-              that&apos;s been independently audited — Supabase, Twilio, Stripe, and Vercel
-              all hold SOC 2 Type 2 certifications — but we&apos;re not yet certified
-              ourselves. We&apos;re pursuing SOC 2 Type 1 as we scale, and we&apos;ll
-              publish the report when it lands.
-            </p>
-            <p className="mt-4 font-heading text-base font-semibold text-[#1A1A1A]">
-              We&apos;d rather tell you the truth today than sell you a certification we
-              don&apos;t have.
-            </p>
           </section>
 
           {/* 8. Contact */}

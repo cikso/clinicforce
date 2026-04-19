@@ -54,7 +54,7 @@ const faqs: [string, string][] = [
   ],
 ]
 
-function FAQItem({ question, answer }: { question: string; answer: string }) {
+export function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false)
   const panelId = `faq-panel-${question.replace(/\W+/g, '-').toLowerCase()}`
 
