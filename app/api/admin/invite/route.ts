@@ -3,6 +3,7 @@ import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
 import { sendInviteEmail } from '@/lib/email'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   // Auth check — must be clinic_admin
@@ -20,6 +21,15 @@ export async function POST(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorised.' }, { status: 401 })
+
+  // Per-user invite limit: 20 invites per hour to stop mass email blasting.
+  const limit = rateLimit('admin-invite:user', user.id, 20, 60 * 60 * 1000)
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Invite limit reached. Please try again in an hour.' },
+      { status: 429 },
+    )
+  }
 
   let body: { clinic_id?: string; email?: string; role?: string }
   try { body = await request.json() } catch {

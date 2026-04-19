@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { getClinicProfile } from '@/lib/supabase/auth-helpers'
 
 function getOpenAI() { return new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) }
 
@@ -49,6 +50,11 @@ Respond with this exact JSON structure:
 
 export async function POST(req: NextRequest) {
   try {
+    const profile = await getClinicProfile()
+    if (!profile?.clinicId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body: TriageRequest = await req.json()
     const { patientName, species, breed, age, presentingIssue, ownerDescription } = body
 

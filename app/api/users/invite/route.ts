@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendWelcomeEmail } from '@/lib/email'
+import { rateLimit } from '@/lib/rate-limit'
 
 function getAdmin() {
   return createClient(
@@ -16,6 +17,14 @@ export async function POST(req: NextRequest) {
     const supabase = await createServerClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const limit = rateLimit('users-invite:user', user.id, 20, 60 * 60 * 1000)
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: 'Invite limit reached. Please try again in an hour.' },
+        { status: 429 },
+      )
+    }
 
     const { name, email, role } = await req.json()
     if (!name || !email) {

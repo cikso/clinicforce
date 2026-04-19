@@ -128,12 +128,26 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   )
 }
 
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(([question, answer]) => ({
+    '@type': 'Question',
+    name: question,
+    acceptedAnswer: { '@type': 'Answer', text: answer },
+  })),
+}
+
 export default function AfterHoursPage() {
   const [demoOpen, setDemoOpen] = useState(false)
   const openDemo = () => setDemoOpen(true)
 
   return (
     <main className="min-h-screen bg-white text-[#1A1A1A]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <DemoModal isOpen={demoOpen} onClose={() => setDemoOpen(false)} />
       <MarketingNavbar onBookDemo={openDemo} />
 
