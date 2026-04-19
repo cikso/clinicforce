@@ -64,37 +64,53 @@ export async function POST(req: NextRequest) {
     if (callSid && isTerminal) {
       const supabase = getServiceSupabase()
 
-      // Look up the active_calls row to bridge this CallSid → clinic_id
-      // and the call's start time. Needed to find the right call_inbox row
-      // to stamp with the duration.
+      // Look up the active_calls row to bridge this CallSid → clinic_id,
+      // the call's start time, and — critically — the authoritative Twilio
+      // PSTN caller_phone captured at /api/twilio/incoming.
       const { data: activeCall } = await supabase
         .from('active_calls')
-        .select('clinic_id, started_at')
+        .select('clinic_id, started_at, caller_phone')
         .eq('call_sid', callSid)
         .maybeSingle()
 
-      // Stamp CallDuration onto the most recent call_inbox row for this
-      // clinic created after the call started that doesn't already have
-      // a duration. Scoped narrowly so we don't clobber older rows.
-      if (activeCall && duration && Number.isFinite(duration) && duration > 0) {
+      // Stamp CallDuration AND the real Twilio From onto the most recent
+      // call_inbox row for this clinic created after the call started.
+      // caller_phone: Stella's in-call tool often writes the number the
+      // caller *said* (frequently mis-heard). active_calls.caller_phone is
+      // the PSTN-signalling truth from Twilio's From header. Overwriting
+      // here — before the ElevenLabs post-call webhook fires — is the
+      // simplest way to guarantee the inbox shows the real caller ID.
+      if (activeCall) {
         const { data: target } = await supabase
           .from('call_inbox')
-          .select('id')
+          .select('id, call_duration_seconds')
           .eq('clinic_id', activeCall.clinic_id)
           .gte('created_at', activeCall.started_at)
-          .is('call_duration_seconds', null)
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle()
 
         if (target) {
-          const { error: updateErr } = await supabase
-            .from('call_inbox')
-            .update({ call_duration_seconds: duration })
-            .eq('id', target.id)
+          const update: Record<string, unknown> = {}
+          if (
+            duration && Number.isFinite(duration) && duration > 0 &&
+            target.call_duration_seconds == null
+          ) {
+            update.call_duration_seconds = duration
+          }
+          if (activeCall.caller_phone && String(activeCall.caller_phone).trim()) {
+            update.caller_phone = String(activeCall.caller_phone).trim()
+          }
 
-          if (updateErr) {
-            console.error('[twilio/status] call_duration update failed:', updateErr.message)
+          if (Object.keys(update).length > 0) {
+            const { error: updateErr } = await supabase
+              .from('call_inbox')
+              .update(update)
+              .eq('id', target.id)
+
+            if (updateErr) {
+              console.error('[twilio/status] call_inbox update failed:', updateErr.message)
+            }
           }
         }
       }
