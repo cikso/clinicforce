@@ -663,18 +663,14 @@
 }
 .cf-landing-v2 .drc-pin-city {
   font-family: var(--font-heading), sans-serif;
-  font-size: 8px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 800;
   fill: var(--text-primary);
   letter-spacing: -0.01em;
-}
-.cf-landing-v2 .drc-pin-role {
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 5.5px;
-  font-weight: 600;
-  fill: var(--text-tertiary);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  paint-order: stroke;
+  stroke: white;
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
 }
 @keyframes drcPinPulse {
   0%, 100% { transform: scale(1); opacity: 0.18; }

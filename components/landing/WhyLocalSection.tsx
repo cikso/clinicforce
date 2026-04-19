@@ -47,12 +47,11 @@ export default function WhyLocalSection() {
             </h2>
             <p className="why-local-lead">
               ClinicForce is Australian-owned, built by an Australian team, and hosted on
-              Australian infrastructure. When something breaks, you ring Sydney — not a
-              helpdesk in Utah or Manila.
+              Australian infrastructure. When something breaks, you ring Sydney.
             </p>
 
             <div className="data-region-card">
-              <div className="drc-label">Primary data region</div>
+              <div className="drc-label">Data Centre</div>
               <div className="drc-map">
                 <svg
                   viewBox={australiaMap.viewBox}
@@ -77,8 +76,7 @@ export default function WhyLocalSection() {
                     <circle className="drc-pin-core" r="2.6" />
                   </g>
                   <g className="drc-pin-label" transform={`translate(${SYDNEY_X}, ${SYDNEY_Y})`}>
-                    <text x="8" y="-2" className="drc-pin-city">Sydney</text>
-                    <text x="8" y="7" className="drc-pin-role">Data centre</text>
+                    <text x="7" y="2" className="drc-pin-city">Sydney</text>
                   </g>
                 </svg>
               </div>
