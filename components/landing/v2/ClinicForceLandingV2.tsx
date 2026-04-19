@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement } from 'react'
 import Link from 'next/link'
+import { MapPin, Lock, ShieldOff, Shield, ShieldCheck, FileCheck } from 'lucide-react'
 import {
   NPS_COMMENTS,
   TRUST_PILLS,
@@ -330,6 +331,13 @@ export default function ClinicForceLandingV2() {
               </a>
             </div>
 
+            <ul className="hero-trust-bar" aria-label="Trust and security signals">
+              <li><MapPin size={13} strokeWidth={2} aria-hidden /><span>Australian data residency</span></li>
+              <li><Lock size={13} strokeWidth={2} aria-hidden /><span>Encrypted end-to-end</span></li>
+              <li><ShieldOff size={13} strokeWidth={2} aria-hidden /><span>No AI training on your calls</span></li>
+              <li><Shield size={13} strokeWidth={2} aria-hidden /><span>Privacy Act 1988 aligned</span></li>
+            </ul>
+
             <div className="trust-row">
               <span className="trust-pill"><CheckIcon /><span>{trust1}</span></span>
               <span className="trust-pill"><CheckIcon /><span>{trust2}</span></span>
@@ -634,6 +642,48 @@ export default function ClinicForceLandingV2() {
             </div>
             <Link href="/veterinary-clinics/case-studies" className="quote-case">
               Read the case study <span className="arrow"><ArrowRight /></span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Secure by design ─── */}
+      <section className="secure-section" id="secure">
+        <div className="container">
+          <div className="secure-head reveal">
+            <div className="eyebrow" style={{ textAlign: 'center' }}>Security</div>
+            <h2 className="section-heading" style={{ margin: '14px auto 0', textAlign: 'center' }}>
+              Secure by design
+            </h2>
+            <p className="secure-sub">
+              Healthcare-grade security isn&apos;t an add-on — it&apos;s how we built ClinicForce from day one.
+            </p>
+          </div>
+          <ul className="secure-grid reveal">
+            <li className="secure-card">
+              <div className="secure-icon"><MapPin size={18} strokeWidth={2} aria-hidden /></div>
+              <h3>Australian data residency</h3>
+              <p>Your clinic&apos;s data stays in Australia, on AWS Sydney infrastructure. Not the US. Not Europe. Australia.</p>
+            </li>
+            <li className="secure-card">
+              <div className="secure-icon"><Lock size={18} strokeWidth={2} aria-hidden /></div>
+              <h3>Encrypted everywhere</h3>
+              <p>TLS in transit, AES-256 at rest. Every call, every record, every message.</p>
+            </li>
+            <li className="secure-card">
+              <div className="secure-icon"><ShieldCheck size={18} strokeWidth={2} aria-hidden /></div>
+              <h3>AI that doesn&apos;t train on you</h3>
+              <p>Your calls are never used to train public AI models. Ever. Contractually guaranteed with our voice providers.</p>
+            </li>
+            <li className="secure-card">
+              <div className="secure-icon"><FileCheck size={18} strokeWidth={2} aria-hidden /></div>
+              <h3>APPs-aligned from day one</h3>
+              <p>Built around Australian privacy law, not retrofitted from a US system.</p>
+            </li>
+          </ul>
+          <div className="secure-cta">
+            <Link href="/trust" className="cta-ghost">
+              See how we protect your data <span className="arrow"><ArrowRight /></span>
             </Link>
           </div>
         </div>
