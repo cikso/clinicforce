@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement } from 'react'
 import Link from 'next/link'
 import { MapPin, Lock, ShieldOff, Shield, ShieldCheck, FileCheck } from 'lucide-react'
-import SecurityFAQSection from '../SecurityFAQSection'
+import WhyLocalSection from '../WhyLocalSection'
+import QuestionsFAQSection from '../QuestionsFAQSection'
 import {
   TRUST_PILLS,
   VERTICALS,
@@ -347,21 +348,27 @@ export default function ClinicForceLandingV2() {
         </div>
       </div>
 
-      {/* ─── Logos wall ─── */}
+      {/* ─── Infra trust strip ─── */}
       <section className="logos-wall">
         <div className="container">
-          <div className="logos-tagline">Trusted by clinics across Australia.</div>
-          <div className="logos-grid">
-            {[
-              <svg key="1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" /></svg>,
-              <svg key="2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9" /><path d="M12 3v18M3 12h18" /></svg>,
-              <svg key="3" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M4 10h16" /></svg>,
-              <svg key="4" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 3l9 8-9 10L3 11l9-8z" /></svg>,
-              <svg key="5" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="8" cy="12" r="5" /><circle cx="16" cy="12" r="5" /></svg>,
-              <svg key="6" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M3 12h6l2-7 2 14 2-7h6" /></svg>,
-            ].map((icon, i) => (
-              <a key={i} href="#" className="logo-ghost">{icon}{`{LOGO_${i + 1}}`}</a>
-            ))}
+          <div className="infra-strip">
+            <div className="infra-label">
+              Runs on enterprise-grade<br />
+              infrastructure trusted by<br />
+              Australian businesses
+            </div>
+            <ul className="infra-items">
+              {['AWS Sydney', 'Australian data centre', 'Telephony', 'Payments (AU)', 'Voice AI'].map((label) => (
+                <li key={label}>
+                  <span className="infra-check">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="M3 8.5L6.5 12L13 4" />
+                    </svg>
+                  </span>
+                  <span>{label}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -525,6 +532,9 @@ export default function ClinicForceLandingV2() {
         </div>
       </section>
 
+      {/* ─── Why local matters ─── */}
+      <WhyLocalSection />
+
       {/* ─── Secure by design ─── */}
       <section className="secure-section" id="secure">
         <div className="container">
@@ -599,8 +609,8 @@ export default function ClinicForceLandingV2() {
         </div>
       </section>
 
-      {/* ─── Security & Privacy FAQ ─── */}
-      <SecurityFAQSection />
+      {/* ─── Questions FAQ ─── */}
+      <QuestionsFAQSection />
 
       {/* ─── CTA banner ─── */}
       <div className="cta-banner reveal" id="cta">
