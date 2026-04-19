@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
 import { getServiceSupabase, normaliseAustralianPhone, validateSecret, validateWebhookHmac } from '@/lib/voice/shared'
 import { withRetry } from '@/lib/utils/withRetry'
+import { ensureTaskAndActivity } from '@/lib/calls/auto-tasks'
 
 export const preferredRegion = 'syd1'
 
@@ -191,6 +192,19 @@ export async function POST(req: NextRequest) {
         console.error('[inbox/webhook] Update error (exact match):', err)
         Sentry.captureException(err, { tags: { route: 'inbox/webhook', phase: 'exact-match' } })
       })
+
+      await ensureTaskAndActivity(supabase, {
+        id:              exactMatch.id,
+        clinic_id:       clinicId,
+        caller_name:     (needsNameBackfill && twilioCallerName ? twilioCallerName : exactMatch.caller_name) ?? null,
+        pet_name:        enriched.petName !== '—' ? enriched.petName : null,
+        summary:         aiSummary.slice(0, 300),
+        ai_detail:       aiSummary,
+        urgency,
+        action_required: null,
+        coverage_reason: coverageReason,
+      })
+
       return NextResponse.json({ ok: true, action: 'updated_exact' })
     }
   }
@@ -245,6 +259,19 @@ export async function POST(req: NextRequest) {
       console.error('[inbox/webhook] Update error (recent match):', err)
       Sentry.captureException(err, { tags: { route: 'inbox/webhook', phase: 'recent-match' } })
     })
+
+    await ensureTaskAndActivity(supabase, {
+      id:              recentMatch.id,
+      clinic_id:       clinicId,
+      caller_name:     (needsNameBackfill && twilioCallerName ? twilioCallerName : recentMatch.caller_name) ?? null,
+      pet_name:        enriched.petName !== '—' ? enriched.petName : null,
+      summary:         aiSummary.slice(0, 300),
+      ai_detail:       aiSummary,
+      urgency,
+      action_required: null,
+      coverage_reason: coverageReason,
+    })
+
     return NextResponse.json({ ok: true, action: 'updated_recent' })
   }
 
@@ -305,134 +332,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: msg }, { status: 500 })
   }
 
-  // ── Auto-create task for every call with a follow-up hint ───────
-  // Changed Apr 2026: previously skipped ROUTINE calls entirely, leaving
-  // ~85% of follow-ups invisible in the Action Queue. Now every call with
-  // an `action_required` produces a task, categorised and SLA-timed by
-  // urgency. Task links back to call_inbox via call_inbox_id so the
-  // detail pane can pull caller + transcript + AI summary.
-  if (actionRequired && newRow?.id) {
-    const { category, nextBestAction, taskType } = inferTaskMeta({
+  // Single source of truth for task + activity creation lives in
+  // lib/calls/auto-tasks.ts so the enrich-calls cron produces identical rows
+  // when ElevenLabs skips this webhook (the common case in prod).
+  if (newRow?.id) {
+    await ensureTaskAndActivity(supabase, {
+      id:              newRow.id,
+      clinic_id:       clinicId,
+      caller_name:     callerInfo.name,
+      pet_name:        callerInfo.petName !== '—' ? callerInfo.petName : null,
+      summary:         aiSummary.slice(0, 300),
+      ai_detail:       aiSummary,
       urgency,
-      summary: aiSummary,
-      actionRequired,
-    })
-    const taskPriority =
-      urgency === 'CRITICAL' ? 'URGENT'
-      : urgency === 'URGENT' ? 'HIGH'
-      : 'NORMAL'
-    const slaMs =
-      urgency === 'CRITICAL' ? 30 * 60 * 1000          // 30 min
-      : urgency === 'URGENT' ? 4 * 60 * 60 * 1000      // 4 hr
-      : 24 * 60 * 60 * 1000                             // 1 day
-    const slaDueAt = new Date(Date.now() + slaMs).toISOString()
-
-    const prettyPet = callerInfo.petName && callerInfo.petName !== '—'
-      ? ` · ${callerInfo.petName}`
-      : ''
-    const title =
-      category === 'EMERGENCY' ? `EMERGENCY: ${callerInfo.name}${prettyPet}`
-      : category === 'BOOKING' ? `Book: ${callerInfo.name}${prettyPet}`
-      : category === 'RX'      ? `Rx refill: ${callerInfo.name}${prettyPet}`
-      : category === 'TRIAGE'  ? `Triage follow-up: ${callerInfo.name}`
-      : category === 'BILLING' ? `Billing: ${callerInfo.name}`
-      : category === 'RECORDS' ? `Records request: ${callerInfo.name}`
-      :                          `Callback: ${callerInfo.name}`
-
-    const { error: taskErr } = await supabase.from('tasks').insert({
-      clinic_id:        clinicId,
-      call_inbox_id:    newRow.id,
-      title,
-      description:      actionRequired,
-      type:             taskType,
-      category,
-      priority:         taskPriority,
-      status:           'PENDING',
-      source:           'CALL',
-      sla_due_at:       slaDueAt,
-      due_at:           slaDueAt,
-      next_best_action: nextBestAction,
-    })
-
-    if (taskErr) {
-      console.error('[inbox/webhook] Task insert error:', taskErr)
-    }
-  }
-
-  // ── Log to activity_log ─────────────────────────────────────────
-  const { error: logErr } = await supabase.from('activity_log').insert({
-    clinic_id: clinicId,
-    type:      'CALL',
-    message:   `AI call from ${callerInfo.name}: ${aiSummary.slice(0, 120)}`,
-    metadata:  {
-      call_inbox_id:  newRow?.id ?? null,
-      urgency,
+      action_required: actionRequired,
       coverage_reason: coverageReason,
-    },
-  })
-
-  if (logErr) {
-    console.error('[inbox/webhook] Activity log insert error:', logErr)
+    })
   }
 
   return NextResponse.json({ ok: true, action: 'inserted' })
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-/**
- * Classify a call into the Action Queue taxonomy and suggest a next-best action.
- * Weave-style categories scoped to vet receptionist work. URGENT urgency is
- * excluded from EMERGENCY — only CRITICAL + explicit emergency language count,
- * so minor-severity urgent triage doesn't drown the red lane.
- */
-type TaskCategory = 'EMERGENCY' | 'BOOKING' | 'RX' | 'TRIAGE' | 'BILLING' | 'RECORDS' | 'CALLBACK'
-function inferTaskMeta({
-  urgency,
-  summary,
-  actionRequired,
-}: {
-  urgency: string
-  summary: string
-  actionRequired: string
-}): { category: TaskCategory; nextBestAction: string; taskType: string } {
-  const s = (summary ?? '').toLowerCase()
-  const a = (actionRequired ?? '').toLowerCase()
-  const text = `${s} ${a}`
-
-  let category: TaskCategory
-  if (urgency === 'CRITICAL' || /emergenc|collapse|unconscious|bleeding|seizure/.test(text)) {
-    category = 'EMERGENCY'
-  } else if (/book|appointment|schedule|reschedule/.test(text)) {
-    category = 'BOOKING'
-  } else if (/refill|prescription|medication|tablets|pills/.test(text)) {
-    category = 'RX'
-  } else if (/triage|symptom|not eating|lethargic|limp|vomit|diarrh/.test(text)) {
-    category = 'TRIAGE'
-  } else if (/invoice|billing|payment|refund|charge/.test(text)) {
-    category = 'BILLING'
-  } else if (/record|history|transfer|file/.test(text)) {
-    category = 'RECORDS'
-  } else {
-    category = 'CALLBACK'
-  }
-
-  const nextBestAction =
-    category === 'EMERGENCY' ? 'Call owner now · confirm transport to nearest emergency centre'
-    : category === 'BOOKING' ? 'Call back · offer next available slot · confirm pet details'
-    : category === 'RX'      ? 'Verify last visit · call clinic · confirm refill pickup window'
-    : category === 'TRIAGE'  ? 'Review AI summary · call owner · escalate to on-call vet if worsening'
-    : category === 'BILLING' ? 'Open invoice · call owner · arrange payment'
-    : category === 'RECORDS' ? 'Confirm identity · send records via secure portal'
-    :                          'Call owner back within SLA · confirm reason · action as needed'
-
-  const taskType =
-    category === 'EMERGENCY' || category === 'TRIAGE' ? 'TRIAGE_REVIEW'
-    : category === 'BOOKING'                          ? 'FOLLOW_UP'
-    :                                                   'CALLBACK'
-
-  return { category, nextBestAction, taskType }
-}
 
 /** Check analysis, data_collection, then payload for a non-empty string field */
 function resolveField(
