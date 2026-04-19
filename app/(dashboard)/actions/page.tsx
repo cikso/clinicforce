@@ -48,30 +48,35 @@ export default async function ActionsPage() {
 
   const todayISO = todayStart()
 
-  // Parallel queries
+  // Join each task to its originating call_inbox row so the row + detail pane
+  // can show caller/pet/AI-summary without a second round-trip. Supabase
+  // implicit join via FK (`call_inbox`) returns the embedded row as an object.
+  const taskSelect =
+    'id, title, description, type, category, priority, status, source, ' +
+    'assigned_to, case_id, call_inbox_id, due_at, sla_due_at, snoozed_until, ' +
+    'next_best_action, completed_at, created_at, ' +
+    'call:call_inbox!tasks_call_inbox_id_fkey(id, caller_name, caller_phone, pet_name, pet_species, urgency, summary, ai_detail, elevenlabs_conversation_id)'
+
   const [pendingRes, completedRes, staffRes] = await Promise.all([
-    // Pending + in-progress tasks
     clinicId
       ? db
           .from('tasks')
-          .select('id, title, description, type, priority, status, assigned_to, case_id, due_at, completed_at, created_at')
+          .select(taskSelect)
           .eq('clinic_id', clinicId)
           .in('status', ['PENDING', 'IN_PROGRESS'])
           .order('created_at', { ascending: false })
       : Promise.resolve({ data: null }),
 
-    // Completed today
     clinicId
       ? db
           .from('tasks')
-          .select('id, title, description, type, priority, status, assigned_to, case_id, due_at, completed_at, created_at')
+          .select(taskSelect)
           .eq('clinic_id', clinicId)
           .eq('status', 'DONE')
           .gte('completed_at', todayISO)
           .order('completed_at', { ascending: false })
       : Promise.resolve({ data: null }),
 
-    // Staff (clinic_users)
     clinicId
       ? db
           .from('clinic_users')
@@ -80,8 +85,11 @@ export default async function ActionsPage() {
       : Promise.resolve({ data: null }),
   ])
 
-  const pendingTasks = (pendingRes.data ?? []) as TaskRow[]
-  const completedTasks = (completedRes.data ?? []) as TaskRow[]
+  // Supabase's row-type inference mis-parses explicit `fk-name(...)` relation
+  // syntax as an error union, so we `unknown`-cast once and own the shape
+  // via TaskRow at the component boundary.
+  const pendingTasks   = (pendingRes.data   ?? []) as unknown as TaskRow[]
+  const completedTasks = (completedRes.data ?? []) as unknown as TaskRow[]
   const staffList = ((staffRes.data ?? []) as Array<{ id: string; name: string; role: string }>)
     .map(s => ({ id: s.id, name: s.name || 'Unnamed' }))
 

@@ -305,18 +305,53 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: msg }, { status: 500 })
   }
 
-  // ── Auto-create task for calls needing follow-up ────────────────
-  if (actionRequired && urgency !== 'ROUTINE') {
+  // ── Auto-create task for every call with a follow-up hint ───────
+  // Changed Apr 2026: previously skipped ROUTINE calls entirely, leaving
+  // ~85% of follow-ups invisible in the Action Queue. Now every call with
+  // an `action_required` produces a task, categorised and SLA-timed by
+  // urgency. Task links back to call_inbox via call_inbox_id so the
+  // detail pane can pull caller + transcript + AI summary.
+  if (actionRequired && newRow?.id) {
+    const { category, nextBestAction, taskType } = inferTaskMeta({
+      urgency,
+      summary: aiSummary,
+      actionRequired,
+    })
     const taskPriority =
-      urgency === 'CRITICAL' ? 'URGENT' : urgency === 'URGENT' ? 'HIGH' : 'NORMAL'
+      urgency === 'CRITICAL' ? 'URGENT'
+      : urgency === 'URGENT' ? 'HIGH'
+      : 'NORMAL'
+    const slaMs =
+      urgency === 'CRITICAL' ? 30 * 60 * 1000          // 30 min
+      : urgency === 'URGENT' ? 4 * 60 * 60 * 1000      // 4 hr
+      : 24 * 60 * 60 * 1000                             // 1 day
+    const slaDueAt = new Date(Date.now() + slaMs).toISOString()
+
+    const prettyPet = callerInfo.petName && callerInfo.petName !== '—'
+      ? ` · ${callerInfo.petName}`
+      : ''
+    const title =
+      category === 'EMERGENCY' ? `EMERGENCY: ${callerInfo.name}${prettyPet}`
+      : category === 'BOOKING' ? `Book: ${callerInfo.name}${prettyPet}`
+      : category === 'RX'      ? `Rx refill: ${callerInfo.name}${prettyPet}`
+      : category === 'TRIAGE'  ? `Triage follow-up: ${callerInfo.name}`
+      : category === 'BILLING' ? `Billing: ${callerInfo.name}`
+      : category === 'RECORDS' ? `Records request: ${callerInfo.name}`
+      :                          `Callback: ${callerInfo.name}`
 
     const { error: taskErr } = await supabase.from('tasks').insert({
-      clinic_id:   clinicId,
-      title:       `Callback: ${callerInfo.name}`,
-      description: actionRequired,
-      type:        'CALLBACK',
-      priority:    taskPriority,
-      status:      'PENDING',
+      clinic_id:        clinicId,
+      call_inbox_id:    newRow.id,
+      title,
+      description:      actionRequired,
+      type:             taskType,
+      category,
+      priority:         taskPriority,
+      status:           'PENDING',
+      source:           'CALL',
+      sla_due_at:       slaDueAt,
+      due_at:           slaDueAt,
+      next_best_action: nextBestAction,
     })
 
     if (taskErr) {
@@ -344,6 +379,60 @@ export async function POST(req: NextRequest) {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+/**
+ * Classify a call into the Action Queue taxonomy and suggest a next-best action.
+ * Weave-style categories scoped to vet receptionist work. URGENT urgency is
+ * excluded from EMERGENCY — only CRITICAL + explicit emergency language count,
+ * so minor-severity urgent triage doesn't drown the red lane.
+ */
+type TaskCategory = 'EMERGENCY' | 'BOOKING' | 'RX' | 'TRIAGE' | 'BILLING' | 'RECORDS' | 'CALLBACK'
+function inferTaskMeta({
+  urgency,
+  summary,
+  actionRequired,
+}: {
+  urgency: string
+  summary: string
+  actionRequired: string
+}): { category: TaskCategory; nextBestAction: string; taskType: string } {
+  const s = (summary ?? '').toLowerCase()
+  const a = (actionRequired ?? '').toLowerCase()
+  const text = `${s} ${a}`
+
+  let category: TaskCategory
+  if (urgency === 'CRITICAL' || /emergenc|collapse|unconscious|bleeding|seizure/.test(text)) {
+    category = 'EMERGENCY'
+  } else if (/book|appointment|schedule|reschedule/.test(text)) {
+    category = 'BOOKING'
+  } else if (/refill|prescription|medication|tablets|pills/.test(text)) {
+    category = 'RX'
+  } else if (/triage|symptom|not eating|lethargic|limp|vomit|diarrh/.test(text)) {
+    category = 'TRIAGE'
+  } else if (/invoice|billing|payment|refund|charge/.test(text)) {
+    category = 'BILLING'
+  } else if (/record|history|transfer|file/.test(text)) {
+    category = 'RECORDS'
+  } else {
+    category = 'CALLBACK'
+  }
+
+  const nextBestAction =
+    category === 'EMERGENCY' ? 'Call owner now · confirm transport to nearest emergency centre'
+    : category === 'BOOKING' ? 'Call back · offer next available slot · confirm pet details'
+    : category === 'RX'      ? 'Verify last visit · call clinic · confirm refill pickup window'
+    : category === 'TRIAGE'  ? 'Review AI summary · call owner · escalate to on-call vet if worsening'
+    : category === 'BILLING' ? 'Open invoice · call owner · arrange payment'
+    : category === 'RECORDS' ? 'Confirm identity · send records via secure portal'
+    :                          'Call owner back within SLA · confirm reason · action as needed'
+
+  const taskType =
+    category === 'EMERGENCY' || category === 'TRIAGE' ? 'TRIAGE_REVIEW'
+    : category === 'BOOKING'                          ? 'FOLLOW_UP'
+    :                                                   'CALLBACK'
+
+  return { category, nextBestAction, taskType }
+}
 
 /** Check analysis, data_collection, then payload for a non-empty string field */
 function resolveField(
