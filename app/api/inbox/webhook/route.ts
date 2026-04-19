@@ -124,10 +124,19 @@ export async function POST(req: NextRequest) {
 
   const structured = { analysis, dataCollection, payload }
 
-  // Twilio's real caller ID (E.164). More reliable than any phone Stella
-  // asks for in-conversation — use it to backfill when tool-created rows
-  // didn't capture a phone, or to normalise when Stella wrote a spoken form.
-  const twilioCallerId = typeof phoneCall.caller_id === 'string' ? phoneCall.caller_id.trim() : ''
+  // The REAL caller's PSTN phone. ElevenLabs' post-call webhook surfaces
+  // this under `metadata.phone_call.external_number` (NOT `caller_id` — an
+  // earlier draft of this code read the wrong field name, which is why
+  // Stella's asked-for-phone was winning on every call). Also try top-level
+  // body fields and the initiate-style `to`/`from` fallbacks in case
+  // ElevenLabs evolves the schema.
+  const bodyFrom = (body as Record<string, unknown>).from
+  const twilioCallerId =
+    (typeof phoneCall.external_number === 'string' && phoneCall.external_number.trim())
+    || (typeof phoneCall.caller_id === 'string' && phoneCall.caller_id.trim())
+    || (typeof phoneCall.from_number === 'string' && phoneCall.from_number.trim())
+    || (typeof bodyFrom === 'string' && bodyFrom.trim())
+    || ''
   const twilioCallerName = typeof phoneCall.external_caller_id_name === 'string'
     ? phoneCall.external_caller_id_name.trim()
     : ''
