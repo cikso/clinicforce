@@ -218,8 +218,14 @@ export default function ConversationDetail({
               sub={call.caller_name ? 'Existing caller' : 'Phone — no name captured'}
             />
 
-            {/* Card 2: Phone */}
-            <DetailCard label="PHONE" value={call.caller_phone || '—'} sub="Primary mobile" />
+            {/* Card 2: Phone — prefer stated_phone (what the caller gave
+                 Stella for callback). Fall back to caller_phone (PSTN
+                 caller ID) when the caller didn't supply one. */}
+            <DetailCard
+              label="PHONE"
+              value={call.stated_phone || call.caller_phone || '—'}
+              sub={call.stated_phone ? 'Callback number (as given on call)' : 'Caller ID'}
+            />
 
             {/* Card 3 & 4: Industry-specific */}
             {isVet || hasExtraFields ? (

@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
   if (conversationId) {
     const { data: exactMatch } = await supabase
       .from('call_inbox')
-      .select('id, caller_phone, caller_name')
+      .select('id, caller_phone, caller_name, stated_phone')
       .eq('elevenlabs_conversation_id', conversationId)
       .eq('clinic_id', clinicId)
       .maybeSingle()
@@ -154,14 +154,18 @@ export async function POST(req: NextRequest) {
       const enriched = extractCallerInfo(transcript, '—', structured)
       const industryData = buildIndustryData(transcript, structured)
 
-      // Twilio's caller_id is the AUTHORITATIVE phone for inbound calls.
-      // Always overwrite with it when present — what Stella hears on the call
-      // is often mistranscribed (e.g. "0414 232 390" when the real number is
-      // 391). Twilio's caller_id comes from the PSTN signalling layer.
+      // Twilio's caller_id is the AUTHORITATIVE phone for inbound calls —
+      // gets overwritten onto caller_phone by /api/twilio/status from
+      // active_calls. Here we only update caller_phone if the webhook
+      // payload happens to include one. stated_phone (what the caller
+      // said) is backfilled only if missing, never overwritten — the
+      // Stella tool that created the row already captured it.
       // Name: Twilio only has external_caller_id_name (AU rarely populates
       // this via CNAM). Fall back only if we have no name yet.
       const existingName = (exactMatch.caller_name ?? '').trim()
       const needsNameBackfill = !existingName || existingName.toLowerCase() === 'unknown caller'
+      const existingStated = ((exactMatch as { stated_phone?: string | null }).stated_phone ?? '').trim()
+      const transcriptPhone = enriched.phone && enriched.phone !== '—' ? enriched.phone : ''
 
       await withRetry(async () => {
         const { error: updateErr } = await supabase
@@ -177,6 +181,7 @@ export async function POST(req: NextRequest) {
             ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
             ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
             ...(twilioCallerId ? { caller_phone: twilioCallerId } : {}),
+            ...(!existingStated && transcriptPhone ? { stated_phone: transcriptPhone } : {}),
             ...(needsNameBackfill && twilioCallerName ? { caller_name: twilioCallerName } : {}),
           })
           .eq('id', exactMatch.id)
@@ -195,7 +200,7 @@ export async function POST(req: NextRequest) {
 
   const { data: recentMatch } = await supabase
     .from('call_inbox')
-    .select('id, caller_phone, caller_name')
+    .select('id, caller_phone, caller_name, stated_phone')
     .eq('clinic_id', clinicId)
     .is('elevenlabs_conversation_id', null)
     .gte('created_at', tenMinsAgo)
@@ -207,10 +212,13 @@ export async function POST(req: NextRequest) {
     const enriched = extractCallerInfo(transcript, '—', structured)
     const industryData = buildIndustryData(transcript, structured)
 
-    // Same logic as Step 1 — Twilio's caller_id is authoritative for the
-    // phone (always overwrite). Name: only backfill when missing.
+    // Same logic as Step 1. caller_phone is the PSTN truth (stamped by
+    // /api/twilio/status). stated_phone is what the caller said — backfill
+    // only if missing. Name only backfills when missing.
     const existingName = (recentMatch.caller_name ?? '').trim()
     const needsNameBackfill = !existingName || existingName.toLowerCase() === 'unknown caller'
+    const existingStated = ((recentMatch as { stated_phone?: string | null }).stated_phone ?? '').trim()
+    const transcriptPhone = enriched.phone && enriched.phone !== '—' ? enriched.phone : ''
 
     await withRetry(async () => {
       const { error: updateErr } = await supabase
@@ -227,6 +235,7 @@ export async function POST(req: NextRequest) {
           ...(enriched.petName    !== '—' ? { pet_name:    enriched.petName }    : {}),
           ...(enriched.petSpecies !== '—' ? { pet_species: enriched.petSpecies } : {}),
           ...(twilioCallerId ? { caller_phone: twilioCallerId } : {}),
+          ...(!existingStated && transcriptPhone ? { stated_phone: transcriptPhone } : {}),
           ...(needsNameBackfill && twilioCallerName ? { caller_name: twilioCallerName } : {}),
         })
         .eq('id', recentMatch.id)
@@ -262,7 +271,13 @@ export async function POST(req: NextRequest) {
         .insert({
           clinic_id:                  clinicId,
           caller_name:                callerInfo.name,
-          caller_phone:               callerInfo.phone,
+          // caller_phone: prefer the authoritative Twilio PSTN (stamped
+          // by /api/twilio/status when active_calls row exists). Fall
+          // back to the transcript-extracted phone if we somehow got
+          // here without an active_calls row.
+          caller_phone:               twilioCallerId || callerInfo.phone,
+          // stated_phone: always what the caller said in the conversation.
+          stated_phone:               callerInfo.phone && callerInfo.phone !== '—' ? callerInfo.phone : null,
           pet_name:                   callerInfo.petName,
           pet_species:                callerInfo.petSpecies,
           industry_data:              industryData,

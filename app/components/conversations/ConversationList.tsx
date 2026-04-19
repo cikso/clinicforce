@@ -12,6 +12,7 @@ export interface CallItem {
   id: string
   caller_name: string
   caller_phone: string
+  stated_phone: string | null
   pet_name: string | null
   pet_species: string | null
   summary: string
@@ -273,7 +274,7 @@ export default function ConversationList({
       const oldest = calls[calls.length - 1]?.created_at
       const { data } = await supabase
         .from('call_inbox')
-        .select('id, caller_name, caller_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, coverage_reason, call_duration_seconds, industry_data, elevenlabs_conversation_id, created_at')
+        .select('id, caller_name, caller_phone, stated_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, coverage_reason, call_duration_seconds, industry_data, elevenlabs_conversation_id, created_at')
         .eq('clinic_id', clinicId)
         .lt('created_at', oldest)
         .order('created_at', { ascending: false })

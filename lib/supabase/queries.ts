@@ -10,7 +10,7 @@ export async function fetchCallInbox(clinicId: string): Promise<Call[]> {
   const { data, error } = await supabase
     .from('call_inbox')
     .select(
-      'id, caller_name, caller_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, call_duration_seconds, created_at'
+      'id, caller_name, caller_phone, stated_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, call_duration_seconds, created_at'
     )
     .eq('clinic_id', clinicId)
     .order('created_at', { ascending: false })
@@ -25,6 +25,7 @@ export async function fetchCallInbox(clinicId: string): Promise<Call[]> {
     id:                  row.id as string,
     callerName:          (row.caller_name       as string) ?? 'Unknown caller',
     callerPhone:         (row.caller_phone      as string) ?? '—',
+    statedPhone:         (row.stated_phone      as string | null) ?? null,
     petName:             (row.pet_name          as string) ?? '—',
     petSpecies:          (row.pet_species       as string) ?? '—',
     summary:             (row.summary           as string) ?? '',
@@ -73,7 +74,7 @@ export async function fetchDashboardCases(clinicId: string): Promise<Call[]> {
   const { data, error } = await supabase
     .from('call_inbox')
     .select(
-      'id, caller_name, caller_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, call_duration_seconds, created_at'
+      'id, caller_name, caller_phone, stated_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, call_duration_seconds, created_at'
     )
     .eq('clinic_id', clinicId)
     .in('urgency', ['CRITICAL', 'URGENT'])
@@ -90,6 +91,7 @@ export async function fetchDashboardCases(clinicId: string): Promise<Call[]> {
     id:                  row.id as string,
     callerName:          (row.caller_name       as string) ?? 'Unknown caller',
     callerPhone:         (row.caller_phone      as string) ?? '—',
+    statedPhone:         (row.stated_phone      as string | null) ?? null,
     petName:             (row.pet_name          as string) ?? '—',
     petSpecies:          (row.pet_species       as string) ?? '—',
     summary:             (row.summary           as string) ?? '',
