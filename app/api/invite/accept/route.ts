@@ -2,8 +2,19 @@ import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
+import { getClientIp, rateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
+  // Token-guessing guard: 10 attempts per 15 min per IP.
+  const ip = getClientIp(request)
+  const limit = rateLimit('invite-accept:ip', ip, 10, 15 * 60 * 1000)
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many attempts. Please wait a few minutes and try again.' },
+      { status: 429 },
+    )
+  }
+
   let body: { token?: string; fullName?: string; password?: string }
 
   try {

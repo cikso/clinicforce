@@ -29,20 +29,7 @@ interface CaseStudyCard {
   isDraft?: boolean
 }
 
-// TODO(content): replace with real pilot clinics as they go live. Each entry
-// becomes its own /veterinary-clinics/case-studies/[slug] page via the
-// template at app/veterinary-clinics/case-studies/example-clinic/page.tsx.
-const CASE_STUDIES: CaseStudyCard[] = [
-  {
-    slug:         'example-clinic',
-    clinic:       'Example Vet Clinic',
-    location:     'Sydney, NSW',
-    summary:      'How one Sydney clinic captured 58% more after-hours bookings in 30 days by handing their phones to Stella.',
-    headlineStat: '+58%',
-    statLabel:    'after-hours bookings',
-    isDraft:      true,
-  },
-]
+const CASE_STUDIES: CaseStudyCard[] = []
 
 const listingJsonLd = {
   '@context': 'https://schema.org',
@@ -94,51 +81,64 @@ export default function CaseStudiesHub() {
           </p>
         </header>
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          {CASE_STUDIES.map((s) => (
-            <article
-              key={s.slug}
-              className="group rounded-2xl border border-[var(--border)] bg-white p-7 transition-all hover:border-[var(--brand)]/40 hover:shadow-lg"
-            >
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <p className="eyebrow text-[var(--text-tertiary)] mb-2">
-                    {s.location}
-                  </p>
-                  <h2 className="heading-4 font-heading text-[var(--text-primary)] leading-snug">
-                    {s.clinic}
-                  </h2>
+        {CASE_STUDIES.length === 0 ? (
+          <div className="rounded-2xl border border-[var(--border)] bg-white p-10 text-center">
+            <p className="text-title font-heading font-semibold text-[var(--text-primary)] mb-3">
+              Pilot clinics going live now
+            </p>
+            <p className="text-body text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
+              We&apos;re onboarding our first Australian clinics. Real case studies — with
+              real names, real numbers, and real quotes — will land here as each pilot
+              completes its first 30 days.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2">
+            {CASE_STUDIES.map((s) => (
+              <article
+                key={s.slug}
+                className="group rounded-2xl border border-[var(--border)] bg-white p-7 transition-all hover:border-[var(--brand)]/40 hover:shadow-lg"
+              >
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <p className="eyebrow text-[var(--text-tertiary)] mb-2">
+                      {s.location}
+                    </p>
+                    <h2 className="heading-4 font-heading text-[var(--text-primary)] leading-snug">
+                      {s.clinic}
+                    </h2>
+                  </div>
+                  {s.isDraft && (
+                    <span className="shrink-0 rounded-full bg-[var(--warning-light)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--warning)]">
+                      Draft
+                    </span>
+                  )}
                 </div>
-                {s.isDraft && (
-                  <span className="shrink-0 rounded-full bg-[var(--warning-light)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--warning)]">
-                    Draft
-                  </span>
-                )}
-              </div>
 
-              <p className="text-body text-[var(--text-secondary)] leading-relaxed mb-8 min-h-[4.5rem]">
-                {s.summary}
-              </p>
+                <p className="text-body text-[var(--text-secondary)] leading-relaxed mb-8 min-h-[4.5rem]">
+                  {s.summary}
+                </p>
 
-              <div className="flex items-end justify-between">
-                <div>
-                  <p className="heading-2 font-heading text-[var(--brand)] leading-none">
-                    {s.headlineStat}
-                  </p>
-                  <p className="text-caption text-[var(--text-tertiary)] mt-1 uppercase tracking-wider">
-                    {s.statLabel}
-                  </p>
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="heading-2 font-heading text-[var(--brand)] leading-none">
+                      {s.headlineStat}
+                    </p>
+                    <p className="text-caption text-[var(--text-tertiary)] mt-1 uppercase tracking-wider">
+                      {s.statLabel}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/veterinary-clinics/case-studies/${s.slug}`}
+                    className="text-body font-semibold text-[var(--brand)] hover:text-[var(--brand-dark)] transition-colors"
+                  >
+                    Read the story →
+                  </Link>
                 </div>
-                <Link
-                  href={`/veterinary-clinics/case-studies/${s.slug}`}
-                  className="text-body font-semibold text-[var(--brand)] hover:text-[var(--brand-dark)] transition-colors"
-                >
-                  Read the story →
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+              </article>
+            ))}
+          </div>
+        )}
 
         <section className="mt-20 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-secondary)] p-8 text-center">
           <p className="text-title font-heading font-semibold text-[var(--text-primary)] mb-2">

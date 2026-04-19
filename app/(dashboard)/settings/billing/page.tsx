@@ -221,7 +221,7 @@ export default async function BillingPage() {
             </div>
           )}
           <p className="text-[11px] text-[var(--text-tertiary)]">
-            Billing portal coming soon. Contact support@clinicforce.io for billing enquiries.
+            Billing portal coming soon. Contact admin@clinicforce.io for billing enquiries.
           </p>
         </div>
       </Card>

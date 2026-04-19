@@ -325,10 +325,10 @@ export default function TrustPage() {
             <p>
               Email{' '}
               <a
-                href="mailto:privacy@clinicforce.io"
+                href="mailto:admin@clinicforce.io"
                 className="font-medium text-[#00B578] underline decoration-[#00B578]/40 underline-offset-4 transition-colors hover:text-[#00A06A] hover:decoration-[#00B578]"
               >
-                privacy@clinicforce.io
+                admin@clinicforce.io
               </a>{' '}
               — the founder reads every message.
             </p>

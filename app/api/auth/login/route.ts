@@ -1,14 +1,26 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { getClientIp, rateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
-  const email = typeof body?.email === 'string' ? body.email.trim() : ''
+  const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : ''
   const password = typeof body?.password === 'string' ? body.password : ''
 
   if (!email || !password) {
     return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 })
+  }
+
+  // Brute-force guard: 5 attempts per 15 min per IP, 5 per 15 min per email.
+  const ip = getClientIp(request)
+  const ipLimit = rateLimit('login:ip', ip, 5, 15 * 60 * 1000)
+  const emailLimit = rateLimit('login:email', email, 5, 15 * 60 * 1000)
+  if (!ipLimit.allowed || !emailLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many sign-in attempts. Please wait a few minutes and try again.' },
+      { status: 429 },
+    )
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL

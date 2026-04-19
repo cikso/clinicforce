@@ -23,7 +23,7 @@ export default function PrivacyPage() {
           </h1>
           <p className="mt-4 text-sm text-[#6B7280]">Last updated {LAST_UPDATED}</p>
           <p className="mt-6 text-[16px] leading-[1.75] text-[#374151]">
-            ClinicForce Pty Ltd (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;) is
+            ClinicForce (&ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;) is
             committed to protecting your personal information in accordance with the
             Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs). This
             policy explains what we collect, how we use it, and your rights.
@@ -39,13 +39,24 @@ export default function PrivacyPage() {
               1. Who we are
             </h2>
             <p>
-              ClinicForce Pty Ltd is an Australian company providing AI front desk
-              services to healthcare clinics.
+              ClinicForce is the business name of ACN 692 724 584 Pty Ltd, an
+              Australian private company providing AI front desk services to
+              healthcare clinics.
             </p>
-            <p className="mt-3">
-              Registered address:{' '}
-              <span className="text-[#6B7280]">[to be confirmed]</span>
-            </p>
+            <ul className="mt-4 space-y-1 text-[#4B5563]">
+              <li>Business name: <span className="text-[#1A1A1A]">ClinicForce</span></li>
+              <li>ABN: <span className="text-[#1A1A1A]">43 692 724 584</span></li>
+              <li>Registered in: <span className="text-[#1A1A1A]">New South Wales, Australia</span></li>
+              <li>
+                Privacy contact:{' '}
+                <a
+                  href="mailto:admin@clinicforce.io"
+                  className="font-medium text-[#00B578] underline decoration-[#00B578]/40 underline-offset-4 transition-colors hover:text-[#00A06A] hover:decoration-[#00B578]"
+                >
+                  admin@clinicforce.io
+                </a>
+              </li>
+            </ul>
           </section>
 
           <section aria-labelledby="what-we-collect">
@@ -192,10 +203,10 @@ export default function PrivacyPage() {
             <p>
               To exercise any of these rights, email{' '}
               <a
-                href="mailto:privacy@clinicforce.io"
+                href="mailto:admin@clinicforce.io"
                 className="font-medium text-[#00B578] underline decoration-[#00B578]/40 underline-offset-4 transition-colors hover:text-[#00A06A] hover:decoration-[#00B578]"
               >
-                privacy@clinicforce.io
+                admin@clinicforce.io
               </a>
               .
             </p>
@@ -239,10 +250,10 @@ export default function PrivacyPage() {
             <ul className="list-disc space-y-2 pl-6 marker:text-[#9CA3AF]">
               <li>
                 <a
-                  href="mailto:privacy@clinicforce.io"
+                  href="mailto:admin@clinicforce.io"
                   className="font-medium text-[#00B578] underline decoration-[#00B578]/40 underline-offset-4 transition-colors hover:text-[#00A06A] hover:decoration-[#00B578]"
                 >
-                  privacy@clinicforce.io
+                  admin@clinicforce.io
                 </a>{' '}
                 for privacy matters
               </li>
