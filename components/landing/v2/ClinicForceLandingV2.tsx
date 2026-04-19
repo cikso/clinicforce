@@ -296,31 +296,6 @@ export default function ClinicForceLandingV2() {
         </div>
       </section>
 
-      {/* ─── Infra trust strip ─── */}
-      <section className="logos-wall">
-        <div className="container">
-          <div className="infra-strip">
-            <div className="infra-label">
-              Runs on enterprise-grade<br />
-              infrastructure trusted by<br />
-              Australian businesses
-            </div>
-            <ul className="infra-items">
-              {['AWS Sydney', 'Australian data centre', 'Telephony', 'Payments (AU)', 'Voice AI'].map((label) => (
-                <li key={label}>
-                  <span className="infra-check">
-                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                      <path d="M3 8.5L6.5 12L13 4" />
-                    </svg>
-                  </span>
-                  <span>{label}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
       {/* ─── Section 01 — AI Answering ─── */}
       <section id="product">
         <div className="container">

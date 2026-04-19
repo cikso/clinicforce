@@ -642,7 +642,8 @@
   display: block;
   color: var(--text-quaternary);
 }
-.cf-landing-v2 .drc-map-outline { opacity: 0.9; }
+.cf-landing-v2 .drc-map-outline { opacity: 0.95; }
+.cf-landing-v2 .drc-map-borders { opacity: 0.45; }
 .cf-landing-v2 .drc-pin-ring {
   stroke: var(--brand);
   opacity: 0.35;
