@@ -231,11 +231,9 @@
 /* ─── Hero visual slot ─── */
 .cf-landing-v2 .hero-visual-slot {
   position: relative;
-  align-self: start;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding-top: 0;
 }
 
 /* ─── Hero video ─── */
