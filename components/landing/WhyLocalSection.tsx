@@ -76,7 +76,7 @@ export default function WhyLocalSection() {
                     <circle className="drc-pin-core" r="2.6" />
                   </g>
                   <g className="drc-pin-label" transform={`translate(${SYDNEY_X}, ${SYDNEY_Y})`}>
-                    <text x="7" y="2" className="drc-pin-city">Sydney</text>
+                    <text x="-8" y="2" textAnchor="end" className="drc-pin-city">Sydney</text>
                   </g>
                 </svg>
               </div>
