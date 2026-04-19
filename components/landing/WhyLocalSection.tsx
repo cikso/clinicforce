@@ -46,22 +46,32 @@ export default function WhyLocalSection() {
                   aria-label="Map of Australia with Sydney marked as the primary data centre"
                   className="drc-map-svg"
                 >
+                  {/* Mainland + Tasmania */}
                   <path
                     className="drc-map-outline"
-                    d="M92 182 C84 170 76 160 78 146 C82 128 100 120 118 124 C130 126 142 132 154 130 C166 128 174 118 186 116 C200 114 212 122 226 118 C238 114 244 102 256 100 C272 98 286 108 302 108 C318 108 332 100 346 106 C360 112 368 126 382 130 C398 134 414 130 424 142 C434 154 432 172 428 186 C424 200 414 212 406 224 C398 236 394 250 382 258 C370 266 354 264 344 274 C334 284 336 300 326 310 C316 320 300 322 288 316 C276 310 270 296 258 292 C244 288 228 294 216 288 C202 282 196 268 184 262 C170 256 152 258 138 252 C122 246 108 232 100 218 C94 208 96 194 92 182 Z M352 334 C348 328 352 320 360 318 C368 316 376 322 376 330 C376 338 368 342 360 340 C356 338 354 336 352 334 Z"
-                    fill="none"
+                    d="M306 26 L310 40 L300 48 L290 55 L275 62 L260 68 L248 70 L240 65 L230 55 L218 50 L205 48 L196 52 L198 62 L186 68 L176 70 L162 75 L148 82 L135 92 L126 105 L118 118 L108 130 L96 150 L85 175 L75 195 L70 215 L70 240 L68 260 L63 278 L78 282 L95 285 L115 287 L140 288 L165 287 L195 285 L225 283 L240 280 L255 278 L262 290 L270 283 L272 283 L280 290 L290 292 L302 297 L312 305 L325 312 L340 310 L355 302 L365 293 L372 282 L376 268 L384 273 L392 258 L396 240 L400 220 L402 205 L400 188 L395 170 L388 150 L378 130 L365 108 L350 92 L338 75 L325 58 L315 42 Z M340 350 L350 348 L358 352 L362 360 L360 370 L354 375 L345 376 L338 372 L334 362 L336 354 Z"
+                    fill="var(--bg-secondary)"
                     stroke="currentColor"
-                    strokeWidth="1.5"
+                    strokeWidth="1.25"
                     strokeLinejoin="round"
                   />
-                  <g className="drc-pin-group" transform="translate(394, 248)">
+                  {/* Internal state borders (hinted) */}
+                  <path
+                    className="drc-map-borders"
+                    d="M187 55 L187 283 M187 190 L292 190 M267 55 L267 190 M292 190 L292 289 M292 220 L402 220 M292 289 L370 289"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="0.9"
+                    strokeLinecap="round"
+                  />
+                  <g className="drc-pin-group" transform="translate(384, 273)">
                     <circle className="drc-pin-ring" r="16" fill="none" strokeWidth="1" />
                     <circle className="drc-pin-halo" r="10" />
                     <circle className="drc-pin-core" r="5" />
                   </g>
-                  <g className="drc-pin-label" transform="translate(394, 248)">
-                    <text x="14" y="-6" className="drc-pin-city">Sydney</text>
-                    <text x="14" y="10" className="drc-pin-role">Data centre</text>
+                  <g className="drc-pin-label" transform="translate(384, 273)">
+                    <text x="14" y="-4" className="drc-pin-city">Sydney</text>
+                    <text x="14" y="12" className="drc-pin-role">Data centre</text>
                   </g>
                 </svg>
               </div>
