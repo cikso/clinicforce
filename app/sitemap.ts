@@ -49,6 +49,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...blogEntries,
     {
+      url: `${BASE_URL}/trust`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
       url: `${BASE_URL}/privacy`,
       lastModified,
       changeFrequency: 'yearly',

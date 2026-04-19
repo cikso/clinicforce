@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement } from 'react'
 import Link from 'next/link'
+import { MapPin, Lock, ShieldOff, Shield, ShieldCheck, FileCheck } from 'lucide-react'
 import {
-  NPS_COMMENTS,
   TRUST_PILLS,
   VERTICALS,
   VERTICAL_TABS,
@@ -69,12 +69,9 @@ const TAB_ICONS: Record<VerticalKey, ReactElement> = {
 
 /* ─── Main component ──────────────────────────────────────────────────── */
 
-const ORB_SUB_SEQUENCE: VerticalKey[] = ['vet', 'dental', 'gp', 'chiro']
-
 export default function ClinicForceLandingV2() {
   /* ─── Vertical state + persistence ─── */
   const [currentVertical, setCurrentVertical] = useState<VerticalKey>('all')
-  const [orbSubVertical, setOrbSubVertical] = useState<VerticalKey>('vet')
 
   // Initialise from URL hash or sessionStorage on mount.
   useEffect(() => {
@@ -98,51 +95,6 @@ export default function ClinicForceLandingV2() {
       if (history.replaceState) history.replaceState(null, '', '#' + currentVertical)
     } catch { /* ignore */ }
   }, [currentVertical])
-
-  // Drive orbSubVertical: follow currentVertical unless 'all', in which case
-  // rotate through vet → dental → gp → chiro every 4.5s.
-  useEffect(() => {
-    if (currentVertical !== 'all') {
-      setOrbSubVertical(currentVertical)
-      return
-    }
-    setOrbSubVertical(ORB_SUB_SEQUENCE[0])
-    let i = 0
-    const id = window.setInterval(() => {
-      i = (i + 1) % ORB_SUB_SEQUENCE.length
-      setOrbSubVertical(ORB_SUB_SEQUENCE[i])
-    }, 4500)
-    return () => window.clearInterval(id)
-  }, [currentVertical])
-
-  /* ─── Orb cyclers (each runs independently, matching the original HTML) ─── */
-  const [cIdx, setCIdx] = useState(0)
-  const [bIdx, setBIdx] = useState(0)
-  const [sIdx, setSIdx] = useState(0)
-  const [nIdx, setNIdx] = useState(0)
-
-  // Reset item indices when the orb's source vertical changes.
-  useEffect(() => {
-    setCIdx(0); setBIdx(0); setSIdx(0)
-  }, [orbSubVertical])
-
-  useEffect(() => {
-    const idC = window.setInterval(() => setCIdx((i) => (i + 1) % 4), 4500)
-    const idB = window.setInterval(() => setBIdx((i) => (i + 1) % 4), 4800)
-    const idS = window.setInterval(() => setSIdx((i) => (i + 1) % 4), 5100)
-    const idN = window.setInterval(() => setNIdx((i) => (i + 1) % NPS_COMMENTS.length), 5000)
-    return () => {
-      window.clearInterval(idC); window.clearInterval(idB)
-      window.clearInterval(idS); window.clearInterval(idN)
-    }
-  }, [])
-
-  /* ─── Ticking call duration (0:42 → 2:59 → wrap) ─── */
-  const [callSec, setCallSec] = useState(42)
-  useEffect(() => {
-    const id = window.setInterval(() => setCallSec((s) => (s + 1) % 180), 1000)
-    return () => window.clearInterval(id)
-  }, [])
 
   /* ─── Industry-switcher sliding underline ─── */
   const switcherRef = useRef<HTMLDivElement>(null)
@@ -253,13 +205,7 @@ export default function ClinicForceLandingV2() {
 
   /* ─── Derived display values ─── */
   const v = VERTICALS[currentVertical]
-  const orbV = VERTICALS[orbSubVertical]
-  const caller  = orbV.callers[cIdx % orbV.callers.length]
-  const booking = orbV.bookings[bIdx % orbV.bookings.length]
-  const sms     = orbV.smses[sIdx % orbV.smses.length]
-  const drift   = NPS_COMMENTS[nIdx]
   const [trust1, trust2, trust3] = TRUST_PILLS[currentVertical]
-  const callTime = `00:${String(callSec).padStart(2, '0')}`
 
   return (
     <div ref={rootRef} className="cf-landing-v2">
@@ -330,6 +276,13 @@ export default function ClinicForceLandingV2() {
               </a>
             </div>
 
+            <ul className="hero-trust-bar" aria-label="Trust and security signals">
+              <li><MapPin size={13} strokeWidth={2} aria-hidden /><span>Australian data residency</span></li>
+              <li><Lock size={13} strokeWidth={2} aria-hidden /><span>Encrypted end-to-end</span></li>
+              <li><ShieldOff size={13} strokeWidth={2} aria-hidden /><span>No AI training on your calls</span></li>
+              <li><Shield size={13} strokeWidth={2} aria-hidden /><span>Privacy Act 1988 aligned</span></li>
+            </ul>
+
             <div className="trust-row">
               <span className="trust-pill"><CheckIcon /><span>{trust1}</span></span>
               <span className="trust-pill"><CheckIcon /><span>{trust2}</span></span>
@@ -339,87 +292,19 @@ export default function ClinicForceLandingV2() {
             <div className="integrations-row" dangerouslySetInnerHTML={{ __html: v.integrations }} />
           </div>
 
-          {/* Hero visual — Operations Orb */}
+          {/* Hero visual — Stella demo video */}
           <div className="hero-visual-slot">
-            <div className="vis-orb">
-              <svg className="orb-rings" viewBox="0 0 560 560" aria-hidden>
-                <circle cx="280" cy="280" r="270" fill="none" stroke="#E5EAF0" strokeWidth="1" opacity="0.4" />
-                <circle cx="280" cy="280" r="210" fill="none" stroke="#E5EAF0" strokeWidth="1" opacity="0.5" />
-                <circle cx="280" cy="280" r="150" fill="none" stroke="#E5EAF0" strokeWidth="1" opacity="0.6" />
-              </svg>
-
-              <div className="orb-center">
-                <div className="orb-ping" />
-                <div className="orb-ping orb-ping-2" />
-                <div className="orb-core">
-                  <div className="orb-label">STELLA</div>
-                  <div className="orb-live"><span className="orb-live-dot" />LIVE</div>
-                </div>
-              </div>
-
-              <svg className="orb-lines" viewBox="0 0 560 560" aria-hidden>
-                <line x1="280" y1="230" x2="280" y2="110" stroke="#E5EAF0" strokeWidth="1" strokeDasharray="2 4" className="orb-line line-top" />
-                <line x1="330" y1="280" x2="450" y2="280" stroke="#E5EAF0" strokeWidth="1" strokeDasharray="2 4" className="orb-line line-right" />
-                <line x1="280" y1="330" x2="280" y2="450" stroke="#E5EAF0" strokeWidth="1" strokeDasharray="2 4" className="orb-line line-bot" />
-                <line x1="230" y1="280" x2="110" y2="280" stroke="#E5EAF0" strokeWidth="1" strokeDasharray="2 4" className="orb-line line-left" />
-              </svg>
-
-              {/* 12 o'clock — AI ANSWERING */}
-              <div className="orb-card orb-card-top" style={{ '--d': '0ms' } as CSSProperties} data-tip="AI call answering">
-                <div className="oc-head">
-                  <span className="oc-tag">AI ANSWERING</span>
-                  <span className="oc-time">{callTime}</span>
-                </div>
-                <div className="oc-body">
-                  <div className="oc-main">{caller}</div>
-                  <div className="oc-sub">Call answered</div>
-                </div>
-                <div className="oc-wave"><span /><span /><span /><span /><span /></div>
-              </div>
-
-              {/* 3 o'clock — BOOKINGS */}
-              <div className="orb-card orb-card-right" style={{ '--d': '120ms' } as CSSProperties} data-tip="Live calendar bookings">
-                <div className="oc-head">
-                  <span className="oc-tag">BOOKING</span>
-                  <span className="oc-time">Thu 10:15</span>
-                </div>
-                <div className="oc-body">
-                  <div className="oc-main">{booking}</div>
-                  <div className="oc-sub">Dr. Patel</div>
-                </div>
-                <div className="oc-check"><CheckIcon size={14} strokeWidth={2.5} /></div>
-              </div>
-
-              {/* 6 o'clock — SMS */}
-              <div className="orb-card orb-card-bot" style={{ '--d': '240ms' } as CSSProperties} data-tip="SMS reminders & recalls">
-                <div className="oc-head">
-                  <span className="oc-tag">SMS</span>
-                  <span className="oc-time">3:42 PM</span>
-                </div>
-                <div className="oc-body">
-                  <div className="oc-main">{sms}</div>
-                  <div className="oc-sub">Delivered</div>
-                </div>
-                <div className="oc-bar"><span /></div>
-              </div>
-
-              {/* 9 o'clock — SURVEYS */}
-              <div className="orb-card orb-card-left" style={{ '--d': '360ms' } as CSSProperties} data-tip="Post-visit NPS surveys">
-                <div className="oc-head">
-                  <span className="oc-tag">NPS</span>
-                  <span className="oc-time oc-delta">+14</span>
-                </div>
-                <div className="oc-body">
-                  <div className="oc-main">
-                    <span className="oc-score">72</span>
-                    <span className="oc-score-unit">/100</span>
-                  </div>
-                  <svg className="oc-spark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden>
-                    <path d="M0,20 L20,16 L40,14 L60,10 L80,7 L100,4" fill="none" stroke="#00D68F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <div className="oc-drift">{drift}</div>
-              </div>
+            <div className="hero-video">
+              <video
+                className="hero-video-el"
+                src="/hero-stella.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="ClinicForce Stella AI receptionist demo"
+              />
             </div>
           </div>
         </div>
@@ -639,6 +524,48 @@ export default function ClinicForceLandingV2() {
         </div>
       </section>
 
+      {/* ─── Secure by design ─── */}
+      <section className="secure-section" id="secure">
+        <div className="container">
+          <div className="secure-head reveal">
+            <div className="eyebrow" style={{ textAlign: 'center' }}>Security</div>
+            <h2 className="section-heading" style={{ margin: '14px auto 0', textAlign: 'center' }}>
+              Secure by design
+            </h2>
+            <p className="secure-sub">
+              Healthcare-grade security isn&apos;t an add-on — it&apos;s how we built ClinicForce from day one.
+            </p>
+          </div>
+          <ul className="secure-grid reveal">
+            <li className="secure-card">
+              <div className="secure-icon"><MapPin size={18} strokeWidth={2} aria-hidden /></div>
+              <h3>Australian data residency</h3>
+              <p>Your clinic&apos;s data stays in Australia, on AWS Sydney infrastructure. Not the US. Not Europe. Australia.</p>
+            </li>
+            <li className="secure-card">
+              <div className="secure-icon"><Lock size={18} strokeWidth={2} aria-hidden /></div>
+              <h3>Encrypted everywhere</h3>
+              <p>TLS in transit, AES-256 at rest. Every call, every record, every message.</p>
+            </li>
+            <li className="secure-card">
+              <div className="secure-icon"><ShieldCheck size={18} strokeWidth={2} aria-hidden /></div>
+              <h3>AI that doesn&apos;t train on you</h3>
+              <p>Your calls are never used to train public AI models. Ever. Contractually guaranteed with our voice providers.</p>
+            </li>
+            <li className="secure-card">
+              <div className="secure-icon"><FileCheck size={18} strokeWidth={2} aria-hidden /></div>
+              <h3>APPs-aligned from day one</h3>
+              <p>Built around Australian privacy law, not retrofitted from a US system.</p>
+            </li>
+          </ul>
+          <div className="secure-cta">
+            <Link href="/trust" className="cta-ghost">
+              See how we protect your data <span className="arrow"><ArrowRight /></span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ─── Pricing ─── */}
       <section className="pricing-section" id="pricing">
         <div className="container">
@@ -722,6 +649,7 @@ export default function ClinicForceLandingV2() {
             <div className="footer-col">
               <h5>Legal</h5>
               <ul>
+                <li><Link href="/trust">Trust &amp; Security</Link></li>
                 <li><Link href="/privacy">Privacy</Link></li>
                 <li><Link href="/terms">Terms</Link></li>
               </ul>
