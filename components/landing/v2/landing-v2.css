@@ -81,6 +81,11 @@
   display: flex; align-items: center; gap: 9px;
   font-family: var(--font-heading), sans-serif;
   font-weight: 800; font-size: 16px; letter-spacing: -0.02em;
+  text-decoration: none; color: inherit;
+}
+.cf-landing-v2 .logo-svg { height: 32px; width: auto; display: block; }
+@media (min-width: 768px) {
+  .cf-landing-v2 .logo-svg { height: 40px; }
 }
 .cf-landing-v2 .logo-mark {
   width: 26px; height: 26px; border-radius: 7px;

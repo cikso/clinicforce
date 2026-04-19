@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement } from 'react'
 import Link from 'next/link'
 import { MapPin, Lock, ShieldCheck, FileCheck } from 'lucide-react'
+import { Logo } from '@/components/brand/Logo'
 import WhyLocalSection from '../WhyLocalSection'
 import QuestionsFAQSection from '../QuestionsFAQSection'
 import {
@@ -212,9 +213,8 @@ export default function ClinicForceLandingV2() {
       {/* ─── Navigation ─── */}
       <nav className={`nav${scrolled ? ' scrolled' : ''}`} aria-label="Primary">
         <div className="container-wide nav-inner">
-          <Link href="/" className="logo">
-            <div className="logo-mark">CF</div>
-            ClinicForce
+          <Link href="/" className="logo" aria-label="ClinicForce home">
+            <Logo className="logo-svg" />
           </Link>
           <div className="nav-links">
             <a href="#product">Product</a>
@@ -549,9 +549,8 @@ export default function ClinicForceLandingV2() {
         <div className="container">
           <div className="footer-grid">
             <div className="footer-col" style={{ maxWidth: 280 }}>
-              <Link href="/" className="logo" style={{ marginBottom: 14 }}>
-                <div className="logo-mark">CF</div>
-                ClinicForce
+              <Link href="/" className="logo" style={{ marginBottom: 14 }} aria-label="ClinicForce home">
+                <Logo className="logo-svg" />
               </Link>
               <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>
                 The AI front desk for veterinary, dental, GP, and chiropractic clinics. Built in Australia.

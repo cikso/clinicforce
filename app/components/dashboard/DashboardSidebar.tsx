@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import ClinicSwitcher from './ClinicSwitcher'
+import { Logo } from '@/components/brand/Logo'
 
 /* ─── Inline SVG Icons (18px) ─── */
 const icons = {
@@ -164,11 +165,9 @@ export default function DashboardSidebar({
     <>
       {/* Header */}
       <div className="flex items-center gap-3 px-5 py-4 border-b border-[var(--border)]">
-        <div className="w-8 h-8 rounded-lg bg-[var(--brand)] flex items-center justify-center shrink-0">
-          <span className="text-white text-[12px] font-bold font-heading">CF</span>
-        </div>
+        <Logo iconOnly className="w-8 h-8 shrink-0" aria-hidden />
         <div className="min-w-0 sidebar-expanded-content">
-          <h1 className="font-bold text-[15px] text-[var(--text-primary)] leading-snug tracking-tight font-heading">
+          <h1 className="font-serif text-[18px] text-[#00B578] leading-none tracking-tight">
             ClinicForce
           </h1>
           {isMultiClinic ? (

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Logo } from '@/components/brand/Logo'
 
 export default function MarketingNavbar({ onBookDemo }: { onBookDemo?: () => void }) {
   return (
@@ -8,15 +9,8 @@ export default function MarketingNavbar({ onBookDemo }: { onBookDemo?: () => voi
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Wordmark */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-6 h-6 rounded-md bg-[#00D68F] flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-[11px] font-mono" aria-hidden="true">
-                CF
-              </span>
-            </div>
-            <span className="text-[#1A1A1A] font-bold text-xl tracking-tight font-heading">
-              ClinicForce
-            </span>
+          <Link href="/" className="flex items-center group" aria-label="ClinicForce home">
+            <Logo className="h-8 md:h-10 w-auto" />
           </Link>
 
           {/* Center nav links */}

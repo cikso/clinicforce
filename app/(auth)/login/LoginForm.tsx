@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { Logo } from '@/components/brand/Logo'
 
 export default function LoginForm({ next }: { next: string }) {
   const [email, setEmail] = useState('')
@@ -66,14 +67,8 @@ export default function LoginForm({ next }: { next: string }) {
           <div className="cf-mesh-blob cf-mesh-blob-c" />
         </div>
         {/* Logo */}
-        <div className="flex items-center gap-2.5 relative z-10">
-          <div className="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center backdrop-blur-sm">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 2L3 6v8l7 4 7-4V6l-7-4z" fill="white" opacity="0.9" />
-              <path d="M10 10V2L3 6l7 4z" fill="white" opacity="0.6" />
-            </svg>
-          </div>
-          <span className="text-[18px] font-heading font-bold text-white tracking-[-0.01em]">ClinicForce</span>
+        <div className="flex items-center relative z-10">
+          <Logo variant="white" className="h-10 w-auto" />
         </div>
 
         {/* Center content */}
