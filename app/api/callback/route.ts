@@ -72,6 +72,7 @@ export async function POST(req: NextRequest) {
           clinic_id:       clinicId,
           caller_name:     owner_name,
           caller_phone:    phone_number,
+          stated_phone:    phone_number,
           pet_name,
           pet_species:     species,
           summary:         summary.slice(0, 300),

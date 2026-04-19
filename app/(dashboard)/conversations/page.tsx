@@ -26,7 +26,7 @@ async function ConversationsContent() {
   const { data: calls } = clinicId
     ? await db
         .from('call_inbox')
-        .select('id, caller_name, caller_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, coverage_reason, call_duration_seconds, industry_data, elevenlabs_conversation_id, created_at')
+        .select('id, caller_name, caller_phone, stated_phone, pet_name, pet_species, summary, ai_detail, action_required, urgency, status, coverage_reason, call_duration_seconds, industry_data, elevenlabs_conversation_id, created_at')
         .eq('clinic_id', clinicId)
         .order('created_at', { ascending: false })
         .limit(20)
@@ -59,6 +59,7 @@ async function ConversationsContent() {
     id: string
     caller_name: string
     caller_phone: string
+    stated_phone: string | null
     pet_name: string | null
     pet_species: string | null
     summary: string

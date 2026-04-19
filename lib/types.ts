@@ -70,6 +70,7 @@ export interface Call {
   id: string
   callerName: string
   callerPhone: string
+  statedPhone?: string | null
   petName: string
   petSpecies: string
   summary: string
