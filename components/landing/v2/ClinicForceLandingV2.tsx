@@ -2,11 +2,10 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement } from 'react'
 import Link from 'next/link'
-import { MapPin, Lock, ShieldOff, Shield, ShieldCheck, FileCheck } from 'lucide-react'
+import { MapPin, Lock, ShieldCheck, FileCheck } from 'lucide-react'
 import WhyLocalSection from '../WhyLocalSection'
 import QuestionsFAQSection from '../QuestionsFAQSection'
 import {
-  TRUST_PILLS,
   VERTICALS,
   VERTICAL_TABS,
   type VerticalKey,
@@ -207,7 +206,6 @@ export default function ClinicForceLandingV2() {
 
   /* ─── Derived display values ─── */
   const v = VERTICALS[currentVertical]
-  const [trust1, trust2, trust3] = TRUST_PILLS[currentVertical]
 
   return (
     <div ref={rootRef} className="cf-landing-v2">
@@ -278,20 +276,6 @@ export default function ClinicForceLandingV2() {
               </a>
             </div>
 
-            <ul className="hero-trust-bar" aria-label="Trust and security signals">
-              <li><MapPin size={13} strokeWidth={2} aria-hidden /><span>Australian data residency</span></li>
-              <li><Lock size={13} strokeWidth={2} aria-hidden /><span>Encrypted end-to-end</span></li>
-              <li><ShieldOff size={13} strokeWidth={2} aria-hidden /><span>No AI training on your calls</span></li>
-              <li><Shield size={13} strokeWidth={2} aria-hidden /><span>Privacy Act 1988 aligned</span></li>
-            </ul>
-
-            <div className="trust-row">
-              <span className="trust-pill"><CheckIcon /><span>{trust1}</span></span>
-              <span className="trust-pill"><CheckIcon /><span>{trust2}</span></span>
-              <span className="trust-pill"><CheckIcon /><span>{trust3}</span></span>
-            </div>
-
-            <div className="integrations-row" dangerouslySetInnerHTML={{ __html: v.integrations }} />
           </div>
 
           {/* Hero visual — Stella demo video */}
@@ -311,42 +295,6 @@ export default function ClinicForceLandingV2() {
           </div>
         </div>
       </section>
-
-      {/* ─── Credentials strip ─── */}
-      <div className="credentials">
-        <div className="container">
-          <div className="cred-row">
-            <span className="cred-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M22 10L12 5 2 10l10 5 10-5z" /><path d="M6 12v5c3 2 9 2 12 0v-5" />
-              </svg>
-              Trained on 50,000+ real clinic calls
-            </span>
-            <span className="cred-sep" />
-            <span className="cred-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <rect x="3" y="6" width="8" height="15" /><rect x="13" y="3" width="8" height="18" />
-                <path d="M6 10h2M6 14h2M16 7h2M16 11h2M16 15h2" />
-              </svg>
-              Trained on vet, dental, GP, and chiro clinic calls
-            </span>
-            <span className="cred-sep" />
-            <span className="cred-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z" />
-              </svg>
-              AU Privacy Act compliant · AU data residency
-            </span>
-            <span className="cred-sep" />
-            <span className="cred-item">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
-              </svg>
-              Integrates with 12+ clinical PMS platforms
-            </span>
-          </div>
-        </div>
-      </div>
 
       {/* ─── Infra trust strip ─── */}
       <section className="logos-wall">

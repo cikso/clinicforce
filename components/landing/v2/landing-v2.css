@@ -622,9 +622,9 @@
   background: white;
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 20px 22px;
+  padding: 20px 22px 12px;
   box-shadow: var(--shadow-card);
-  max-width: 380px;
+  max-width: 440px;
 }
 .cf-landing-v2 .drc-label {
   font-family: var(--font-geist-mono), monospace;
@@ -633,33 +633,52 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-tertiary);
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
-.cf-landing-v2 .drc-body { display: flex; align-items: center; gap: 14px; }
-.cf-landing-v2 .drc-pin {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--brand-light);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+.cf-landing-v2 .drc-map { width: 100%; }
+.cf-landing-v2 .drc-map-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  color: var(--text-quaternary);
 }
-.cf-landing-v2 .drc-pin-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--brand);
-  box-shadow: 0 0 0 3px rgba(0, 214, 143, 0.2);
+.cf-landing-v2 .drc-map-outline { opacity: 0.9; }
+.cf-landing-v2 .drc-pin-ring {
+  stroke: var(--brand);
+  opacity: 0.35;
 }
-.cf-landing-v2 .drc-region {
+.cf-landing-v2 .drc-pin-halo {
+  fill: var(--brand);
+  opacity: 0.18;
+  transform-origin: center;
+  animation: drcPinPulse 2.4s ease-in-out infinite;
+}
+.cf-landing-v2 .drc-pin-core {
+  fill: var(--brand);
+  stroke: white;
+  stroke-width: 2;
+}
+.cf-landing-v2 .drc-pin-city {
   font-family: var(--font-heading), sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--text-primary);
+  fill: var(--text-primary);
   letter-spacing: -0.01em;
 }
-.cf-landing-v2 .drc-coords {
+.cf-landing-v2 .drc-pin-role {
   font-family: var(--font-geist-mono), monospace;
-  font-size: 11px;
-  color: var(--text-tertiary);
-  margin-top: 2px;
-  letter-spacing: 0.02em;
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--text-tertiary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+@keyframes drcPinPulse {
+  0%, 100% { transform: scale(1); opacity: 0.18; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-landing-v2 .drc-pin-halo { animation: none; }
 }
 
 .cf-landing-v2 .why-local-points {
