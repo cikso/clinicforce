@@ -7,6 +7,7 @@ type FooterLink = { label: string; href: string; internal?: boolean }
 const FOOTER_LINKS: FooterLink[] = [
   { label: 'Platform', href: '#' },
   { label: 'Integrations', href: '#' },
+  { label: 'Trust & Security', href: '/trust', internal: true },
   { label: 'Privacy', href: '/privacy', internal: true },
   { label: 'Terms', href: '/terms', internal: true },
   { label: 'Contact', href: '#' },

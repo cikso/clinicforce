@@ -722,6 +722,7 @@ export default function ClinicForceLandingV2() {
             <div className="footer-col">
               <h5>Legal</h5>
               <ul>
+                <li><Link href="/trust">Trust &amp; Security</Link></li>
                 <li><Link href="/privacy">Privacy</Link></li>
                 <li><Link href="/terms">Terms</Link></li>
               </ul>
