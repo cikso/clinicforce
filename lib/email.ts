@@ -46,8 +46,8 @@ export async function sendWelcomeEmail({
             <td align="center" style="padding-bottom:32px;">
               <table cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="background:#00D68F;border-radius:12px;padding:10px 20px;">
-                    <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">ClinicForce</span>
+                  <td style="background:#00B578;border-radius:12px;padding:10px 20px;">
+                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:500;color:#ffffff;letter-spacing:-0.3px;">ClinicForce</span>
                   </td>
                 </tr>
               </table>
@@ -71,7 +71,7 @@ export async function sendWelcomeEmail({
 
               <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                 <tr>
-                  <td style="background:#00D68F;border-radius:10px;">
+                  <td style="background:#00B578;border-radius:10px;">
                     <a
                       href="${loginUrl}"
                       style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;"
@@ -83,7 +83,7 @@ export async function sendWelcomeEmail({
               </table>
 
               <p style="margin:0 0 4px;font-size:12px;color:#9CA3AF;">Or copy this link:</p>
-              <p style="margin:0;font-size:12px;color:#00D68F;word-break:break-all;">${loginUrl}</p>
+              <p style="margin:0;font-size:12px;color:#00B578;word-break:break-all;">${loginUrl}</p>
 
             </td>
           </tr>
@@ -157,7 +157,7 @@ export async function sendInviteEmail({
             <td align="center" style="padding-bottom:32px;">
               <table cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="background:#00D68F;border-radius:12px;padding:10px 20px;">
+                  <td style="background:#00B578;border-radius:12px;padding:10px 20px;">
                     <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">
                       ClinicForce
                     </span>
@@ -196,7 +196,7 @@ export async function sendInviteEmail({
               <!-- CTA button -->
               <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                 <tr>
-                  <td style="background:#00D68F;border-radius:10px;">
+                  <td style="background:#00B578;border-radius:10px;">
                     <a
                       href="${inviteUrl}"
                       style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:-0.1px;"
@@ -211,7 +211,7 @@ export async function sendInviteEmail({
               <p style="margin:0 0 4px;font-size:12px;color:#9CA3AF;">
                 Or copy this link into your browser:
               </p>
-              <p style="margin:0;font-size:12px;color:#00D68F;word-break:break-all;">
+              <p style="margin:0;font-size:12px;color:#00B578;word-break:break-all;">
                 ${inviteUrl}
               </p>
 

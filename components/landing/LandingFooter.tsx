@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Logo } from '@/components/brand/Logo'
 
 type FooterLink = { label: string; href: string; internal?: boolean }
 
@@ -27,13 +28,8 @@ export function LandingFooter() {
       gap: 24,
     }}>
       {/* Brand */}
-      <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 700, fontSize: 15, color: '#F0F4FF', textDecoration: 'none', letterSpacing: '-0.2px' }}>
-        <div style={{ width: 28, height: 28, background: '#00C896', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M8 3v10M3 8h10" stroke="#080B12" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-        </div>
-        ClinicForce
+      <a href="#" aria-label="ClinicForce home" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+        <Logo variant="white" style={{ height: 36, width: 'auto' }} />
       </a>
 
       {/* Links */}

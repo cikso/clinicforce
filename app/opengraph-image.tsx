@@ -32,29 +32,37 @@ export default function Image() {
       >
         {/* Wordmark */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div
-            style={{
-              width: 72,
-              height: 72,
-              borderRadius: 18,
-              background: BRAND,
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 36,
-              fontWeight: 900,
-              letterSpacing: '-0.02em',
-            }}
+          <svg
+            width="80"
+            height="80"
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            CF
-          </div>
+            <path
+              d="M 75 25 A 35 35 0 1 0 75 75"
+              stroke={BRAND_DARK}
+              strokeWidth="3.6"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <path
+              d="M 50 1 C 42.5 8.5, 42.5 21.5, 50 29 C 57.5 21.5, 57.5 8.5, 50 1 Z"
+              fill={BRAND_DARK}
+            />
+            <path
+              d="M 50 71 C 42.5 78.5, 42.5 91.5, 50 99 C 57.5 91.5, 57.5 78.5, 50 71 Z"
+              fill={BRAND_DARK}
+            />
+            <rect x="46" y="30" width="8" height="40" rx="1.2" fill={BRAND_DARK} />
+            <rect x="30" y="46" width="40" height="8" rx="1.2" fill={BRAND_DARK} />
+          </svg>
           <div
             style={{
-              fontSize: 40,
-              fontWeight: 800,
-              color: INK,
-              letterSpacing: '-0.03em',
+              fontSize: 56,
+              fontWeight: 500,
+              color: BRAND_DARK,
+              letterSpacing: '-0.02em',
+              fontStyle: 'italic',
             }}
           >
             ClinicForce
