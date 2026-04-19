@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
 import { getServiceSupabase } from '@/lib/voice/shared'
+import { ensureTaskAndActivity } from '@/lib/calls/auto-tasks'
 
 export const preferredRegion = 'syd1'
 export const maxDuration = 30
@@ -29,7 +30,7 @@ export async function GET() {
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
   const { data: rows, error: rowsErr } = await supabase
     .from('call_inbox')
-    .select('id, created_at, elevenlabs_conversation_id, summary, ai_detail, caller_name, pet_name')
+    .select('id, clinic_id, created_at, elevenlabs_conversation_id, summary, ai_detail, caller_name, pet_name, urgency, action_required, coverage_reason')
     .gte('created_at', since)
     .order('created_at', { ascending: false })
     .limit(50)
@@ -133,10 +134,25 @@ export async function GET() {
 
     if (updateErr) {
       console.error(`[enrich-calls] Update failed for ${row.id}:`, updateErr)
-    } else {
-      enriched++
-      console.log(`[enrich-calls] Enriched row ${row.id} with summary from ${convId}`)
+      continue
     }
+
+    enriched++
+    console.log(`[enrich-calls] Enriched row ${row.id} with summary from ${convId}`)
+
+    // Backfill task + activity_log for calls where ElevenLabs never fired the
+    // post-call webhook. Idempotent — no-op if they already exist.
+    await ensureTaskAndActivity(supabase, {
+      id:              row.id as string,
+      clinic_id:       row.clinic_id as string,
+      caller_name:     (row.caller_name as string | null) ?? null,
+      pet_name:        (row.pet_name as string | null) ?? null,
+      summary:         (updateData.summary as string | null) ?? (row.summary as string | null) ?? null,
+      ai_detail:       (updateData.ai_detail as string | null) ?? (row.ai_detail as string | null) ?? null,
+      urgency:         (row.urgency as string | null) ?? null,
+      action_required: (row.action_required as string | null) ?? null,
+      coverage_reason: (row.coverage_reason as string | null) ?? null,
+    })
   }
 
   return NextResponse.json({ enriched, total_rows: rows.length, el_conversations: elConversations.length })
