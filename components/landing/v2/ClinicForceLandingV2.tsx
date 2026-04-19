@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement } from 'react'
 import Link from 'next/link'
 import { MapPin, Lock, ShieldOff, Shield, ShieldCheck, FileCheck } from 'lucide-react'
+import SecurityFAQSection from '../SecurityFAQSection'
 import {
   TRUST_PILLS,
   VERTICALS,
@@ -597,6 +598,9 @@ export default function ClinicForceLandingV2() {
           <p className="pricing-sub">Need a custom plan for 10+ clinics? <a href="#cta">Talk to us →</a></p>
         </div>
       </section>
+
+      {/* ─── Security & Privacy FAQ ─── */}
+      <SecurityFAQSection />
 
       {/* ─── CTA banner ─── */}
       <div className="cta-banner reveal" id="cta">
