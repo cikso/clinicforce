@@ -11,6 +11,7 @@ type LogoProps = {
 
 const BRAND = '#00B578'
 const WHITE = '#FFFFFF'
+const INK = '#0A0A0A'
 
 const WORDMARK_FONT_FAMILY =
   "var(--font-garamond), 'EB Garamond', 'Cormorant Garamond', Garamond, 'Times New Roman', serif"
@@ -25,6 +26,8 @@ export function Logo({
 }: LogoProps) {
   const stroke = variant === 'white' ? WHITE : BRAND
   const dotFill = variant === 'white' ? BRAND : WHITE
+  const clinicFill = variant === 'white' ? WHITE : INK
+  const forceFill = variant === 'white' ? WHITE : BRAND
 
   const mark = (
     <>
@@ -87,10 +90,10 @@ export function Logo({
         fontFamily={WORDMARK_FONT_FAMILY}
         fontSize="76"
         fontWeight={500}
-        fill={stroke}
         letterSpacing="-0.5"
       >
-        ClinicForce
+        <tspan fill={clinicFill}>Clinic</tspan>
+        <tspan fill={forceFill}>Force</tspan>
       </text>
     </svg>
   )

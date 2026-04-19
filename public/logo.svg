@@ -15,5 +15,5 @@
   </g>
   <text x="140" y="92"
         font-family="'EB Garamond', 'Cormorant Garamond', Garamond, 'Times New Roman', serif"
-        font-size="76" font-weight="500" fill="#00B578" letter-spacing="-0.5">ClinicForce</text>
+        font-size="76" font-weight="500" letter-spacing="-0.5"><tspan fill="#0A0A0A">Clinic</tspan><tspan fill="#00B578">Force</tspan></text>
 </svg>

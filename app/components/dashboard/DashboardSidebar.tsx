@@ -167,8 +167,11 @@ export default function DashboardSidebar({
       <div className="flex items-center gap-3 px-5 py-4 border-b border-[var(--border)]">
         <Logo iconOnly className="w-8 h-8 shrink-0" aria-hidden />
         <div className="min-w-0 sidebar-expanded-content">
-          <h1 className="font-serif text-[18px] text-[#00B578] leading-none tracking-tight">
-            ClinicForce
+          <h1
+            className="text-[18px] leading-none tracking-tight"
+            style={{ fontFamily: "var(--font-garamond), 'EB Garamond', Georgia, 'Times New Roman', serif" }}
+          >
+            <span className="text-[#0A0A0A]">Clinic</span><span className="text-[#00B578]">Force</span>
           </h1>
           {isMultiClinic ? (
             <ClinicSwitcher />
