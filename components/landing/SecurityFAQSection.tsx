@@ -18,7 +18,7 @@ const SECURITY_FAQS: [string, string][] = [
   ],
   [
     "Who can access my clinic's data?",
-    'You, your team, and a small number of audited infrastructure providers — Supabase, Twilio, ElevenLabs, Stripe, and Vercel. Each is bound by a data processing agreement and holds SOC 2 Type 2 or equivalent certifications. We name every one of them publicly on our Trust page.',
+    'You, your team, and a small number of audited infrastructure providers covering our data centre, telephony, voice AI, payments, and hosting. Each is bound by a data processing agreement and holds SOC 2 Type 2 or equivalent certifications. See our Trust page for the current sub-processor list.',
   ],
   [
     "What happens if there's a data breach?",
