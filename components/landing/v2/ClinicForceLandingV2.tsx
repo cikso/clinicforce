@@ -27,12 +27,6 @@ const ArrowRight = () => (
   </svg>
 )
 
-const PhoneIcon = ({ size = 18, strokeWidth = 1.8 }: { size?: number; strokeWidth?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M16 12.5c-1.2 0-2.4-.2-3.5-.6a.8.8 0 0 0-.8.2l-1.6 2A12.1 12.1 0 0 1 4.5 8.5L6.4 7a.8.8 0 0 0 .2-.8C6.2 5 6 3.8 6 2.6a.8.8 0 0 0-.8-.8H2.6a.8.8 0 0 0-.8.8A13.4 13.4 0 0 0 15.2 16a.8.8 0 0 0 .8-.8v-2a.8.8 0 0 0-.8-.8z" />
-  </svg>
-)
-
 /* Tab icons — copied verbatim from the Claude Design handoff so shapes match. */
 const TAB_ICONS: Record<VerticalKey, ReactElement> = {
   all: (
@@ -307,31 +301,16 @@ export default function ClinicForceLandingV2() {
               <p>If it&apos;s routine, she books it. If it&apos;s an emergency, she escalates to your on-call team within seconds. Every call comes back as a structured handover note with transcript, urgency, and the next action already queued up.</p>
             </div>
             <div className="col-visual reveal">
-              <div className="phone-visual">
-                <div className="phone-row">
-                  <div className="phone-icon"><PhoneIcon /></div>
-                  <div>
-                    <div className="caller-name">Sarah Williams</div>
-                    <div className="status">CONNECTED · 00:42</div>
-                  </div>
-                  <div className="wave-mini">
-                    {[0, 0.08, 0.16, 0.24, 0.32, 0.4, 0.48].map((d, i) => (
-                      <span key={i} style={{ animationDelay: `${d}s` }} />
-                    ))}
-                  </div>
-                </div>
-                <div className="transcript-lines">
-                  <div className="transcript-line"><b>Stella:</b> Hills Veterinary, you&apos;ve reached Stella. How can I help?</div>
-                  <div className="transcript-line"><b>Caller:</b> Hi — Luna&apos;s due for her annual. Do you have anything this week?</div>
-                  <div className="transcript-line"><b>Stella:</b> I can see Dr. Patel has Thursday at 10:15, or Friday at 4pm.</div>
-                  <div className="transcript-line"><b>Caller:</b> Thursday works great.</div>
-                </div>
-                <div className="booking-confirm">
-                  <div className="check"><CheckIcon size={12} strokeWidth={2.5} /></div>
-                  <div className="text">
-                    <b>Booked.</b> <span>Luna · Annual · Thu 10:15 with Dr. Patel</span>
-                  </div>
-                </div>
+              <div className="dashboard-video">
+                <video
+                  src="/videos/dashboard-preview.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                  aria-label="ClinicForce dashboard preview showing Stella answering a call, logging the transcript, and booking an appointment."
+                />
               </div>
             </div>
           </div>
